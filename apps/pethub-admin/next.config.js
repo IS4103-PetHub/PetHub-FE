@@ -2,7 +2,7 @@
 
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["ui"],
+  transpilePackages: ["web-ui", "shared-utils"],
 };
 
 module.exports = nextConfig;

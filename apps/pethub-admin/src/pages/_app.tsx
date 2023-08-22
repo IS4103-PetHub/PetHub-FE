@@ -6,16 +6,15 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
-import type { AppProps } from "next/app";
-import Head from "next/head";
-import { useState } from "react";
-
 import {
   Hydrate,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import Head from "next/head";
+import { useState } from "react";
 import SideNavBar from "@/components/common/SideNavBar";
+import type { AppProps } from "next/app";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
@@ -30,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
             refetchOnMount: false,
           },
         },
-      })
+      }),
   );
 
   return (

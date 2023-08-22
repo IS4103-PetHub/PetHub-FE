@@ -7,11 +7,11 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconPackage, IconUser, IconBuildingStore } from "@tabler/icons-react";
+import { IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { LightDarkModeToggle } from "../../../../../packages/ui";
+import { LightDarkModeToggle } from "web-ui";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -68,9 +68,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const data = [
-  { link: "/users", label: "Users", icon: IconUser },
-];
+const data = [{ link: "/users", label: "Users", icon: IconUser }];
 
 const SideNavBar = () => {
   const { classes, cx } = useStyles();

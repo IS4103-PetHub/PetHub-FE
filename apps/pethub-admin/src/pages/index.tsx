@@ -1,5 +1,5 @@
+import { Container } from "@mantine/core";
 import Head from "next/head";
-import { Container, Text } from "@mantine/core";
 import PageTitle from "@/components/common/PageTitle";
 
 export default function Home() {
