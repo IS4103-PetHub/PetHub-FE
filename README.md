@@ -16,7 +16,8 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `pethub-admin`: a [Next.js](https://nextjs.org/) app
+- `pethub-admin`: a [Next.js](https://nextjs.org/) app, the administrative portal used by PetHub staff
+- `pethub-main`: another [Next.js](https://nextjs.org/) app, the main webapp used by partners and customers
 - `web-ui`: a stub React component library shared by all applications
 - `shared-utils`: a utils library shared by all applications
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
