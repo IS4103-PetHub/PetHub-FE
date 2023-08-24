@@ -1,6 +1,6 @@
 import { Container } from "@mantine/core";
 import React from "react";
-import PageTitle from "@/components/common/PageTitle";
+import { PageTitle } from "web-ui";
 
 export default function Users() {
   return (
