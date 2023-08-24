@@ -1,6 +1,6 @@
 import { Container } from "@mantine/core";
 import Head from "next/head";
-import PageTitle from "@/components/common/PageTitle";
+import { PageTitle } from "web-ui";
 
 export default function Home() {
   return (

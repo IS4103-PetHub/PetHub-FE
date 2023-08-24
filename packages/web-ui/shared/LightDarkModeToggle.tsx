@@ -6,7 +6,7 @@ import {
 } from "@mantine/core";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
 
-export function LightDarkModeToggle() {
+export const LightDarkModeToggle = () => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
 
@@ -27,4 +27,4 @@ export function LightDarkModeToggle() {
       />
     </Group>
   );
-}
+};
