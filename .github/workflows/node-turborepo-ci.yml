@@ -27,9 +27,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          
-      - name: Install latest npm
-        run: npm install -g npm@latest
         
       - name: Install current dependencies
         run: npm install
