@@ -1,5 +1,4 @@
 import { Container } from "@mantine/core";
-import { Inter } from "next/font/google";
 import Head from "next/head";
 import Banner from "@/components/common/landing/Banner";
 import { useExampleGet } from "@/hooks/example";
