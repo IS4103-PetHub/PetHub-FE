@@ -95,7 +95,7 @@ const links: {
   },
   {
     link: "/services/fnb",
-    label: "Dine with pet",
+    label: "Dine with pets",
     links: undefined,
   },
 ];

@@ -7,7 +7,7 @@ import {
   BackgroundImage,
 } from "@mantine/core";
 
-const BANNER_HEIGHT = rem(500);
+const BANNER_HEIGHT = rem(700);
 
 const useStyles = createStyles((theme) => ({
   inner: {
