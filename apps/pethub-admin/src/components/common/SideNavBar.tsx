@@ -6,10 +6,13 @@ import {
   rem,
   Text,
   useMantineTheme,
+  Button,
 } from "@mantine/core";
 import { IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
 
@@ -75,6 +78,7 @@ const SideNavBar = () => {
   const theme = useMantineTheme();
   const router = useRouter();
   const [active, setActive] = useState(router.asPath);
+  const { data: session, status } = useSession();
 
   const links = data.map((item) => (
     <Link
@@ -94,6 +98,10 @@ const SideNavBar = () => {
     </Link>
   ));
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <Navbar
       height="100vh"
@@ -110,6 +118,15 @@ const SideNavBar = () => {
         </Group>
         {links}
       </Navbar.Section>
+      {session && (
+        <Button
+          onClick={
+            () => signOut({ callbackUrl: "http://localhost:3001/login" }) // weird bug here, testing in prog
+          }
+        >
+          Logout
+        </Button>
+      )}
     </Navbar>
   );
 };
