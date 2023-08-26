@@ -9,6 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "eslint-config-custom": "*"
+    "web-ui": "*",
+    "shared-utils": "*"
+  },
+  "devDependencies": {
+    "eslint-config-custom": "*",
+    "tsconfig": "*"
   }
 }
