@@ -2,10 +2,10 @@ import { Container } from "@mantine/core";
 import { Inter } from "next/font/google";
 import Head from "next/head";
 import Banner from "@/components/common/landing/Banner";
-
-const inter = Inter({ subsets: ["latin"] });
+import { useExampleGet } from "@/hooks/example";
 
 export default function Home() {
+  const { refetch, data } = useExampleGet();
   return (
     <>
       <Head>

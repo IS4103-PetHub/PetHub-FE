@@ -17,10 +17,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "dependencies": {
-    "web-ui": "*",
-    "shared-utils": "*"
-  },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

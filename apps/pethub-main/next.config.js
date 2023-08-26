@@ -1,12 +1,8 @@
 /** @type {import('next').NextConfig} */
 
-const nextConfig = {
+module.exports = {
   reactStrictMode: true,
   transpilePackages: ["web-ui", "shared-utils"],
-};
-
-module.exports = {
-  nextConfig,
   // avoiding CORS error, more here: https://vercel.com/support/articles/how-to-enable-cors
   async headers() {
     return [

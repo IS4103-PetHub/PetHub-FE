@@ -21,7 +21,7 @@ This Turborepo includes the following packages/apps:
 - `web-ui`: a stub React component library shared by all applications
 - `shared-utils`: a utils library shared by all applications
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+- `tsconfig`: `tsconfig.json` is used throughout the monorepo
 
 Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 

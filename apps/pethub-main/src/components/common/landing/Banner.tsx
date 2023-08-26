@@ -6,6 +6,7 @@ import {
   Text,
   BackgroundImage,
 } from "@mantine/core";
+import { useExampleGet } from "@/hooks/example";
 
 const BANNER_HEIGHT = rem(700);
 
