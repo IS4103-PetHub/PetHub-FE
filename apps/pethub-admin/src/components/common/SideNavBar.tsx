@@ -120,8 +120,10 @@ const SideNavBar = () => {
       </Navbar.Section>
       {session && (
         <Button
-          onClick={
-            () => signOut({ callbackUrl: "http://localhost:3001/login" }) // weird bug here, testing in prog
+          onClick={() =>
+            signOut({
+              callbackUrl: "/login",
+            })
           }
         >
           Logout
