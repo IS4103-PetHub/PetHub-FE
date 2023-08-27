@@ -8,6 +8,7 @@ import {
   useMantineTheme,
   Button,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -120,13 +121,19 @@ const SideNavBar = () => {
       </Navbar.Section>
       {session && (
         <Button
-          onClick={() =>
+          uppercase
+          onClick={() => {
+            notifications.show({
+              message: "Logging you out...",
+              color: "blue",
+              loading: true,
+            });
             signOut({
               callbackUrl: "/login",
-            })
-          }
+            });
+          }}
         >
-          Logout
+          logout
         </Button>
       )}
     </Navbar>

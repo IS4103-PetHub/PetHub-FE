@@ -13,19 +13,20 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import React, { useState } from "react";
 import { RegularButton } from "@/components/buttons/RegularButton";
 
 export default function Login() {
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
 
+  // Follow backend validation once ready
   const loginForm = useForm({
     initialValues: {
       username: "",
@@ -43,6 +44,7 @@ export default function Login() {
     },
   });
 
+  // Follow backend validation once ready
   const forgotPasswordForm = useForm({
     initialValues: {
       email: "",
@@ -68,9 +70,19 @@ export default function Login() {
     });
     loginForm.reset();
     if (res?.error) {
-      console.log("Error loggin in!");
+      notifications.show({
+        title: "Login Failed",
+        message: "Placeholder for API response",
+        color: "red",
+        autoClose: 5000,
+      });
     } else {
-      console.log("Login succecssful");
+      notifications.show({
+        title: "Login Successful",
+        message: "You are currently logged in as <role from API response>",
+        color: "green",
+        autoClose: 5000,
+      });
       router.push("/");
     }
   };
@@ -80,10 +92,6 @@ export default function Login() {
     forgotPasswordForm.reset();
     setIsForgotPasswordSuccessful(true); // replace with API response status
   };
-
-  if (status === "authenticated") {
-    router.push("/");
-  }
 
   return (
     <Container fluid>

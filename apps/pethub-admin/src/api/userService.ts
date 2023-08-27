@@ -1,9 +1,16 @@
-import api from "./axiosConfig.js";
+import { LoginCredentials } from "@/types";
+import api from "./axiosConfig";
 
-export const loginService = async (username: string, password: string) => {
+export const loginService = async ({
+  username,
+  password,
+}: LoginCredentials) => {
   try {
-    const body = {};
-    let res = await api.post("xxx/login", body);
+    const body = {
+      username: username,
+      password: password,
+    };
+    let res = await api.post("/login", body);
     console.log(
       "Calling Service: [userService - userLogin] with response:",
       res,
@@ -16,6 +23,7 @@ export const loginService = async (username: string, password: string) => {
 };
 
 export const forgotPasswordService = async (email: string) => {
+  // Implement once API is available
   try {
     const body = {};
     let res = await api.post("xxx/forgotpassword", body);

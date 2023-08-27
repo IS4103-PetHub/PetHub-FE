@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginService } from "@/api/userService";
+import { LoginCredentials } from "@/types";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -13,21 +14,19 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       credentials: {},
-      async authorize(credentials, req) {
-        // let res = await loginService(credentials.username, credentials.password);
-        // if (res.data && res.data.user !== null) {
-        //   return res.data.user;
-        // } else {
-        //   return null;
-        // }
-
-        // Mock user obj returned from backend for now
-        const user = {
-          id: "1",
-          authenticated: true,
-          role: "manager",
+      async authorize(credentials?: any, req?: any) {
+        const loginCredentials: LoginCredentials = {
+          username: credentials.username,
+          password: credentials.password,
         };
-        return user ? user : null;
+        const data = await loginService(loginCredentials);
+        if (data && data.status === "success") {
+          // Change to fit API response when available
+          const user = data.payload;
+          return user;
+        } else {
+          return null;
+        }
       },
     }),
   ],
