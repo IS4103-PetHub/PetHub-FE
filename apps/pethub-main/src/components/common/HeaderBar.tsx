@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronDown } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 
 const HEADER_HEIGHT = rem(80);
 
@@ -101,8 +102,17 @@ const links: {
 ];
 
 const HeaderBar = () => {
+  const router = useRouter();
   const { classes } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
+
+  function handleClickLogo() {
+    router.push("/");
+  }
+  function handleClickSignUp() {
+    router.push("/signup");
+  }
+
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
@@ -156,7 +166,7 @@ const HeaderBar = () => {
             size="sm"
             color="white"
           />
-          <Text size="xl" weight={600} color="white">
+          <Text size="xl" weight={600} color="white" onClick={handleClickLogo}>
             PetHub
           </Text>
         </Group>
@@ -167,7 +177,7 @@ const HeaderBar = () => {
           <Button size="md" radius="md" variant="default">
             Log in
           </Button>
-          <Button size="md" radius="md">
+          <Button size="md" radius="md" onClick={handleClickSignUp}>
             Sign up
           </Button>
         </Group>
