@@ -8,14 +8,17 @@ import {
   TextInput,
   Center,
 } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { useForm, isEmail, hasLength } from "@mantine/form";
 import {
   IconBuildingStore,
+  IconCalendar,
   IconPawFilled,
   IconPlus,
 } from "@tabler/icons-react";
 import React from "react";
 import { PageTitle } from "web-ui";
+import PasswordBar from "web-ui/shared/PasswordBar";
 
 export default function SignUp() {
   const form = useForm({
@@ -24,8 +27,11 @@ export default function SignUp() {
       companyName: "",
       firstName: "",
       lastName: "",
+      dateOfBirth: "",
+      contactNumber: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
 
     validate: {
@@ -41,11 +47,14 @@ export default function SignUp() {
         values.accountType === "PET_OWNER" && !value
           ? "Last name is required."
           : null,
+      contactNumber: hasLength({ min: 8, max: 8 }, "Invalid phone number."),
       email: isEmail("Invalid email."),
-      password: hasLength(
-        { min: 8 },
-        "Password must be at least 8 characters long.",
-      ),
+      password: (value) =>
+        /^(?!.* )(?=.*\d)(?=.*[a-z]).{8,}$/.test(value)
+          ? null
+          : "Password must be at least 8 characters long with at least 1 letter, 1 number and no white spaces.",
+      confirmPassword: (value, values) =>
+        value !== values.password ? "Passwords do not match." : null,
     },
   });
 
@@ -70,7 +79,7 @@ export default function SignUp() {
     },
   ];
 
-  const nameFields =
+  const conditionalFields =
     form.values.accountType === "PET_OWNER" ? (
       <>
         <Grid.Col span={6}>
@@ -87,6 +96,17 @@ export default function SignUp() {
             placeholder="Last name"
             withAsterisk
             {...form.getInputProps("lastName")}
+          />
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <DateInput
+            label="Date of birth"
+            placeholder="Date of birth"
+            valueFormat="DD/MM/YYYY"
+            maxDate={new Date()}
+            icon={<IconCalendar size="1rem" />}
+            withAsterisk
+            {...form.getInputProps("dateOfBirth")}
           />
         </Grid.Col>
       </>
@@ -116,7 +136,15 @@ export default function SignUp() {
                 {...form.getInputProps("accountType")}
               />
             </Grid.Col>
-            {nameFields}
+            {conditionalFields}
+            <Grid.Col span={12}>
+              <TextInput
+                label="Contact number"
+                placeholder="Contact number"
+                withAsterisk
+                {...form.getInputProps("contactNumber")}
+              />
+            </Grid.Col>
             <Grid.Col span={12}>
               <TextInput
                 label="Email"
@@ -131,6 +159,17 @@ export default function SignUp() {
                 label="Password"
                 withAsterisk
                 {...form.getInputProps("password")}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <PasswordBar password={form.values.password} />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <PasswordInput
+                placeholder="Confirm password"
+                label="Confirm password"
+                withAsterisk
+                {...form.getInputProps("confirmPassword")}
               />
             </Grid.Col>
           </Grid>
