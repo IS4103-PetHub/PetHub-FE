@@ -21,14 +21,7 @@ export const authOptions: NextAuthOptions = {
           username: credentials.username,
           password: credentials.password,
         };
-        const data = await loginService(loginCredentials);
-        if (data && data.status === "success") {
-          // Change to fit API response when available
-          const user = data.payload;
-          return user;
-        } else {
-          return null;
-        }
+        return await loginService(loginCredentials);
       },
     }),
   ],
@@ -42,22 +35,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  // callbacks: {
-  //   jwt({ token, user }) {
-  //     if (user) {
-  //       token.name = user.name;
-  //       token.role = user.role;
-  //       token.userId = user.userId;
-  //     }
-  //     return token;
-  //   },
-  //   session({ session, token }) {
-  //     session.user.name = token.name;
-  //     session.user.role = token.role;
-  //     session.user.userId = token.userId;
-  //     return session;
-  //   },
-  // },
 };
 
 export default NextAuth(authOptions);

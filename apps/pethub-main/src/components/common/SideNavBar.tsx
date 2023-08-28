@@ -114,7 +114,7 @@ const SideNavBar = () => {
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
           <Text size="lg" weight={600} color={theme.colors.gray[0]}>
-            PetHub Main
+            PetHub Business
           </Text>
           <LightDarkModeToggle />
         </Group>

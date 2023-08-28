@@ -13,8 +13,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconChevronDown } from "@tabler/icons-react";
-import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { LoginModal } from "@/modals/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
@@ -126,8 +125,6 @@ const HeaderBar = () => {
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
     ));
 
-    console.log("session", session);
-
     if (menuItems) {
       return (
         <Menu
@@ -166,7 +163,7 @@ const HeaderBar = () => {
   });
 
   // This should only show if the user is not logged in, or if the logged in user is a Pet Owner
-  if (session && session.user["role"] === "PetOwner") {
+  if (session && session.user["role"] === "petBusiness") {
     return null;
   }
 

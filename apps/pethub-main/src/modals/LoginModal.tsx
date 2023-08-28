@@ -21,7 +21,8 @@ import { notifications } from "@mantine/notifications";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { IconPawFilled, IconBuildingStore } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+
 import React, { useState, useEffect } from "react";
 
 interface LoginModalProps {
@@ -35,6 +36,8 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const theme = useMantineTheme();
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [userType, setUserType] = useState("PO");
+  const { data: session, status } = useSession();
+  const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
 
@@ -87,8 +90,16 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     toggle();
   };
 
+  useEffect(() => {
+    if (hasLoggedIn && status === "authenticated") {
+      if (session.user["role"] === "petBusiness") {
+        router.push("/business/dashboard");
+      }
+      setHasLoggedIn(false);
+    }
+  }, [hasLoggedIn, status, session]);
+
   const handleLogin = async (event: any) => {
-    console.log("Login values:", loginForm.values);
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
@@ -104,13 +115,12 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       });
     } else {
       notifications.show({
-        title: "Login Successful",
-        message: "You are currently logged in as <role from API response>",
+        message: "Login Successful",
         color: "green",
         autoClose: 5000,
       });
+      setHasLoggedIn(true);
       close();
-      router.push("/");
     }
     const timer = setTimeout(() => {
       loginForm.reset();
@@ -118,7 +128,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   };
 
   const handleForgotPassword = () => {
-    console.log("Forgot password values:", forgotPasswordForm.values);
     setIsForgotPasswordSuccessful(true); // replace with API response status
     const timer = setTimeout(() => {
       forgotPasswordForm.reset();
