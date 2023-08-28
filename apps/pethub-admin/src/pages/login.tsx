@@ -17,14 +17,30 @@ import { notifications } from "@mantine/notifications";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import React, { useState, useEffect } from "react";
 import { RegularButton } from "@/components/buttons/RegularButton";
 
 export default function Login() {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
+
+  // Disallow user from accessing this page if a session is present
+  if (session) {
+    router.push("/");
+  }
+
+  useEffect(() => {
+    // Set background gradient on component mount and reset on unmount, move to globals.css if gradient is desired for all pages
+    document.body.style.background =
+      "linear-gradient(90deg, rgb(244, 244, 246) 0%, rgb(204, 204, 226), rgb(180, 180, 239) 100%)";
+    return () => {
+      document.body.style.background = "";
+    };
+  }, []);
 
   // Follow backend validation once ready
   const loginForm = useForm({
