@@ -19,7 +19,7 @@ import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { IconDog, IconBuildingWarehouse } from "@tabler/icons-react";
+import { IconPawFilled, IconBuildingStore } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import React, { useState, useEffect } from "react";
@@ -154,86 +154,79 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
               <Text color="dimmed" size="sm" align="center">
                 Welcome to PetHub. Login now!
               </Text>
-              <Paper
-                shadow="xl"
-                p={30}
-                mt={10}
-                radius="lg"
-                style={{ backgroundColor: "#F8F8FF" }}
-              >
-                <form onSubmit={loginForm.onSubmit(handleLogin)}>
-                  <SegmentedControl
-                    fullWidth
-                    color="cyan"
-                    onChange={(val) => {
-                      setUserType(val);
-                      loginForm.setFieldValue("type", val);
-                    }}
-                    value={userType}
-                    data={[
-                      {
-                        value: "PO",
-                        label: (
-                          <Center>
-                            <IconDog />
-                            <Box ml={10}>Pet Owner</Box>
-                          </Center>
-                        ),
-                      },
-                      {
-                        value: "PB",
-                        label: (
-                          <Center>
-                            <IconBuildingWarehouse />
-                            <Box ml={10}>Pet Business</Box>
-                          </Center>
-                        ),
-                      },
-                    ]}
-                  />
-                  <TextInput
-                    label="Username:"
-                    required
-                    mt="xs"
-                    value={loginForm.values.username}
-                    onChange={(event) =>
-                      loginForm.setFieldValue(
-                        "username",
-                        event.currentTarget.value,
-                      )
-                    }
-                    error={loginForm.errors.username && "Invalid username"}
-                  />
-                  <PasswordInput
-                    label="Password:"
-                    required
-                    mt="xs"
-                    value={loginForm.values.password}
-                    onChange={(event) =>
-                      loginForm.setFieldValue(
-                        "password",
-                        event.currentTarget.value,
-                      )
-                    }
-                    error={loginForm.errors.password && "Invalid password"}
-                  />
-                  <Anchor
-                    component="button"
-                    type="button"
-                    color="dimmed"
-                    onClick={changeBoxToggle}
-                    size="xs"
-                    mt="sm"
-                  >
-                    {type === "login"
-                      ? "Forgot your password?"
-                      : "Already have an account? Login here"}
-                  </Anchor>
-                  <Button mt="xs" type="submit" fullWidth>
-                    Login
-                  </Button>
-                </form>
-              </Paper>
+
+              <form onSubmit={loginForm.onSubmit(handleLogin)}>
+                <SegmentedControl
+                  fullWidth
+                  color="dark"
+                  onChange={(val) => {
+                    setUserType(val);
+                    loginForm.setFieldValue("type", val);
+                  }}
+                  value={userType}
+                  data={[
+                    {
+                      value: "PO",
+                      label: (
+                        <Center>
+                          <IconPawFilled />
+                          <Box ml={10}>Pet Owner</Box>
+                        </Center>
+                      ),
+                    },
+                    {
+                      value: "PB",
+                      label: (
+                        <Center>
+                          <IconBuildingStore />
+                          <Box ml={10}>Pet Business</Box>
+                        </Center>
+                      ),
+                    },
+                  ]}
+                />
+                <TextInput
+                  label="Username:"
+                  required
+                  mt="xs"
+                  value={loginForm.values.username}
+                  onChange={(event) =>
+                    loginForm.setFieldValue(
+                      "username",
+                      event.currentTarget.value,
+                    )
+                  }
+                  error={loginForm.errors.username && "Invalid username"}
+                />
+                <PasswordInput
+                  label="Password:"
+                  required
+                  mt="xs"
+                  value={loginForm.values.password}
+                  onChange={(event) =>
+                    loginForm.setFieldValue(
+                      "password",
+                      event.currentTarget.value,
+                    )
+                  }
+                  error={loginForm.errors.password && "Invalid password"}
+                />
+                <Anchor
+                  component="button"
+                  type="button"
+                  color="dimmed"
+                  onClick={changeBoxToggle}
+                  size="xs"
+                  mt="sm"
+                >
+                  {type === "login"
+                    ? "Forgot your password?"
+                    : "Already have an account? Login here"}
+                </Anchor>
+                <Button mt="xs" type="submit" fullWidth>
+                  Login
+                </Button>
+              </form>
             </div>
           ) : (
             // ForgotPassword Box
@@ -243,48 +236,41 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
                 Enter your email address to get a reset link if your email
                 address is tied to an account in our system.
               </Text>
-              <Paper
-                shadow="md"
-                p={30}
-                radius="sm"
-                mt="md"
-                style={{ backgroundColor: "#F8F8FF" }}
-              >
-                {isForgotPasswordSuccessful ? (
-                  <Text c="dimmed" fz="md" ta="center">
-                    Password reset request successful. Please check your inbox.
-                  </Text>
-                ) : (
-                  <form
-                    onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}
-                  >
-                    <TextInput
-                      label="Email Address:"
-                      required
-                      value={forgotPasswordForm.values.email}
-                      onChange={(event) =>
-                        forgotPasswordForm.setFieldValue(
-                          "email",
-                          event.currentTarget.value,
-                        )
-                      }
-                      error={
-                        forgotPasswordForm.errors.email &&
-                        "Invalid email address"
-                      }
-                    />
-                    <Group position="apart" mt="lg">
-                      <Anchor color="dimmed" size="sm">
-                        <Center inline onClick={() => toggle()}>
-                          <IconArrowLeft size={rem(12)} stroke={1.5} />
-                          <Box ml={5}>Go back</Box>
-                        </Center>
-                      </Anchor>
-                      <Button type="submit">Reset Password</Button>
-                    </Group>
-                  </form>
-                )}
-              </Paper>
+
+              {isForgotPasswordSuccessful ? (
+                <Text c="dimmed" fz="md" ta="center">
+                  Password reset request successful. Please check your inbox.
+                </Text>
+              ) : (
+                <form
+                  onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}
+                >
+                  <TextInput
+                    mt={20}
+                    label="Email Address:"
+                    required
+                    value={forgotPasswordForm.values.email}
+                    onChange={(event) =>
+                      forgotPasswordForm.setFieldValue(
+                        "email",
+                        event.currentTarget.value,
+                      )
+                    }
+                    error={
+                      forgotPasswordForm.errors.email && "Invalid email address"
+                    }
+                  />
+                  <Group position="apart" mt="lg">
+                    <Anchor color="dimmed" size="sm">
+                      <Center inline onClick={() => toggle()}>
+                        <IconArrowLeft size={rem(12)} stroke={1.5} />
+                        <Box ml={5}>Go back</Box>
+                      </Center>
+                    </Anchor>
+                    <Button type="submit">Reset Password</Button>
+                  </Group>
+                </form>
+              )}
             </div>
           )}
         </Container>
