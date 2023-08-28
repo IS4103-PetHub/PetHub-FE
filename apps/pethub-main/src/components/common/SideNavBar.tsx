@@ -72,7 +72,9 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const data = [{ link: "/users", label: "Users", icon: IconUser }];
+const data = [
+  { link: "/someotherlink", label: "This is a label", icon: IconUser },
+];
 
 const SideNavBar = () => {
   const { classes, cx } = useStyles();

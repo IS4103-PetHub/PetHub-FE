@@ -37,7 +37,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [userType, setUserType] = useState("PO");
   const { data: session, status } = useSession();
-  const [hasLoggedIn, setHasLoggedIn] = useState(false);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
 
@@ -90,26 +89,17 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     toggle();
   };
 
-  useEffect(() => {
-    if (hasLoggedIn && status === "authenticated") {
-      if (session.user["role"] === "petBusiness") {
-        router.push("/business/dashboard");
-      }
-      setHasLoggedIn(false);
-    }
-  }, [hasLoggedIn, status, session]);
-
   const handleLogin = async (event: any) => {
     const res = await signIn("credentials", {
-      callbackUrl: "/",
-      redirect: false,
+      callbackUrl: "/business/dashboard",
+      redirect: true,
       username: loginForm.values.username,
       password: loginForm.values.password,
     });
     if (res?.error) {
       notifications.show({
         title: "Login Failed",
-        message: "Placeholder for API response",
+        message: "Invalid Credentials",
         color: "red",
         autoClose: 5000,
       });
@@ -119,7 +109,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         color: "green",
         autoClose: 5000,
       });
-      setHasLoggedIn(true);
       close();
     }
     const timer = setTimeout(() => {
