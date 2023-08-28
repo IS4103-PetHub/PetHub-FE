@@ -6,11 +6,9 @@ import {
   PasswordInput,
   SegmentedControl,
   TextInput,
-  Text,
-  useMantineTheme,
   Center,
 } from "@mantine/core";
-import { useForm, isEmail, hasLength, isNotEmpty } from "@mantine/form";
+import { useForm, isEmail, hasLength } from "@mantine/form";
 import {
   IconBuildingStore,
   IconPawFilled,
@@ -20,10 +18,10 @@ import React from "react";
 import { PageTitle } from "web-ui";
 
 export default function SignUp() {
-  const theme = useMantineTheme();
   const form = useForm({
     initialValues: {
       accountType: "PET_OWNER",
+      companyName: "",
       firstName: "",
       lastName: "",
       email: "",
@@ -31,8 +29,18 @@ export default function SignUp() {
     },
 
     validate: {
-      firstName: isNotEmpty("First name is required."),
-      lastName: isNotEmpty("Last name is required."),
+      companyName: (value, values) =>
+        values.accountType === "PET_BUSINESS" && !value
+          ? "Company name is required."
+          : null,
+      firstName: (value, values) =>
+        values.accountType === "PET_OWNER" && !value
+          ? "First name is required."
+          : null,
+      lastName: (value, values) =>
+        values.accountType === "PET_OWNER" && !value
+          ? "Last name is required."
+          : null,
       email: isEmail("Invalid email."),
       password: hasLength(
         { min: 8 },
@@ -40,6 +48,58 @@ export default function SignUp() {
       ),
     },
   });
+
+  const segmentedControlData = [
+    {
+      value: "PET_OWNER",
+      label: (
+        <Center>
+          <IconPawFilled size="1rem" />
+          <Box ml={10}>Pet Owner</Box>
+        </Center>
+      ),
+    },
+    {
+      value: "PET_BUSINESS",
+      label: (
+        <Center>
+          <IconBuildingStore size="1rem" />
+          <Box ml={10}>Pet Business</Box>
+        </Center>
+      ),
+    },
+  ];
+
+  const nameFields =
+    form.values.accountType === "PET_OWNER" ? (
+      <>
+        <Grid.Col span={6}>
+          <TextInput
+            label="First name"
+            placeholder="First name"
+            withAsterisk
+            {...form.getInputProps("firstName")}
+          />
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <TextInput
+            label="Last name"
+            placeholder="Last name"
+            withAsterisk
+            {...form.getInputProps("lastName")}
+          />
+        </Grid.Col>
+      </>
+    ) : (
+      <Grid.Col span={12}>
+        <TextInput
+          label="Company name"
+          placeholder="Company name"
+          withAsterisk
+          {...form.getInputProps("companyName")}
+        />
+      </Grid.Col>
+    );
 
   return (
     <Container>
@@ -52,45 +112,11 @@ export default function SignUp() {
                 color="dark"
                 fullWidth
                 size="md"
-                data={[
-                  {
-                    value: "PET_OWNER",
-                    label: (
-                      <Center>
-                        <IconPawFilled size="1rem" />
-                        <Box ml={10}>Pet Owner</Box>
-                      </Center>
-                    ),
-                  },
-                  {
-                    value: "PET_BUSINESS",
-                    label: (
-                      <Center>
-                        <IconBuildingStore size="1rem" />
-                        <Box ml={10}>Pet Business</Box>
-                      </Center>
-                    ),
-                  },
-                ]}
+                data={segmentedControlData}
                 {...form.getInputProps("accountType")}
               />
             </Grid.Col>
-            <Grid.Col span={6}>
-              <TextInput
-                label="First name"
-                withAsterisk
-                placeholder="First name"
-                {...form.getInputProps("firstName")}
-              />
-            </Grid.Col>
-            <Grid.Col span={6}>
-              <TextInput
-                label="Last name"
-                placeholder="Last name"
-                withAsterisk
-                {...form.getInputProps("lastName")}
-              />
-            </Grid.Col>
+            {nameFields}
             <Grid.Col span={12}>
               <TextInput
                 label="Email"
