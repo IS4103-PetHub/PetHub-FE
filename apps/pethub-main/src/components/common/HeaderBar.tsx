@@ -175,7 +175,7 @@ const HeaderBar = () => {
         </Group>
         <Group position="right">
           <Button size="md" radius="md" variant="default">
-            Log in
+            Login
           </Button>
           <Button size="md" radius="md" onClick={handleClickSignUp}>
             Sign up
