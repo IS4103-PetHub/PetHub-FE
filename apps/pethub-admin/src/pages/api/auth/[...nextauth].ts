@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { loginService } from "@/api/userService";
 import { LoginCredentials } from "@/types";
 
+type ExtendedUserType = User & { name: string; role: string; userId: Number };
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
@@ -19,23 +21,18 @@ export const authOptions: NextAuthOptions = {
           username: credentials.username,
           password: credentials.password,
         };
-        const data = await loginService(loginCredentials);
-        if (data && data.status === "success") {
-          // Change to fit API response when available
-          const user = data.payload;
-          return user;
-        } else {
-          return null;
-        }
+        return await loginService(loginCredentials);
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.user = user;
-      }
+    jwt({ token, user }) {
+      if (user) token.user = user;
       return token;
+    },
+    session({ session, token }) {
+      session.user = token.user as any;
+      return session;
     },
   },
 };

@@ -77,8 +77,7 @@ export default function Login() {
   };
 
   const handleLogin = async (event: any) => {
-    console.log("Login values:", loginForm.values);
-    const res = await signIn("credentials", {
+    const res = await signIn("Invalid Credentials", {
       callbackUrl: "/",
       redirect: false,
       username: loginForm.values.username,
@@ -88,14 +87,13 @@ export default function Login() {
     if (res?.error) {
       notifications.show({
         title: "Login Failed",
-        message: "Placeholder for API response",
+        message: "Invalid Credentials",
         color: "red",
         autoClose: 5000,
       });
     } else {
       notifications.show({
-        title: "Login Successful",
-        message: "You are currently logged in as <role from API response>",
+        message: "Login Successful",
         color: "green",
         autoClose: 5000,
       });
@@ -104,7 +102,6 @@ export default function Login() {
   };
 
   const handleForgotPassword = () => {
-    console.log("Forgot password values:", forgotPasswordForm.values);
     forgotPasswordForm.reset();
     setIsForgotPasswordSuccessful(true); // replace with API response status
   };

@@ -15,7 +15,11 @@ export const loginService = async ({
       "Calling Service: [userService - userLogin] with response:",
       res,
     );
-    return res.data;
+    if (res.data && res.status == 200) {
+      return res.data;
+    } else {
+      return null;
+    }
   } catch (e) {
     console.log("Error from [userService - userLogin]:", e);
     throw e;
