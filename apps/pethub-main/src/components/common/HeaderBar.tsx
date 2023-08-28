@@ -102,6 +102,11 @@ const links: {
     label: "Dine with pets",
     links: undefined,
   },
+  {
+    link: "/account",
+    label: "My account",
+    links: undefined,
+  },
 ];
 
 const HeaderBar = () => {
@@ -110,9 +115,18 @@ const HeaderBar = () => {
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
   const items = links.map((link) => {
+    // Only logged in users can see the account tab
+    if (link.label === "My account") {
+      if (!session) {
+        return null;
+      }
+    }
+
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
     ));
+
+    console.log("session", session);
 
     if (menuItems) {
       return (
@@ -151,6 +165,11 @@ const HeaderBar = () => {
     );
   });
 
+  // This should only show if the user is not logged in, or if the logged in user is a Pet Owner
+  if (session && session.user["role"] === "PetOwner") {
+    return null;
+  }
+
   return (
     <Header height={HEADER_HEIGHT} sx={{ borderBottom: 0 }} mb={120}>
       <Container className={classes.inner} fluid>
@@ -185,7 +204,7 @@ const HeaderBar = () => {
                 });
               }}
             >
-              log out
+              Log out
             </Button>
           ) : (
             <>
