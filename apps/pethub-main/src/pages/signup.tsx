@@ -23,6 +23,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
+import { usePetBusinessCreate } from "@/hooks/pet-business";
 import { usePetOwnerCreate } from "@/hooks/pet-owner";
 import { CreatePetBusinessRequest, CreatePetOwnerRequest } from "@/types/types";
 
@@ -69,10 +70,10 @@ export default function SignUp() {
     },
   });
 
-  const createMutation = usePetOwnerCreate(queryClient);
+  const createPetOwnerMutation = usePetOwnerCreate(queryClient);
   const createPetOwnerAccount = async (payload: CreatePetOwnerRequest) => {
     try {
-      await createMutation.mutateAsync(payload);
+      await createPetOwnerMutation.mutateAsync(payload);
       notifications.show({
         title: "Account Created",
         color: "green",
@@ -80,6 +81,29 @@ export default function SignUp() {
         message: `Pet owner account created successfully!`,
       });
       // TODO login and redirect home page
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Creating Account",
+        color: "red",
+        icon: <IconX />,
+        message: error.response.data.message,
+      });
+    }
+  };
+
+  const createPetBusinessMutation = usePetBusinessCreate(queryClient);
+  const createPetBusinessAccount = async (
+    payload: CreatePetBusinessRequest,
+  ) => {
+    try {
+      await createPetBusinessMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Account Created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Pet business account created successfully!`,
+      });
+      // TODO login and redirect to pet business dashboard
     } catch (error: any) {
       notifications.show({
         title: "Error Creating Account",
@@ -117,6 +141,7 @@ export default function SignUp() {
           },
         },
       };
+      createPetBusinessAccount(payload);
     }
     form.reset();
   }
