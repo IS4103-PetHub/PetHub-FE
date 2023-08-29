@@ -10,41 +10,24 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm, isEmail, hasLength, isNotEmpty } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import {
   IconBuildingStore,
   IconCalendar,
+  IconCheck,
   IconPawFilled,
   IconPlus,
+  IconX,
 } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
-
-interface CreatePetOwnerRequest {
-  firstName: string;
-  lastName: string;
-  contactNumber: string;
-  dateOfBirth: string;
-  user: {
-    create: {
-      email: string;
-      password: string;
-    };
-  };
-}
-
-interface CreatePetBusinessRequest {
-  companyName: string;
-  contactNumber: string;
-  user: {
-    create: {
-      email: string;
-      password: string;
-    };
-  };
-}
+import { usePetOwnerCreate } from "@/hooks/pet-owner";
+import { CreatePetBusinessRequest, CreatePetOwnerRequest } from "@/types/types";
 
 export default function SignUp() {
+  const queryClient = useQueryClient();
   const form = useForm({
     initialValues: {
       userType: "petOwner",
@@ -86,8 +69,28 @@ export default function SignUp() {
     },
   });
 
+  const createMutation = usePetOwnerCreate(queryClient);
+  const createPetOwnerAccount = async (payload: CreatePetOwnerRequest) => {
+    try {
+      await createMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Account Created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Pet owner account created successfully!`,
+      });
+      // TODO login and redirect home page
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Creating Account",
+        color: "red",
+        icon: <IconX />,
+        message: error.response.data.message,
+      });
+    }
+  };
+
   function handleSubmit(values: any) {
-    console.log(values);
     if (values.userType === "petOwner") {
       const payload: CreatePetOwnerRequest = {
         firstName: values.firstName,
@@ -101,7 +104,7 @@ export default function SignUp() {
           },
         },
       };
-      console.log(payload);
+      createPetOwnerAccount(payload);
     } else {
       // userType === "petBusiness"
       const payload: CreatePetBusinessRequest = {
@@ -114,8 +117,8 @@ export default function SignUp() {
           },
         },
       };
-      console.log(payload);
     }
+    form.reset();
   }
 
   const segmentedControlData = [
