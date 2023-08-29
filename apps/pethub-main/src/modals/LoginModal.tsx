@@ -2,7 +2,6 @@ import {
   Container,
   TextInput,
   PasswordInput,
-  Paper,
   Title,
   Anchor,
   Text,
@@ -57,23 +56,19 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   // Follow backend validation once ready
   const loginForm = useForm({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
       type: "petOwner",
     },
     validate: {
-      username: (val) =>
-        val.length <= 3
-          ? "Username should include at least 3 characters"
+      email: (val) =>
+        val.length > 512
+          ? "The input exceeds the character limit of 512"
           : null,
-      password: (val) => {
-        if (val.length < 8)
-          return "Password should be at least 8 characters long";
-        if (!/\d/.test(val))
-          return "Password should contain at least one digit";
-        if (/\s/.test(val)) return "Password should not consist of spaces";
-        return null;
-      },
+      password: (val) =>
+        val.length > 512
+          ? "The input exceeds the character limit of 512"
+          : null,
     },
   });
 
@@ -97,7 +92,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
-      username: loginForm.values.username,
+      username: loginForm.values.email,
       password: loginForm.values.password,
       userType: userType,
     });
@@ -129,6 +124,114 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     }, 800);
   };
 
+  const LoginBox = () => {
+    return (
+      <div>
+        <Title align="center">PetHub</Title>
+        <Text color="dimmed" size="sm" align="center" mb="sm">
+          Welcome to PetHub. Login now!
+        </Text>
+
+        <form onSubmit={loginForm.onSubmit(handleLogin)}>
+          <SegmentedControl
+            fullWidth
+            color="dark"
+            onChange={(val) => {
+              setUserType(val);
+              loginForm.setFieldValue("type", val);
+            }}
+            value={userType}
+            data={[
+              {
+                value: "petOwner",
+                label: (
+                  <Center>
+                    <IconPawFilled size="1rem" />
+                    <Box ml={10}>Pet Owner</Box>
+                  </Center>
+                ),
+              },
+              {
+                value: "petBusiness",
+                label: (
+                  <Center>
+                    <IconBuildingStore size="1rem" />
+                    <Box ml={10}>Pet Business</Box>
+                  </Center>
+                ),
+              },
+            ]}
+          />
+          <TextInput
+            label="Email"
+            required
+            mt="xs"
+            {...loginForm.getInputProps("email")}
+          />
+          <PasswordInput
+            label="Password"
+            required
+            mt="xs"
+            {...loginForm.getInputProps("password")}
+          />
+          <Anchor
+            component="button"
+            type="button"
+            color="dimmed"
+            onClick={changeBoxToggle}
+            size="xs"
+            mt="sm"
+          >
+            {type === "login"
+              ? "Forgot your password?"
+              : "Already have an account? Login here"}
+          </Anchor>
+          <Button mt="xs" type="submit" fullWidth mb="sm">
+            Login
+          </Button>
+        </form>
+      </div>
+    );
+  };
+
+  const ForgotPasswordBox = () => {
+    return (
+      <div>
+        <Title align="center" fz="xl">
+          Forgot your password?
+        </Title>
+        <Text c="dimmed" fz="sm" ta="center" mt="sm">
+          Enter your email address to get a reset link if your email address is
+          tied to an account in our system.
+        </Text>
+
+        {isForgotPasswordSuccessful ? (
+          <Text c="dimmed" fz="md" ta="center">
+            Password reset request successful. Please check your inbox.
+          </Text>
+        ) : (
+          <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
+            <TextInput
+              mt={20}
+              label="Email"
+              required
+              {...forgotPasswordForm.getInputProps("email")}
+            />
+            <Group position="apart" mt="lg" mb="md">
+              <Anchor color="dimmed" size="sm">
+                <Center inline onClick={() => toggle()}>
+                  <IconArrowLeft size={rem(12)} stroke={1.5} />
+                  <Box ml={5}>Go back</Box>
+                </Center>
+              </Anchor>
+              <Button type="submit">Reset Password</Button>
+            </Group>
+          </form>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <Modal
@@ -151,130 +254,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         }}
       >
         <Container fluid>
-          {type === "login" ? (
-            // LoginBox
-            <div>
-              <Title align="center">PetHub</Title>
-              <Text color="dimmed" size="sm" align="center">
-                Welcome to PetHub. Login now!
-              </Text>
-
-              <form onSubmit={loginForm.onSubmit(handleLogin)}>
-                <SegmentedControl
-                  fullWidth
-                  color="dark"
-                  onChange={(val) => {
-                    setUserType(val);
-                    loginForm.setFieldValue("type", val);
-                  }}
-                  value={userType}
-                  data={[
-                    {
-                      value: "petOwner",
-                      label: (
-                        <Center>
-                          <IconPawFilled />
-                          <Box ml={10}>Pet Owner</Box>
-                        </Center>
-                      ),
-                    },
-                    {
-                      value: "petBusiness",
-                      label: (
-                        <Center>
-                          <IconBuildingStore />
-                          <Box ml={10}>Pet Business</Box>
-                        </Center>
-                      ),
-                    },
-                  ]}
-                />
-                <TextInput
-                  label="Username:"
-                  required
-                  mt="xs"
-                  value={loginForm.values.username}
-                  onChange={(event) =>
-                    loginForm.setFieldValue(
-                      "username",
-                      event.currentTarget.value,
-                    )
-                  }
-                  error={loginForm.errors.username}
-                />
-                <PasswordInput
-                  label="Password:"
-                  required
-                  mt="xs"
-                  value={loginForm.values.password}
-                  onChange={(event) =>
-                    loginForm.setFieldValue(
-                      "password",
-                      event.currentTarget.value,
-                    )
-                  }
-                  error={loginForm.errors.password}
-                />
-                <Anchor
-                  component="button"
-                  type="button"
-                  color="dimmed"
-                  onClick={changeBoxToggle}
-                  size="xs"
-                  mt="sm"
-                >
-                  {type === "login"
-                    ? "Forgot your password?"
-                    : "Already have an account? Login here"}
-                </Anchor>
-                <Button mt="xs" type="submit" fullWidth>
-                  Login
-                </Button>
-              </form>
-            </div>
-          ) : (
-            // ForgotPassword Box
-            <div>
-              <Title align="center">Forgot your password?</Title>
-              <Text c="dimmed" fz="sm" ta="center" mt="sm">
-                Enter your email address to get a reset link if your email
-                address is tied to an account in our system.
-              </Text>
-
-              {isForgotPasswordSuccessful ? (
-                <Text c="dimmed" fz="md" ta="center">
-                  Password reset request successful. Please check your inbox.
-                </Text>
-              ) : (
-                <form
-                  onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}
-                >
-                  <TextInput
-                    mt={20}
-                    label="Email Address:"
-                    required
-                    value={forgotPasswordForm.values.email}
-                    onChange={(event) =>
-                      forgotPasswordForm.setFieldValue(
-                        "email",
-                        event.currentTarget.value,
-                      )
-                    }
-                    error={forgotPasswordForm.errors.email}
-                  />
-                  <Group position="apart" mt="lg">
-                    <Anchor color="dimmed" size="sm">
-                      <Center inline onClick={() => toggle()}>
-                        <IconArrowLeft size={rem(12)} stroke={1.5} />
-                        <Box ml={5}>Go back</Box>
-                      </Center>
-                    </Anchor>
-                    <Button type="submit">Reset Password</Button>
-                  </Group>
-                </form>
-              )}
-            </div>
-          )}
+          {type === "login" ? <LoginBox /> : <ForgotPasswordBox />}
         </Container>
       </Modal>
     </>
