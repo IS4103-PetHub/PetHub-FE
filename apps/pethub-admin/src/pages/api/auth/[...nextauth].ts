@@ -3,8 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { loginService } from "@/api/userService";
 import { LoginCredentials } from "@/types";
 
-type ExtendedUserType = User & { name: string; role: string; userId: Number };
-
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
@@ -18,7 +16,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {},
       async authorize(credentials?: any, req?: any) {
         const loginCredentials: LoginCredentials = {
-          username: credentials.username,
+          email: credentials.email,
           password: credentials.password,
         };
         return await loginService(loginCredentials);

@@ -1,16 +1,14 @@
 import { LoginCredentials } from "@/types";
 import api from "./axiosConfig";
 
-export const loginService = async ({
-  username,
-  password,
-}: LoginCredentials) => {
+export const loginService = async ({ email, password }: LoginCredentials) => {
   try {
     const body = {
-      username: username,
+      email: email,
       password: password,
       userType: "applicationAdmin",
     };
+    console.log("body", body);
     let res = await api.post("/login", body);
     console.log(
       "Calling Service: [userService - userLogin] with response:",

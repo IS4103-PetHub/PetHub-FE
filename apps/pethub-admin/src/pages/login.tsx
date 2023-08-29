@@ -45,32 +45,35 @@ export default function Login() {
   // Follow backend validation once ready
   const loginForm = useForm({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validate: {
-      username: (val) =>
-        val.length <= 3
-          ? "Username should include at least 3 characters"
+      email: (val) =>
+        val.length > 512
+          ? "The input exceeds the character limit of 512"
           : null,
-      password: (val) => {
-        if (val.length < 8)
-          return "Password should be at least 8 characters long";
-        if (!/\d/.test(val))
-          return "Password should contain at least one digit";
-        if (/\s/.test(val)) return "Password should not consist of spaces";
-        return null;
-      },
+      password: (val) =>
+        val.length > 512
+          ? "The input exceeds the character limit of 512"
+          : null,
     },
   });
 
-  // Follow backend validation once ready
   const forgotPasswordForm = useForm({
     initialValues: {
       email: "",
     },
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email address"),
+      email: (val) => {
+        if (val.length > 512) {
+          return "The input exceeds the character limit of 512";
+        }
+        if (!/^\S+@\S+$/.test(val)) {
+          return "Invalid email address";
+        }
+        return null;
+      },
     },
   });
 
@@ -84,7 +87,7 @@ export default function Login() {
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
-      username: loginForm.values.username,
+      email: loginForm.values.email,
       password: loginForm.values.password,
     });
     loginForm.reset();
@@ -116,23 +119,23 @@ export default function Login() {
         // LoginBox
         <Container size={420} mt={100}>
           <Title align="center">PetHub</Title>
-          <Text color="dimmed" size="sm" align="center" mt={5}>
+          <Text color="dark" size="sm" align="center" mt={5}>
             Admin Management Portal
           </Text>
           <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
             <form onSubmit={loginForm.onSubmit(handleLogin)}>
               <TextInput
-                label="Username:"
+                label="Email"
                 required
                 mt="xs"
-                value={loginForm.values.username}
+                value={loginForm.values.email}
                 onChange={(event) =>
-                  loginForm.setFieldValue("username", event.currentTarget.value)
+                  loginForm.setFieldValue("email", event.currentTarget.value)
                 }
-                error={loginForm.errors.username}
+                error={loginForm.errors.email}
               />
               <PasswordInput
-                label="Password:"
+                label="Password"
                 required
                 mt="xs"
                 value={loginForm.values.password}
@@ -175,7 +178,7 @@ export default function Login() {
                 onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}
               >
                 <TextInput
-                  label="Email Address:"
+                  label="Email"
                   required
                   value={forgotPasswordForm.values.email}
                   onChange={(event) =>
