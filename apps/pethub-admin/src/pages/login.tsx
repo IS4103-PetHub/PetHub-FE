@@ -53,10 +53,14 @@ export default function Login() {
         val.length <= 3
           ? "Username should include at least 3 characters"
           : null,
-      password: (val) =>
-        val.length <= 6
-          ? "Password should include at least 6 characters"
-          : null,
+      password: (val) => {
+        if (val.length < 8)
+          return "Password should be at least 8 characters long";
+        if (!/\d/.test(val))
+          return "Password should contain at least one digit";
+        if (/\s/.test(val)) return "Password should not consist of spaces";
+        return null;
+      },
     },
   });
 
@@ -77,7 +81,7 @@ export default function Login() {
   };
 
   const handleLogin = async (event: any) => {
-    const res = await signIn("Invalid Credentials", {
+    const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
       username: loginForm.values.username,
@@ -125,7 +129,7 @@ export default function Login() {
                 onChange={(event) =>
                   loginForm.setFieldValue("username", event.currentTarget.value)
                 }
-                error={loginForm.errors.username && "Invalid username"}
+                error={loginForm.errors.username}
               />
               <PasswordInput
                 label="Password:"
@@ -135,7 +139,7 @@ export default function Login() {
                 onChange={(event) =>
                   loginForm.setFieldValue("password", event.currentTarget.value)
                 }
-                error={loginForm.errors.password && "Invalid password"}
+                error={loginForm.errors.password}
               />
               <Anchor
                 component="button"
@@ -180,9 +184,7 @@ export default function Login() {
                       event.currentTarget.value,
                     )
                   }
-                  error={
-                    forgotPasswordForm.errors.email && "Invalid email address"
-                  }
+                  error={forgotPasswordForm.errors.email}
                 />
                 <Group position="apart" mt="lg">
                   <Anchor color="dimmed" size="sm">
