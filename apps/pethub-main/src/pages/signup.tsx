@@ -9,7 +9,7 @@ import {
   Center,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useForm, isEmail, hasLength } from "@mantine/form";
+import { useForm, isEmail, hasLength, isNotEmpty } from "@mantine/form";
 import {
   IconBuildingStore,
   IconCalendar,
@@ -20,10 +20,34 @@ import React from "react";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
 
+interface CreatePetOwnerRequest {
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+  dateOfBirth: string;
+  user: {
+    create: {
+      email: string;
+      password: string;
+    };
+  };
+}
+
+interface CreatePetBusinessRequest {
+  companyName: string;
+  contactNumber: string;
+  user: {
+    create: {
+      email: string;
+      password: string;
+    };
+  };
+}
+
 export default function SignUp() {
   const form = useForm({
     initialValues: {
-      accountType: "PET_OWNER",
+      userType: "petOwner",
       companyName: "",
       firstName: "",
       lastName: "",
@@ -36,19 +60,23 @@ export default function SignUp() {
 
     validate: {
       companyName: (value, values) =>
-        values.accountType === "PET_BUSINESS" && !value
+        values.userType === "petBusiness" && !value
           ? "Company name is required."
           : null,
       firstName: (value, values) =>
-        values.accountType === "PET_OWNER" && !value
+        values.userType === "petOwner" && !value
           ? "First name is required."
           : null,
       lastName: (value, values) =>
-        values.accountType === "PET_OWNER" && !value
+        values.userType === "petOwner" && !value
           ? "Last name is required."
           : null,
-      contactNumber: hasLength({ min: 8, max: 8 }, "Invalid phone number."),
+      contactNumber: hasLength(
+        { min: 8, max: 8 },
+        "Phone number must be 8 digits long.",
+      ),
       email: isEmail("Invalid email."),
+      dateOfBirth: isNotEmpty("Date of birth required."),
       password: (value) =>
         /^(?!.* )(?=.*\d)(?=.*[a-z]).{8,}$/.test(value)
           ? null
@@ -58,9 +86,41 @@ export default function SignUp() {
     },
   });
 
+  function handleSubmit(values: any) {
+    console.log(values);
+    if (values.userType === "petOwner") {
+      const payload: CreatePetOwnerRequest = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        contactNumber: values.contactNumber,
+        dateOfBirth: new Date(values.dateOfBirth).toISOString(),
+        user: {
+          create: {
+            email: values.email,
+            password: values.password,
+          },
+        },
+      };
+      console.log(payload);
+    } else {
+      // userType === "petBusiness"
+      const payload: CreatePetBusinessRequest = {
+        companyName: values.companyName,
+        contactNumber: values.contactNumber,
+        user: {
+          create: {
+            email: values.email,
+            password: values.password,
+          },
+        },
+      };
+      console.log(payload);
+    }
+  }
+
   const segmentedControlData = [
     {
-      value: "PET_OWNER",
+      value: "petOwner",
       label: (
         <Center>
           <IconPawFilled size="1rem" />
@@ -69,7 +129,7 @@ export default function SignUp() {
       ),
     },
     {
-      value: "PET_BUSINESS",
+      value: "petBusiness",
       label: (
         <Center>
           <IconBuildingStore size="1rem" />
@@ -80,7 +140,8 @@ export default function SignUp() {
   ];
 
   const conditionalFields =
-    form.values.accountType === "PET_OWNER" ? (
+    form.values.userType === "petOwner" ? (
+      // pet owner fields
       <>
         <Grid.Col span={6}>
           <TextInput
@@ -111,6 +172,7 @@ export default function SignUp() {
         </Grid.Col>
       </>
     ) : (
+      // pet business fields
       <Grid.Col span={12}>
         <TextInput
           label="Company name"
@@ -125,7 +187,7 @@ export default function SignUp() {
     <Container>
       <Box mt="lg">
         <PageTitle title="🐕 Join the PetHub community" />
-        <form onSubmit={form.onSubmit(console.log)}>
+        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
           <Grid mt="md" mb="md">
             <Grid.Col span={12}>
               <SegmentedControl
@@ -133,7 +195,7 @@ export default function SignUp() {
                 fullWidth
                 size="md"
                 data={segmentedControlData}
-                {...form.getInputProps("accountType")}
+                {...form.getInputProps("userType")}
               />
             </Grid.Col>
             {conditionalFields}
