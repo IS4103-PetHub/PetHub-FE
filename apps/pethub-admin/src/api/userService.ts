@@ -9,6 +9,7 @@ export const loginService = async ({
     const body = {
       username: username,
       password: password,
+      userType: "applicationAdmin",
     };
     let res = await api.post("/login", body);
     console.log(
