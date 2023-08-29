@@ -35,7 +35,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const router = useRouter();
   const theme = useMantineTheme();
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
-  const [userType, setUserType] = useState("PO");
+  const [userType, setUserType] = useState("petOwner");
   const { data: session, status } = useSession();
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
@@ -48,7 +48,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         loginForm.reset();
         forgotPasswordForm.reset();
         toggle("login");
-        setUserType("PO");
+        setUserType("petOwner");
         setIsForgotPasswordSuccessful(false);
       }, 800);
     }
@@ -59,17 +59,21 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     initialValues: {
       username: "",
       password: "",
-      type: "owner",
+      type: "petOwner",
     },
     validate: {
       username: (val) =>
         val.length <= 3
           ? "Username should include at least 3 characters"
           : null,
-      password: (val) =>
-        val.length <= 6
-          ? "Password should include at least 6 characters"
-          : null,
+      password: (val) => {
+        if (val.length < 8)
+          return "Password should be at least 8 characters long";
+        if (!/\d/.test(val))
+          return "Password should contain at least one digit";
+        if (/\s/.test(val)) return "Password should not consist of spaces";
+        return null;
+      },
     },
   });
 
@@ -91,10 +95,11 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
 
   const handleLogin = async (event: any) => {
     const res = await signIn("credentials", {
-      callbackUrl: "/business/dashboard",
-      redirect: true,
+      callbackUrl: "/",
+      redirect: false,
       username: loginForm.values.username,
       password: loginForm.values.password,
+      userType: userType,
     });
     if (res?.error) {
       notifications.show({
@@ -110,6 +115,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         autoClose: 5000,
       });
       close();
+      userType === "petBusiness" ? router.push("/business/dashboard") : null;
     }
     const timer = setTimeout(() => {
       loginForm.reset();
@@ -164,7 +170,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
                   value={userType}
                   data={[
                     {
-                      value: "PO",
+                      value: "petOwner",
                       label: (
                         <Center>
                           <IconPawFilled />
@@ -173,7 +179,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
                       ),
                     },
                     {
-                      value: "PB",
+                      value: "petBusiness",
                       label: (
                         <Center>
                           <IconBuildingStore />
@@ -194,7 +200,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
                       event.currentTarget.value,
                     )
                   }
-                  error={loginForm.errors.username && "Invalid username"}
+                  error={loginForm.errors.username}
                 />
                 <PasswordInput
                   label="Password:"
@@ -207,7 +213,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
                       event.currentTarget.value,
                     )
                   }
-                  error={loginForm.errors.password && "Invalid password"}
+                  error={loginForm.errors.password}
                 />
                 <Anchor
                   component="button"
@@ -254,9 +260,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
                         event.currentTarget.value,
                       )
                     }
-                    error={
-                      forgotPasswordForm.errors.email && "Invalid email address"
-                    }
+                    error={forgotPasswordForm.errors.email}
                   />
                   <Group position="apart" mt="lg">
                     <Anchor color="dimmed" size="sm">

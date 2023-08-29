@@ -4,11 +4,13 @@ import api from "./axiosConfig";
 export const loginService = async ({
   username,
   password,
+  userType,
 }: LoginCredentials) => {
   try {
     const body = {
       username: username,
       password: password,
+      userType: userType,
     };
     let res = await api.post("/login", body);
     // console.log(
@@ -22,6 +24,7 @@ export const loginService = async ({
     }
   } catch (e) {
     // console.log("Error from [userService - userLogin]:", e);
+    return null;
     throw e;
   }
 };

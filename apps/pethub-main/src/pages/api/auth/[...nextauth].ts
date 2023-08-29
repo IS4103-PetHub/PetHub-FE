@@ -20,8 +20,10 @@ export const authOptions: NextAuthOptions = {
         const loginCredentials: LoginCredentials = {
           username: credentials.username,
           password: credentials.password,
+          userType: credentials.userType,
         };
-        return await loginService(loginCredentials);
+        const user = await loginService(loginCredentials);
+        return user ? user : null;
       },
     }),
   ],
