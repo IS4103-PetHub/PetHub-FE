@@ -25,13 +25,14 @@ import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { usePetBusinessCreate } from "@/hooks/pet-business";
 import { usePetOwnerCreate } from "@/hooks/pet-owner";
+import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessRequest, CreatePetOwnerRequest } from "@/types/types";
 
 export default function SignUp() {
   const queryClient = useQueryClient();
   const form = useForm({
     initialValues: {
-      userType: "petOwner",
+      accountType: AccountTypeEnum.PetOwner,
       companyName: "",
       firstName: "",
       lastName: "",
@@ -44,15 +45,15 @@ export default function SignUp() {
 
     validate: {
       companyName: (value, values) =>
-        values.userType === "petBusiness" && !value
+        values.accountType === AccountTypeEnum.PetBusiness && !value
           ? "Company name is required."
           : null,
       firstName: (value, values) =>
-        values.userType === "petOwner" && !value
+        values.accountType === AccountTypeEnum.PetOwner && !value
           ? "First name is required."
           : null,
       lastName: (value, values) =>
-        values.userType === "petOwner" && !value
+        values.accountType === AccountTypeEnum.PetOwner && !value
           ? "Last name is required."
           : null,
       contactNumber: hasLength(
@@ -115,40 +116,33 @@ export default function SignUp() {
   };
 
   function handleSubmit(values: any) {
-    if (values.userType === "petOwner") {
+    if (values.accountType === AccountTypeEnum.PetOwner) {
       const payload: CreatePetOwnerRequest = {
         firstName: values.firstName,
         lastName: values.lastName,
         contactNumber: values.contactNumber,
         dateOfBirth: new Date(values.dateOfBirth).toISOString(),
-        user: {
-          create: {
-            email: values.email,
-            password: values.password,
-          },
-        },
+        email: values.email,
+        password: values.password,
       };
-      createPetOwnerAccount(payload);
+      console.log(payload);
+      //createPetOwnerAccount(payload);
     } else {
-      // userType === "petBusiness"
+      // accountType === "petBusiness"
       const payload: CreatePetBusinessRequest = {
         companyName: values.companyName,
         contactNumber: values.contactNumber,
-        user: {
-          create: {
-            email: values.email,
-            password: values.password,
-          },
-        },
+        email: values.email,
+        password: values.password,
       };
-      createPetBusinessAccount(payload);
+      //createPetBusinessAccount(payload);
     }
     form.reset();
   }
 
   const segmentedControlData = [
     {
-      value: "petOwner",
+      value: AccountTypeEnum.PetOwner,
       label: (
         <Center>
           <IconPawFilled size="1rem" />
@@ -157,7 +151,7 @@ export default function SignUp() {
       ),
     },
     {
-      value: "petBusiness",
+      value: AccountTypeEnum.PetBusiness,
       label: (
         <Center>
           <IconBuildingStore size="1rem" />
@@ -168,7 +162,7 @@ export default function SignUp() {
   ];
 
   const conditionalFields =
-    form.values.userType === "petOwner" ? (
+    form.values.accountType === AccountTypeEnum.PetOwner ? (
       // pet owner fields
       <>
         <Grid.Col span={6}>
@@ -223,7 +217,7 @@ export default function SignUp() {
                 fullWidth
                 size="md"
                 data={segmentedControlData}
-                {...form.getInputProps("userType")}
+                {...form.getInputProps("accountType")}
               />
             </Grid.Col>
             {conditionalFields}
