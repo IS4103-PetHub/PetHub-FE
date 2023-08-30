@@ -27,21 +27,13 @@ const LoginBox = ({ changeBoxToggle, loginForm, handleLogin }: any) => {
         label="Email"
         required
         mt="xs"
-        value={loginForm.values.email}
-        onChange={(event) =>
-          loginForm.setFieldValue("email", event.currentTarget.value)
-        }
-        error={loginForm.errors.email}
+        {...loginForm.getInputProps("email")}
       />
       <PasswordInput
         label="Password"
         required
         mt="xs"
-        value={loginForm.values.password}
-        onChange={(event) =>
-          loginForm.setFieldValue("password", event.currentTarget.value)
-        }
-        error={loginForm.errors.password}
+        {...loginForm.getInputProps("password")}
       />
       <Anchor
         component="button"
@@ -73,11 +65,7 @@ const ForgotPasswordBox = ({
       <TextInput
         label="Email"
         required
-        value={forgotPasswordForm.values.email}
-        onChange={(event) =>
-          forgotPasswordForm.setFieldValue("email", event.currentTarget.value)
-        }
-        error={forgotPasswordForm.errors.email}
+        {...forgotPasswordForm.getInputProps("password")}
       />
       <Group position="apart" mt="lg">
         <Anchor color="dimmed" size="sm">
