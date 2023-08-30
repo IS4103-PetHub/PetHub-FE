@@ -1,84 +1,12 @@
-import {
-  Container,
-  TextInput,
-  PasswordInput,
-  Paper,
-  Title,
-  Anchor,
-  Text,
-  Group,
-  Center,
-  Box,
-  rem,
-} from "@mantine/core";
+import { Container, Paper, Title, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconArrowLeft } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { RegularButton } from "@/components/buttons/RegularButton";
-
-const LoginBox = ({ changeBoxToggle, loginForm, handleLogin }: any) => {
-  return (
-    <form onSubmit={loginForm.onSubmit(handleLogin)}>
-      <TextInput
-        label="Email"
-        required
-        mt="xs"
-        {...loginForm.getInputProps("email")}
-      />
-      <PasswordInput
-        label="Password"
-        required
-        mt="xs"
-        {...loginForm.getInputProps("password")}
-      />
-      <Anchor
-        component="button"
-        type="button"
-        color="dimmed"
-        onClick={changeBoxToggle}
-        size="xs"
-        mt="sm"
-      >
-        Forgot your password?
-      </Anchor>
-      <RegularButton text="Login" mt="xs" type="submit" fullWidth />
-    </form>
-  );
-};
-
-const ForgotPasswordBox = ({
-  changeBoxToggle,
-  isForgotPasswordSuccessful,
-  forgotPasswordForm,
-  handleForgotPassword,
-}: any) => {
-  return isForgotPasswordSuccessful ? (
-    <Text c="dimmed" fz="md" ta="center">
-      Password reset request successful. Please check your inbox.
-    </Text>
-  ) : (
-    <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
-      <TextInput
-        label="Email"
-        required
-        {...forgotPasswordForm.getInputProps("password")}
-      />
-      <Group position="apart" mt="lg">
-        <Anchor color="dimmed" size="sm">
-          <Center inline onClick={changeBoxToggle}>
-            <IconArrowLeft size={rem(12)} stroke={1.5} />
-            <Box ml={5}>Go back</Box>
-          </Center>
-        </Anchor>
-        <RegularButton text="Reset Password" type="submit" />
-      </Group>
-    </form>
-  );
-};
+import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
+import { LoginBox } from "@/components/login/LoginBox";
 
 export default function Login() {
   const { data: session, status } = useSession();
@@ -91,6 +19,10 @@ export default function Login() {
     router.push("/");
   }
 
+  /*
+    Manually change the entire document body' background instead of just the component
+    Move into global styles if desired
+  */
   useEffect(() => {
     document.body.style.background =
       "linear-gradient(90deg, rgb(244, 244, 246) 0%, rgb(204, 204, 226), rgb(180, 180, 239) 100%)";
