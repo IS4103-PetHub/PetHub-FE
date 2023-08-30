@@ -70,7 +70,7 @@ const useStyles = createStyles((theme) => ({
 
 const data = [
   { link: "/", label: "Home", icon: IconHome },
-  { link: "/users", label: "Users", icon: IconUser },
+  { link: "/accountmanagement", label: "Account Management", icon: IconUser },
 ];
 
 const SideNavBar = () => {
