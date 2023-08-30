@@ -8,7 +8,7 @@ import {
   rem,
 } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { RegularButton } from "@/components/shared/RegularButton";
+import { RegularButton } from "../common/RegularButton";
 
 export const ForgotPasswordBox = ({
   changeBoxToggle,

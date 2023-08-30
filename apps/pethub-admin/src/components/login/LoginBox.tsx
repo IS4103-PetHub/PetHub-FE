@@ -1,5 +1,5 @@
 import { TextInput, PasswordInput, Anchor } from "@mantine/core";
-import { RegularButton } from "@/components/shared/RegularButton";
+import { RegularButton } from "../common/RegularButton";
 
 export const LoginBox = ({ changeBoxToggle, loginForm, handleLogin }: any) => {
   return (
