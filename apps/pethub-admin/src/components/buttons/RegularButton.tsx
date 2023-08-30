@@ -5,10 +5,7 @@ interface RegularButtonProps extends ButtonProps {
   text: string;
 }
 
-export const RegularButton: React.FC<RegularButtonProps> = ({
-  text,
-  ...props
-}) => {
+export const RegularButton = ({ text, ...props }: RegularButtonProps) => {
   return (
     <Button variant="filled" color="violet" uppercase={true} {...props}>
       {text}
