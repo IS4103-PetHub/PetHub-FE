@@ -7,7 +7,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconUser } from "@tabler/icons-react";
+import { IconUser, IconHome } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -68,7 +68,10 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const data = [{ link: "/users", label: "Users", icon: IconUser }];
+const data = [
+  { link: "/", label: "Home", icon: IconHome },
+  { link: "/users", label: "Users", icon: IconUser },
+];
 
 const SideNavBar = () => {
   const { classes, cx } = useStyles();
