@@ -1,7 +1,7 @@
 export interface LoginCredentials {
   username: string;
   password: string;
-  userType: string;
+  accountType: string;
 }
 
 export interface LoginResponse {

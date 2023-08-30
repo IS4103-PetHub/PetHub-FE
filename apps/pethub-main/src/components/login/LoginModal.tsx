@@ -4,8 +4,9 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-import { useSession, getSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { AccountTypeEnum } from "@/constants";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
 
@@ -39,7 +40,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     initialValues: {
       email: "",
       password: "",
-      userType: "petOwner",
+      accountType: AccountTypeEnum.PetOwner,
     },
     validate: {
       email: (val) =>
@@ -74,7 +75,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       redirect: false,
       username: loginForm.values.email,
       password: loginForm.values.password,
-      userType: loginForm.values.userType,
+      accountType: loginForm.values.accountType,
     });
     if (res?.error) {
       notifications.show({

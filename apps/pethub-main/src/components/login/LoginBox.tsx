@@ -10,6 +10,7 @@ import {
   Button,
 } from "@mantine/core";
 import { IconPawFilled, IconBuildingStore } from "@tabler/icons-react";
+import { AccountTypeEnum } from "@/constants";
 
 export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
   <div>
@@ -21,10 +22,10 @@ export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
       <SegmentedControl
         fullWidth
         color="dark"
-        {...loginForm.getInputProps("userType")}
+        {...loginForm.getInputProps("accountType")}
         data={[
           {
-            value: "petOwner",
+            value: AccountTypeEnum.PetOwner,
             label: (
               <Center>
                 <IconPawFilled size="1rem" />
@@ -33,7 +34,7 @@ export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
             ),
           },
           {
-            value: "petBusiness",
+            value: AccountTypeEnum.PetBusiness,
             label: (
               <Center>
                 <IconBuildingStore size="1rem" />
