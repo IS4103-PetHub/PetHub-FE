@@ -1,133 +1,13 @@
-import {
-  Container,
-  TextInput,
-  PasswordInput,
-  Title,
-  Anchor,
-  Text,
-  useMantineTheme,
-  Group,
-  Center,
-  Box,
-  Modal,
-  SegmentedControl,
-  Button,
-  rem,
-} from "@mantine/core";
+import { Container, useMantineTheme, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconArrowLeft,
-  IconPawFilled,
-  IconBuildingStore,
-} from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-
-// LoginBox Component
-const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
-  <div>
-    <Title align="center">PetHub</Title>
-    <Text color="dimmed" size="sm" align="center" mb="sm">
-      Welcome to PetHub. Login now!
-    </Text>
-    <form onSubmit={loginForm.onSubmit(handleLogin)}>
-      <SegmentedControl
-        fullWidth
-        color="dark"
-        {...loginForm.getInputProps("userType")}
-        data={[
-          {
-            value: "petOwner",
-            label: (
-              <Center>
-                <IconPawFilled size="1rem" />
-                <Box ml={10}>Pet Owner</Box>
-              </Center>
-            ),
-          },
-          {
-            value: "petBusiness",
-            label: (
-              <Center>
-                <IconBuildingStore size="1rem" />
-                <Box ml={10}>Pet Business</Box>
-              </Center>
-            ),
-          },
-        ]}
-      />
-      <TextInput
-        label="Email"
-        required
-        mt="xs"
-        {...loginForm.getInputProps("email")}
-      />
-      <PasswordInput
-        label="Password"
-        required
-        mt="xs"
-        {...loginForm.getInputProps("password")}
-      />
-      <Anchor
-        component="button"
-        type="button"
-        color="dimmed"
-        onClick={changeBoxToggle}
-        size="xs"
-        mt="sm"
-      >
-        Forgot your password?
-      </Anchor>
-      <Button mt="xs" type="submit" fullWidth mb="sm">
-        Login
-      </Button>
-    </form>
-  </div>
-);
-
-// ForgotPassword Box Component
-const ForgotPasswordBox = ({
-  forgotPasswordForm,
-  toggle,
-  handleForgotPassword,
-  isForgotPasswordSuccessful,
-}) => (
-  <div>
-    <Title align="center" fz="xl">
-      Forgot your password?
-    </Title>
-    <Text c="dimmed" fz="sm" ta="center" mt="sm">
-      Enter your email address to get a reset link if your email address is tied
-      to an account in our system.
-    </Text>
-    {isForgotPasswordSuccessful ? (
-      <Text c="dimmed" fz="md" ta="center">
-        Password reset request successful. Please check your inbox.
-      </Text>
-    ) : (
-      <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
-        <TextInput
-          mt={20}
-          label="Email"
-          required
-          {...forgotPasswordForm.getInputProps("email")}
-        />
-        <Group position="apart" mt="lg" mb="md">
-          <Anchor color="dimmed" size="sm">
-            <Center inline onClick={() => toggle()}>
-              <IconArrowLeft size={rem(12)} stroke={1.5} />
-              <Box ml={5}>Go back</Box>
-            </Center>
-          </Anchor>
-          <Button type="submit">Reset Password</Button>
-        </Group>
-      </form>
-    )}
-  </div>
-);
+import { ForgotPasswordBox } from "./ForgotPasswordBox";
+import { LoginBox } from "./LoginBox";
 
 interface LoginModalProps {
   opened: boolean;
@@ -135,7 +15,6 @@ interface LoginModalProps {
   close: () => void;
 }
 
-// Main LoginModal Component
 export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const router = useRouter();
   const theme = useMantineTheme();
@@ -189,7 +68,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     toggle();
   };
 
-  const handleLogin = async (event: any) => {
+  const handleLogin = async () => {
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
@@ -205,14 +84,16 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         autoClose: 5000,
       });
     } else {
-      loginForm.values.userType === "petBusiness"
-        ? router.push("/business/dashboard")
-        : null;
+      const session = await getSession();
+      if (session && session.user["role"] === "petBusiness") {
+        router.push("/business/dashboard");
+      }
       notifications.show({
         message: "Login Successful",
         color: "green",
         autoClose: 5000,
       });
+      close();
     }
     const timer = setTimeout(() => {
       loginForm.reset();

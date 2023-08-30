@@ -14,7 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconChevronDown } from "@tabler/icons-react";
 import { useSession, signOut } from "next-auth/react";
-import { LoginModal } from "@/modals/LoginModal";
+import { LoginModal } from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
 
