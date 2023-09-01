@@ -7,6 +7,9 @@ import {
   SegmentedControl,
   TextInput,
   Center,
+  BackgroundImage,
+  Group,
+  createStyles,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useForm, isEmail, hasLength, isNotEmpty } from "@mantine/form";
@@ -15,6 +18,7 @@ import {
   IconBuildingStore,
   IconCalendar,
   IconCheck,
+  IconDog,
   IconPawFilled,
   IconPlus,
   IconX,
@@ -28,8 +32,23 @@ import { usePetOwnerCreate } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessRequest, CreatePetOwnerRequest } from "@/types/types";
 
+const useStyles = createStyles((theme) => ({
+  backgroundEffect: {
+    height: "100%",
+    background:
+      "radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)",
+  },
+
+  whiteBackground: {
+    height: "100%",
+    backgroundColor: "white",
+  },
+}));
+
 export default function SignUp() {
+  const { classes } = useStyles();
   const queryClient = useQueryClient();
+
   const form = useForm({
     initialValues: {
       accountType: AccountTypeEnum.PetOwner,
@@ -206,9 +225,12 @@ export default function SignUp() {
     );
 
   return (
-    <Container>
-      <Box mt="lg">
-        <PageTitle title="🐕 Join the PetHub community" />
+    <BackgroundImage src="" className={classes.backgroundEffect}>
+      <Container className={classes.whiteBackground} p="lg">
+        <Group>
+          <IconDog size="2rem" />
+          <PageTitle title="Join the PetHub community" />
+        </Group>
         <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
           <Grid mt="md" mb="md">
             <Grid.Col span={12}>
@@ -261,7 +283,7 @@ export default function SignUp() {
             Create account
           </Button>
         </form>
-      </Box>
-    </Container>
+      </Container>
+    </BackgroundImage>
   );
 }

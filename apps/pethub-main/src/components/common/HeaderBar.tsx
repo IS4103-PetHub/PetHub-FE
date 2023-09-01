@@ -76,27 +76,27 @@ const links: {
         label: "Pet grooming",
       },
       {
-        link: "/services/sitting",
-        label: "Pet sitting",
+        link: "/services/vet",
+        label: "Veterinary",
       },
       {
-        link: "/services/training",
-        label: "Pet training",
+        link: "/services/dining",
+        label: "Dining",
       },
       {
-        link: "/services/taxi",
-        label: "Pet taxi",
+        link: "/services/retail",
+        label: "Pet retail",
       },
     ],
   },
   {
-    link: "/services/vet",
-    label: "Find a vet",
+    link: "/lost-and-found",
+    label: "Lost & found pets",
     links: undefined,
   },
   {
-    link: "/services/fnb",
-    label: "Dine with pets",
+    link: "/help",
+    label: "Help",
     links: undefined,
   },
 ];
