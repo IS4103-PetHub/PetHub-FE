@@ -198,7 +198,7 @@ function AccountTable({ data }: TableSortProps) {
   );
 }
 
-export default function Administrators() {
+export default function AdminTable() {
   return (
     <Container fluid>
       <h2>Administrators</h2>

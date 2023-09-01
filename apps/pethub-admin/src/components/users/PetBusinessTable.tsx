@@ -1,7 +1,7 @@
 import { Tabs } from "@mantine/core";
 import React from "react";
 
-const PetBusinessAccounts = () => {
+const PetBusinessTable = () => {
   return (
     <div>
       <h2>Welcome to Pet Business Accounts</h2>
@@ -10,4 +10,4 @@ const PetBusinessAccounts = () => {
   );
 };
 
-export default PetBusinessAccounts;
+export default PetBusinessTable;

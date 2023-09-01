@@ -7,9 +7,9 @@ import {
 import Head from "next/head";
 import { useState } from "react";
 import { PageTitle } from "web-ui";
-import AdministratorTab from "@/components/tabs/accounttabs/AdministratorTab";
 import PetBusinessTab from "@/components/tabs/accounttabs/PetBusinessTab";
 import PetOwnerTab from "@/components/tabs/accounttabs/PetOwnerTab";
+import AdministratorTab from "@/components/users/AdminTable";
 
 export default function Home() {
   return (

@@ -5,6 +5,6 @@ export const enum AccountTypeEnum {
 }
 
 export const enum AccountStatusEnum {
-  "ACTIVE",
-  "INACTIVE",
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
 }
