@@ -22,6 +22,10 @@ import { useState } from "react";
 import React from "react";
 import { PageTitle } from "web-ui";
 
+/* 
+  THIS IMPLEMENTATION USES MANTINE TABLE, AND HAS SORT AND SEARCH
+*/
+
 const useStyles = createStyles((theme) => ({
   th: {
     padding: "0 !important",
