@@ -52,6 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
             primaryColor: "indigo",
             colorScheme,
             spacing: {
+              lg: "50px",
               xl: "100px",
             },
           }}

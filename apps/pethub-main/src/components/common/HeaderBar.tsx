@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronDown } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 
 const HEADER_HEIGHT = rem(80);
 
@@ -75,34 +76,43 @@ const links: {
         label: "Pet grooming",
       },
       {
-        link: "/services/sitting",
-        label: "Pet sitting",
+        link: "/services/vet",
+        label: "Veterinary",
       },
       {
-        link: "/services/training",
-        label: "Pet training",
+        link: "/services/dining",
+        label: "Dining",
       },
       {
-        link: "/services/taxi",
-        label: "Pet taxi",
+        link: "/services/retail",
+        label: "Pet retail",
       },
     ],
   },
   {
-    link: "/services/vet",
-    label: "Find a vet",
+    link: "/lost-and-found",
+    label: "Lost & found pets",
     links: undefined,
   },
   {
-    link: "/services/fnb",
-    label: "Dine with pets",
+    link: "/help",
+    label: "Help",
     links: undefined,
   },
 ];
 
 const HeaderBar = () => {
+  const router = useRouter();
   const { classes } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
+
+  function handleClickLogo() {
+    router.push("/");
+  }
+  function handleClickSignUp() {
+    router.push("/signup");
+  }
+
   const items = links.map((link) => {
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
@@ -156,7 +166,7 @@ const HeaderBar = () => {
             size="sm"
             color="white"
           />
-          <Text size="xl" weight={600} color="white">
+          <Text size="xl" weight={600} color="white" onClick={handleClickLogo}>
             PetHub
           </Text>
         </Group>
@@ -165,9 +175,9 @@ const HeaderBar = () => {
         </Group>
         <Group position="right">
           <Button size="md" radius="md" variant="default">
-            Log in
+            Login
           </Button>
-          <Button size="md" radius="md">
+          <Button size="md" radius="md" onClick={handleClickSignUp}>
             Sign up
           </Button>
         </Group>
