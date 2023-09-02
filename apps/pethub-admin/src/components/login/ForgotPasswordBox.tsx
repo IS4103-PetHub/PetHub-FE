@@ -15,6 +15,7 @@ export const ForgotPasswordBox = ({
   isForgotPasswordSuccessful,
   forgotPasswordForm,
   handleForgotPassword,
+  isSubmitButtonLoading,
 }: any) => {
   return isForgotPasswordSuccessful ? (
     <Text c="dimmed" fz="md" ta="center">
@@ -34,7 +35,11 @@ export const ForgotPasswordBox = ({
             <Box ml={5}>Go back</Box>
           </Center>
         </Anchor>
-        <RegularButton text="Reset Password" type="submit" />
+        <RegularButton
+          text="Reset Password"
+          type="submit"
+          loading={isSubmitButtonLoading}
+        />
       </Group>
     </form>
   );

@@ -1,4 +1,5 @@
-import { LoginCredentials } from "@/types";
+import { AccountTypeEnum } from "@/types/constants";
+import { LoginCredentials, ForgotPasswordPayload } from "@/types/types";
 import api from "./axiosConfig";
 
 export const loginService = async ({ email, password }: LoginCredentials) => {
@@ -6,9 +7,8 @@ export const loginService = async ({ email, password }: LoginCredentials) => {
     const body = {
       username: email,
       password: password,
-      userType: "applicationAdmin",
+      accountType: AccountTypeEnum.InternalUser,
     };
-    console.log("Login with", body);
     let res = await api.post("/login", body);
     console.log(
       "Calling Service: [userService - userLogin] with response:",
@@ -25,11 +25,14 @@ export const loginService = async ({ email, password }: LoginCredentials) => {
   }
 };
 
-export const forgotPasswordService = async (email: string) => {
-  // Implement once API is available
+export const forgotPasswordService = async ({
+  email,
+}: ForgotPasswordPayload) => {
   try {
-    const body = {};
-    let res = await api.post("xxx/forgotpassword", body);
+    const body = {
+      email: email,
+    };
+    let res = await api.post("/forget-password", body);
     console.log(
       "Calling Service: [userService - forgotPassword] with response:",
       res,

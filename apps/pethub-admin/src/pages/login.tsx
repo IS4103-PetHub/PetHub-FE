@@ -5,8 +5,10 @@ import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
 import { LoginBox } from "@/components/login/LoginBox";
+import { ForgotPasswordPayload } from "@/types/types";
 
 export default function Login() {
   const { data: session, status } = useSession();
@@ -14,6 +16,7 @@ export default function Login() {
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
+  const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
 
   if (session) {
     router.push("/");
@@ -96,9 +99,21 @@ export default function Login() {
     }
   };
 
-  const handleForgotPassword = () => {
-    forgotPasswordForm.reset();
-    setIsForgotPasswordSuccessful(true); // replace with API response status
+  const handleForgotPassword = async () => {
+    const forgotPasswordPayload: ForgotPasswordPayload = {
+      email: forgotPasswordForm.values.email,
+    };
+    try {
+      setIsSubmitButtonLoading(true);
+      const res = await forgotPasswordService(forgotPasswordPayload);
+      setIsForgotPasswordSuccessful(true);
+    } catch (e) {
+      notifications.show({
+        message: "Invalid Email",
+        color: "red",
+        autoClose: 5000,
+      });
+    }
   };
 
   return (
@@ -130,6 +145,7 @@ export default function Login() {
               isForgotPasswordSuccessful={isForgotPasswordSuccessful}
               forgotPasswordForm={forgotPasswordForm}
               handleForgotPassword={handleForgotPassword}
+              isSubmitButtonLoading={isSubmitButtonLoading}
             />
           </Paper>
         </Container>

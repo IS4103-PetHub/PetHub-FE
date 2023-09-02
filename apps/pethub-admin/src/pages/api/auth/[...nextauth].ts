@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginService } from "@/api/userService";
-import { LoginCredentials } from "@/types";
+import { LoginCredentials } from "@/types/types";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -19,7 +19,8 @@ export const authOptions: NextAuthOptions = {
           email: credentials.email,
           password: credentials.password,
         };
-        return await loginService(loginCredentials);
+        const user = await loginService(loginCredentials);
+        return user ? user : null;
       },
     }),
   ],
@@ -30,6 +31,7 @@ export const authOptions: NextAuthOptions = {
     },
     session({ session, token }) {
       session.user = token.user as any;
+      console.log("Session object", session);
       return session;
     },
   },
