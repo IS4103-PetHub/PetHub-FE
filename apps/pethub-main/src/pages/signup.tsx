@@ -188,7 +188,6 @@ export default function SignUp() {
           <TextInput
             label="First name"
             placeholder="First name"
-            withAsterisk
             {...form.getInputProps("firstName")}
           />
         </Grid.Col>
@@ -196,7 +195,6 @@ export default function SignUp() {
           <TextInput
             label="Last name"
             placeholder="Last name"
-            withAsterisk
             {...form.getInputProps("lastName")}
           />
         </Grid.Col>
@@ -207,7 +205,6 @@ export default function SignUp() {
             valueFormat="DD/MM/YYYY"
             maxDate={new Date()}
             icon={<IconCalendar size="1rem" />}
-            withAsterisk
             {...form.getInputProps("dateOfBirth")}
           />
         </Grid.Col>
@@ -218,7 +215,6 @@ export default function SignUp() {
         <TextInput
           label="Company name"
           placeholder="Company name"
-          withAsterisk
           {...form.getInputProps("companyName")}
         />
       </Grid.Col>
@@ -247,7 +243,6 @@ export default function SignUp() {
               <TextInput
                 label="Contact number"
                 placeholder="Contact number"
-                withAsterisk
                 {...form.getInputProps("contactNumber")}
               />
             </Grid.Col>
@@ -255,7 +250,6 @@ export default function SignUp() {
               <TextInput
                 label="Email"
                 placeholder="email@email.com"
-                withAsterisk
                 {...form.getInputProps("email")}
               />
             </Grid.Col>
@@ -263,7 +257,6 @@ export default function SignUp() {
               <PasswordInput
                 placeholder="Password"
                 label="Password"
-                withAsterisk
                 {...form.getInputProps("password")}
               />
             </Grid.Col>
@@ -274,7 +267,6 @@ export default function SignUp() {
               <PasswordInput
                 placeholder="Confirm password"
                 label="Confirm password"
-                withAsterisk
                 {...form.getInputProps("confirmPassword")}
               />
             </Grid.Col>
