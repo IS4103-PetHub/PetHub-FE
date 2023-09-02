@@ -15,6 +15,7 @@ import {
 import React from "react";
 import { PageTitle } from "web-ui";
 import ChangePasswordForm from "@/components/account/ChangePasswordForm";
+import DeactivateAccountModal from "@/components/account/DeactivateAccountModal";
 import PersonalInfoForm from "@/components/account/PersonalInfoForm";
 
 export default function MyAccount() {
@@ -61,9 +62,7 @@ export default function MyAccount() {
             </Group>
           </Accordion.Control>
           <Accordion.Panel>
-            <Button color="red" leftIcon={<IconUserX size="1rem" />}>
-              Deactivate your account
-            </Button>
+            <DeactivateAccountModal />
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>
