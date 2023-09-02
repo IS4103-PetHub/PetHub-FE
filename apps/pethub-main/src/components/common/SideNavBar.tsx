@@ -16,6 +16,7 @@ import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
+import { AccountTypeEnum } from "@/types/constants";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -102,7 +103,10 @@ const SideNavBar = () => {
   ));
 
   // This should not show if no user is logged in, or if the logged in user is not a Pet Business
-  if (!session || (session && session.user["role"] !== "petBusiness")) {
+  if (
+    !session ||
+    (session && session.user["accountType"] !== AccountTypeEnum.PetBusiness)
+  ) {
     return null;
   }
 

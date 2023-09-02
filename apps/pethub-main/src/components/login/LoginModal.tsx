@@ -6,7 +6,9 @@ import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { AccountTypeEnum } from "@/constants";
+import { forgotPasswordService } from "@/api/userService";
+import { AccountTypeEnum } from "@/types/constants";
+import { ForgotPasswordPayload } from "@/types/types";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
 
@@ -22,6 +24,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
+  const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -32,6 +35,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         forgotPasswordForm.reset();
         toggle("login");
         setIsForgotPasswordSuccessful(false);
+        setIsSubmitButtonLoading(false);
       }, 800);
     }
   }, [opened]);
@@ -86,7 +90,10 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       });
     } else {
       const session = await getSession();
-      if (session && session.user["role"] === "petBusiness") {
+      if (
+        session &&
+        session.user["accountType"] === AccountTypeEnum.PetBusiness
+      ) {
         router.push("/business/dashboard");
       }
       notifications.show({
@@ -101,11 +108,21 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     }, 800);
   };
 
-  const handleForgotPassword = () => {
-    setIsForgotPasswordSuccessful(true); // replace with API response status
-    const timer = setTimeout(() => {
-      forgotPasswordForm.reset();
-    }, 800);
+  const handleForgotPassword = async () => {
+    const forgotPasswordPayload: ForgotPasswordPayload = {
+      email: forgotPasswordForm.values.email,
+    };
+    try {
+      setIsSubmitButtonLoading(true);
+      const res = await forgotPasswordService(forgotPasswordPayload);
+      setIsForgotPasswordSuccessful(true);
+    } catch (e) {
+      notifications.show({
+        message: "Invalid Email",
+        color: "red",
+        autoClose: 5000,
+      });
+    }
   };
 
   return (
@@ -141,6 +158,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
             toggle={toggle}
             handleForgotPassword={handleForgotPassword}
             isForgotPasswordSuccessful={isForgotPasswordSuccessful}
+            isSubmitButtonLoading={isSubmitButtonLoading}
           />
         )}
       </Container>

@@ -14,6 +14,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconChevronDown } from "@tabler/icons-react";
 import { useSession, signOut } from "next-auth/react";
+import { AccountTypeEnum } from "@/types/constants";
 import { LoginModal } from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
@@ -163,7 +164,7 @@ const HeaderBar = () => {
   });
 
   // This should only show if the user is not logged in, or if the logged in user is a Pet Owner
-  if (session && session.user["role"] === "petBusiness") {
+  if (session && session.user["accountType"] === AccountTypeEnum.PetBusiness) {
     return null;
   }
 

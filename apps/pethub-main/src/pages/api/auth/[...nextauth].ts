@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginService } from "@/api/userService";
-import { LoginCredentials } from "@/types";
+import { LoginCredentials } from "@/types/types";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -32,6 +32,7 @@ export const authOptions: NextAuthOptions = {
     },
     session({ session, token }) {
       session.user = token.user;
+      console.log("Session object", session);
       return session;
     },
   },

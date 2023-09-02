@@ -1,5 +1,5 @@
-import { AccountTypeEnum } from "@/constants";
-import { LoginCredentials } from "@/types";
+import { AccountTypeEnum } from "@/types/constants";
+import { ForgotPasswordPayload, LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
 
 // TODO: Change stuff to fit the format of the finalized API after
@@ -8,18 +8,11 @@ export const loginService = async ({
   password,
   accountType,
 }: LoginCredentials) => {
-  /*
-    TODO: remove this after. This is just to fit the current API req format for userType so the server works as of the current BE dev branch:
-    https://github.com/IS4103-PetHub/PetHub-BE-Service/commit/777bb40f9c4ed7908d7ad5fc4a8cc92f98cbc688
-  */
-  const userType =
-    accountType === AccountTypeEnum.PetOwner ? "petOwner" : "petBusiness";
-
   try {
     const body = {
       username: username,
       password: password,
-      userType: userType,
+      accountType: accountType,
     };
     let res = await api.post("/login", body);
     // console.log(
@@ -37,15 +30,24 @@ export const loginService = async ({
   }
 };
 
-export const forgotPasswordService = async (email: string) => {
-  // TODO: Implement once API is available
+export const forgotPasswordService = async ({
+  email,
+}: ForgotPasswordPayload) => {
   try {
-    const body = {};
-    let res = await api.post("xxx/forgotpassword", body);
+    const body = {
+      email: email,
+    };
+    console.log("BODY", body);
+    let res = await api.post("/forget-password", body);
     // console.log(
     //   "Calling Service: [userService - forgotPassword] with response:",
     //   res
     // );
+    // if (res.data && res.status == 200) {
+    //   return res.data;
+    // } else {
+    //   return null;
+    // }
     return res.data;
   } catch (e) {
     console.log("Error from [userService - forgotPassword]:", e);

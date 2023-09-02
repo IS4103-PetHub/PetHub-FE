@@ -10,7 +10,7 @@ import {
   Button,
 } from "@mantine/core";
 import { IconPawFilled, IconBuildingStore } from "@tabler/icons-react";
-import { AccountTypeEnum } from "@/constants";
+import { AccountTypeEnum } from "@/types/constants";
 
 export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
   <div>
