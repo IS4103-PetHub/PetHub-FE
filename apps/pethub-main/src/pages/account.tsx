@@ -17,6 +17,18 @@ import { PageTitle } from "web-ui";
 import ChangePasswordForm from "@/components/account/ChangePasswordForm";
 import DeactivateAccountModal from "@/components/account/DeactivateAccountModal";
 import PersonalInfoForm from "@/components/account/PersonalInfoForm";
+import { AccountTypeEnum } from "@/types/constants";
+import { UserAccount } from "@/types/types";
+
+const mockUser: UserAccount = {
+  accountId: "123124125",
+  accountType: AccountTypeEnum.PetOwner,
+  firstName: "John",
+  lastName: "Doe",
+  dateOfBirth: new Date("12/30/2000").toISOString(),
+  contactNumber: "91234567",
+  email: "john@gmail.com",
+};
 
 export default function MyAccount() {
   const theme = useMantineTheme();
@@ -27,9 +39,14 @@ export default function MyAccount() {
   ];
 
   return (
-    <Container mt="lg">
+    <Container mt="lg" mb="lg">
       <PageTitle title="My Account" />
-      <Accordion mt="lg" multiple defaultValue={["personal"]}>
+      <Accordion
+        variant="separated"
+        mt="lg"
+        multiple
+        defaultValue={["personal"]}
+      >
         <Accordion.Item value={accordionItems[0].value}>
           <Accordion.Control>
             <Group>
@@ -37,8 +54,8 @@ export default function MyAccount() {
               <Text size="lg">{accordionItems[0].label}</Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
-            <PersonalInfoForm />
+          <Accordion.Panel p="md">
+            <PersonalInfoForm user={mockUser} />
           </Accordion.Panel>
         </Accordion.Item>
 
@@ -49,7 +66,7 @@ export default function MyAccount() {
               <Text size="lg">{accordionItems[1].label}</Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
+          <Accordion.Panel p="md">
             <ChangePasswordForm />
           </Accordion.Panel>
         </Accordion.Item>
@@ -61,7 +78,7 @@ export default function MyAccount() {
               <Text size="lg">{accordionItems[2].label}</Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
+          <Accordion.Panel p="md">
             <DeactivateAccountModal />
           </Accordion.Panel>
         </Accordion.Item>
