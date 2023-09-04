@@ -19,7 +19,7 @@ export const ForgotPasswordBox = ({
 }: any) => {
   return isForgotPasswordSuccessful ? (
     <Text c="dimmed" fz="md" ta="center">
-      Password reset request successful. Please check your inbox.
+      A confirmation email has been sent to your inbox.
     </Text>
   ) : (
     <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
