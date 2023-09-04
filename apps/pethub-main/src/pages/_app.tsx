@@ -55,6 +55,13 @@ export default function App({ Component, pageProps }: AppProps) {
               lg: "50px",
               xl: "100px",
             },
+            components: {
+              Button: {
+                defaultProps: {
+                  radius: "md",
+                },
+              },
+            },
           }}
         >
           <QueryClientProvider client={queryClient}>
