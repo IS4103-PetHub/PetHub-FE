@@ -11,7 +11,7 @@ import {
   Divider,
   rem,
 } from "@mantine/core";
-import { IconArrowLeft, IconMailFast } from "@tabler/icons-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 
 export const ForgotPasswordBox = ({
   forgotPasswordForm,
