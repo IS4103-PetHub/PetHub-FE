@@ -36,7 +36,7 @@ export const forgotPasswordService = async ({
     const body = {
       email: email,
     };
-    let res = await api.post("/users/internal-users/forget-password", body);
+    let res = await api.post("/users/forget-password", body);
     console.log(
       "Calling Service: [userService - forgotPassword] with response:",
       res,
@@ -56,10 +56,7 @@ export const resetPasswordService = async ({
     const body = {
       newPassword: newPassword,
     };
-    let res = await api.post(
-      `/users/internal-users/reset-password/${token}`,
-      body,
-    );
+    let res = await api.post(`/users/reset-password/${token}`, body);
     console.log(
       "Calling Service: [userService - resetPassword] with response:",
       res,
