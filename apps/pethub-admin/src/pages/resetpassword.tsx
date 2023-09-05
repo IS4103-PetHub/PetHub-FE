@@ -21,11 +21,6 @@ export default function Login() {
   const router = useRouter();
   const [isResetSuccessful, setIsResetSuccessful] = useState(false);
 
-  // Redirect if no query token is provided for this page
-  if (!router.query.token) {
-    router.push("/login");
-  }
-
   /*
     Manually change the entire document body' background instead of just the component
     Move into global styles if desired

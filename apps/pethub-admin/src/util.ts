@@ -1,3 +1,6 @@
+/*
+  Validate a password string to be at least 8 characters long, contain at least 1 letter and 1 digit, and not contain spaces
+*/
 export function validatePassword(password: string) {
   if (password.length < 8) {
     return "Password must be at least 8 characters long";
@@ -16,7 +19,9 @@ export function validatePassword(password: string) {
   return null;
 }
 
-// Convert param to string
+/*
+  Convert Next.js's router.param value to either be a string or null
+*/
 export function parseRouterQueryParam(param: string | string[] | undefined) {
   if (!param) {
     return null;
