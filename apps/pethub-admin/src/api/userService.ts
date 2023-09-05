@@ -1,5 +1,9 @@
 import { AccountTypeEnum } from "@/types/constants";
-import { LoginCredentials, ForgotPasswordPayload } from "@/types/types";
+import {
+  LoginCredentials,
+  ForgotPasswordPayload,
+  ResetPasswordPayload,
+} from "@/types/types";
 import api from "./axiosConfig";
 
 export const loginService = async ({ email, password }: LoginCredentials) => {
@@ -38,6 +42,26 @@ export const forgotPasswordService = async ({
       res,
     );
     return res.data;
+  } catch (e) {
+    console.log("Error from [userService - forgotPassword]:", e);
+    throw e;
+  }
+};
+
+export const resetPasswordService = async ({
+  token,
+  newPassword,
+}: ResetPasswordPayload) => {
+  try {
+    const body = {
+      token: token,
+      newPassword: newPassword,
+    };
+    let res = await api.post("./forget-password", body);
+    console.log(
+      "Calling Service: [userService - resetPassword] with response:",
+      res,
+    );
   } catch (e) {
     console.log("Error from [userService - forgotPassword]:", e);
     throw e;

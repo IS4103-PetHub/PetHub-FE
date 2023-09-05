@@ -9,14 +9,23 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
+import { resetPasswordService } from "@/api/userService";
 import { RegularButton } from "@/components/common/RegularButton";
-import { validatePassword } from "@/util";
+import { ResetPasswordPayload } from "@/types/types";
+import { parseRouterQueryParam, validatePassword } from "@/util";
 
 export default function Login() {
   const router = useRouter();
   const [isResetSuccessful, setIsResetSuccessful] = useState(false);
+
+  // Redirect if no query token is provided for this page
+  if (!router.query.token) {
+    router.push("/login");
+  }
+
   /*
     Manually change the entire document body' background instead of just the component
     Move into global styles if desired
@@ -50,9 +59,23 @@ export default function Login() {
       form.reset();
     } else {
       // Get the token out of the URL and attempt API call
-      let token = router.query.token;
-      console.log("The reset password token is", token);
-      setIsResetSuccessful(true);
+      console.log("The reset password token is", router.query.token);
+      const resetPasswordPayload: ResetPasswordPayload = {
+        token: parseRouterQueryParam(router.query.token),
+        newPassword: form.values.password,
+      };
+      try {
+        await resetPasswordService(resetPasswordPayload);
+        setIsResetSuccessful(true);
+      } catch (e: AxiosError | any) {
+        notifications.show({
+          message:
+            (e.response && e.response.data && e.response.data.message) ||
+            e.message,
+          color: "red",
+          autoClose: 5000,
+        });
+      }
     }
   };
 

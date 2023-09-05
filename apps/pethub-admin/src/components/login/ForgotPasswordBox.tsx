@@ -26,7 +26,7 @@ export const ForgotPasswordBox = ({
       <TextInput
         label="Email"
         required
-        {...forgotPasswordForm.getInputProps("password")}
+        {...forgotPasswordForm.getInputProps("email")}
       />
       <Group position="apart" mt="lg">
         <Anchor color="dimmed" size="sm">
