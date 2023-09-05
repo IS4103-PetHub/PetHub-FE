@@ -2,11 +2,12 @@ import { Container, useMantineTheme, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { forgotPasswordService } from "@/api/userService";
+import { forgotPasswordService, resetPasswordService } from "@/api/userService";
 import { AccountTypeEnum } from "@/types/constants";
 import { ForgotPasswordPayload } from "@/types/types";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
@@ -113,11 +114,14 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     };
     try {
       setIsSubmitButtonLoading(true);
-      const res = await forgotPasswordService(forgotPasswordPayload);
+      await forgotPasswordService(forgotPasswordPayload);
       setIsForgotPasswordSuccessful(true);
-    } catch (e) {
+    } catch (e: AxiosError | any) {
+      setIsSubmitButtonLoading(false);
       notifications.show({
-        message: "Invalid Email",
+        message:
+          (e.response && e.response.data && e.response.data.message) ||
+          e.message,
         color: "red",
         autoClose: 5000,
       });
