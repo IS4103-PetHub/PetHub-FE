@@ -68,7 +68,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   });
 
   const changeBoxToggle = () => {
-    loginForm.reset();
     forgotPasswordForm.reset();
     toggle();
   };
