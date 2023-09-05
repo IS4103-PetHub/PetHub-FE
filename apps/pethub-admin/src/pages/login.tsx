@@ -121,39 +121,41 @@ export default function Login() {
   };
 
   return (
-    <Container fluid>
-      {type === "login" ? (
-        <Container size={420} mt={100}>
-          <Title align="center">PetHub</Title>
-          <Text color="dark" size="sm" align="center" mt={5}>
-            Admin Management Portal
-          </Text>
-          <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
-            <LoginBox
-              changeBoxToggle={changeBoxToggle}
-              loginForm={loginForm}
-              handleLogin={handleLogin}
-            />
-          </Paper>
-        </Container>
-      ) : (
-        <Container size={460} my={100}>
-          <Title align="center">Forgot your password?</Title>
-          <Text c="dimmed" fz="sm" ta="center" mt="sm">
-            Enter your email address to get a reset link if your email address
-            is tied to an account in our system.
-          </Text>
-          <Paper withBorder shadow="md" p={30} radius="sm" mt="xl">
-            <ForgotPasswordBox
-              changeBoxToggle={changeBoxToggle}
-              isForgotPasswordSuccessful={isForgotPasswordSuccessful}
-              forgotPasswordForm={forgotPasswordForm}
-              handleForgotPassword={handleForgotPassword}
-              isSubmitButtonLoading={isSubmitButtonLoading}
-            />
-          </Paper>
-        </Container>
-      )}
-    </Container>
+    status !== "authenticated" && (
+      <Container fluid>
+        {type === "login" ? (
+          <Container size={420} mt={100}>
+            <Title align="center">PetHub</Title>
+            <Text color="dark" size="sm" align="center" mt={5}>
+              Admin Management Portal
+            </Text>
+            <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
+              <LoginBox
+                changeBoxToggle={changeBoxToggle}
+                loginForm={loginForm}
+                handleLogin={handleLogin}
+              />
+            </Paper>
+          </Container>
+        ) : (
+          <Container size={460} my={100}>
+            <Title align="center">Forgot your password?</Title>
+            <Text c="dimmed" fz="sm" ta="center" mt="sm">
+              Enter your email address to get a reset link if your email address
+              is tied to an account in our system.
+            </Text>
+            <Paper withBorder shadow="md" p={30} radius="sm" mt="xl">
+              <ForgotPasswordBox
+                changeBoxToggle={changeBoxToggle}
+                isForgotPasswordSuccessful={isForgotPasswordSuccessful}
+                forgotPasswordForm={forgotPasswordForm}
+                handleForgotPassword={handleForgotPassword}
+                isSubmitButtonLoading={isSubmitButtonLoading}
+              />
+            </Paper>
+          </Container>
+        )}
+      </Container>
+    )
   );
 }
