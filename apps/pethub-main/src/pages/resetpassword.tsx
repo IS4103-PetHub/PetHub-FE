@@ -21,11 +21,6 @@ export default function Login() {
   const router = useRouter();
   const [isResetSuccessful, setIsResetSuccessful] = useState(false);
 
-  /*
-    Manually change the entire document body' background instead of just the component
-    Move into global styles if desired
-*/
-
   const form = useForm({
     initialValues: {
       password: "",

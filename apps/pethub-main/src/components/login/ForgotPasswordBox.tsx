@@ -4,12 +4,14 @@ import {
   Anchor,
   Text,
   Group,
-  Center,
   Box,
+  Stack,
+  Center,
   Button,
+  Divider,
   rem,
 } from "@mantine/core";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconMailFast } from "@tabler/icons-react";
 
 export const ForgotPasswordBox = ({
   forgotPasswordForm,
@@ -24,16 +26,23 @@ export const ForgotPasswordBox = ({
         <Title align="center" fz="xl">
           Forgot your password?
         </Title>
-        <Text c="dimmed" fz="sm" ta="center" mt="sm">
+        <Text c="dimmed" fz="sm" ta="center" mt="sm" mb="sm">
           Enter your email address to get a reset link if your email address is
           tied to an account in our system.
         </Text>
       </>
     )}
     {isForgotPasswordSuccessful ? (
-      <Text c="dimmed" fz="md" ta="center" mt="md">
-        Password reset request successful. Please check your inbox.
-      </Text>
+      <Stack mb="lg">
+        <Title align="center" fz="xl" mb="lg">
+          Password Reset Requested
+        </Title>
+        <Divider />
+        <Text c="dimmed" fz="md" ta="center" mt="md">
+          You have requested to reset your password, please check your inbox for
+          an email link.
+        </Text>
+      </Stack>
     ) : (
       <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
         <TextInput
