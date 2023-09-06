@@ -22,7 +22,11 @@ export const ForgotPasswordBox = ({
       A confirmation email has been sent to your inbox.
     </Text>
   ) : (
-    <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
+    <form
+      onSubmit={forgotPasswordForm.onSubmit((values: any) =>
+        handleForgotPassword(values),
+      )}
+    >
       <TextInput
         label="Email"
         required
