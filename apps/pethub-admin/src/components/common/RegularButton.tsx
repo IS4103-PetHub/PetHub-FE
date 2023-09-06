@@ -3,11 +3,22 @@ import React from "react";
 
 interface RegularButtonProps extends ButtonProps {
   text: string;
+  onClick?: () => {};
 }
 
-export const RegularButton = ({ text, ...props }: RegularButtonProps) => {
+export const RegularButton = ({
+  text,
+  onClick,
+  ...props
+}: RegularButtonProps) => {
   return (
-    <Button variant="filled" color="violet" uppercase={true} {...props}>
+    <Button
+      variant="filled"
+      color="violet"
+      uppercase={true}
+      onClick={onClick}
+      {...props}
+    >
       {text}
     </Button>
   );
