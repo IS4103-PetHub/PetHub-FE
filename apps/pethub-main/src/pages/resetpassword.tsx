@@ -28,37 +28,29 @@ export default function Login() {
     },
     validate: {
       password: validatePassword,
-      confirmPassword: validatePassword,
+      confirmPassword: (value, values) =>
+        value !== values.password ? "Passwords did not match" : null,
     },
   });
 
   const handleResetPassword = async () => {
-    if (form.values.password !== form.values.confirmPassword) {
+    // Get the token out of the URL and attempt API call
+    console.log("The reset password token is", router.query.token);
+    const resetPasswordPayload: ResetPasswordPayload = {
+      token: parseRouterQueryParam(router.query.token),
+      newPassword: form.values.password,
+    };
+    try {
+      await resetPasswordService(resetPasswordPayload);
+      setIsResetSuccessful(true);
+    } catch (e: AxiosError | any) {
       notifications.show({
-        message: "Passwords do not match",
+        message:
+          (e.response && e.response.data && e.response.data.message) ||
+          e.message,
         color: "red",
         autoClose: 5000,
       });
-      form.reset();
-    } else {
-      // Get the token out of the URL and attempt API call
-      console.log("The reset password token is", router.query.token);
-      const resetPasswordPayload: ResetPasswordPayload = {
-        token: parseRouterQueryParam(router.query.token),
-        newPassword: form.values.password,
-      };
-      try {
-        await resetPasswordService(resetPasswordPayload);
-        setIsResetSuccessful(true);
-      } catch (e: AxiosError | any) {
-        notifications.show({
-          message:
-            (e.response && e.response.data && e.response.data.message) ||
-            e.message,
-          color: "red",
-          autoClose: 5000,
-        });
-      }
     }
   };
 
