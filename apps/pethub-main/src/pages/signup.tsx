@@ -53,6 +53,7 @@ export default function SignUp() {
     initialValues: {
       accountType: AccountTypeEnum.PetOwner,
       companyName: "",
+      uen: "",
       firstName: "",
       lastName: "",
       dateOfBirth: "",
@@ -67,6 +68,11 @@ export default function SignUp() {
         values.accountType === AccountTypeEnum.PetBusiness && !value
           ? "Company name is required."
           : null,
+      uen: (value, values) =>
+        values.accountType === AccountTypeEnum.PetBusiness &&
+        !/^.{8,9}[A-Z]$/.test(value)
+          ? "Invalid Unique Entity Number (UEN)."
+          : null,
       firstName: (value, values) =>
         values.accountType === AccountTypeEnum.PetOwner && !value
           ? "First name is required."
@@ -77,10 +83,13 @@ export default function SignUp() {
           : null,
       contactNumber: hasLength(
         { min: 8, max: 8 },
-        "Phone number must be 8 digits long.",
+        "Contact number must be 8 digits long.",
       ),
       email: isEmail("Invalid email."),
-      dateOfBirth: isNotEmpty("Date of birth required."),
+      dateOfBirth: (value, values) =>
+        values.accountType === AccountTypeEnum.PetOwner && !value
+          ? "Date of birth required."
+          : null,
       password: (value) =>
         /^(?!.* )(?=.*\d)(?=.*[a-z]).{8,}$/.test(value)
           ? null
@@ -100,6 +109,7 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet owner account created successfully!`,
       });
+      form.reset();
       // TODO login and redirect home page
     } catch (error: any) {
       notifications.show({
@@ -123,6 +133,7 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet business account created successfully!`,
       });
+      form.reset();
       // TODO login and redirect to pet business dashboard
     } catch (error: any) {
       notifications.show({
@@ -145,18 +156,19 @@ export default function SignUp() {
         password: values.password,
       };
       console.log(payload);
-      //createPetOwnerAccount(payload);
+      createPetOwnerAccount(payload);
     } else {
-      // accountType === "petBusiness"
+      // if accountType === "petBusiness"
       const payload: CreatePetBusinessRequest = {
         companyName: values.companyName,
+        uen: values.uen,
         contactNumber: values.contactNumber,
         email: values.email,
         password: values.password,
       };
-      //createPetBusinessAccount(payload);
+      console.log(payload);
+      createPetBusinessAccount(payload);
     }
-    form.reset();
   }
 
   const segmentedControlData = [
@@ -211,13 +223,22 @@ export default function SignUp() {
       </>
     ) : (
       // pet business fields
-      <Grid.Col span={12}>
-        <TextInput
-          label="Company name"
-          placeholder="Company name"
-          {...form.getInputProps("companyName")}
-        />
-      </Grid.Col>
+      <>
+        <Grid.Col span={12}>
+          <TextInput
+            label="Company name"
+            placeholder="Company name"
+            {...form.getInputProps("companyName")}
+          />
+        </Grid.Col>
+        <Grid.Col span={12}>
+          <TextInput
+            label="Unique Entity Number (UEN)"
+            placeholder="UEN"
+            {...form.getInputProps("uen")}
+          />
+        </Grid.Col>
+      </>
     );
 
   return (

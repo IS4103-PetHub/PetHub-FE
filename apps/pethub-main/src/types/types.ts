@@ -9,6 +9,7 @@ export interface CreatePetOwnerRequest {
 
 export interface CreatePetBusinessRequest {
   companyName: string;
+  uen: string;
   contactNumber: string;
   email: string;
   password: string;

@@ -7,7 +7,7 @@ export const usePetOwnerCreate = (queryClient: QueryClient) => {
     mutationFn: async (payload: CreatePetOwnerRequest) => {
       return (
         await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/users/pet-owners`,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners`,
           payload,
         )
       ).data;
