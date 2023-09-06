@@ -11,8 +11,12 @@ import {
   Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { IconChevronDown } from "@tabler/icons-react";
 import { useRouter } from "next/router";
+import { useSession, signOut } from "next-auth/react";
+import { AccountTypeEnum } from "@/types/constants";
+import { LoginModal } from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
 
@@ -99,12 +103,20 @@ const links: {
     label: "Help",
     links: undefined,
   },
+  {
+    link: "/account",
+    label: "My account",
+    links: undefined,
+  },
 ];
 
 const HeaderBar = () => {
   const router = useRouter();
   const { classes } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
+
+  const [isLoginModalOpened, { open, close }] = useDisclosure(false);
+  const { data: session, status } = useSession();
 
   function handleClickLogo() {
     router.push("/");
@@ -114,6 +126,13 @@ const HeaderBar = () => {
   }
 
   const items = links.map((link) => {
+    // Only logged in users can see the account tab
+    if (link.label === "My account") {
+      if (!session) {
+        return null;
+      }
+    }
+
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>{item.label}</Menu.Item>
     ));
@@ -155,6 +174,11 @@ const HeaderBar = () => {
     );
   });
 
+  // This should only show if the user is not logged in, or if the logged in user is a Pet Owner
+  if (session && session.user["accountType"] === AccountTypeEnum.PetBusiness) {
+    return null;
+  }
+
   return (
     <Header height={HEADER_HEIGHT} sx={{ borderBottom: 0 }} mb={120}>
       <Container className={classes.inner} fluid>
@@ -174,14 +198,36 @@ const HeaderBar = () => {
           {items}
         </Group>
         <Group position="right">
-          <Button size="md" radius="md" variant="default">
-            Login
-          </Button>
-          <Button size="md" radius="md" onClick={handleClickSignUp}>
-            Sign up
-          </Button>
+          {session ? (
+            <Button
+              size="md"
+              radius="md"
+              onClick={() => {
+                notifications.show({
+                  message: "Logging you out...",
+                  color: "blue",
+                  loading: true,
+                });
+                signOut({
+                  callbackUrl: "/",
+                });
+              }}
+            >
+              Log out
+            </Button>
+          ) : (
+            <>
+              <Button size="md" radius="md" variant="default" onClick={open}>
+                Log in
+              </Button>
+              <Button size="md" radius="md">
+                Sign up
+              </Button>
+            </>
+          )}
         </Group>
       </Container>
+      <LoginModal opened={isLoginModalOpened} open={open} close={close} />
     </Header>
   );
 };
