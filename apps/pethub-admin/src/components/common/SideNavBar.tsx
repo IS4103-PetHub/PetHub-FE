@@ -6,10 +6,14 @@ import {
   rem,
   Text,
   useMantineTheme,
+  Button,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
 
@@ -75,6 +79,7 @@ const SideNavBar = () => {
   const theme = useMantineTheme();
   const router = useRouter();
   const [active, setActive] = useState(router.asPath);
+  const { data: session, status } = useSession();
 
   const links = data.map((item) => (
     <Link
@@ -94,6 +99,10 @@ const SideNavBar = () => {
     </Link>
   ));
 
+  if (!session) {
+    return null;
+  }
+
   return (
     <Navbar
       height="100vh"
@@ -110,6 +119,23 @@ const SideNavBar = () => {
         </Group>
         {links}
       </Navbar.Section>
+      {session && (
+        <Button
+          uppercase
+          onClick={() => {
+            notifications.show({
+              message: "Logging you out...",
+              color: "blue",
+              loading: true,
+            });
+            signOut({
+              callbackUrl: "/login",
+            });
+          }}
+        >
+          logout
+        </Button>
+      )}
     </Navbar>
   );
 };
