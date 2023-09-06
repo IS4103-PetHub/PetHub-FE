@@ -12,6 +12,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import Head from "next/head";
+import { SessionProvider } from "next-auth/react";
 import { useState } from "react";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
@@ -56,9 +57,13 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Notifications />
-              <AppShell navbar={<SideNavBar />}>
-                <Component {...pageProps} />
-              </AppShell>
+              <SessionProvider session={pageProps.session}>
+                <>
+                  <AppShell navbar={<SideNavBar />}>
+                    <Component {...pageProps} />
+                  </AppShell>
+                </>
+              </SessionProvider>
             </Hydrate>
           </QueryClientProvider>
         </MantineProvider>
