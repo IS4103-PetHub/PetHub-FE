@@ -18,7 +18,7 @@ export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
     <Text color="dimmed" size="sm" align="center" mb="md">
       Welcome to PetHub. Login now!
     </Text>
-    <form onSubmit={loginForm.onSubmit(handleLogin)}>
+    <form onSubmit={loginForm.onSubmit((values) => handleLogin(values))}>
       <SegmentedControl
         fullWidth
         color="dark"

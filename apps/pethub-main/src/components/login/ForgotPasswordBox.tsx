@@ -44,7 +44,11 @@ export const ForgotPasswordBox = ({
         </Text>
       </Stack>
     ) : (
-      <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
+      <form
+        onSubmit={forgotPasswordForm.onSubmit((values) =>
+          handleForgotPassword(values),
+        )}
+      >
         <TextInput
           mt={20}
           label="Email"

@@ -118,13 +118,6 @@ const HeaderBar = () => {
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
 
-  function handleClickLogo() {
-    router.push("/");
-  }
-  function handleClickSignUp() {
-    router.push("/signup");
-  }
-
   const items = links.map((link) => {
     // Only logged in users can see the account tab
     if (link.label === "My account") {
@@ -190,7 +183,12 @@ const HeaderBar = () => {
             size="sm"
             color="white"
           />
-          <Text size="xl" weight={600} color="white" onClick={handleClickLogo}>
+          <Text
+            size="xl"
+            weight={600}
+            color="white"
+            onClick={() => router.push("/")}
+          >
             PetHub
           </Text>
         </Group>

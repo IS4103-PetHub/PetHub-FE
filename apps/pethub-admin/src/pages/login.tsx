@@ -75,12 +75,15 @@ export default function Login() {
     toggle();
   };
 
-  const handleLogin = async () => {
+  type LoginFormValues = typeof loginForm.values;
+  type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
+
+  const handleLogin = async (values: LoginFormValues) => {
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
-      email: loginForm.values.email,
-      password: loginForm.values.password,
+      email: values.email,
+      password: values.password,
     });
     loginForm.reset();
     if (res?.error) {
@@ -100,7 +103,7 @@ export default function Login() {
     }
   };
 
-  const handleForgotPassword = async () => {
+  const handleForgotPassword = async (values: ForgotPasswordFormValues) => {
     const forgotPasswordPayload: ForgotPasswordPayload = {
       email: forgotPasswordForm.values.email,
     };
