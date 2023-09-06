@@ -7,12 +7,13 @@ export const LoginBox = ({ changeBoxToggle, loginForm, handleLogin }: any) => {
       <TextInput
         label="Email"
         required
-        mt="xs"
+        withAsterisk={false}
         {...loginForm.getInputProps("email")}
       />
       <PasswordInput
         label="Password"
         required
+        withAsterisk={false}
         mt="xs"
         {...loginForm.getInputProps("password")}
       />

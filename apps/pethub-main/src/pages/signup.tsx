@@ -243,7 +243,7 @@ export default function SignUp() {
 
   return (
     <BackgroundImage src="" className={classes.backgroundEffect}>
-      <Container className={classes.whiteBackground} p="lg">
+      <Container className={classes.whiteBackground} p="50px">
         <Group>
           <IconDog size="2rem" />
           <PageTitle title="Join the PetHub community" />

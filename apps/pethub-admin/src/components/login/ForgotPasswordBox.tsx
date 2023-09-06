@@ -26,6 +26,7 @@ export const ForgotPasswordBox = ({
       <TextInput
         label="Email"
         required
+        withAsterisk={false}
         {...forgotPasswordForm.getInputProps("email")}
       />
       <Group position="apart" mt="lg">

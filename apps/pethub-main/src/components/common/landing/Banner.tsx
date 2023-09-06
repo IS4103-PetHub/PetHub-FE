@@ -24,7 +24,7 @@ const Banner = () => {
   return (
     <BackgroundImage src="pet-banner.jpg">
       <Container className={classes.inner} fluid>
-        <Box p="xl">
+        <Box p="10vw">
           <Text size="3rem" weight="600" color="white">
             Every pet deserves the best
           </Text>

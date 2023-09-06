@@ -220,7 +220,11 @@ const HeaderBar = () => {
               <Button size="md" radius="md" variant="default" onClick={open}>
                 Log in
               </Button>
-              <Button size="md" radius="md">
+              <Button
+                size="md"
+                radius="md"
+                onClick={() => router.push("/signup")}
+              >
                 Sign up
               </Button>
             </>

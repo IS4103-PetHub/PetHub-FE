@@ -142,11 +142,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       }}
       opened={opened}
       onClose={close}
-      transitionProps={{
-        transition: "fade",
-        duration: 600,
-        timingFunction: "linear",
-      }}
     >
       <Container fluid>
         {type === "login" ? (

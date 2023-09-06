@@ -62,25 +62,17 @@ export default function Login() {
     <Container fluid>
       <Container size={420} mt={100}>
         <Title align="center">Reset your password</Title>
-        <Text color="dark" size="sm" align="center" mt={5}>
+        <Text color="dimmed" size="sm" align="center" mt="sm">
           You have requested to reset your password. Please enter your new
           password below.
         </Text>
-        <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
+        <Paper shadow="sm" p={30} mt={30} radius="sm" c="blue">
           {isResetSuccessful ? (
             <Stack>
               <Text c="dimmed" fz="md" ta="center">
                 Password reset successful.
               </Text>
-              <Anchor
-                component="button"
-                type="button"
-                color="blue"
-                onClick={handleGoToHome}
-                size="lg"
-              >
-                Proceed to Home page
-              </Anchor>
+              <Button onClick={handleGoToHome}>Proceed to Home page</Button>
             </Stack>
           ) : (
             <form onSubmit={form.onSubmit(handleResetPassword)}>

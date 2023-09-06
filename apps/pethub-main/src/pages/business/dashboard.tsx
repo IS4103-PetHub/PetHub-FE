@@ -1,4 +1,6 @@
+import { Container } from "@mantine/core";
 import React from "react";
+import { PageTitle } from "web-ui";
 
 export default function Dashboard() {
   /* 
@@ -6,5 +8,9 @@ export default function Dashboard() {
     This is because client data can be easily tampered with.
   */
 
-  return <>Business Dashboard</>;
+  return (
+    <Container fluid>
+      <PageTitle title="Business Dashboard" />
+    </Container>
+  );
 }
