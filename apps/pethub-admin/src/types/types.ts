@@ -9,6 +9,10 @@ export interface PetOwner {
   AccountTypeEnum: string;
 }
 
-export interface PetBusiness {}
+export interface PetBusiness {
+  AccountTypeEnum: string;
+}
 
-export interface InternalUser {}
+export interface InternalUser {
+  AccountTypeEnum: string;
+}

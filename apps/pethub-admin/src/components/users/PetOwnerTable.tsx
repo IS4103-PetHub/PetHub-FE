@@ -1,15 +1,16 @@
-import { Group, Tabs, Box } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Modal, Group, Tabs, Box, Button, Text, Center } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React from "react";
 import { useEffect, useState } from "react";
-import { usePetOwnerRetrieveAll } from "@/hooks/pet-owner";
+// import { usePetOwnerRetrieveAll } from "@/hooks/pet-owner";
 import { PetOwner } from "@/types/types";
+import UserDetails from "./UserDetails";
 // import { useQueryClient } from "@tanstack/react-query";
 
 /* 
-  THIS IMPLEMENTATION USES MANTINE DATATABLE, AND HAS SORT AND PAGINATION. SEARCH/FILTER IS WORK IN PROGRESS
+  THIS IMPLEMENTATION USES MANTINE DATATABLE, AND HAS SORT AND PAGINATION. May move these into backend rendering in the future.
 */
 
 const PAGE_SIZE = 15;
@@ -256,17 +257,37 @@ export default function PetOwnerTable() {
     },
   ];
 
-  // Initialize sort status
+  // const { status, data, error, isFetching } = usePetOwnerRetrieveAll();
+  // if (isLoading) {
+  //   return <p>Loading...</p>;
+  // }
+
+  // if (error) {
+  //   return <p>Error loading pet owners!</p>;
+  // }
+
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "petOwnerId",
     direction: "asc",
   });
-
-  // Initialize current page
-  const [page, setPage] = useState(1);
-
-  // Initialize records state
+  const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetOwner[]>([]);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<PetOwner | null>(null);
+
+  const handleOpenModal = (record: PetOwner) => {
+    setSelectedRecord(record);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedRecord(null);
+    setModalOpen(false);
+  };
+
+  // Compute pagination slice indices based on the current page
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE;
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
@@ -276,17 +297,12 @@ export default function PetOwnerTable() {
       sortedPetOwners.reverse();
     }
 
-    // Compute pagination slice indices based on the current page
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE;
-
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetOwners.slice(from, to);
 
     // Update the records state
     setRecords(newRecords);
   }, [page, sortStatus]);
-  // const { status, data, error, isFetching } = usePetOwnerRetrieveAll();
 
   return (
     <>
@@ -319,7 +335,11 @@ export default function PetOwnerTable() {
             //   </Group>
             // ),
           },
-          { accessor: "firstName", title: "First Name", sortable: true },
+          {
+            accessor: "firstName",
+            title: "First Name",
+            sortable: true,
+          },
           {
             accessor: "lastName",
             title: "Last Name",
@@ -329,6 +349,7 @@ export default function PetOwnerTable() {
             accessor: "accountStatus",
             title: "Status",
             width: 150,
+            sortable: true,
             // this column has custom cell data rendering
             render: ({ accountStatus }) => (
               <Text
@@ -338,6 +359,19 @@ export default function PetOwnerTable() {
                 {accountStatus.charAt(0).toUpperCase()}
                 {accountStatus.slice(1).toLowerCase()}
               </Text>
+            ),
+          },
+          {
+            // New column for the "view more details" button
+            accessor: "petOwnerId",
+            title: "", // No title
+            width: 150,
+            render: (record) => (
+              <Center style={{ height: "100%" }}>
+                <Button size="sm" onClick={() => handleOpenModal(record)}>
+                  View
+                </Button>
+              </Center>
             ),
           },
         ]}
@@ -351,11 +385,20 @@ export default function PetOwnerTable() {
         onPageChange={(p) => setPage(p)}
         // execute this callback when a row is clicked
         onRowClick={({ firstName, lastName, AccountTypeEnum }) =>
-          alert(
-            `You clicked on ${firstName} ${lastName}, a ${AccountTypeEnum} `,
+          console.log(
+            `You clicked on ${firstName} ${lastName}, a ${AccountTypeEnum}`,
           )
         }
       />
+      <Modal
+        opened={isModalOpen}
+        onClose={handleCloseModal}
+        title="Pet Owner Details"
+        size="lg"
+        padding="md"
+      >
+        <UserDetails user={selectedRecord} />
+      </Modal>
     </>
   );
 }
