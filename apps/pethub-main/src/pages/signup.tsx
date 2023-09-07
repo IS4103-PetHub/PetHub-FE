@@ -160,7 +160,11 @@ export default function SignUp() {
         title: "Error Creating Account",
         color: "red",
         icon: <IconX />,
-        message: error.response.data.message,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
       });
     }
   };
@@ -188,7 +192,11 @@ export default function SignUp() {
         title: "Error Creating Account",
         color: "red",
         icon: <IconX />,
-        message: error.response.data.message,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
       });
     }
   };
