@@ -13,6 +13,7 @@ import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
+import PasswordBar from "web-ui/shared/PasswordBar";
 import { resetPasswordService } from "@/api/userService";
 import { ResetPasswordPayload } from "@/types/types";
 import { parseRouterQueryParam, validatePassword } from "@/util";
@@ -80,8 +81,10 @@ export default function Login() {
                 label="New password"
                 required
                 mt="xs"
+                mb="xs"
                 {...form.getInputProps("password")}
               />
+              <PasswordBar password={form.values.password} />
               <PasswordInput
                 label="Confirm new password"
                 required
