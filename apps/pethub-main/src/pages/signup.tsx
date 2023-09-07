@@ -24,13 +24,19 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import { getSession, signIn } from "next-auth/react";
 import React from "react";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { usePetBusinessCreate } from "@/hooks/pet-business";
 import { usePetOwnerCreate } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
-import { CreatePetBusinessRequest, CreatePetOwnerRequest } from "@/types/types";
+import {
+  CreatePetBusinessRequest,
+  CreatePetOwnerRequest,
+  LoginCredentials,
+} from "@/types/types";
 import { validatePassword } from "@/util";
 
 const useStyles = createStyles((theme) => ({
@@ -49,6 +55,7 @@ const useStyles = createStyles((theme) => ({
 export default function SignUp() {
   const { classes } = useStyles();
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const form = useForm({
     initialValues: {
@@ -97,6 +104,41 @@ export default function SignUp() {
     },
   });
 
+  type FormValues = typeof form.values;
+
+  const handleLogin = async (loginCredentials: LoginCredentials) => {
+    const res = await signIn("credentials", {
+      callbackUrl: "/",
+      redirect: false,
+      ...loginCredentials,
+    });
+    if (res?.error) {
+      notifications.show({
+        title: "Login Failed",
+        message: "Invalid Credentials",
+        color: "red",
+        autoClose: 5000,
+      });
+    } else {
+      const session = await getSession();
+      if (session) {
+        if (session.user["accountType"] === AccountTypeEnum.PetBusiness) {
+          router.push("/business/dashboard");
+        } else {
+          router.push("/");
+        }
+        notifications.show({
+          message: "Login Successful",
+          color: "green",
+          autoClose: 5000,
+        });
+      }
+    }
+    const timer = setTimeout(() => {
+      form.reset();
+    }, 800);
+  };
+
   const createPetOwnerMutation = usePetOwnerCreate(queryClient);
   const createPetOwnerAccount = async (payload: CreatePetOwnerRequest) => {
     try {
@@ -107,8 +149,12 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet owner account created successfully!`,
       });
-      form.reset();
-      // TODO login and redirect home page
+      // login and redirect home page
+      handleLogin({
+        username: payload.email,
+        password: payload.password,
+        accountType: AccountTypeEnum.PetOwner,
+      });
     } catch (error: any) {
       notifications.show({
         title: "Error Creating Account",
@@ -131,8 +177,12 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet business account created successfully!`,
       });
-      form.reset();
-      // TODO login and redirect to pet business dashboard
+      // login and redirect to pet business dashboard
+      handleLogin({
+        username: payload.email,
+        password: payload.password,
+        accountType: AccountTypeEnum.PetOwner,
+      });
     } catch (error: any) {
       notifications.show({
         title: "Error Creating Account",
@@ -143,7 +193,7 @@ export default function SignUp() {
     }
   };
 
-  function handleSubmit(values: any) {
+  function handleSubmit(values: FormValues) {
     if (values.accountType === AccountTypeEnum.PetOwner) {
       const payload: CreatePetOwnerRequest = {
         firstName: values.firstName,
@@ -153,7 +203,6 @@ export default function SignUp() {
         email: values.email,
         password: values.password,
       };
-      console.log(payload);
       createPetOwnerAccount(payload);
     } else {
       // if accountType === "petBusiness"
@@ -164,7 +213,6 @@ export default function SignUp() {
         email: values.email,
         password: values.password,
       };
-      console.log(payload);
       createPetBusinessAccount(payload);
     }
   }
