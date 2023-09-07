@@ -3,16 +3,17 @@ import { RegularButton } from "../common/RegularButton";
 
 export const LoginBox = ({ changeBoxToggle, loginForm, handleLogin }: any) => {
   return (
-    <form onSubmit={loginForm.onSubmit(handleLogin)}>
+    <form onSubmit={loginForm.onSubmit((values: any) => handleLogin(values))}>
       <TextInput
         label="Email"
         required
-        mt="xs"
+        withAsterisk={false}
         {...loginForm.getInputProps("email")}
       />
       <PasswordInput
         label="Password"
         required
+        withAsterisk={false}
         mt="xs"
         {...loginForm.getInputProps("password")}
       />

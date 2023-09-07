@@ -6,9 +6,8 @@ import {
   Text,
   BackgroundImage,
 } from "@mantine/core";
-import { useExampleGet } from "@/hooks/example";
 
-const BANNER_HEIGHT = rem(700);
+const BANNER_HEIGHT = rem(500);
 
 const useStyles = createStyles((theme) => ({
   inner: {
@@ -25,7 +24,7 @@ const Banner = () => {
   return (
     <BackgroundImage src="pet-banner.jpg">
       <Container className={classes.inner} fluid>
-        <Box sx={(theme) => ({ padding: theme.spacing.xl })}>
+        <Box p="10vw">
           <Text size="3rem" weight="600" color="white">
             Every pet deserves the best
           </Text>

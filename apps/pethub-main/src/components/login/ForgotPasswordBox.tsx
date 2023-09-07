@@ -44,21 +44,26 @@ export const ForgotPasswordBox = ({
         </Text>
       </Stack>
     ) : (
-      <form onSubmit={forgotPasswordForm.onSubmit(handleForgotPassword)}>
+      <form
+        onSubmit={forgotPasswordForm.onSubmit((values) =>
+          handleForgotPassword(values),
+        )}
+      >
         <TextInput
           mt={20}
           label="Email"
           required
+          withAsterisk={false}
           {...forgotPasswordForm.getInputProps("email")}
         />
-        <Group position="apart" mt="lg" mb="md">
+        <Group position="apart" mt="md" mb="xs">
           <Anchor color="dimmed" size="sm">
             <Center inline onClick={() => toggle()}>
               <IconArrowLeft size={rem(12)} stroke={1.5} />
               <Box ml={5}>Go back</Box>
             </Center>
           </Anchor>
-          <Button type="submit" loading={isSubmitButtonLoading}>
+          <Button type="submit" mt="md" loading={isSubmitButtonLoading}>
             Reset Password
           </Button>
         </Group>

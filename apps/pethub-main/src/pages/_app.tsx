@@ -53,9 +53,6 @@ export default function App({ Component, pageProps }: AppProps) {
             fontFamily: "Inter, sans-serif",
             primaryColor: "indigo",
             colorScheme,
-            spacing: {
-              xl: "100px",
-            },
           }}
         >
           <QueryClientProvider client={queryClient}>

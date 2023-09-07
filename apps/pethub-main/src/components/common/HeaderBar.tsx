@@ -13,6 +13,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconChevronDown } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import { AccountTypeEnum } from "@/types/constants";
 import { LoginModal } from "../login/LoginModal";
@@ -79,27 +80,27 @@ const links: {
         label: "Pet grooming",
       },
       {
-        link: "/services/sitting",
-        label: "Pet sitting",
+        link: "/services/vet",
+        label: "Veterinary",
       },
       {
-        link: "/services/training",
-        label: "Pet training",
+        link: "/services/dining",
+        label: "Dining",
       },
       {
-        link: "/services/taxi",
-        label: "Pet taxi",
+        link: "/services/retail",
+        label: "Pet retail",
       },
     ],
   },
   {
-    link: "/services/vet",
-    label: "Find a vet",
+    link: "/lost-and-found",
+    label: "Lost & found pets",
     links: undefined,
   },
   {
-    link: "/services/fnb",
-    label: "Dine with pets",
+    link: "/help",
+    label: "Help",
     links: undefined,
   },
   {
@@ -110,10 +111,13 @@ const links: {
 ];
 
 const HeaderBar = () => {
+  const router = useRouter();
   const { classes } = useStyles();
   const [opened, { toggle }] = useDisclosure(false);
+
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
+
   const items = links.map((link) => {
     // Only logged in users can see the account tab
     if (link.label === "My account") {
@@ -179,7 +183,12 @@ const HeaderBar = () => {
             size="sm"
             color="white"
           />
-          <Text size="xl" weight={600} color="white">
+          <Text
+            size="xl"
+            weight={600}
+            color="white"
+            onClick={() => router.push("/")}
+          >
             PetHub
           </Text>
         </Group>
@@ -209,7 +218,11 @@ const HeaderBar = () => {
               <Button size="md" radius="md" variant="default" onClick={open}>
                 Log in
               </Button>
-              <Button size="md" radius="md">
+              <Button
+                size="md"
+                radius="md"
+                onClick={() => router.push("/signup")}
+              >
                 Sign up
               </Button>
             </>
