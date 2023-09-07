@@ -28,6 +28,7 @@
     "@tabler/icons-react": "^2.31.0",
     "mantine-datatable": "^2.9.11",
     "next": "^13.4.19",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-password-strength-bar": "^0.4.1"
   }
 }

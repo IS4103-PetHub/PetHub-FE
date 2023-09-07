@@ -9,13 +9,14 @@ import {
   Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUser, IconHome } from "@tabler/icons-react";
+import { IconUser } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
+import { AccountTypeEnum } from "@/types/constants";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -73,8 +74,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-  { link: "/", label: "Home", icon: IconHome },
-  { link: "/users", label: "Users Management", icon: IconUser },
+  { link: "/someotherlink", label: "This is a label", icon: IconUser },
 ];
 
 const SideNavBar = () => {
@@ -102,7 +102,11 @@ const SideNavBar = () => {
     </Link>
   ));
 
-  if (!session) {
+  // This should not show if no user is logged in, or if the logged in user is not a Pet Business
+  if (
+    status !== "authenticated" ||
+    (session && session.user["accountType"] !== AccountTypeEnum.PetBusiness)
+  ) {
     return null;
   }
 
@@ -116,7 +120,7 @@ const SideNavBar = () => {
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
           <Text size="lg" weight={600} color={theme.colors.gray[0]}>
-            PetHub Admin
+            PetHub Business
           </Text>
           <LightDarkModeToggle />
         </Group>
@@ -132,7 +136,7 @@ const SideNavBar = () => {
               loading: true,
             });
             signOut({
-              callbackUrl: "/login",
+              callbackUrl: "/",
             });
           }}
         >
