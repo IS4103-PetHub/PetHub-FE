@@ -31,6 +31,7 @@ import { usePetBusinessCreate } from "@/hooks/pet-business";
 import { usePetOwnerCreate } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessRequest, CreatePetOwnerRequest } from "@/types/types";
+import { validatePassword } from "@/util";
 
 const useStyles = createStyles((theme) => ({
   backgroundEffect: {
@@ -90,10 +91,7 @@ export default function SignUp() {
         values.accountType === AccountTypeEnum.PetOwner && !value
           ? "Date of birth required."
           : null,
-      password: (value) =>
-        /^(?!.* )(?=.*\d)(?=.*[a-z]).{8,}$/.test(value)
-          ? null
-          : "Password must be at least 8 characters long with at least 1 letter, 1 number and no white spaces.",
+      password: validatePassword,
       confirmPassword: (value, values) =>
         value !== values.password ? "Passwords do not match." : null,
     },
