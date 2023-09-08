@@ -1,20 +1,33 @@
+// export interface PetOwner {
+//   petOwnerId: number;
+//   firstName: string;
+//   lastName: string;
+//   contactNumber: string;
+//   dateOfBirth: string;
+//   email: string;
+//   accountStatus: string;
+//   AccountTypeEnum: string;
+// }
+
 export interface PetOwner {
-  petOwnerId: number;
   firstName: string;
   lastName: string;
   contactNumber: string;
   dateOfBirth: string;
+  userId: number;
   email: string;
+  accountType: string;
   accountStatus: string;
-  AccountTypeEnum: string;
+  dateCreated: string;
+  lastUpdated: string;
 }
 
 export interface PetBusiness {
-  AccountTypeEnum: string;
+  accountType: string;
 }
 
 export interface InternalUser {
-  AccountTypeEnum: string;
+  accountType: string;
 }
 export interface LoginCredentials {
   email: string;
