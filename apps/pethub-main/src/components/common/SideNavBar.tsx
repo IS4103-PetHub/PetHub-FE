@@ -16,6 +16,7 @@ import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
+import { AccountTypeEnum } from "@/types/constants";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -72,7 +73,9 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const data = [{ link: "/users", label: "Users", icon: IconUser }];
+const data = [
+  { link: "/someotherlink", label: "This is a label", icon: IconUser },
+];
 
 const SideNavBar = () => {
   const { classes, cx } = useStyles();
@@ -99,7 +102,11 @@ const SideNavBar = () => {
     </Link>
   ));
 
-  if (!session) {
+  // This should not show if no user is logged in, or if the logged in user is not a Pet Business
+  if (
+    status !== "authenticated" ||
+    (session && session.user["accountType"] !== AccountTypeEnum.PetBusiness)
+  ) {
     return null;
   }
 
@@ -113,7 +120,7 @@ const SideNavBar = () => {
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
           <Text size="lg" weight={600} color={theme.colors.gray[0]}>
-            PetHub Admin
+            PetHub Business
           </Text>
           <LightDarkModeToggle />
         </Group>
@@ -129,7 +136,7 @@ const SideNavBar = () => {
               loading: true,
             });
             signOut({
-              callbackUrl: "/login",
+              callbackUrl: "/",
             });
           }}
         >
