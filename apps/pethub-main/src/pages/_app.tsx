@@ -3,6 +3,8 @@ import {
   AppShell,
   ColorScheme,
   ColorSchemeProvider,
+  Loader,
+  Container,
   MantineProvider,
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
@@ -13,13 +15,16 @@ import {
 } from "@tanstack/react-query";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
+import { AccountTypeEnum } from "@/types/constants";
 import type { AppProps } from "next/app";
 
-export default function App({ Component, pageProps }: AppProps) {
+export function App({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
+  const { data: session, status } = useSession();
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
   const [queryClient] = useState(
@@ -33,6 +38,28 @@ export default function App({ Component, pageProps }: AppProps) {
         },
       }),
   );
+
+  function headerBarCheck() {
+    if (
+      status === "loading" ||
+      (session && session.user["accountType"] === AccountTypeEnum.PetBusiness)
+    ) {
+      return null;
+    } else {
+      return <HeaderBar />;
+    }
+  }
+
+  function SideBarCheck() {
+    if (
+      status !== "authenticated" ||
+      (session && session.user["accountType"] !== AccountTypeEnum.PetBusiness)
+    ) {
+      return null;
+    } else {
+      return <SideNavBar />;
+    }
+  }
 
   return (
     <>
@@ -53,27 +80,43 @@ export default function App({ Component, pageProps }: AppProps) {
             fontFamily: "Inter, sans-serif",
             primaryColor: "indigo",
             colorScheme,
-            spacing: {
-              xl: "100px",
-            },
           }}
         >
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Notifications />
-              <SessionProvider session={pageProps.session}>
-                <AppShell
-                  header={<HeaderBar />}
-                  navbar={<SideNavBar />}
-                  padding={0}
-                >
+              <AppShell
+                header={headerBarCheck()}
+                navbar={SideBarCheck()}
+                padding={0}
+              >
+                {status === "loading" ? (
+                  <Container
+                    style={{
+                      height: "100vh",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Loader size="5rem" />
+                  </Container>
+                ) : (
                   <Component {...pageProps} />
-                </AppShell>
-              </SessionProvider>
+                )}
+              </AppShell>
             </Hydrate>
           </QueryClientProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </>
+  );
+}
+
+export default function AppProvider(props: any) {
+  return (
+    <SessionProvider session={props.pageProps.session}>
+      <App {...props} />
+    </SessionProvider>
   );
 }

@@ -73,13 +73,16 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     toggle();
   };
 
-  const handleLogin = async () => {
+  type LoginFormValues = typeof loginForm.values;
+  type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
+
+  const handleLogin = async (values: LoginFormValues) => {
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
-      username: loginForm.values.email,
-      password: loginForm.values.password,
-      accountType: loginForm.values.accountType,
+      email: values.email,
+      password: values.password,
+      accountType: values.accountType,
     });
     if (res?.error) {
       notifications.show({
@@ -108,7 +111,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     }, 800);
   };
 
-  const handleForgotPassword = async () => {
+  const handleForgotPassword = async (values: ForgotPasswordFormValues) => {
     const forgotPasswordPayload: ForgotPasswordPayload = {
       email: forgotPasswordForm.values.email,
     };
@@ -142,11 +145,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       }}
       opened={opened}
       onClose={close}
-      transitionProps={{
-        transition: "fade",
-        duration: 600,
-        timingFunction: "linear",
-      }}
     >
       <Container fluid>
         {type === "login" ? (

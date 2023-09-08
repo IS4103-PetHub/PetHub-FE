@@ -106,14 +106,6 @@ const SideNavBar = () => {
     </Link>
   ));
 
-  // This should not show if no user is logged in, or if the logged in user is not a Pet Business
-  if (
-    status !== "authenticated" ||
-    (session && session.user["accountType"] !== AccountTypeEnum.PetBusiness)
-  ) {
-    return null;
-  }
-
   return (
     <Navbar
       height="100vh"

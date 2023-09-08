@@ -15,10 +15,10 @@ import { AccountTypeEnum } from "@/types/constants";
 export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
   <div>
     <Title align="center">PetHub</Title>
-    <Text color="dimmed" size="sm" align="center" mb="sm">
+    <Text color="dimmed" size="sm" align="center" mb="md">
       Welcome to PetHub. Login now!
     </Text>
-    <form onSubmit={loginForm.onSubmit(handleLogin)}>
+    <form onSubmit={loginForm.onSubmit((values) => handleLogin(values))}>
       <SegmentedControl
         fullWidth
         color="dark"
@@ -47,12 +47,14 @@ export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
       <TextInput
         label="Email"
         required
+        withAsterisk={false}
         mt="xs"
         {...loginForm.getInputProps("email")}
       />
       <PasswordInput
         label="Password"
         required
+        withAsterisk={false}
         mt="xs"
         {...loginForm.getInputProps("password")}
       />
@@ -66,7 +68,7 @@ export const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => (
       >
         Forgot your password?
       </Anchor>
-      <Button mt="xs" type="submit" fullWidth mb="sm">
+      <Button mt="xs" type="submit" fullWidth mb="xs">
         Login
       </Button>
     </form>

@@ -1,5 +1,5 @@
 export interface LoginCredentials {
-  username: string;
+  email: string;
   password: string;
   accountType: string;
 }
@@ -19,4 +19,21 @@ export interface Address {
   line2: string;
   postal: string;
   isDefault: boolean;
+}
+
+export interface CreatePetOwnerRequest {
+  firstName: string;
+  lastName: string;
+  contactNumber: string;
+  dateOfBirth: string;
+  email: string;
+  password: string;
+}
+
+export interface CreatePetBusinessRequest {
+  companyName: string;
+  uen: string;
+  contactNumber: string;
+  email: string;
+  password: string;
 }
