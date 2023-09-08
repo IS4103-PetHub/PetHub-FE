@@ -80,7 +80,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
-      username: values.email,
+      email: values.email,
       password: values.password,
       accountType: values.accountType,
     });

@@ -8,17 +8,21 @@ import api from "./axiosConfig";
 
 // TODO: Change stuff to fit the format of the finalized API after
 export const loginService = async ({
-  username,
+  email,
   password,
   accountType,
 }: LoginCredentials) => {
   try {
     const body = {
-      username: username,
+      email: email,
       password: password,
       accountType: accountType,
     };
-    let res = await api.post("/login", body);
+    let url =
+      accountType === AccountTypeEnum.PetOwner
+        ? "/users/pet-owners/login"
+        : "/users/pet-businesses/login";
+    let res = await api.post(url, body);
     // console.log(
     //   "Calling Service: [userService - userLogin] with response:",
     //   res
