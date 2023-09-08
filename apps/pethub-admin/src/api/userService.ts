@@ -9,11 +9,10 @@ import api from "./axiosConfig";
 export const loginService = async ({ email, password }: LoginCredentials) => {
   try {
     const body = {
-      username: email,
+      email: email,
       password: password,
-      accountType: AccountTypeEnum.InternalUser,
     };
-    let res = await api.post("/login", body);
+    let res = await api.post("/users/internal-users/login", body);
     console.log(
       "Calling Service: [userService - userLogin] with response:",
       res,

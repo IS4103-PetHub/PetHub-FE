@@ -18,7 +18,6 @@ import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import HeaderBar from "@/components/common/HeaderBar";
-import Spinner from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import { AccountTypeEnum } from "@/types/constants";
 import type { AppProps } from "next/app";
