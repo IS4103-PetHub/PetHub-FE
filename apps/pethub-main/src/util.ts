@@ -18,6 +18,13 @@ export function validatePassword(password: string) {
   return null;
 }
 
+export function validateChangePassword(password: string, newPassword: string) {
+  if (password === newPassword) {
+    return "New password cannot be the same as current password.";
+  }
+  return validatePassword(newPassword);
+}
+
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
   if (!param) {

@@ -64,7 +64,9 @@ export default function MyAccount({ petOwner, petBusiness }: MyAccountProps) {
             </Group>
           </Accordion.Control>
           <Accordion.Panel p="md">
-            <ChangePasswordForm />
+            <ChangePasswordForm
+              email={petOwner ? petOwner.email : petBusiness.email}
+            />
           </Accordion.Panel>
         </Accordion.Item>
 

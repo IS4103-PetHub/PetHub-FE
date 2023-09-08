@@ -1,5 +1,6 @@
 import { Button, Divider, Grid } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import { IconPencil } from "@tabler/icons-react";
 import React from "react";
 import { PetBusinessAccount, PetOwnerAccount } from "@/types/types";
@@ -11,6 +12,8 @@ interface AccountInfoFormProps {
 }
 
 const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
+  const [editing, setEditing] = useToggle();
+
   const form = useForm({
     initialValues: {},
   });

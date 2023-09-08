@@ -15,7 +15,13 @@ export interface ResetPasswordPayload {
   newPassword: string;
 }
 
-export interface CreatePetOwnerRequest {
+export interface ChangePasswordPayload {
+  email: string;
+  password: string;
+  newPassword: string;
+}
+
+export interface CreatePetOwnerPayload {
   firstName: string;
   lastName: string;
   contactNumber: string;
@@ -24,7 +30,7 @@ export interface CreatePetOwnerRequest {
   password: string;
 }
 
-export interface CreatePetBusinessRequest {
+export interface CreatePetBusinessPayload {
   companyName: string;
   uen: string;
   contactNumber: string;

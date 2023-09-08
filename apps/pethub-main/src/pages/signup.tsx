@@ -33,8 +33,8 @@ import { usePetBusinessCreate } from "@/hooks/pet-business";
 import { usePetOwnerCreate } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
 import {
-  CreatePetBusinessRequest,
-  CreatePetOwnerRequest,
+  CreatePetBusinessPayload,
+  CreatePetOwnerPayload,
   LoginCredentials,
 } from "@/types/types";
 import { validatePassword } from "@/util";
@@ -140,7 +140,7 @@ export default function SignUp() {
   };
 
   const createPetOwnerMutation = usePetOwnerCreate(queryClient);
-  const createPetOwnerAccount = async (payload: CreatePetOwnerRequest) => {
+  const createPetOwnerAccount = async (payload: CreatePetOwnerPayload) => {
     try {
       await createPetOwnerMutation.mutateAsync(payload);
       notifications.show({
@@ -171,7 +171,7 @@ export default function SignUp() {
 
   const createPetBusinessMutation = usePetBusinessCreate(queryClient);
   const createPetBusinessAccount = async (
-    payload: CreatePetBusinessRequest,
+    payload: CreatePetBusinessPayload,
   ) => {
     try {
       await createPetBusinessMutation.mutateAsync(payload);
@@ -203,7 +203,7 @@ export default function SignUp() {
 
   function handleSubmit(values: FormValues) {
     if (values.accountType === AccountTypeEnum.PetOwner) {
-      const payload: CreatePetOwnerRequest = {
+      const payload: CreatePetOwnerPayload = {
         firstName: values.firstName,
         lastName: values.lastName,
         contactNumber: values.contactNumber,
@@ -214,7 +214,7 @@ export default function SignUp() {
       createPetOwnerAccount(payload);
     } else {
       // if accountType === "petBusiness"
-      const payload: CreatePetBusinessRequest = {
+      const payload: CreatePetBusinessPayload = {
         companyName: values.companyName,
         uen: values.uen,
         contactNumber: values.contactNumber,
