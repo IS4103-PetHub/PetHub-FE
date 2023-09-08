@@ -4,14 +4,8 @@ import {
   Text,
   Group,
   useMantineTheme,
-  Button,
 } from "@mantine/core";
-import {
-  IconUser,
-  IconKey,
-  IconUserX,
-  IconAlertOctagon,
-} from "@tabler/icons-react";
+import { IconUser, IconKey, IconAlertOctagon } from "@tabler/icons-react";
 import axios from "axios";
 import { getSession } from "next-auth/react";
 import React from "react";

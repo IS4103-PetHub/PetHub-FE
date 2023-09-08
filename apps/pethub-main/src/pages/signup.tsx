@@ -89,10 +89,10 @@ export default function SignUp() {
         values.accountType === AccountTypeEnum.PetOwner && !value
           ? "Last name is required."
           : null,
-      contactNumber: hasLength(
-        { min: 8, max: 8 },
-        "Contact number must be 8 digits long.",
-      ),
+      contactNumber: (value) =>
+        /^[0-9]{8}$/.test(value)
+          ? null
+          : "Contact number must be 8 digits long.",
       email: isEmail("Invalid email."),
       dateOfBirth: (value, values) =>
         values.accountType === AccountTypeEnum.PetOwner && !value
