@@ -38,7 +38,7 @@ export interface CreatePetBusinessPayload {
   password: string;
 }
 
-export abstract class UserAccount {
+export abstract class User {
   userId: number;
   contactNumber: string;
 
@@ -50,7 +50,7 @@ export abstract class UserAccount {
   lastUpdated?: string;
 }
 
-export interface PetBusinessAccount extends UserAccount {
+export interface PetBusiness extends User {
   // pet business attributes
   companyName: string;
   uen: string;
@@ -59,7 +59,7 @@ export interface PetBusinessAccount extends UserAccount {
   websiteURL?: string;
 }
 
-export interface PetOwnerAccount extends UserAccount {
+export interface PetOwner extends User {
   // pet owner attributes
   firstName: string;
   lastName: string;

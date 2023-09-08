@@ -14,3 +14,19 @@ export const usePetOwnerCreate = (queryClient: QueryClient) => {
     },
   });
 };
+
+export const usePetOwnerUpdate = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      const payloadWithoutId = Object.fromEntries(
+        Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
+      );
+      return (
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners/${payload.userId}`,
+          payloadWithoutId,
+        )
+      ).data;
+    },
+  });
+};

@@ -1,19 +1,39 @@
-import { Button, Divider, Grid, Group, TextInput } from "@mantine/core";
+import {
+  Button,
+  Divider,
+  Grid,
+  Group,
+  LoadingOverlay,
+  TextInput,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { isEmail, useForm } from "@mantine/form";
-import { useToggle } from "@mantine/hooks";
-import { IconCalendar, IconPencil } from "@tabler/icons-react";
+import { TransformedValues, isEmail, useForm } from "@mantine/form";
+import { useDisclosure, useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import {
+  IconCalendar,
+  IconCheck,
+  IconPencil,
+  IconX,
+} from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import React from "react";
-import { PetBusinessAccount, PetOwnerAccount } from "@/types/types";
+import { usePetBusinessUpdate } from "@/hooks/pet-business";
+import { usePetOwnerUpdate } from "@/hooks/pet-owner";
+import { PetBusiness, PetOwner } from "@/types/types";
 import { formatISODateString } from "@/util";
 
 interface AccountInfoFormProps {
-  petOwner?: PetOwnerAccount;
-  petBusiness?: PetBusinessAccount;
+  petOwner?: PetOwner;
+  petBusiness?: PetBusiness;
 }
 
 const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const [isEditing, setIsEditing] = useToggle();
+  const [visible, { toggle }] = useDisclosure(false);
 
   const form = useForm({
     initialValues: {
@@ -27,6 +47,11 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
         : petBusiness.contactNumber,
       email: petOwner ? petOwner.email : petBusiness.email,
     },
+
+    transformValues: (values) => ({
+      ...values,
+      dateOfBirth: petOwner ? new Date(values.dateOfBirth).toISOString() : "",
+    }),
 
     validate: {
       companyName: (value, values) =>
@@ -49,6 +74,9 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
     },
   });
 
+  const updatePetOwnerMutation = usePetOwnerUpdate(queryClient);
+  const updatePetBusinessMutation = usePetBusinessUpdate(queryClient);
+
   if (!petOwner && !petBusiness) {
     return null;
   }
@@ -57,9 +85,71 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
   const VALUE_SPAN = 12 - KEY_SPAN;
 
   type FormValues = typeof form.values;
-  const handleSubmit = (values: FormValues) => {
-    console.log(values);
-    setIsEditing(false);
+  type Transformed = TransformedValues<typeof form>;
+
+  const updateAccount = async (payload: any) => {
+    try {
+      if (petOwner) {
+        await updatePetOwnerMutation.mutateAsync(payload);
+      } else {
+        // pet business
+        await updatePetBusinessMutation.mutateAsync(payload);
+      }
+      setIsEditing(false);
+      notifications.show({
+        title: "Account Updated",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Account updated successfully!`,
+      });
+      toggle();
+      router.reload();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Updating Account",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const handleSubmit = (values: TransformedValues<typeof form>) => {
+    const valuesToUpdate = {};
+    let payload = {};
+
+    if (petOwner) {
+      // get only the changed values
+      Object.keys(form.values).forEach((key) => {
+        if (values[key] !== petOwner[key] && values[key] !== "") {
+          valuesToUpdate[key] = values[key];
+        }
+      });
+      payload = {
+        userId: petOwner.userId,
+        ...valuesToUpdate,
+      };
+    } else {
+      // pet business
+      Object.keys(form.values).forEach((key) => {
+        if (values[key] !== petBusiness[key]) {
+          valuesToUpdate[key] = values[key];
+        }
+      });
+      payload = {
+        userId: petBusiness.userId,
+        ...valuesToUpdate,
+      };
+    }
+    if (Object.keys(valuesToUpdate).length === 0) {
+      setIsEditing(false);
+      return;
+    }
+    updateAccount(payload);
   };
 
   const conditionalFields = petOwner ? (
@@ -160,11 +250,12 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+      <LoadingOverlay visible={visible} overlayBlur={2} />
       <Grid>
         {conditionalFields}
 
         <Grid.Col span={KEY_SPAN}>
-          <strong>Contact Number</strong>
+          <strong>Contact number</strong>
         </Grid.Col>
         <Grid.Col span={VALUE_SPAN}>
           {isEditing ? (

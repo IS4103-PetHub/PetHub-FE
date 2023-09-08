@@ -14,11 +14,11 @@ import AccountInfoForm from "@/components/account/AccountInfoForm";
 import ChangePasswordForm from "@/components/account/ChangePasswordForm";
 import DeactivateAccountModal from "@/components/account/DeactivateAccountModal";
 import { AccountTypeEnum } from "@/types/constants";
-import { PetBusinessAccount, PetOwnerAccount } from "@/types/types";
+import { PetBusiness, PetOwner } from "@/types/types";
 
 interface MyAccountProps {
-  petOwner?: PetOwnerAccount;
-  petBusiness?: PetBusinessAccount;
+  petOwner?: PetOwner;
+  petBusiness?: PetBusiness;
 }
 
 export default function MyAccount({ petOwner, petBusiness }: MyAccountProps) {
@@ -91,7 +91,7 @@ export async function getServerSideProps(context) {
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners/${userId}`,
       )
     ).data;
-    const petOwner: PetOwnerAccount = {
+    const petOwner: PetOwner = {
       userId: userId,
       firstName: data.firstName,
       lastName: data.lastName,
@@ -109,7 +109,7 @@ export async function getServerSideProps(context) {
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-businesses/${userId}`,
       )
     ).data;
-    const petBusiness: PetBusinessAccount = {
+    const petBusiness: PetBusiness = {
       userId: userId,
       companyName: data.companyName,
       uen: data.uen,
