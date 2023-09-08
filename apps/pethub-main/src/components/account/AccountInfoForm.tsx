@@ -84,9 +84,6 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
   const KEY_SPAN = petOwner ? 3 : 4;
   const VALUE_SPAN = 12 - KEY_SPAN;
 
-  type FormValues = typeof form.values;
-  type Transformed = TransformedValues<typeof form>;
-
   const updateAccount = async (payload: any) => {
     try {
       if (petOwner) {
