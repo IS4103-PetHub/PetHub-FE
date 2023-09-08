@@ -167,11 +167,6 @@ const HeaderBar = () => {
     );
   });
 
-  // This should only show if the user is not logged in, or if the logged in user is a Pet Owner
-  if (session && session.user["accountType"] === AccountTypeEnum.PetBusiness) {
-    return null;
-  }
-
   return (
     <Header height={HEADER_HEIGHT} sx={{ borderBottom: 0 }} mb={120}>
       <Container className={classes.inner} fluid>
