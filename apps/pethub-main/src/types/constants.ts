@@ -3,3 +3,8 @@ export const enum AccountTypeEnum {
   PetBusiness = "PET_BUSINESS",
   InternalUser = "INTERNAL_USER",
 }
+
+export const enum AccountStatusEnum {
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+}

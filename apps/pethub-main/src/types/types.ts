@@ -1,4 +1,4 @@
-import { AccountTypeEnum } from "./constants";
+import { AccountStatusEnum, AccountTypeEnum } from "./constants";
 
 export interface LoginCredentials {
   username: string;
@@ -32,13 +32,30 @@ export interface CreatePetBusinessRequest {
   password: string;
 }
 
-export interface UserAccount {
-  accountId: string;
-  accountType: AccountTypeEnum;
-  firstName?: string;
-  lastName?: string;
-  companyName?: string;
+export abstract class UserAccount {
+  userId: number;
   contactNumber: string;
-  dateOfBirth?: string;
+
+  // found in 'user' section of backend response
   email: string;
+  accountType: AccountTypeEnum;
+  accountStatus: AccountStatusEnum;
+  dateCreated: string;
+  lastUpdated?: string;
+}
+
+export interface PetBusinessAccount extends UserAccount {
+  // pet business attributes
+  companyName: string;
+  uen: string;
+  businessType?: string;
+  businessDescription?: string;
+  websiteURL?: string;
+}
+
+export interface PetOwnerAccount extends UserAccount {
+  // pet owner attributes
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
 }
