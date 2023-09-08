@@ -74,7 +74,11 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-  { link: "/someotherlink", label: "This is a label", icon: IconUser },
+  {
+    link: "/business/application", // This link should be active provided that the PB session's AccountStatus is "INACTIVE" (change it to "NEW" in backend or smth?)
+    label: "Apply as Pet Business partner",
+    icon: IconUser,
+  },
 ];
 
 const SideNavBar = () => {
