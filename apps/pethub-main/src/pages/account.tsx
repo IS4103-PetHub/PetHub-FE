@@ -27,14 +27,10 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
 
   const defaultValues = ["account"];
 
-  const { data: petOwner } = useGetPetOwnerByIdAndAccountType(
-    userId,
-    accountType,
-  );
-  const { data: petBusiness } = useGetPetBusinessByIdAndAccountType(
-    userId,
-    accountType,
-  );
+  const { data: petOwner, refetch: refetchPetOwner } =
+    useGetPetOwnerByIdAndAccountType(userId, accountType);
+  const { data: petBusiness, refetch: refetchPetBusiness } =
+    useGetPetBusinessByIdAndAccountType(userId, accountType);
 
   if (!petOwner && !petBusiness) {
     return null;
@@ -58,9 +54,12 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           </Accordion.Control>
           <Accordion.Panel p="md">
             {petOwner ? (
-              <AccountInfoForm petOwner={petOwner} />
+              <AccountInfoForm petOwner={petOwner} refetch={refetchPetOwner} />
             ) : (
-              <AccountInfoForm petBusiness={petBusiness} />
+              <AccountInfoForm
+                petBusiness={petBusiness}
+                refetch={refetchPetBusiness}
+              />
             )}
           </Accordion.Panel>
         </Accordion.Item>

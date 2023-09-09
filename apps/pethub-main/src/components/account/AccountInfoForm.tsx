@@ -20,9 +20,14 @@ import { formatISODateString } from "@/util";
 interface AccountInfoFormProps {
   petOwner?: PetOwner;
   petBusiness?: PetBusiness;
+  refetch(): void;
 }
 
-const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
+const AccountInfoForm = ({
+  petOwner,
+  petBusiness,
+  refetch,
+}: AccountInfoFormProps) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [isEditing, setIsEditing] = useToggle();
@@ -92,6 +97,7 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
         icon: <IconCheck />,
         message: `Account updated successfully!`,
       });
+      refetch();
     } catch (error: any) {
       notifications.show({
         title: "Error Updating Account",
