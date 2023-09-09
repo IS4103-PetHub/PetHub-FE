@@ -29,8 +29,8 @@ import { getSession, signIn } from "next-auth/react";
 import React from "react";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
-import { usePetBusinessCreate } from "@/hooks/pet-business";
-import { usePetOwnerCreate } from "@/hooks/pet-owner";
+import { useCreatePetBusiness } from "@/hooks/pet-business";
+import { useCreatePetOwner } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
 import {
   CreatePetBusinessPayload,
@@ -139,7 +139,7 @@ export default function SignUp() {
     }, 800);
   };
 
-  const createPetOwnerMutation = usePetOwnerCreate(queryClient);
+  const createPetOwnerMutation = useCreatePetOwner(queryClient);
   const createPetOwnerAccount = async (payload: CreatePetOwnerPayload) => {
     try {
       await createPetOwnerMutation.mutateAsync(payload);
@@ -169,7 +169,7 @@ export default function SignUp() {
     }
   };
 
-  const createPetBusinessMutation = usePetBusinessCreate(queryClient);
+  const createPetBusinessMutation = useCreatePetBusiness(queryClient);
   const createPetBusinessAccount = async (
     payload: CreatePetBusinessPayload,
   ) => {

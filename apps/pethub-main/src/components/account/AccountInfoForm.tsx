@@ -19,8 +19,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React from "react";
-import { usePetBusinessUpdate } from "@/hooks/pet-business";
-import { usePetOwnerUpdate } from "@/hooks/pet-owner";
+import { useUpdatePetBusiness } from "@/hooks/pet-business";
+import { useUpdatePetOwner } from "@/hooks/pet-owner";
 import { PetBusiness, PetOwner } from "@/types/types";
 import { formatISODateString } from "@/util";
 
@@ -74,8 +74,8 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
     },
   });
 
-  const updatePetOwnerMutation = usePetOwnerUpdate(queryClient);
-  const updatePetBusinessMutation = usePetBusinessUpdate(queryClient);
+  const updatePetOwnerMutation = useUpdatePetOwner(queryClient);
+  const updatePetBusinessMutation = useUpdatePetBusiness(queryClient);
 
   if (!petOwner && !petBusiness) {
     return null;
