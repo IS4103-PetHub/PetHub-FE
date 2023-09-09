@@ -6,11 +6,10 @@ import {
   Text,
   Title,
   Button,
+  Group,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
-import { AccountTypeEnum } from "@/types/constants";
 
 export const AddAddressModal = ({
   opened,
@@ -68,27 +67,32 @@ export const AddAddressModal = ({
             withAsterisk
             label="Address Name"
             placeholder="Service HQ"
-            {...addAddressForm.getInputProps("addressName")}
+            {...addAddressForm.getInputProps("name")}
           />
           <TextInput
             withAsterisk
             label="Address Line 1"
             placeholder="2 Esplanade Road"
-            {...addAddressForm.getInputProps("addressLine1")}
+            {...addAddressForm.getInputProps("line1")}
           />
           <TextInput
             label="Address Line 2"
-            {...addAddressForm.getInputProps("addressLine2")}
+            {...addAddressForm.getInputProps("line2")}
           />
           <TextInput
             withAsterisk
             label="Address Postal Code"
             placeholder="SG123456"
-            {...addAddressForm.getInputProps("addressPostalCode")}
+            {...addAddressForm.getInputProps("postal")}
           />
-          <Button mt="xs" type="submit" fullWidth mb="sm">
-            Add Address
-          </Button>
+          <Group position="right">
+            <Button mt="xs" mb="sm" onClick={() => close()} color="red">
+              Cancel
+            </Button>
+            <Button mt="xs" type="submit" mb="sm">
+              Add Address
+            </Button>
+          </Group>
         </Box>
       </form>
     </Modal>

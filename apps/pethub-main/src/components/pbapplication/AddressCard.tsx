@@ -12,9 +12,15 @@ import { Address } from "@/types/types";
 
 type AddressCardProps = {
   address: Address;
+  onRemoveAddress: (address: Address) => void;
+  onSetDefaultAddress: (address: Address) => void;
 };
 
-export const AddressCard = ({ address }: AddressCardProps) => {
+export const AddressCard = ({
+  address,
+  onRemoveAddress,
+  onSetDefaultAddress,
+}: AddressCardProps) => {
   return (
     <Card
       w={190}
@@ -26,7 +32,7 @@ export const AddressCard = ({ address }: AddressCardProps) => {
       ml="xs"
       mr="xs"
       sx={{
-        backgroundColor: address.isDefault ? "#f0f0f0" : "",
+        backgroundColor: address.isDefault ? "#f0f0f0" : "#f7ffff",
       }}
     >
       <Card.Section>
@@ -44,23 +50,14 @@ export const AddressCard = ({ address }: AddressCardProps) => {
               <Menu.Item
                 icon={<IconStar size="1rem" />}
                 color="indigo"
-                onClick={() =>
-                  console.log(`setting ${address.name} as default`)
-                }
+                onClick={() => onSetDefaultAddress(address)}
               >
                 Set as default
               </Menu.Item>
               <Menu.Item
-                icon={<IconPencil size="1rem" />}
-                color="blue"
-                onClick={() => console.log(`trying to edit ${address.name}`)}
-              >
-                Edit
-              </Menu.Item>
-              <Menu.Item
                 icon={<IconTrash size="1rem" />}
                 color="red"
-                onClick={() => console.log(`trying to remove ${address.name} `)}
+                onClick={() => onRemoveAddress(address)}
               >
                 Remove
               </Menu.Item>

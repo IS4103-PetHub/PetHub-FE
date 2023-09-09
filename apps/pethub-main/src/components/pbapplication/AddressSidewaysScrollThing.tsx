@@ -1,20 +1,20 @@
-import { Box, Button, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
-import { IconHandMiddleFinger, IconPlus } from "@tabler/icons-react";
-import { useState } from "react";
+import { Box } from "@mantine/core";
 import { Address } from "@/types/types";
-import { AddAddressModal } from "./AddAddressModal";
+import { AddAddressCard } from "./AddAddressCard";
 import { AddressCard } from "./AddressCard";
 
 type AddressSidewaysScrollThingProps = {
   addressList: Address[];
   openModal: () => void;
+  onRemoveAddress: (address: Address) => void;
+  onSetDefaultAddress: (address: Address) => void;
 };
 
 export const AddressSidewaysScrollThing = ({
   addressList,
   openModal,
+  onRemoveAddress,
+  onSetDefaultAddress,
 }: AddressSidewaysScrollThingProps) => {
   const addresses = addressList.map((address, idx) => (
     <Box
@@ -24,7 +24,11 @@ export const AddressSidewaysScrollThing = ({
         position: "relative",
       }}
     >
-      <AddressCard address={address} />
+      <AddressCard
+        address={address}
+        onRemoveAddress={() => onRemoveAddress(address)}
+        onSetDefaultAddress={() => onSetDefaultAddress(address)}
+      />
     </Box>
   ));
 
@@ -39,14 +43,6 @@ export const AddressSidewaysScrollThing = ({
         borderWidth: "10px",
       })}
     >
-      <Button
-        fullWidth
-        variant="light"
-        leftIcon={<IconPlus size="1rem" />}
-        onClick={openModal}
-      >
-        Add an address
-      </Button>
       <Box
         style={{
           overflowX: "auto",
@@ -55,6 +51,15 @@ export const AddressSidewaysScrollThing = ({
           width: "100%",
         }}
       >
+        <Box
+          style={{
+            display: "inline-block",
+            position: "relative",
+          }}
+          onClick={openModal}
+        >
+          <AddAddressCard />
+        </Box>
         {addresses}
       </Box>
     </Box>
