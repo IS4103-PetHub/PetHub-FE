@@ -1,10 +1,11 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
 
 const PET_BUSINESS_API = "api/users/pet-businesses";
 
-export const useCreatePetBusiness = (queryClient: QueryClient) => {
+export const useCreatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: CreatePetBusinessPayload) => {
       return (
@@ -30,12 +31,21 @@ export const useUpdatePetBusiness = (queryClient: QueryClient) => {
         )
       ).data;
     },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["pet-businesses", data.user.accountType, data.userId],
+      });
+    },
   });
 };
 
-export const useGetPetBusinessById = (queryClient: QueryClient) => {
-  return useMutation({
-    mutationFn: async (userId: number) => {
+export const useGetPetBusinessByIdAndAccountType = (
+  userId: number,
+  accountType: AccountTypeEnum,
+) => {
+  return useQuery({
+    queryKey: ["pet-businesses", accountType, userId],
+    queryFn: async () => {
       const data = await (
         await axios.get(
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-businesses/${userId}`,
@@ -56,5 +66,6 @@ export const useGetPetBusinessById = (queryClient: QueryClient) => {
       };
       return petBusiness;
     },
+    enabled: accountType === AccountTypeEnum.PetBusiness,
   });
 };

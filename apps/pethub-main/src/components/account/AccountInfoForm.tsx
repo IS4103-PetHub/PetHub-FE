@@ -1,11 +1,4 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  Group,
-  LoadingOverlay,
-  TextInput,
-} from "@mantine/core";
+import { Button, Divider, Grid, Group, TextInput } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { TransformedValues, isEmail, useForm } from "@mantine/form";
 import { useDisclosure, useToggle } from "@mantine/hooks";
@@ -99,8 +92,6 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
         icon: <IconCheck />,
         message: `Account updated successfully!`,
       });
-      toggle();
-      router.reload();
     } catch (error: any) {
       notifications.show({
         title: "Error Updating Account",
@@ -133,7 +124,7 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
     } else {
       // pet business
       Object.keys(form.values).forEach((key) => {
-        if (values[key] !== petBusiness[key]) {
+        if (values[key] !== petBusiness[key] && values[key] !== "") {
           valuesToUpdate[key] = values[key];
         }
       });
@@ -247,7 +238,6 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-      <LoadingOverlay visible={visible} overlayBlur={2} />
       <Grid>
         {conditionalFields}
 

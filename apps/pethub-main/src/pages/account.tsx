@@ -7,23 +7,38 @@ import {
 } from "@mantine/core";
 import { IconUser, IconKey, IconAlertOctagon } from "@tabler/icons-react";
 import axios from "axios";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import React from "react";
 import { PageTitle } from "web-ui";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
 import ChangePasswordForm from "@/components/account/ChangePasswordForm";
 import DeactivateAccountModal from "@/components/account/DeactivateAccountModal";
+import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
+import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
-import { PetBusiness, PetOwner } from "@/types/types";
 
 interface MyAccountProps {
-  petOwner?: PetOwner;
-  petBusiness?: PetBusiness;
+  userId: number;
+  accountType: AccountTypeEnum;
 }
 
-export default function MyAccount({ petOwner, petBusiness }: MyAccountProps) {
+export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const theme = useMantineTheme();
+
   const defaultValues = ["account"];
+
+  const { data: petOwner } = useGetPetOwnerByIdAndAccountType(
+    userId,
+    accountType,
+  );
+  const { data: petBusiness } = useGetPetBusinessByIdAndAccountType(
+    userId,
+    accountType,
+  );
+
+  if (!petOwner && !petBusiness) {
+    return null;
+  }
 
   return (
     <Container mt="50px" mb="lg">
@@ -87,43 +102,5 @@ export async function getServerSideProps(context) {
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
 
-  if (accountType === AccountTypeEnum.PetOwner) {
-    const data = await (
-      await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners/${userId}`,
-      )
-    ).data;
-    const petOwner: PetOwner = {
-      userId: userId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      dateOfBirth: data.dateOfBirth,
-      contactNumber: data.contactNumber,
-      email: data.user.email,
-      accountType: accountType,
-      accountStatus: data.user.accountStatus,
-      dateCreated: data.user.dateCreated,
-    };
-    return { props: { petOwner: petOwner } };
-  } else if (accountType === AccountTypeEnum.PetBusiness) {
-    const data = await (
-      await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-businesses/${userId}`,
-      )
-    ).data;
-    const petBusiness: PetBusiness = {
-      userId: userId,
-      companyName: data.companyName,
-      uen: data.uen,
-      businessType: data.businessType,
-      businessDescription: data.businessDescription,
-      websiteURL: data.websiteURL,
-      contactNumber: data.contactNumber,
-      email: data.user.email,
-      accountType: accountType,
-      accountStatus: data.user.accountStatus,
-      dateCreated: data.user.dateCreated,
-    };
-    return { props: { petBusiness: petBusiness } };
-  }
+  return { props: { userId, accountType } };
 }

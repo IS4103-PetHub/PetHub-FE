@@ -54,7 +54,6 @@ const useStyles = createStyles((theme) => ({
 
 export default function SignUp() {
   const { classes } = useStyles();
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const form = useForm({
@@ -134,12 +133,12 @@ export default function SignUp() {
         });
       }
     }
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       form.reset();
     }, 800);
   };
 
-  const createPetOwnerMutation = useCreatePetOwner(queryClient);
+  const createPetOwnerMutation = useCreatePetOwner();
   const createPetOwnerAccount = async (payload: CreatePetOwnerPayload) => {
     try {
       await createPetOwnerMutation.mutateAsync(payload);
@@ -169,7 +168,7 @@ export default function SignUp() {
     }
   };
 
-  const createPetBusinessMutation = useCreatePetBusiness(queryClient);
+  const createPetBusinessMutation = useCreatePetBusiness();
   const createPetBusinessAccount = async (
     payload: CreatePetBusinessPayload,
   ) => {
