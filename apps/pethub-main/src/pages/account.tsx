@@ -72,7 +72,9 @@ export default function MyAccount({ petOwner, petBusiness }: MyAccountProps) {
             </Group>
           </Accordion.Control>
           <Accordion.Panel p="md">
-            <DeactivateAccountModal />
+            <DeactivateAccountModal
+              userId={petOwner ? petOwner.userId : petBusiness.userId}
+            />
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>

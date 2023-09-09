@@ -6,12 +6,23 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconUserX } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconUserX, IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
 import React from "react";
+import { useDeactivateAccount } from "@/hooks/account";
 
-const DeactivateAccountModal = () => {
+interface DeactivateAccountModalProps {
+  userId: number;
+}
+
+const DeactivateAccountModal = ({ userId }: DeactivateAccountModalProps) => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm({
@@ -19,6 +30,39 @@ const DeactivateAccountModal = () => {
       password: "",
     },
   });
+
+  type FormValues = typeof form.values;
+
+  const deactivateAccountMutation = useDeactivateAccount(queryClient);
+
+  const handleSubmit = async (values: FormValues) => {
+    const payload = { userId: userId, password: values.password };
+    try {
+      await deactivateAccountMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Account Deactivated",
+        color: "green",
+        loading: true,
+        message:
+          "Pet business account deactivated successfully. Redirecting back to home page...",
+      });
+      signOut({
+        callbackUrl: "/",
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Deactivating Account",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+    form.reset();
+  };
 
   return (
     <>
@@ -39,9 +83,10 @@ const DeactivateAccountModal = () => {
           We are sad to say goodbye. Please enter your account password for
           verification.
         </Text>
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
           <PasswordInput
             mt="md"
+            required
             placeholder="Enter your password"
             {...form.getInputProps("password")}
           />
@@ -55,6 +100,7 @@ const DeactivateAccountModal = () => {
           </Group>
         </form>
       </Modal>
+
       <Button color="red" leftIcon={<IconUserX size="1rem" />} onClick={open}>
         Deactivate my account
       </Button>
