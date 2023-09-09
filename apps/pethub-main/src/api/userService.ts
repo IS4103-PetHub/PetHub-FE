@@ -23,10 +23,10 @@ export const loginService = async ({
         ? "/users/pet-owners/login"
         : "/users/pet-businesses/login";
     let res = await api.post(url, body);
-    // console.log(
-    //   "Calling Service: [userService - userLogin] with response:",
-    //   res
-    // );
+    console.log(
+      "Calling Service: [userService - userLogin] with response:",
+      res,
+    );
     if (res.data && res.status == 200) {
       return res.data;
     } else {

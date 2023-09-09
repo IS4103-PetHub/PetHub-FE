@@ -7,16 +7,25 @@ import {
   TextInput,
   Group,
   FileInput,
+  Text,
+  Avatar,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconSend, IconUpload } from "@tabler/icons-react";
+import { QueryClient } from "@tanstack/react-query";
 import React from "react";
+import { useState } from "react";
 import { PageTitle } from "web-ui";
+import { AddAddressModal } from "@/components/pbapplication/AddAddressModal";
 import { AddressSidewaysScrollThing } from "@/components/pbapplication/AddressSidewaysScrollThing";
 import { PetBusinessTypeEnum } from "@/types/constants";
 
 export default function Application() {
+  const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
+  const [avatarURL, setAvatarURL] = useState(null);
+
   const businessTypeData = Object.entries(PetBusinessTypeEnum).map(
     ([key, value]) => ({
       value: key.toLowerCase(),
@@ -24,17 +33,19 @@ export default function Application() {
     }),
   );
 
-  const form = useForm({
+  const applicationForm = useForm({
     initialValues: {
+      businessIcon: null,
       businessType: [],
       businessAddresses: [],
       businessEmail: "",
       websiteURL: "",
       businessDescription: "",
-      attachments: "",
+      attachments: null,
     },
 
     validate: {
+      businessIcon: (value) => null,
       businessType: (value) =>
         value.length === 0 ? "Business type is required." : null,
       businessEmail: (value) =>
@@ -53,47 +64,52 @@ export default function Application() {
     },
   });
 
-  function handleSubmit(values: any) {
+  const addressForm = useForm({
+    initialValues: {
+      addressName: "",
+      addressLine1: "",
+      addressLine2: "",
+      addressPostalCode: "",
+    },
+    validate: {
+      addressName: (value) => (!value ? "Address name is required." : null),
+      addressLine1: (value) => (!value ? "Address is required." : null),
+      addressPostalCode: (value) =>
+        !value ? "Address postal code is required." : null,
+    },
+  });
+
+  type applicationFormValues = typeof applicationForm.values;
+  function handleSubmit(values: applicationFormValues) {
     console.log("Submitting", values);
   }
 
-  const mockAddresses = [
-    {
-      name: "Vivo City",
-      line1: "1 Vivo Lane",
-      line2: "Complex A",
-      postal: "SG12864",
-      isDefault: true,
-    },
-    {
-      name: "Esplanade",
-      line1: "2 Durian Lane",
-      line2: "Spiky Road #03-40",
-      postal: "S2938642",
-      isDefault: false,
-    },
-    {
-      name: "John Building",
-      line1: "1 John Road",
-      line2: "John Complex",
-      postal: "SG283764",
-      isDefault: false,
-    },
-    {
-      name: "Groomer HQ",
-      line1: "Groomer Road 45",
-      line2: "",
-      postal: "SG293875",
-      isDefault: false,
-    },
-    {
-      name: "address 5",
-      line1: "address line 1",
-      line2: "address line 2",
-      postal: "9186348913",
-      isDefault: false,
-    },
-  ];
+  type addressFormValues = typeof addressForm.values;
+  function handleAddAddress(values: addressFormValues) {
+    console.log("address values", values);
+    const updatedAddresses = [
+      ...applicationForm.values.businessAddresses,
+      values,
+    ];
+    applicationForm.setValues({
+      ...applicationForm.values,
+      businessAddresses: updatedAddresses,
+    });
+    console.log("Address array", applicationForm.values.businessAddresses);
+    close();
+    addressForm.reset();
+  }
+
+  const handleFileChange = (file: File) => {
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setAvatarURL(imageUrl);
+      applicationForm.setValues({
+        ...applicationForm.values,
+        businessIcon: file,
+      });
+    }
+  };
 
   return (
     <Container p="lg">
@@ -101,15 +117,35 @@ export default function Application() {
         <PageTitle title="Business Partner Application" />
       </Group>
 
-      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+      <form
+        onSubmit={applicationForm.onSubmit((values: any) =>
+          handleSubmit(values),
+        )}
+      >
         <Grid mt="sm" mb="sm" gutter="xs">
+          <Grid.Col span={10}>
+            <FileInput
+              label="Business Profile Image"
+              placeholder="Upload an icon here"
+              icon={<IconUpload size="1rem" />}
+              {...applicationForm.getInputProps("businessIcon")}
+              onChange={handleFileChange}
+            />
+            {avatarURL && (
+              <Avatar
+                src={avatarURL}
+                size={100}
+                style={{ marginTop: "20px" }}
+              />
+            )}
+          </Grid.Col>
           <Grid.Col span={10}>
             <MultiSelect
               withAsterisk
               data={businessTypeData}
               label="Business Type"
               placeholder="Select all the business types that apply"
-              {...form.getInputProps("businessType")}
+              {...applicationForm.getInputProps("businessType")}
             />
           </Grid.Col>
           <Grid.Col span={10}>
@@ -117,7 +153,7 @@ export default function Application() {
               withAsterisk
               label="Business Email"
               placeholder="example@email.com"
-              {...form.getInputProps("businessEmail")}
+              {...applicationForm.getInputProps("businessEmail")}
             />
           </Grid.Col>
           <Grid.Col span={10}>
@@ -125,7 +161,7 @@ export default function Application() {
               withAsterisk
               placeholder="https://www.igroomdoggos.com"
               label="Business Website URL"
-              {...form.getInputProps("websiteURL")}
+              {...applicationForm.getInputProps("websiteURL")}
             />
           </Grid.Col>
           <Grid.Col span={10}>
@@ -135,19 +171,24 @@ export default function Application() {
               autosize
               minRows={3}
               maxRows={3}
-              {...form.getInputProps("businessDescription")}
+              {...applicationForm.getInputProps("businessDescription")}
             />
           </Grid.Col>
           <Grid.Col span={10}>
+            <Text>Business Address (min 1)</Text>
             <FileInput
               label="Attachments"
               placeholder="Any licenses and permits"
               icon={<IconUpload size="1rem" />}
               multiple
+              {...applicationForm.getInputProps("attachments")}
             />
           </Grid.Col>
           <Grid.Col span={10}>
-            <AddressSidewaysScrollThing addressList={mockAddresses} />
+            <AddressSidewaysScrollThing
+              addressList={applicationForm.values.businessAddresses}
+              openModal={open}
+            />
           </Grid.Col>
           <Grid.Col span={10}>
             <Button
@@ -161,6 +202,13 @@ export default function Application() {
           </Grid.Col>
         </Grid>
       </form>
+      <AddAddressModal
+        opened={isAddAddressModalOpened}
+        open={open}
+        close={close}
+        addAddressForm={addressForm}
+        handleAddAddress={handleAddAddress}
+      />
     </Container>
   );
 }

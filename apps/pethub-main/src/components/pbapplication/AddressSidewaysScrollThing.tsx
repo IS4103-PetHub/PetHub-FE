@@ -1,7 +1,7 @@
 import { Box, Button, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconPlus } from "@tabler/icons-react";
+import { IconHandMiddleFinger, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { Address } from "@/types/types";
 import { AddAddressModal } from "./AddAddressModal";
@@ -9,12 +9,13 @@ import { AddressCard } from "./AddressCard";
 
 type AddressSidewaysScrollThingProps = {
   addressList: Address[];
+  openModal: () => void;
 };
 
 export const AddressSidewaysScrollThing = ({
   addressList,
+  openModal,
 }: AddressSidewaysScrollThingProps) => {
-  const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
   const addresses = addressList.map((address, idx) => (
     <Box
       key={idx}
@@ -26,21 +27,6 @@ export const AddressSidewaysScrollThing = ({
       <AddressCard address={address} />
     </Box>
   ));
-
-  const form = useForm({
-    initialValues: {
-      addressName: "",
-      addressLine1: "",
-      addressLine2: "",
-      addressPostalCode: "",
-    },
-    validate: {
-      addressName: (value) => (!value ? "Address name is required." : null),
-      addressLine1: (value) => (!value ? "Address is required." : null),
-      addressPostalCode: (value) =>
-        !value ? "Address postal code is required." : null,
-    },
-  });
 
   return (
     <Box
@@ -57,9 +43,9 @@ export const AddressSidewaysScrollThing = ({
         fullWidth
         variant="light"
         leftIcon={<IconPlus size="1rem" />}
-        onClick={open}
+        onClick={openModal}
       >
-        Add another address
+        Add an address
       </Button>
       <Box
         style={{
@@ -71,12 +57,6 @@ export const AddressSidewaysScrollThing = ({
       >
         {addresses}
       </Box>
-      <AddAddressModal
-        opened={isAddAddressModalOpened}
-        open={open}
-        close={close}
-        addAddressForm={form}
-      />
     </Box>
   );
 };

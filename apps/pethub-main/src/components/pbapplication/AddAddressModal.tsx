@@ -12,7 +12,13 @@ import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import { AccountTypeEnum } from "@/types/constants";
 
-export const AddAddressModal = ({ opened, open, close, addAddressForm }) => {
+export const AddAddressModal = ({
+  opened,
+  open,
+  close,
+  addAddressForm,
+  handleAddAddress,
+}) => {
   const router = useRouter();
   const theme = useMantineTheme();
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
@@ -28,10 +34,6 @@ export const AddAddressModal = ({ opened, open, close, addAddressForm }) => {
       }, 800);
     }
   }, [opened]);
-
-  function handleAddAddress() {
-    console.log("Adding an address", addAddressForm.values);
-  }
 
   return (
     <Modal
@@ -49,11 +51,15 @@ export const AddAddressModal = ({ opened, open, close, addAddressForm }) => {
       onClose={close}
       transitionProps={{
         transition: "fade",
-        duration: 600,
+        duration: 300,
         timingFunction: "linear",
       }}
     >
-      <form onSubmit={addAddressForm.onSubmit(handleAddAddress)}>
+      <form
+        onSubmit={addAddressForm.onSubmit((values: any) =>
+          handleAddAddress(values),
+        )}
+      >
         <Box>
           <Title align="center" mb="sm">
             Add a new address

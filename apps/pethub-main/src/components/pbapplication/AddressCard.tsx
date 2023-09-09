@@ -41,13 +41,27 @@ export const AddressCard = ({ address }: AddressCardProps) => {
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item icon={<IconStar size="1rem" />} color="indigo">
+              <Menu.Item
+                icon={<IconStar size="1rem" />}
+                color="indigo"
+                onClick={() =>
+                  console.log(`setting ${address.name} as default`)
+                }
+              >
                 Set as default
               </Menu.Item>
-              <Menu.Item icon={<IconPencil size="1rem" />} color="blue">
+              <Menu.Item
+                icon={<IconPencil size="1rem" />}
+                color="blue"
+                onClick={() => console.log(`trying to edit ${address.name}`)}
+              >
                 Edit
               </Menu.Item>
-              <Menu.Item icon={<IconTrash size="1rem" />} color="red">
+              <Menu.Item
+                icon={<IconTrash size="1rem" />}
+                color="red"
+                onClick={() => console.log(`trying to remove ${address.name} `)}
+              >
                 Remove
               </Menu.Item>
             </Menu.Dropdown>
