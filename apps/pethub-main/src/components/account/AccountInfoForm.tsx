@@ -206,7 +206,7 @@ const AccountInfoForm = ({ petOwner, petBusiness }: AccountInfoFormProps) => {
       <Grid.Col span={VALUE_SPAN}>
         {isEditing ? (
           <TextInput
-            placeholder="companyName"
+            placeholder="Company name"
             {...form.getInputProps("companyName")}
           />
         ) : (
