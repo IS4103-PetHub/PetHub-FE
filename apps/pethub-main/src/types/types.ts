@@ -1,7 +1,7 @@
 import { AccountStatusEnum, AccountTypeEnum } from "./constants";
 
 export interface LoginCredentials {
-  username: string;
+  email: string;
   password: string;
   accountType: string;
 }

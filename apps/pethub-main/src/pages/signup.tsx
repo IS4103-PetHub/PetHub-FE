@@ -150,7 +150,7 @@ export default function SignUp() {
       });
       // login and redirect home page
       handleLogin({
-        username: payload.email,
+        email: payload.email,
         password: payload.password,
         accountType: AccountTypeEnum.PetOwner,
       });
@@ -182,7 +182,7 @@ export default function SignUp() {
       });
       // login and redirect to pet business dashboard
       handleLogin({
-        username: payload.email,
+        email: payload.email,
         password: payload.password,
         accountType: AccountTypeEnum.PetOwner,
       });
