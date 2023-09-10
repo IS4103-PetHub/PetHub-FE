@@ -5,10 +5,8 @@ export const enum AccountTypeEnum {
 }
 
 export const enum AccountStatusEnum {
+  Pending = "PENDING",
   Active = "ACTIVE",
   Inactive = "INACTIVE",
+  Suspended = "SUSPENDED",
 }
-
-// for routing
-export const PET_BUSINESS_SLUG = "business";
-export const PET_OWNER_SLUG = "customer";
