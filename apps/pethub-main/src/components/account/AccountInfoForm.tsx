@@ -11,7 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
 import { PetBusiness, PetOwner } from "@/types/types";
@@ -79,6 +79,11 @@ const AccountInfoForm = ({
     return null;
   }
 
+  // useEffect(() => {
+  //   console.log("petOwner", petOwner);
+  //   console.log("petBusiness", petBusiness);
+  // }, []);
+
   const KEY_SPAN = petOwner ? 3 : 4;
   const VALUE_SPAN = 12 - KEY_SPAN;
 
@@ -98,6 +103,7 @@ const AccountInfoForm = ({
         message: `Account updated successfully!`,
       });
       refetch();
+      form.reset();
     } catch (error: any) {
       notifications.show({
         title: "Error Updating Account",

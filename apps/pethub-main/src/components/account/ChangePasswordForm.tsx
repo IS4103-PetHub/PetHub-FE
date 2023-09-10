@@ -1,5 +1,5 @@
 import { Stack, PasswordInput, Button, Group } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
@@ -24,6 +24,7 @@ const ChangePasswordForm = ({ email }: ChangePasswordFormProps) => {
       confirmPassword: "",
     },
     validate: {
+      currentPassword: isNotEmpty("Please enter your current password."),
       newPassword: (value, values) =>
         validateChangePassword(values.currentPassword, value),
       confirmPassword: (value, values) =>

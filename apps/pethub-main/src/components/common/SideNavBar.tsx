@@ -16,7 +16,7 @@ import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
-import { AccountTypeEnum } from "@/types/constants";
+import { PET_BUSINESS_SLUG } from "@/types/constants";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -73,7 +73,9 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const data = [{ link: "/account", label: "My Account", icon: IconUser }];
+const data = [
+  { link: `${PET_BUSINESS_SLUG}/account`, label: "My Account", icon: IconUser },
+];
 
 const SideNavBar = () => {
   const { classes, cx } = useStyles();
@@ -109,7 +111,12 @@ const SideNavBar = () => {
     >
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
-          <Text size="lg" weight={600} color={theme.colors.gray[0]}>
+          <Text
+            size="lg"
+            weight={600}
+            color={theme.colors.gray[0]}
+            onClick={() => router.push("/")}
+          >
             PetHub Business
           </Text>
           <LightDarkModeToggle />

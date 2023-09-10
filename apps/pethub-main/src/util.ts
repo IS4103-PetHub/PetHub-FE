@@ -19,6 +19,9 @@ export function validatePassword(password: string) {
 }
 
 export function validateChangePassword(password: string, newPassword: string) {
+  if (!password) {
+    return "Please enter your new password.";
+  }
   if (password === newPassword) {
     return "New password cannot be the same as current password.";
   }

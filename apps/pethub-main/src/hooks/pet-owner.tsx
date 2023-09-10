@@ -31,6 +31,11 @@ export const useUpdatePetOwner = (queryClient: QueryClient) => {
         )
       ).data;
     },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["pet-owners", data.user.accountType, data.userId],
+      });
+    },
   });
 };
 
@@ -57,7 +62,7 @@ export const useGetPetOwnerByIdAndAccountType = (
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
       };
-      return petOwner;
+      return petOwner as PetOwner;
     },
     enabled: accountType === AccountTypeEnum.PetOwner,
   });

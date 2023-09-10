@@ -18,7 +18,7 @@ export default withAuth(
       return;
     }
 
-    // if you are not logged in and you are trying to access a /business route: go back to home page
+    //if you are not logged in and you are trying to access a /business route: go back to home page
     if (!req.nextauth.token && req.nextUrl.pathname.startsWith("/business")) {
       return NextResponse.redirect(new URL("/", req.url));
     }

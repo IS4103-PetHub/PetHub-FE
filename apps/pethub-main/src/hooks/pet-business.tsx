@@ -48,7 +48,7 @@ export const useGetPetBusinessByIdAndAccountType = (
     queryFn: async () => {
       const data = await (
         await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-businesses/${userId}`,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}/${userId}`,
         )
       ).data;
       const petBusiness: PetBusiness = {
@@ -64,7 +64,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
       };
-      return petBusiness;
+      return petBusiness as PetBusiness;
     },
     enabled: accountType === AccountTypeEnum.PetBusiness,
   });
