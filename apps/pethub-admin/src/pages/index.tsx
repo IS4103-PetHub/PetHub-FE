@@ -1,15 +1,6 @@
 import { Container, Tabs } from "@mantine/core";
-import {
-  IconPhoto,
-  IconMessageCircle,
-  IconSettings,
-} from "@tabler/icons-react";
 import Head from "next/head";
-import { useState } from "react";
 import { PageTitle } from "web-ui";
-import AdministratorTab from "@/components/users/AdminTable";
-import PetBusinessTab from "@/components/users/PetBusinessTable";
-import PetOwnerTab from "@/components/users/PetOwnerTable";
 
 export default function Home() {
   return (

@@ -8,3 +8,7 @@ export const enum AccountStatusEnum {
   Active = "ACTIVE",
   Inactive = "INACTIVE",
 }
+
+export const enum InternalUserRoleEnum {
+  admin = "ADMINISTRATOR",
+}

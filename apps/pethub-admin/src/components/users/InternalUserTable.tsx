@@ -13,9 +13,9 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React from "react";
 import { useEffect, useState } from "react";
-import { useGetAllPetBusinesses } from "@/hooks/pet-business";
+import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { AccountStatusEnum } from "@/types/constants";
-import { PetBusiness } from "@/types/types";
+import { InternalUser } from "@/types/types";
 import UserDetails from "./UserDetails";
 
 /* 
@@ -24,21 +24,21 @@ import UserDetails from "./UserDetails";
 
 const PAGE_SIZE = 15;
 
-export default function PetBusinessTable() {
-  const { data: petBusinesses, isLoading, isError } = useGetAllPetBusinesses();
+export default function InternalUserTable() {
+  const { data: internalUsers, isLoading, isError } = useGetAllInternalUsers();
 
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "userId",
     direction: "asc",
   });
   const [page, setPage] = useState<number>(1);
-  const [records, setRecords] = useState<PetBusiness[]>();
+  const [records, setRecords] = useState<InternalUser[]>();
   const [isModalOpen, setModalOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<PetBusiness | null>(
+  const [selectedRecord, setSelectedRecord] = useState<InternalUser | null>(
     null,
   );
 
-  const handleOpenModal = (record: PetBusiness) => {
+  const handleOpenModal = (record: InternalUser) => {
     setSelectedRecord(record);
     setModalOpen(true);
   };
@@ -54,25 +54,25 @@ export default function PetBusinessTable() {
 
   //useEffect w no dependencies to render the table
   useEffect(() => {
-    if (petBusinesses) {
-      setRecords(petBusinesses);
+    if (internalUsers) {
+      setRecords(internalUsers);
     }
-  }, [petBusinesses]);
+  }, [internalUsers]);
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
     // Sort the petOwners based on the current sort status
 
-    const sortedPetBusinesses = sortBy(
-      petBusinesses,
+    const sortedInternalUsers = sortBy(
+      internalUsers,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
-      sortedPetBusinesses.reverse();
+      sortedInternalUsers.reverse();
     }
 
     // Slice the sorted array to get the records for the current page
-    const newRecords = sortedPetBusinesses.slice(from, to);
+    const newRecords = sortedInternalUsers.slice(from, to);
 
     // Update the records state
     setRecords(newRecords);
@@ -91,7 +91,7 @@ export default function PetBusinessTable() {
   if (isError) {
     return (
       <Notification title="Error" color="red" style={{ marginTop: "2rem" }}>
-        There was an error loading the list of Pet Businesses. Please try again
+        There was an error loading the list of Internal Users. Please try again
         later.
       </Notification>
     );
@@ -99,7 +99,7 @@ export default function PetBusinessTable() {
 
   return (
     <>
-      <h2>Pet Businesses</h2>
+      <h2>Internal Users</h2>
       <DataTable
         withBorder
         borderRadius="sm"
@@ -119,13 +119,13 @@ export default function PetBusinessTable() {
             sortable: true,
           },
           {
-            accessor: "companyName",
-            title: "Company Name",
+            accessor: "firstName",
+            title: "First Name",
             sortable: true,
           },
           {
-            accessor: "uen",
-            title: "UEN",
+            accessor: "lastName",
+            title: "Last Name",
             sortable: true,
           },
           {
@@ -165,7 +165,7 @@ export default function PetBusinessTable() {
         sortStatus={sortStatus}
         onSortStatusChange={setSortStatus}
         //pagination
-        totalRecords={petBusinesses ? petBusinesses.length : 0}
+        totalRecords={internalUsers ? internalUsers.length : 0}
         recordsPerPage={PAGE_SIZE}
         page={page}
         onPageChange={(p) => setPage(p)}
@@ -174,7 +174,7 @@ export default function PetBusinessTable() {
       <Modal
         opened={isModalOpen}
         onClose={handleCloseModal}
-        title="Pet Owner Details"
+        title="Internal User Details"
         size="lg"
         padding="md"
       >

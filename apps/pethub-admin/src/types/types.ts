@@ -1,33 +1,40 @@
-// export interface PetOwner {
-//   petOwnerId: number;
-//   firstName: string;
-//   lastName: string;
-//   contactNumber: string;
-//   dateOfBirth: string;
-//   email: string;
-//   accountStatus: string;
-//   AccountTypeEnum: string;
-// }
+import {
+  AccountStatusEnum,
+  AccountTypeEnum,
+  InternalUserRoleEnum,
+} from "./constants";
 
-export interface PetOwner {
+export abstract class User {
+  userId: number;
+
+  // found in 'user' section of backend response
+  email: string;
+  accountType: AccountTypeEnum;
+  accountStatus: AccountStatusEnum;
+  dateCreated: string;
+  lastUpdated?: string;
+}
+
+export interface PetOwner extends User {
   firstName: string;
   lastName: string;
   contactNumber: string;
   dateOfBirth: string;
-  userId: number;
-  email: string;
-  accountType: string;
-  accountStatus: string;
-  dateCreated: string;
-  lastUpdated: string;
 }
 
-export interface PetBusiness {
-  accountType: string;
+export interface PetBusiness extends User {
+  // pet business attributes
+  companyName: string;
+  uen: string;
+  businessType?: string;
+  businessDescription?: string;
+  websiteURL?: string;
 }
 
-export interface InternalUser {
-  accountType: string;
+export interface InternalUser extends User {
+  firstName: string;
+  lastName: string;
+  adminRole: InternalUserRoleEnum;
 }
 export interface LoginCredentials {
   email: string;

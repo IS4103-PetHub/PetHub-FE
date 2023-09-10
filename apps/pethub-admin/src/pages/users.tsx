@@ -1,9 +1,8 @@
 import { Container, Tabs } from "@mantine/core";
 import { IconPaw, IconBuildingStore, IconUserCog } from "@tabler/icons-react";
 import Head from "next/head";
-import { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
-import AdminTable from "@/components/users/AdminTable";
+import InternalUserTable from "@/components/users/InternalUserTable";
 import PetBusinessTable from "@/components/users/PetBusinessTable";
 import PetOwnerTable from "@/components/users/PetOwnerTable";
 import { AccountTypeEnum } from "@/types/constants";
@@ -28,7 +27,7 @@ function AccountTabs() {
           value={AccountTypeEnum.InternalUser}
           icon={<IconUserCog size="0.8rem" />}
         >
-          Administrator
+          Internal User
         </Tabs.Tab>
       </Tabs.List>
 
@@ -41,7 +40,7 @@ function AccountTabs() {
       </Tabs.Panel>
 
       <Tabs.Panel value={AccountTypeEnum.InternalUser} pt="xs">
-        <AdminTable />
+        <InternalUserTable />
       </Tabs.Panel>
     </Tabs>
   );
