@@ -10,6 +10,21 @@ function isSharedPage(path: string) {
   return sharedPages.some((page) => path.endsWith(page));
 }
 
+/*
+  Current page protection rules:
+
+  1. A non-logged in user can access any path (e.g. /signup) as long as the path is not prepended with /business, /customer, 
+      or the path does not end with a shared page route (e.g. /account)
+
+  2. A path prepended with /business can only be accessed by PB, /customer can only be accessed by PO, 
+      else, redirect to the respective home pages ('/' for PO, /business/dashboard for PB)
+
+  3. If a user is a PB and the path is not prepended with /business, redirect to /business/dashboard
+
+  4. If the end of the path is valid (e.g. /account), prepending it with something thats invalid like /potato will redirect to the home page '/'. 
+      (This only applies to POs, as PBs will already get redirected during rule 3 to the business dashboard)
+*/
+
 export default withAuth(
   function middleware(req) {
     const pathname = req.nextUrl.pathname;
@@ -62,7 +77,6 @@ export default withAuth(
       return NextResponse.redirect(new URL("/", req.url));
     }
   },
-
   {
     callbacks: {
       // Bypass the authorized callback that NextAuth checks for by allowing everything (and using the Next.js middleware function to check instead)
