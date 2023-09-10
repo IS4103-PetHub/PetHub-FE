@@ -2,43 +2,67 @@ import { NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
 import { AccountTypeEnum } from "./types/constants";
 
+// Put all shared pages here
+const sharedPages = ["/account"];
+
+// This checks the last page path of the URL
+function isSharedPage(path: string) {
+  return sharedPages.some((page) => path.endsWith(page));
+}
+
 export default withAuth(
   function middleware(req) {
-    // console.log(
-    //   "From src/middleware.ts: Middleware activation at path:",
-    //   req.nextUrl.pathname,
-    // );
+    const pathname = req.nextUrl.pathname;
+    const token = req.nextauth.token;
+    const isBusinessPath = pathname.startsWith("/business");
+    const isCustomerPath = pathname.startsWith("/customer");
+    const isOtherPath =
+      !isBusinessPath && !isCustomerPath && isSharedPage(pathname); // We don't want potato
 
-    /*
-      Add/Modify redirections for customer pages or other pages in the future when they exist
-    */
-
-    // if you are not logged in and you are trying to access the home page: let it be
-    if (!req.nextauth.token && req.nextUrl.pathname === "/") {
-      return;
-    }
-
-    //if you are not logged in and you are trying to access a /business route: go back to home page
-    if (!req.nextauth.token && req.nextUrl.pathname.startsWith("/business")) {
+    // If no session and you are tryna access a shared page or a protected path, redirect to home, else let it be
+    if (!token) {
+      if (
+        (!isBusinessPath && !isCustomerPath && !isSharedPage(pathname)) ||
+        pathname === "/"
+      )
+        return;
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // If you are not a PetBusiness and you are trying to access a /business route: go back to home page
+    /*
+      All the checks below are for those with an existing session (either PB or PO)
+    */
+
+    // If the path starts with /business and you are not a PB, redirect to home
     if (
-      req.nextUrl.pathname.startsWith("/business") &&
-      req.nextauth.token?.user["accountType"] !== AccountTypeEnum.PetBusiness
+      isBusinessPath &&
+      token.user["accountType"] !== AccountTypeEnum.PetBusiness
     ) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // If you are a PetBusiness and you are trying to access a non /business route: go back to business dashboard
+    // If the path does not start with /business and you are a PB, go back to business dashboard
     if (
-      !req.nextUrl.pathname.startsWith("/business") &&
-      req.nextauth.token?.user["accountType"] === AccountTypeEnum.PetBusiness
+      !isBusinessPath &&
+      token.user["accountType"] === AccountTypeEnum.PetBusiness
     ) {
       return NextResponse.redirect(new URL("/business/dashboard", req.url));
     }
+
+    // If the path starts with /customer and you are not a PO, redirect to business dashboard
+    if (
+      isCustomerPath &&
+      token.user["accountType"] !== AccountTypeEnum.PetOwner
+    ) {
+      return NextResponse.redirect(new URL("/business/dashboard", req.url));
+    }
+
+    // If the path starts with something like /potato, redirect to home
+    if (isOtherPath) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   },
+
   {
     callbacks: {
       // Bypass the authorized callback that NextAuth checks for by allowing everything (and using the Next.js middleware function to check instead)

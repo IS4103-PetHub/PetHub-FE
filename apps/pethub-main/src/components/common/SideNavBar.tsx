@@ -16,7 +16,6 @@ import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LightDarkModeToggle } from "web-ui";
-import { PET_BUSINESS_SLUG } from "@/types/constants";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -74,7 +73,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-  { link: `${PET_BUSINESS_SLUG}/account`, label: "My Account", icon: IconUser },
+  { link: "/business/account", label: "My Account", icon: IconUser },
 ];
 
 const SideNavBar = () => {
