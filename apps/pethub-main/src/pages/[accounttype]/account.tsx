@@ -33,11 +33,6 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const { data: petBusiness, refetch: refetchPetBusiness } =
     useGetPetBusinessByIdAndAccountType(userId, accountType);
 
-  useEffect(() => {
-    console.log("petOwner", petOwner);
-    console.log("petBusiness", petBusiness);
-  }, [petOwner, petBusiness]);
-
   if (!petOwner && !petBusiness) {
     return null;
   }

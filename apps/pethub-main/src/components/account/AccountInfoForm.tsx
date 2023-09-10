@@ -79,11 +79,6 @@ const AccountInfoForm = ({
     return null;
   }
 
-  // useEffect(() => {
-  //   console.log("petOwner", petOwner);
-  //   console.log("petBusiness", petBusiness);
-  // }, []);
-
   const KEY_SPAN = petOwner ? 3 : 4;
   const VALUE_SPAN = 12 - KEY_SPAN;
 
