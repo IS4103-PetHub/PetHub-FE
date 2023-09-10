@@ -79,6 +79,21 @@ const data = [
     label: "Apply as Pet Business partner",
     icon: IconUser,
   },
+  {
+    link: "/business/account",
+    label: "Account",
+    icon: IconUser,
+  },
+  {
+    link: "/business/shared1",
+    label: "shared1",
+    icon: IconUser,
+  },
+  {
+    link: "/business/shared2",
+    label: "shared2",
+    icon: IconUser,
+  },
 ];
 
 const SideNavBar = () => {
@@ -118,7 +133,7 @@ const SideNavBar = () => {
           <Text size="lg" weight={600} color={theme.colors.gray[0]}>
             PetHub Business
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>
