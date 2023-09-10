@@ -102,10 +102,6 @@ const SideNavBar = () => {
     </Link>
   ));
 
-  if (!session) {
-    return null;
-  }
-
   return (
     <Navbar
       height="100vh"

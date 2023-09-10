@@ -4,6 +4,8 @@ import {
   ColorScheme,
   ColorSchemeProvider,
   MantineProvider,
+  Loader,
+  Container,
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import {
@@ -13,11 +15,13 @@ import {
 } from "@tanstack/react-query";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
 
-export default function App({ Component, pageProps }: AppProps) {
+export function App({ Component, pageProps }: AppProps) {
+  const { data: session, status } = useSession();
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
@@ -57,17 +61,36 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Notifications />
-              <SessionProvider session={pageProps.session}>
-                <>
-                  <AppShell navbar={<SideNavBar />}>
+              <>
+                <AppShell navbar={session ? <SideNavBar /> : undefined}>
+                  {status === "loading" ? (
+                    <Container
+                      style={{
+                        height: "100vh",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Loader size="5rem" />
+                    </Container>
+                  ) : (
                     <Component {...pageProps} />
-                  </AppShell>
-                </>
-              </SessionProvider>
+                  )}
+                </AppShell>
+              </>
             </Hydrate>
           </QueryClientProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </>
+  );
+}
+
+export default function AppProvider(props: any) {
+  return (
+    <SessionProvider session={props.pageProps.session}>
+      <App {...props} />
+    </SessionProvider>
   );
 }
