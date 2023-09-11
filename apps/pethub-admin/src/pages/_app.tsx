@@ -62,7 +62,10 @@ export function App({ Component, pageProps }: AppProps) {
             <Hydrate state={pageProps.dehydratedState}>
               <Notifications />
               <>
-                <AppShell navbar={session ? <SideNavBar /> : undefined}>
+                <AppShell
+                  navbar={session ? <SideNavBar /> : undefined}
+                  padding="lg"
+                >
                   {status === "loading" ? (
                     <Container
                       style={{
