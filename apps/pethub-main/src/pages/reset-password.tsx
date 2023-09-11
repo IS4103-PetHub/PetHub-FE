@@ -4,35 +4,22 @@ import {
   Title,
   Text,
   PasswordInput,
-  Anchor,
+  Button,
   Stack,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { resetPasswordService } from "@/api/userService";
-import { RegularButton } from "@/components/common/RegularButton";
 import { ResetPasswordPayload } from "@/types/types";
 import { parseRouterQueryParam, validatePassword } from "@/util";
 
-export default function Login() {
+export default function ResetPassword() {
   const router = useRouter();
   const [isResetSuccessful, setIsResetSuccessful] = useState(false);
-
-  /*
-    Manually change the entire document body' background instead of just the component
-    Move into global styles if desired
-  */
-  useEffect(() => {
-    document.body.style.background =
-      "linear-gradient(90deg, rgb(244, 244, 246) 0%, rgb(204, 204, 226), rgb(180, 180, 239) 100%)";
-    return () => {
-      document.body.style.background = "";
-    };
-  }, []);
 
   const form = useForm({
     initialValues: {
@@ -67,28 +54,25 @@ export default function Login() {
     }
   };
 
-  const handleGoToLogin = async () => {
-    router.push("/login");
+  const handleGoToHome = async () => {
+    router.push("/");
   };
 
   return (
     <Container fluid>
       <Container size={420} mt={100}>
         <Title align="center">Reset your password</Title>
-        <Text color="dark" size="sm" align="center" mt={5}>
+        <Text color="dimmed" size="sm" align="center" mt="sm">
           You have requested to reset your password. Please enter your new
           password below.
         </Text>
-        <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
+        <Paper shadow="sm" p={30} mt={30} radius="sm" c="blue">
           {isResetSuccessful ? (
             <Stack>
               <Text c="dimmed" fz="md" ta="center">
                 Password reset successful.
               </Text>
-              <RegularButton
-                text="Proceed to login page"
-                onClick={handleGoToLogin}
-              />
+              <Button onClick={handleGoToHome}>Proceed to Home page</Button>
             </Stack>
           ) : (
             <form onSubmit={form.onSubmit(handleResetPassword)}>
@@ -106,12 +90,9 @@ export default function Login() {
                 mt="xs"
                 {...form.getInputProps("confirmPassword")}
               />
-              <RegularButton
-                text="reset password"
-                mt="lg"
-                type="submit"
-                fullWidth
-              />
+              <Button mt="lg" type="submit" fullWidth>
+                Reset Password
+              </Button>
             </form>
           )}
         </Paper>
