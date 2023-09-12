@@ -4,7 +4,7 @@ import { PetOwner } from "@/types/types";
 
 export const useGetAllPetOwners = () => {
   return useQuery({
-    queryKey: ["petOwners"],
+    queryKey: ["pet-owners"],
     queryFn: async () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners`,
@@ -19,6 +19,7 @@ export const useGetAllPetOwners = () => {
         accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
+        lastUpdated: data.user.lastUpdated,
       }));
       return petOwners;
     },

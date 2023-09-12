@@ -15,6 +15,7 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
 import { InternalUser, PetBusiness, PetOwner } from "@/types/types";
+import { formatAccountTypeEnum } from "@/util/EnumHelper";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   // onDeactivate: () => void; This method should call hook to deactivate user acc
@@ -73,6 +74,26 @@ const UserDetails = ({ user }: UserDetailsProps) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   if (!user) return null;
+  // const userType = user ? user.accountType : null;
+  // const typedUser =
+  //   userType === AccountTypeEnum.InternalUser
+  //     ? (user as InternalUser)
+  //     : userType === AccountTypeEnum.PetBusiness
+  //     ? (user as PetBusiness)
+  //     : userType === AccountTypeEnum.PetOwner
+  //     ? (user as PetOwner)
+  //     : user; //default
+
+  // const displayName =
+  //   userType === AccountTypeEnum.InternalUser ||
+  //   userType === AccountTypeEnum.PetOwner
+  //     ? (typedUser as InternalUser | PetOwner).firstName +
+  //       " " +
+  //       (typedUser as InternalUser | PetOwner).lastName
+  //     : userType === AccountTypeEnum.PetBusiness
+  //     ? (typedUser as PetBusiness).companyName
+  //     : ""; //default
+
   switch (user.accountType) {
     case AccountTypeEnum.InternalUser:
       const internalUser = user as InternalUser;
@@ -128,7 +149,7 @@ const UserDetails = ({ user }: UserDetailsProps) => {
                 <Text>Account Type:</Text>
               </Col>
               <Col span={6}>
-                <Text>{internalUser.accountType}</Text>
+                <Text>{formatAccountTypeEnum(internalUser.accountType)}</Text>
               </Col>
 
               <Col span={6}>
@@ -152,6 +173,16 @@ const UserDetails = ({ user }: UserDetailsProps) => {
               <Col span={6}>
                 <Text>
                   {new Date(internalUser.dateCreated).toLocaleDateString()}
+                </Text>
+              </Col>
+              <Col span={6}>
+                <Text>Date Last Updated:</Text>
+              </Col>
+              <Col span={6}>
+                <Text>
+                  {internalUser.lastUpdated
+                    ? new Date(internalUser.lastUpdated).toLocaleDateString()
+                    : "-"}
                 </Text>
               </Col>
             </Grid>
@@ -206,26 +237,21 @@ const UserDetails = ({ user }: UserDetailsProps) => {
                 <Text>Business Type:</Text>
               </Col>
               <Col span={6}>
-                <Text>
-                  {petBusiness.businessType || "<No business type indicated>"}
-                </Text>
+                <Text>{petBusiness.businessType || "-"}</Text>
               </Col>
 
               <Col span={6}>
                 <Text>Business Description:</Text>
               </Col>
               <Col span={6}>
-                <Text>
-                  {petBusiness.businessDescription ||
-                    "<No description provided>"}
-                </Text>
+                <Text>{petBusiness.businessDescription || "-"}</Text>
               </Col>
 
               <Col span={6}>
                 <Text>Website:</Text>
               </Col>
               <Col span={6}>
-                <Text>{petBusiness.websiteURL || "<No website provided>"}</Text>
+                <Text>{petBusiness.websiteURL || "-"}</Text>
               </Col>
 
               <Col span={6}>
@@ -239,7 +265,7 @@ const UserDetails = ({ user }: UserDetailsProps) => {
                 <Text>Account Type:</Text>
               </Col>
               <Col span={6}>
-                <Text>{petBusiness.accountType}</Text>
+                <Text>{formatAccountTypeEnum(petBusiness.accountType)}</Text>
               </Col>
 
               <Col span={6}>
@@ -263,6 +289,17 @@ const UserDetails = ({ user }: UserDetailsProps) => {
               <Col span={6}>
                 <Text>
                   {new Date(petBusiness.dateCreated).toLocaleDateString()}
+                </Text>
+              </Col>
+
+              <Col span={6}>
+                <Text>Date Last Updated:</Text>
+              </Col>
+              <Col span={6}>
+                <Text>
+                  {petBusiness.lastUpdated
+                    ? new Date(petBusiness.lastUpdated).toLocaleDateString()
+                    : "-"}
                 </Text>
               </Col>
             </Grid>
@@ -347,7 +384,7 @@ const UserDetails = ({ user }: UserDetailsProps) => {
                 <Text>Account Type:</Text>
               </Col>
               <Col span={6}>
-                <Text>{petOwner.accountType}</Text>
+                <Text>{formatAccountTypeEnum(petOwner.accountType)}</Text>
               </Col>
 
               <Col span={6}>
@@ -371,6 +408,17 @@ const UserDetails = ({ user }: UserDetailsProps) => {
               <Col span={6}>
                 <Text>
                   {new Date(petOwner.dateCreated).toLocaleDateString()}
+                </Text>
+              </Col>
+
+              <Col span={6}>
+                <Text>Date Last Updated:</Text>
+              </Col>
+              <Col span={6}>
+                <Text>
+                  {petOwner.lastUpdated
+                    ? new Date(petOwner.lastUpdated).toLocaleDateString()
+                    : "-"}
                 </Text>
               </Col>
             </Grid>

@@ -11,8 +11,7 @@ import {
 import { IconSearch } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { AccountStatusEnum } from "@/types/constants";
 import { PetOwner } from "@/types/types";
@@ -26,8 +25,6 @@ const PAGE_SIZE = 15;
 
 export default function PetOwnerTable() {
   const { data: petOwners, isLoading, isError } = useGetAllPetOwners();
-
-  //console.log("Data", petOwners);
 
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "userId",
@@ -78,9 +75,11 @@ export default function PetOwnerTable() {
   if (isLoading) {
     return (
       <>
-        <Group position="center">
-          <Loader size="xl" style={{ marginTop: "2rem" }} />
-        </Group>
+        <div className="center-vertically">
+          <Group position="center">
+            <Loader size="xl" style={{ marginTop: "2rem" }} />
+          </Group>
+        </div>
       </>
     );
   }
@@ -119,11 +118,13 @@ export default function PetOwnerTable() {
             accessor: "firstName",
             title: "First Name",
             sortable: true,
+            ellipsis: true,
           },
           {
             accessor: "lastName",
             title: "Last Name",
             sortable: true,
+            ellipsis: true,
           },
           {
             accessor: "accountStatus",
@@ -144,7 +145,7 @@ export default function PetOwnerTable() {
           {
             // New column for the "view more details" button. Using an appended userId to avoid double child problem
             accessor: "${record.userId}-button",
-            title: "", // No title
+            title: "Actions",
             width: 150,
             render: (record) => (
               <Center style={{ height: "100%" }}>

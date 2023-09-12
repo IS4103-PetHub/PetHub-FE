@@ -4,7 +4,7 @@ import { InternalUser } from "@/types/types";
 
 export const useGetAllInternalUsers = () => {
   return useQuery({
-    queryKey: ["internalUsers"],
+    queryKey: ["internal-users"],
     queryFn: async () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/internal-users`,
@@ -18,6 +18,7 @@ export const useGetAllInternalUsers = () => {
         accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
+        lastUpdated: data.user.lastUpdated,
       }));
       return internalUsers;
     },

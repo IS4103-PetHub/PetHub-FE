@@ -11,8 +11,7 @@ import {
 import { IconSearch } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import { AccountStatusEnum } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
@@ -61,7 +60,7 @@ export default function PetBusinessTable() {
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
-    // Sort the petOwners based on the current sort status
+    // Sort petBusinesses based on the current sort status
 
     const sortedPetBusinesses = sortBy(
       petBusinesses,
@@ -81,9 +80,11 @@ export default function PetBusinessTable() {
   if (isLoading) {
     return (
       <>
-        <Group position="center">
-          <Loader size="xl" style={{ marginTop: "2rem" }} />
-        </Group>
+        <div className="center-vertically">
+          <Group position="center">
+            <Loader size="xl" style={{ marginTop: "2rem" }} />
+          </Group>
+        </div>
       </>
     );
   }
@@ -122,11 +123,13 @@ export default function PetBusinessTable() {
             accessor: "companyName",
             title: "Company Name",
             sortable: true,
+            ellipsis: true,
           },
           {
             accessor: "uen",
             title: "UEN",
             sortable: true,
+            ellipsis: true,
           },
           {
             accessor: "accountStatus",
@@ -147,7 +150,7 @@ export default function PetBusinessTable() {
           {
             // New column for the "view more details" button. Using an appended userId to avoid double child problem
             accessor: "${record.userId}-button",
-            title: "", // No title
+            title: "Actions",
             width: 150,
             render: (record) => (
               <Center style={{ height: "100%" }}>
@@ -174,7 +177,7 @@ export default function PetBusinessTable() {
       <Modal
         opened={isModalOpen}
         onClose={handleCloseModal}
-        title="Pet Owner Details"
+        title="Pet Business Details"
         size="lg"
         padding="md"
       >
