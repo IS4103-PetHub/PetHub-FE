@@ -1,26 +1,60 @@
+import { Button, Group } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
-import React from "react";
+import React, { useState } from "react";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import EditActionButton from "web-ui/shared/EditActionButton";
+import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { UserGroup } from "@/types/types";
 
+/* 
+  THIS IMPLEMENTATION USES MANTINE DATATABLE AND PAGINATION. May move pagination into backend rendering in the future.
+*/
+
+const PAGE_SIZE = 15;
 interface UserGroupsTableProps {
   userGroups: UserGroup[];
 }
+
 const UserGroupsTable = ({ userGroups }: UserGroupsTableProps) => {
+  const [page, setPage] = useState<number>(1);
   return (
     <DataTable
+      minHeight={150}
       columns={[
         {
-          accessor: "index",
+          accessor: "groupId",
           title: "#",
-          render: (group) => group.groupId,
           textAlignment: "right",
-          width: 50,
+          width: 80,
         },
-        { accessor: "name", width: "25vw" },
+        { accessor: "name", width: "25vw", ellipsis: true },
         { accessor: "description", width: "40vw", ellipsis: true },
         {
-          accessor: "permissions",
-          render: (group) => group.permissions.length,
+          // actions
+          accessor: "",
+          title: "Actions",
+          width: "10vw",
+          render: (group) => (
+            <Group>
+              <ViewActionButton
+                onClick={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
+              <EditActionButton
+                onClick={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
+              <DeleteActionButtonModal
+                title={`Are you sure you want to delete ${group.name}?`}
+                subtitle="Any users currently assigned to this user group will be unassigned."
+                onDelete={function (): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
+            </Group>
+          ),
         },
       ]}
       records={userGroups}
@@ -28,6 +62,12 @@ const UserGroupsTable = ({ userGroups }: UserGroupsTableProps) => {
       withColumnBorders
       striped
       verticalSpacing="sm"
+      //pagination
+      totalRecords={userGroups ? userGroups.length : 0}
+      recordsPerPage={PAGE_SIZE}
+      page={page}
+      onPageChange={(p) => setPage(p)}
+      idAccessor="userId"
     />
   );
 };

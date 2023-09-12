@@ -1,8 +1,34 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Permission } from "@/types/types";
+import { CreateUserGroupPayload, Permission, UserGroup } from "@/types/types";
 
-const RBAC_API = "api/rbac";
+const RBAC_USER_GROUPS_API = "api/rbac/user-groups";
+const RBAC_PERMISSIONS_API = "api/rbac/permissions";
+
+export const useGetAllUserGroups = () => {
+  return useQuery({
+    queryKey: ["user-groups"],
+    queryFn: async () =>
+      (
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}`,
+        )
+      ).data as UserGroup[],
+  });
+};
+
+export const useCreateUserGroup = () => {
+  return useMutation({
+    mutationFn: async (payload: CreateUserGroupPayload) => {
+      return (
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}`,
+          payload,
+        )
+      ).data;
+    },
+  });
+};
 
 export const useGetAllPermissions = () => {
   return useQuery({
@@ -10,7 +36,7 @@ export const useGetAllPermissions = () => {
     queryFn: async () =>
       (
         await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_API}/permissions`,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_PERMISSIONS_API}`,
         )
       ).data as Permission[],
   });

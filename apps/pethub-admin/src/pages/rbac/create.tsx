@@ -12,16 +12,26 @@ import {
   Button,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { Router, useRouter } from "next/router";
 import { PageTitle } from "web-ui";
-import { useGetAllPermissions } from "@/hooks/rbac";
+import PermissionsCheckboxCard from "@/components/rbac/PermissionsCheckboxCard";
+import UserGroupForm from "@/components/rbac/UserGroupForm";
+import { useCreateUserGroup, useGetAllPermissions } from "@/hooks/rbac";
+import { CreateUserGroupPayload } from "@/types/types";
 
 export default function CreateUserGroup() {
+  const router = useRouter();
+  const { data: permissions = [] } = useGetAllPermissions();
+  const createUserGroupMutation = useCreateUserGroup();
+
   const emptyNumberArr: number[] = [];
   const form = useForm({
     initialValues: {
       name: "",
       description: "",
-      permissions: emptyNumberArr,
+      permissionIds: emptyNumberArr,
     },
 
     validate: {
@@ -30,65 +40,42 @@ export default function CreateUserGroup() {
     },
   });
 
-  const { data: permissions = [] } = useGetAllPermissions();
-
-  const permissionsCheckboxes = (
-    <Grid gutter="xl">
-      {permissions.map((permission) => (
-        <Grid.Col span={6} key={permission.permissionId}>
-          <Card shadow="sm" padding="lg" radius="sm" withBorder>
-            <Checkbox
-              size="md"
-              value={permission.permissionId}
-              label={<Text weight={500}>{permission.name}</Text>}
-              onChange={(event) =>
-                event.currentTarget.checked
-                  ? form.setFieldValue("permissions", [
-                      ...form.values.permissions,
-                      permission.permissionId,
-                    ])
-                  : form.setFieldValue(
-                      "permissions",
-                      form.values.permissions.filter(
-                        (x) => x !== permission.permissionId,
-                      ),
-                    )
-              }
-            />
-            <Text size="sm" color="dimmed" ml={36} mt={5}>
-              {permission.description}
-            </Text>
-          </Card>
-        </Grid.Col>
-      ))}
-    </Grid>
-  );
+  const handleCreateUserGroup = async (values: any) => {
+    const payload: CreateUserGroupPayload = {
+      ...values,
+    };
+    try {
+      await createUserGroupMutation.mutateAsync(payload);
+      notifications.show({
+        title: "User Group Created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `User group created successfully!`,
+      });
+      // redirect to RBAC page
+      router.push("/rbac");
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Creating User Group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
 
   return (
     <Container fluid>
       <PageTitle title="Create User Group" mb="md" />
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
-        <Stack mb="xl">
-          <TextInput
-            label="Group name"
-            placeholder="Group name"
-            {...form.getInputProps("name")}
-          />
-          <Textarea
-            label="Description"
-            placeholder="Description"
-            {...form.getInputProps("description")}
-          />
-        </Stack>
-        <Text size="xl" weight={600} mt="lg" mb="xs">
-          Permissions ({form.values.permissions.length})
-        </Text>
-        <Divider mb="md" />
-        {permissionsCheckboxes}
-        <Button type="submit" mt={50} size="md" fullWidth>
-          Create User Group
-        </Button>
-      </form>
+      <UserGroupForm
+        permissions={permissions}
+        form={form}
+        onCreate={handleCreateUserGroup}
+      />
     </Container>
   );
 }
