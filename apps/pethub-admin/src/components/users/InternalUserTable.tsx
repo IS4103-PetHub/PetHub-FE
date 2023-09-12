@@ -1,12 +1,15 @@
-import { Modal, Center } from "@mantine/core";
+import { Modal, Center, Group, Button } from "@mantine/core";
+import { IconUserPlus } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
+import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { InternalUser } from "@/types/types";
 import { ViewButton } from "../common/ViewButton";
 import { errorAlert, loader } from "../util/TableHelper";
+import { CreateInternalUserForm } from "./CreateInternalUserForm";
 import UserDetails from "./UserDetails";
 
 /* 
@@ -20,6 +23,7 @@ export default function InternalUserTable() {
     data: internalUsers = [],
     isLoading,
     isError,
+    refetch,
   } = useGetAllInternalUsers();
 
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
@@ -28,19 +32,24 @@ export default function InternalUserTable() {
   });
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<InternalUser[]>(internalUsers);
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isViewDetailsModalOpen, setViewDetailsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<InternalUser | null>(
     null,
   );
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
 
-  const handleOpenModal = (record: InternalUser) => {
+  const handleViewDetailsOpenModal = (record: InternalUser) => {
     setSelectedRecord(record);
-    setModalOpen(true);
+    setViewDetailsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
+  const handleViewDetailsCloseModal = () => {
     setSelectedRecord(null);
-    setModalOpen(false);
+    setViewDetailsModalOpen(false);
+  };
+
+  const handleCreateInternalUserOpenModal = () => {
+    setCreateModalOpen(true);
   };
 
   // Compute pagination slice indices based on the current page
@@ -76,7 +85,18 @@ export default function InternalUserTable() {
 
   return (
     <>
-      <h2>Internal Users</h2>
+      <Group mb="xl" position="apart">
+        {/* wanted to use the CreateButton but thought that UserPlus is a better icon for this case */}
+        <PageTitle title="Internal Users" />
+        <Button
+          size="md"
+          leftIcon={<IconUserPlus />}
+          onClick={() => handleCreateInternalUserOpenModal()}
+        >
+          Create Internal User
+        </Button>
+      </Group>
+
       <DataTable
         withBorder
         borderRadius="sm"
@@ -142,7 +162,9 @@ export default function InternalUserTable() {
             width: 150,
             render: (record) => (
               <Center style={{ height: "100%" }}>
-                <ViewButton onClick={() => handleOpenModal(record)} />
+                <ViewButton
+                  onClick={() => handleViewDetailsOpenModal(record)}
+                />
               </Center>
             ),
           },
@@ -158,13 +180,22 @@ export default function InternalUserTable() {
         idAccessor="userId"
       />
       <Modal
-        opened={isModalOpen}
-        onClose={handleCloseModal}
+        opened={isViewDetailsModalOpen}
+        onClose={handleViewDetailsCloseModal}
         title="Internal User Details"
         size="lg"
         padding="md"
       >
         <UserDetails user={selectedRecord} />
+      </Modal>
+      <Modal
+        opened={isCreateModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        title="Create New Internal User"
+        size="lg"
+        padding="md"
+      >
+        <CreateInternalUserForm />
       </Modal>
     </>
   );

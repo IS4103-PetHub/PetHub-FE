@@ -2,6 +2,7 @@ import { Modal, Center } from "@mantine/core";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
+import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { PetOwner } from "@/types/types";
@@ -67,7 +68,7 @@ export default function PetOwnerTable() {
 
   return (
     <>
-      <h2>Pet Owners</h2>
+      <PageTitle title="Pet Owners" />
       <DataTable
         withBorder
         borderRadius="sm"

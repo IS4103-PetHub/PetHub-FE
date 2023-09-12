@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Group, Text } from "@mantine/core";
+import { Button, ButtonProps } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import React from "react";
 

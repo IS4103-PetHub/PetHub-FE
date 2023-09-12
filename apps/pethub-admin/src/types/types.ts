@@ -49,3 +49,10 @@ export interface ResetPasswordPayload {
   token: string | null;
   newPassword: string;
 }
+export interface CreateInternalUserPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  adminRole: string;
+  password: string;
+}
