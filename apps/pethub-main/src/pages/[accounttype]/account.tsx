@@ -7,7 +7,7 @@ import {
 } from "@mantine/core";
 import { IconUser, IconKey, IconAlertOctagon } from "@tabler/icons-react";
 import { getSession } from "next-auth/react";
-import React, { useEffect } from "react";
+import React from "react";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
@@ -119,7 +119,6 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
 
               <DeactivateReactivateAccountModal
                 userId={petOwner ? petOwner.userId : petBusiness.userId}
-                accountStatus={accountStatus}
                 action={action}
                 refetch={petOwner ? refetchPetOwner : refetchPetBusiness}
               />

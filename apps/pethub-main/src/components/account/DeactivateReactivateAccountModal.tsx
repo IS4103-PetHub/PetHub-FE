@@ -6,32 +6,26 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { isNotEmpty, useForm } from "@mantine/form";
+import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconUser, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
-import { signOut } from "next-auth/react";
 import React from "react";
 import { useActivateAccount, useDeactivateAccount } from "@/hooks/account";
-import { AccountStatusEnum } from "@/types/constants";
 
 interface DeactivateReactivateAccountModalProps {
   userId: number;
-  accountStatus: AccountStatusEnum;
   action: string;
   refetch(): void;
 }
 
 const DeactivateReactivateAccountModal = ({
   userId,
-  accountStatus,
   action,
   refetch,
 }: DeactivateReactivateAccountModalProps) => {
   const queryClient = useQueryClient();
-  const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm({

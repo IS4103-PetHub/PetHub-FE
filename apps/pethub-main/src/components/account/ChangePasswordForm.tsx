@@ -8,7 +8,7 @@ import React from "react";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useChangePassword } from "@/hooks/account";
 import { ChangePasswordPayload } from "@/types/types";
-import { validateChangePassword, validatePassword } from "@/util";
+import { validateChangePassword } from "@/util";
 
 interface ChangePasswordFormProps {
   email: string;
