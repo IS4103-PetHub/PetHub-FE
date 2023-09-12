@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { CreateUserGroupPayload, Permission, UserGroup } from "@/types/types";
 
@@ -8,6 +8,7 @@ const RBAC_PERMISSIONS_API = "api/rbac/permissions";
 export const useGetAllUserGroups = () => {
   return useQuery({
     queryKey: ["user-groups"],
+    refetchOnMount: true,
     queryFn: async () =>
       (
         await axios.get(
@@ -17,7 +18,7 @@ export const useGetAllUserGroups = () => {
   });
 };
 
-export const useCreateUserGroup = () => {
+export const useCreateUserGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CreateUserGroupPayload) => {
       return (
@@ -26,6 +27,29 @@ export const useCreateUserGroup = () => {
           payload,
         )
       ).data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-groups"],
+      });
+    },
+  });
+};
+
+export const useDeleteUserGroup = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${id}`,
+        )
+      ).data;
+    },
+    onSuccess: (data, id) => {
+      queryClient.setQueryData<UserGroup[]>(["user-groups"], (old = []) => {
+        return old.filter((group) => group.groupId !== id);
+        // removes deleted record from cached data
+      });
     },
   });
 };

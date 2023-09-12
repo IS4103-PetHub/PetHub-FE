@@ -13,9 +13,10 @@ import { UserGroup } from "@/types/types";
 const PAGE_SIZE = 15;
 interface UserGroupsTableProps {
   userGroups: UserGroup[];
+  onDelete(id: number): void;
 }
 
-const UserGroupsTable = ({ userGroups }: UserGroupsTableProps) => {
+const UserGroupsTable = ({ userGroups, onDelete }: UserGroupsTableProps) => {
   const [page, setPage] = useState<number>(1);
   return (
     <DataTable
@@ -49,9 +50,7 @@ const UserGroupsTable = ({ userGroups }: UserGroupsTableProps) => {
               <DeleteActionButtonModal
                 title={`Are you sure you want to delete ${group.name}?`}
                 subtitle="Any users currently assigned to this user group will be unassigned."
-                onDelete={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
+                onDelete={() => onDelete(group.groupId)}
               />
             </Group>
           ),

@@ -1,30 +1,20 @@
-import {
-  Container,
-  Stack,
-  TextInput,
-  Textarea,
-  Text,
-  Divider,
-  Checkbox,
-  Table,
-  Grid,
-  Card,
-  Button,
-} from "@mantine/core";
+import { Container } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { Router, useRouter } from "next/router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { PageTitle } from "web-ui";
-import PermissionsCheckboxCard from "@/components/rbac/PermissionsCheckboxCard";
 import UserGroupForm from "@/components/rbac/UserGroupForm";
 import { useCreateUserGroup, useGetAllPermissions } from "@/hooks/rbac";
 import { CreateUserGroupPayload } from "@/types/types";
 
 export default function CreateUserGroup() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const { data: permissions = [] } = useGetAllPermissions();
-  const createUserGroupMutation = useCreateUserGroup();
+  const createUserGroupMutation = useCreateUserGroup(queryClient);
 
   const emptyNumberArr: number[] = [];
   const form = useForm({
@@ -36,7 +26,6 @@ export default function CreateUserGroup() {
 
     validate: {
       name: isNotEmpty("Name required."),
-      description: isNotEmpty("Description required."),
     },
   });
 
