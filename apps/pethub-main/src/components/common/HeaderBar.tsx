@@ -13,9 +13,9 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconChevronDown } from "@tabler/icons-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { AccountTypeEnum } from "@/types/constants";
 import { LoginModal } from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
@@ -104,7 +104,7 @@ const links: {
     links: undefined,
   },
   {
-    link: "/account",
+    link: "/customer/account",
     label: "My account",
     links: undefined,
   },
@@ -139,16 +139,12 @@ const HeaderBar = () => {
           withinPortal
         >
           <Menu.Target>
-            <a
-              href={link.link}
-              className={classes.link}
-              onClick={(event) => event.preventDefault()}
-            >
+            <Link href={link.link} className={classes.link}>
               <Center>
                 <span className={classes.linkLabel}>{link.label}</span>
                 <IconChevronDown size={rem(12)} stroke={1.5} />
               </Center>
-            </a>
+            </Link>
           </Menu.Target>
           <Menu.Dropdown>{menuItems}</Menu.Dropdown>
         </Menu>
@@ -156,14 +152,9 @@ const HeaderBar = () => {
     }
 
     return (
-      <a
-        key={link.label}
-        href={link.link}
-        className={classes.link}
-        onClick={(event) => event.preventDefault()}
-      >
+      <Link key={link.label} href={link.link} className={classes.link}>
         {link.label}
-      </a>
+      </Link>
     );
   });
 

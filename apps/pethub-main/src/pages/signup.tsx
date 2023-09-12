@@ -29,12 +29,12 @@ import { getSession, signIn } from "next-auth/react";
 import React from "react";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
-import { usePetBusinessCreate } from "@/hooks/pet-business";
-import { usePetOwnerCreate } from "@/hooks/pet-owner";
+import { useCreatePetBusiness } from "@/hooks/pet-business";
+import { useCreatePetOwner } from "@/hooks/pet-owner";
 import { AccountTypeEnum } from "@/types/constants";
 import {
-  CreatePetBusinessRequest,
-  CreatePetOwnerRequest,
+  CreatePetBusinessPayload,
+  CreatePetOwnerPayload,
   LoginCredentials,
 } from "@/types/types";
 import { validatePassword } from "@/util";
@@ -54,7 +54,6 @@ const useStyles = createStyles((theme) => ({
 
 export default function SignUp() {
   const { classes } = useStyles();
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const form = useForm({
@@ -89,10 +88,10 @@ export default function SignUp() {
         values.accountType === AccountTypeEnum.PetOwner && !value
           ? "Last name is required."
           : null,
-      contactNumber: hasLength(
-        { min: 8, max: 8 },
-        "Contact number must be 8 digits long.",
-      ),
+      contactNumber: (value) =>
+        /^[0-9]{8}$/.test(value)
+          ? null
+          : "Contact number must be 8 digits long.",
       email: isEmail("Invalid email."),
       dateOfBirth: (value, values) =>
         values.accountType === AccountTypeEnum.PetOwner && !value
@@ -134,13 +133,13 @@ export default function SignUp() {
         });
       }
     }
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       form.reset();
     }, 800);
   };
 
-  const createPetOwnerMutation = usePetOwnerCreate(queryClient);
-  const createPetOwnerAccount = async (payload: CreatePetOwnerRequest) => {
+  const createPetOwnerMutation = useCreatePetOwner();
+  const createPetOwnerAccount = async (payload: CreatePetOwnerPayload) => {
     try {
       await createPetOwnerMutation.mutateAsync(payload);
       notifications.show({
@@ -169,9 +168,9 @@ export default function SignUp() {
     }
   };
 
-  const createPetBusinessMutation = usePetBusinessCreate(queryClient);
+  const createPetBusinessMutation = useCreatePetBusiness();
   const createPetBusinessAccount = async (
-    payload: CreatePetBusinessRequest,
+    payload: CreatePetBusinessPayload,
   ) => {
     try {
       await createPetBusinessMutation.mutateAsync(payload);
@@ -203,7 +202,7 @@ export default function SignUp() {
 
   function handleSubmit(values: FormValues) {
     if (values.accountType === AccountTypeEnum.PetOwner) {
-      const payload: CreatePetOwnerRequest = {
+      const payload: CreatePetOwnerPayload = {
         firstName: values.firstName,
         lastName: values.lastName,
         contactNumber: values.contactNumber,
@@ -214,7 +213,7 @@ export default function SignUp() {
       createPetOwnerAccount(payload);
     } else {
       // if accountType === "petBusiness"
-      const payload: CreatePetBusinessRequest = {
+      const payload: CreatePetBusinessPayload = {
         companyName: values.companyName,
         uen: values.uen,
         contactNumber: values.contactNumber,

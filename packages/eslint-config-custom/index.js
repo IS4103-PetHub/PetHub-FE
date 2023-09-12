@@ -15,10 +15,8 @@ module.exports = {
         endOfLine: "auto",
       },
     ],
+    // suppress errors for missing 'import React' in files as it is not needed for Nextjs
     "react/react-in-jsx-scope": "off",
-    "arrow-body-style": "off",
-    "react/no-unescaped-entities": "off",
-    "prefer-arrow-callback": "off",
     "react/self-closing-comp": [
       "error",
       {

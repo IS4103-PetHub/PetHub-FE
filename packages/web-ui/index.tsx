@@ -4,3 +4,4 @@ import * as React from "react";
 export * from "./shared/PageTitle";
 export * from "./shared/PasswordBar";
 export * from "./shared/LightDarkModeToggle";
+export * from "./shared/AccountStatusBadge";
