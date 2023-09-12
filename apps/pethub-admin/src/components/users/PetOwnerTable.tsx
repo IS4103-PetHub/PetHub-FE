@@ -1,10 +1,9 @@
-import { Modal, Button, Center, Badge, Group, Text } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { Modal, Center } from "@mantine/core";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
+import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
-import { AccountStatusEnum } from "@/types/constants";
 import { PetOwner } from "@/types/types";
 import { ViewButton } from "../common/ViewButton";
 import { errorAlert, loader } from "../util/TableHelper";
@@ -17,14 +16,14 @@ import UserDetails from "./UserDetails";
 const PAGE_SIZE = 15;
 
 export default function PetOwnerTable() {
-  const { data: petOwners, isLoading, isError } = useGetAllPetOwners();
+  const { data: petOwners = [], isLoading, isError } = useGetAllPetOwners();
 
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "userId",
     direction: "asc",
   });
   const [page, setPage] = useState<number>(1);
-  const [records, setRecords] = useState<PetOwner[]>();
+  const [records, setRecords] = useState<PetOwner[]>(petOwners);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetOwner | null>(null);
 
@@ -42,13 +41,6 @@ export default function PetOwnerTable() {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE;
 
-  //useEffect w no dependencies to render the table
-  useEffect(() => {
-    if (petOwners) {
-      setRecords(petOwners);
-    }
-  }, [petOwners]);
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
     // Sort the petOwners based on the current sort status
@@ -63,7 +55,7 @@ export default function PetOwnerTable() {
 
     // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus]);
+  }, [page, sortStatus, petOwners]);
 
   if (isLoading) {
     return loader();
@@ -83,6 +75,7 @@ export default function PetOwnerTable() {
         striped
         highlightOnHover
         verticalAlignment="center"
+        minHeight={150}
         // provide data
         records={records}
         // define columns
@@ -91,7 +84,7 @@ export default function PetOwnerTable() {
             accessor: "userId",
             title: "#",
             textAlignment: "right",
-            width: 150,
+            width: 100,
             sortable: true,
           },
           {
@@ -107,19 +100,30 @@ export default function PetOwnerTable() {
             ellipsis: true,
           },
           {
+            accessor: "email",
+            title: "Email",
+            sortable: true,
+            ellipsis: true,
+            width: 300,
+          },
+          {
+            accessor: "dateCreated",
+            title: "Date Created",
+            sortable: true,
+            ellipsis: true,
+            width: 150,
+            render: ({ dateCreated }) => {
+              return new Date(dateCreated).toLocaleDateString();
+            },
+          },
+          {
             accessor: "accountStatus",
             title: "Status",
             width: 150,
             sortable: true,
             // this column has custom cell data rendering
             render: ({ accountStatus }) => (
-              <Badge
-                color={
-                  accountStatus === AccountStatusEnum.Active ? "green" : "red"
-                }
-              >
-                {accountStatus}
-              </Badge>
+              <AccountStatusBadge accountStatus={accountStatus} size="lg" />
             ),
           },
           {

@@ -1,10 +1,9 @@
-import { Modal, Button, Center, Badge, Group, Text } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { Modal, Center } from "@mantine/core";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
+import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
-import { AccountStatusEnum } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
 import { ViewButton } from "../common/ViewButton";
 import { errorAlert, loader } from "../util/TableHelper";
@@ -17,14 +16,18 @@ import UserDetails from "./UserDetails";
 const PAGE_SIZE = 15;
 
 export default function PetBusinessTable() {
-  const { data: petBusinesses, isLoading, isError } = useGetAllPetBusinesses();
+  const {
+    data: petBusinesses = [],
+    isLoading,
+    isError,
+  } = useGetAllPetBusinesses();
 
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "userId",
     direction: "asc",
   });
   const [page, setPage] = useState<number>(1);
-  const [records, setRecords] = useState<PetBusiness[]>();
+  const [records, setRecords] = useState<PetBusiness[]>(petBusinesses);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetBusiness | null>(
     null,
@@ -44,13 +47,6 @@ export default function PetBusinessTable() {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE;
 
-  //useEffect w no dependencies to render the table
-  useEffect(() => {
-    if (petBusinesses) {
-      setRecords(petBusinesses);
-    }
-  }, [petBusinesses]);
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
     // Sort petBusinesses based on the current sort status
@@ -68,7 +64,7 @@ export default function PetBusinessTable() {
 
     // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus]);
+  }, [page, sortStatus, petBusinesses]);
 
   if (isLoading) {
     return loader();
@@ -88,6 +84,7 @@ export default function PetBusinessTable() {
         striped
         highlightOnHover
         verticalAlignment="center"
+        minHeight={150}
         // provide data
         records={records}
         // define columns
@@ -96,7 +93,7 @@ export default function PetBusinessTable() {
             accessor: "userId",
             title: "#",
             textAlignment: "right",
-            width: 150,
+            width: 100,
             sortable: true,
           },
           {
@@ -112,19 +109,30 @@ export default function PetBusinessTable() {
             ellipsis: true,
           },
           {
+            accessor: "email",
+            title: "Email",
+            sortable: true,
+            ellipsis: true,
+            width: 300,
+          },
+          {
+            accessor: "dateCreated",
+            title: "Date Created",
+            sortable: true,
+            ellipsis: true,
+            width: 150,
+            render: ({ dateCreated }) => {
+              return new Date(dateCreated).toLocaleDateString();
+            },
+          },
+          {
             accessor: "accountStatus",
             title: "Status",
             width: 150,
             sortable: true,
             // this column has custom cell data rendering
             render: ({ accountStatus }) => (
-              <Badge
-                color={
-                  accountStatus === AccountStatusEnum.Active ? "green" : "red"
-                }
-              >
-                {accountStatus}
-              </Badge>
+              <AccountStatusBadge accountStatus={accountStatus} size="lg" />
             ),
           },
           {
