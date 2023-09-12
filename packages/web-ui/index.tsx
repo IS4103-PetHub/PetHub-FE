@@ -8,6 +8,7 @@ export * from "./shared/AccountStatusBadge";
 export * from "./shared/LargeCreateButton";
 export * from "./shared/SadDimmedMessage";
 export * from "./shared/CenterLoader";
-export * from "./shared/DeleteActionButton";
+export * from "./shared/SimpleDeleteActionButton";
+export * from "./shared/DeleteActionButtonModal";
 export * from "./shared/ViewActionButton";
 export * from "./shared/EditActionButton";

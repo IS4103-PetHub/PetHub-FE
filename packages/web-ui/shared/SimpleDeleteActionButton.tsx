@@ -1,23 +1,16 @@
-import {
-  ActionIcon,
-  Button,
-  Group,
-  Popover,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
+import { Button, Group, Popover, Text, useMantineTheme } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import { IconTrash } from "@tabler/icons-react";
+import DeleteActionIcon from "./DeleteActionIcon";
 
-interface DeleteActionButtonProps {
+interface SimpleDeleteActionButtonProps {
   onDelete(): void;
   itemName: string;
 }
 
-const DeleteActionButton = ({
+const SimpleDeleteActionButton = ({
   onDelete,
   itemName,
-}: DeleteActionButtonProps) => {
+}: SimpleDeleteActionButtonProps) => {
   const [opened, setOpened] = useToggle();
   const theme = useMantineTheme();
 
@@ -37,16 +30,7 @@ const DeleteActionButton = ({
       withinPortal
     >
       <Popover.Target>
-        <ActionIcon
-          size="lg"
-          radius="md"
-          color="red"
-          variant={theme.colorScheme === "light" ? "outline" : "light"}
-          sx={{ border: "1.5px solid" }}
-          onClick={() => setOpened((o) => !o)}
-        >
-          <IconTrash size={"1.25rem"} />
-        </ActionIcon>
+        <DeleteActionIcon onClick={() => setOpened((o) => !o)} />
       </Popover.Target>
 
       <Popover.Dropdown>
@@ -64,4 +48,4 @@ const DeleteActionButton = ({
   );
 };
 
-export default DeleteActionButton;
+export default SimpleDeleteActionButton;
