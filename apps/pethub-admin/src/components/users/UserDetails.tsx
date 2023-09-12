@@ -13,9 +13,9 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
+import { formatAccountTypeEnum } from "@/components/util/EnumHelper";
 import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
 import { InternalUser, PetBusiness, PetOwner } from "@/types/types";
-import { formatAccountTypeEnum } from "@/util/EnumHelper";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   // onDeactivate: () => void; This method should call hook to deactivate user acc

@@ -1,13 +1,4 @@
-import {
-  Modal,
-  Button,
-  Center,
-  Badge,
-  Group,
-  Text,
-  Loader,
-  Notification,
-} from "@mantine/core";
+import { Modal, Button, Center, Badge, Group, Text } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -15,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { AccountStatusEnum } from "@/types/constants";
 import { PetOwner } from "@/types/types";
+import { ViewButton } from "../common/ViewButton";
+import { errorAlert, loader } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
 
 /* 
@@ -73,24 +66,11 @@ export default function PetOwnerTable() {
   }, [page, sortStatus]);
 
   if (isLoading) {
-    return (
-      <>
-        <div className="center-vertically">
-          <Group position="center">
-            <Loader size="xl" style={{ marginTop: "2rem" }} />
-          </Group>
-        </div>
-      </>
-    );
+    return loader();
   }
 
   if (isError) {
-    return (
-      <Notification title="Error" color="red" style={{ marginTop: "2rem" }}>
-        There was an error loading the list of Pet Owners. Please try again
-        later.
-      </Notification>
-    );
+    return errorAlert("Pet Owners");
   }
 
   return (
@@ -149,12 +129,7 @@ export default function PetOwnerTable() {
             width: 150,
             render: (record) => (
               <Center style={{ height: "100%" }}>
-                <Button size="sm" onClick={() => handleOpenModal(record)}>
-                  <Group position="center" spacing="xs">
-                    <IconSearch size="0.8rem" />
-                    <Text>View</Text>
-                  </Group>
-                </Button>
+                <ViewButton onClick={() => handleOpenModal(record)} />
               </Center>
             ),
           },
