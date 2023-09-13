@@ -12,3 +12,5 @@ export * from "./shared/SimpleDeleteActionButton";
 export * from "./shared/DeleteActionButtonModal";
 export * from "./shared/ViewActionButton";
 export * from "./shared/EditActionButton";
+export * from "./shared/SearchBar";
+export * from "./shared/NoSearchResultsMessage";

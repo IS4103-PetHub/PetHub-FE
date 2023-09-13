@@ -1,19 +1,31 @@
 import { Button, Group } from "@mantine/core";
-import { DataTable } from "mantine-datatable";
-import React, { useState } from "react";
+import { useToggle } from "@mantine/hooks";
+import sortBy from "lodash/sortBy";
+import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import React, { useEffect, useState } from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
+import { useGetAllUserGroups } from "@/hooks/rbac";
+import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
-
-const PAGE_SIZE = 15;
 interface UserGroupsTableProps {
   userGroups: UserGroup[];
+  page: number;
+  sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
+  onSortStatusChange: any;
+  onPageChange(p: number): void;
 }
 
-const UserGroupsTable = ({ userGroups, onDelete }: UserGroupsTableProps) => {
-  const [page, setPage] = useState<number>(1);
+const UserGroupsTable = ({
+  userGroups,
+  page,
+  sortStatus,
+  onDelete,
+  onSortStatusChange,
+  onPageChange,
+}: UserGroupsTableProps) => {
   return (
     <DataTable
       minHeight={150}
@@ -23,9 +35,15 @@ const UserGroupsTable = ({ userGroups, onDelete }: UserGroupsTableProps) => {
           title: "#",
           textAlignment: "right",
           width: 80,
+          sortable: true,
         },
-        { accessor: "name", width: "25vw", ellipsis: true },
-        { accessor: "description", width: "40vw", ellipsis: true },
+        { accessor: "name", width: "25vw", ellipsis: true, sortable: true },
+        {
+          accessor: "description",
+          width: "40vw",
+          ellipsis: true,
+          sortable: true,
+        },
         {
           // actions
           accessor: "",
@@ -57,11 +75,14 @@ const UserGroupsTable = ({ userGroups, onDelete }: UserGroupsTableProps) => {
       withColumnBorders
       striped
       verticalSpacing="sm"
+      //sorting
+      sortStatus={sortStatus}
+      onSortStatusChange={onSortStatusChange}
       //pagination
       totalRecords={userGroups ? userGroups.length : 0}
-      recordsPerPage={PAGE_SIZE}
+      recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
-      onPageChange={(p) => setPage(p)}
+      onPageChange={(p) => onPageChange(p)}
       idAccessor="userId"
     />
   );
