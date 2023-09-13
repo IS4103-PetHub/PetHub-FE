@@ -40,3 +40,15 @@ export const useCreateInternalUser = () => {
     },
   });
 };
+
+export const useDeleteInternalUser = () => {
+  return useMutation({
+    mutationFn: async (userId: number) => {
+      return (
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${userId}`,
+        )
+      ).data;
+    },
+  });
+};

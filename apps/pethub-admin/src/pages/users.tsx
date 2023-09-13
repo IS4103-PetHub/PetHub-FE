@@ -1,6 +1,7 @@
 import { Container, Tabs } from "@mantine/core";
 import { IconPaw, IconBuildingStore, IconUserCog } from "@tabler/icons-react";
 import Head from "next/head";
+import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
 import InternalUserTable from "@/components/users/InternalUserTable";
 import PetBusinessTable from "@/components/users/PetBusinessTable";

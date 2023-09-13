@@ -1,7 +1,6 @@
 import {
   Button,
   TextInput,
-  Select,
   Group,
   Container,
   createStyles,
@@ -21,7 +20,11 @@ import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
 import { CreateInternalUserPayload } from "@/types/types";
 import { validatePassword } from "@/util";
 
-export function CreateInternalUserForm() {
+export function CreateInternalUserForm({
+  onUserCreated,
+}: {
+  onUserCreated: (success: boolean) => void;
+}) {
   const useStyles = createStyles((theme) => ({
     backgroundEffect: {
       height: "100%",
@@ -76,7 +79,10 @@ export function CreateInternalUserForm() {
         icon: <IconCheck />,
         message: `Internal User created successfully!`,
       });
+
+      onUserCreated(true);
     } catch (error: any) {
+      onUserCreated(false);
       notifications.show({
         title: "Error Creating Account",
         color: "red",

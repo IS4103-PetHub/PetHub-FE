@@ -186,7 +186,15 @@ export default function InternalUserTable() {
         size="lg"
         padding="md"
       >
-        <UserDetails user={selectedRecord} />
+        <UserDetails
+          user={selectedRecord}
+          onUserDeleted={(success) => {
+            if (success) {
+              handleViewDetailsCloseModal();
+            }
+            refetch();
+          }}
+        />
       </Modal>
       <Modal
         opened={isCreateModalOpen}
@@ -195,7 +203,14 @@ export default function InternalUserTable() {
         size="lg"
         padding="md"
       >
-        <CreateInternalUserForm />
+        <CreateInternalUserForm
+          onUserCreated={(success) => {
+            if (success) {
+              setCreateModalOpen(false);
+            }
+            refetch();
+          }}
+        />
       </Modal>
     </>
   );

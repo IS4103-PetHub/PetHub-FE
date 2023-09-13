@@ -6,22 +6,23 @@ import {
   Text,
   Modal,
   Title,
-  Container,
   Grid,
   Col,
-  Center,
-  Box,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
+import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import { formatAccountTypeEnum } from "@/components/util/EnumHelper";
-import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
+import { useDeleteInternalUser } from "@/hooks/internal-user";
+import { AccountTypeEnum } from "@/types/constants";
 import { InternalUser, PetBusiness, PetOwner, User } from "@/types/types";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
-  // onDeactivate: () => void; This method should call hook to deactivate user acc
-  // onActivate: () => void; This method should call hook to activate user acc
+  onUserDeleted: (success: boolean) => void;
 };
 
 const getUserName = (user: any): string => {
@@ -94,7 +95,7 @@ const UserDetail = ({ user, userName }: { user: User; userName: string }) => (
   </>
 );
 
-const ActivateDeactivateButton = ({
+const DeleteButton = ({
   user,
   openModal,
 }: {
@@ -103,22 +104,15 @@ const ActivateDeactivateButton = ({
 }) => (
   <Grid gutter="md">
     <Col span={12}>
-      {user.accountStatus === AccountStatusEnum.Active && (
-        <Button
-          fullWidth
-          variant="outline"
-          size="lg"
-          onClick={openModal}
-          color="red"
-        >
-          Deactivate
-        </Button>
-      )}
-      {user.accountStatus === AccountStatusEnum.Inactive && (
-        <Button fullWidth variant="outline" size="lg" color="teal">
-          Activate
-        </Button>
-      )}
+      <Button
+        fullWidth
+        variant="outline"
+        size="lg"
+        onClick={openModal}
+        color="red"
+      >
+        Delete
+      </Button>
     </Col>
   </Grid>
 );
@@ -158,7 +152,7 @@ const InternalUserDetails = ({
         </Col>
       </Grid>
     </Paper>
-    <ActivateDeactivateButton user={user} openModal={open} />
+    <DeleteButton user={user} openModal={open} />
   </>
 );
 
@@ -204,7 +198,6 @@ const PetBusinessDetails = ({
         </Col>
       </Grid>
     </Paper>
-    <ActivateDeactivateButton user={user} openModal={open} />
   </>
 );
 
@@ -250,26 +243,60 @@ const PetOwnerDetails = ({
         </Col>
       </Grid>
     </Paper>
-    <ActivateDeactivateButton user={user} openModal={open} />
   </>
 );
 
-type DeactivateAccountModalProps = {
+type DeleteAccountModalProps = {
   closeModal: () => void;
   opened: boolean;
   name: string;
+  userId: number;
+  onUserDeleted: (success: boolean) => void;
 };
 
-const DeactivateAccountModal = ({
+const DeleteAccountModal = ({
   closeModal,
   opened,
   name,
-}: DeactivateAccountModalProps) => {
+  userId,
+  onUserDeleted,
+}: DeleteAccountModalProps) => {
   const form = useForm({
     initialValues: {
-      userId: "",
+      userId: userId,
     },
   });
+
+  const deleteInternalUserMutation = useDeleteInternalUser();
+  const deleteInternalUserAccount = async (
+    values: { userId: number },
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    try {
+      await deleteInternalUserMutation.mutateAsync(userId);
+      notifications.show({
+        title: "Account Deleted",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Internal User deleted successfully!`,
+      });
+      onUserDeleted(true);
+      closeModal();
+    } catch (error: any) {
+      onUserDeleted(false);
+      notifications.show({
+        title: "Error Deleting Account",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
 
   return (
     <>
@@ -283,17 +310,15 @@ const DeactivateAccountModal = ({
         padding="1.5rem"
         size="md"
       >
-        <Title order={2}>
-          Are you sure you want to deactivate {name} account?
-        </Title>
+        <Title order={2}>Are you sure you want to delete {name} account?</Title>
         {/* the follow values should be the user ID */}
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
+        <form onSubmit={form.onSubmit(deleteInternalUserAccount)}>
           <Group mt="25px" position="right">
             <Button type="reset" color="gray" onClick={closeModal}>
               Cancel
             </Button>
             <Button color="red" type="submit">
-              Deactivate
+              Delete
             </Button>
           </Group>
         </form>
@@ -302,7 +327,7 @@ const DeactivateAccountModal = ({
   );
 };
 
-const UserDetails = ({ user }: UserDetailsProps) => {
+const UserDetails = ({ user, onUserDeleted }: UserDetailsProps) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   if (!user) return null;
@@ -344,10 +369,12 @@ const UserDetails = ({ user }: UserDetailsProps) => {
   return (
     <>
       {UserDetailsComponent}
-      <DeactivateAccountModal
+      <DeleteAccountModal
         closeModal={close}
         opened={opened}
         name={userName}
+        userId={user.userId}
+        onUserDeleted={onUserDeleted}
       />
     </>
   );
