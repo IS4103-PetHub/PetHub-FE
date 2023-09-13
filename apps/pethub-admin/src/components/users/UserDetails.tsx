@@ -22,8 +22,8 @@ import { AccountTypeEnum } from "@/types/constants";
 import { InternalUser, PetBusiness, PetOwner, User } from "@/types/types";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
-  onUserDeleted: (success: boolean) => void;
-  sessionUserId: number;
+  onUserDeleted?: (success: boolean) => void;
+  sessionUserId?: number;
 };
 
 const getUserName = (user: any): string => {
@@ -346,6 +346,8 @@ const UserDetails = ({
   sessionUserId,
 }: UserDetailsProps) => {
   const [opened, { open, close }] = useDisclosure(false);
+  const propSessionUserId = sessionUserId || -1;
+  const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
 
   if (!user) return null;
 
@@ -391,8 +393,8 @@ const UserDetails = ({
         opened={opened}
         name={userName}
         userId={user.userId}
-        onUserDeleted={onUserDeleted}
-        sessionUserId={sessionUserId}
+        onUserDeleted={propOnUserDeleted}
+        sessionUserId={propSessionUserId}
       />
     </>
   );
