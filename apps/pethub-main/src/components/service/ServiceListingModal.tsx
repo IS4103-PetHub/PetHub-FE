@@ -30,7 +30,7 @@ import { ServiceCategoryEnum } from "@/types/constants";
 import {
   CreateServiceListingPayload,
   ServiceListing,
-  UploadServiceListingPayload,
+  UpdateServiceListingPayload,
 } from "@/types/types";
 
 interface ServiceListingModalProps {
@@ -77,71 +77,54 @@ const ServiceListingModal = ({
 
   const { data: tags } = useGetAllTags();
 
-  type createServiceFormValues = typeof serviceListingForm.values;
-
-  const createServiceListingMutation = useCreateServiceListing();
-  const handleCreateService = async (values: createServiceFormValues) => {
-    // send request to create service
-    try {
-      const payload: CreateServiceListingPayload = {
-        petBusinessId: userId, // get userid from server props
-        title: values.title,
-        description: values.description,
-        category: values.category as ServiceCategoryEnum,
-        basePrice: values.basePrice,
-        tagIds: values.tags.map((tagId) => parseInt(tagId)),
-      };
-      await createServiceListingMutation.mutateAsync(payload);
-      notifications.show({
-        message: "Service Successfully Created",
-        color: "green",
-        autoClose: 5000,
-      });
-      refetch();
-      serviceListingForm.reset();
-      setImagePreview(null);
-      onClose();
-    } catch (error) {
-      notifications.show({
-        title: "Error Creating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
-      });
-    }
-  };
+  type ServiceFormValues = typeof serviceListingForm.values;
 
   const queryClient = useQueryClient();
+  const createServiceListingMutation = useCreateServiceListing();
   const updateServiceListingMutation =
     usePatchServiceListingByServiceId(queryClient);
-  const handleUpdateService = async (values: createServiceFormValues) => {
-    // send request to update service
+  const handleAction = async (values: ServiceFormValues) => {
     try {
-      const payload: UploadServiceListingPayload = {
-        serviceListingId: values.serviceListingId,
-        title: values.title,
-        description: values.description,
-        category: values.category as ServiceCategoryEnum,
-        basePrice: values.basePrice,
-        tagIds: values.tags.map((tagId) => parseInt(tagId)),
-      };
-      const result = await updateServiceListingMutation.mutateAsync(payload);
-      notifications.show({
-        message: "Service Successfully Updated",
-        color: "green",
-        autoClose: 5000,
-      });
+      if (isUpdate) {
+        const payload: UpdateServiceListingPayload = {
+          serviceListingId: values.serviceListingId,
+          title: values.title,
+          description: values.description,
+          category: values.category as ServiceCategoryEnum,
+          basePrice: values.basePrice,
+          tagIds: values.tags.map((tagId) => parseInt(tagId)),
+        };
+        const result = await updateServiceListingMutation.mutateAsync(payload);
+        notifications.show({
+          message: "Service Successfully Updated",
+          color: "green",
+          autoClose: 5000,
+        });
+      } else {
+        const payload: CreateServiceListingPayload = {
+          petBusinessId: userId, // get userid from server props
+          title: values.title,
+          description: values.description,
+          category: values.category as ServiceCategoryEnum,
+          basePrice: values.basePrice,
+          tagIds: values.tags.map((tagId) => parseInt(tagId)),
+        };
+        await createServiceListingMutation.mutateAsync(payload);
+        notifications.show({
+          message: "Service Successfully Created",
+          color: "green",
+          autoClose: 5000,
+        });
+      }
       refetch();
       serviceListingForm.reset();
       setImagePreview(null);
       onClose();
     } catch (error) {
       notifications.show({
-        title: "Error Updating Account",
+        title: isUpdate
+          ? "Error Updating Service Listing"
+          : "Error Creating Service Listing",
         color: "red",
         icon: <IconX />,
         message:
@@ -216,9 +199,7 @@ const ServiceListingModal = ({
       <Container fluid>
         <form
           onSubmit={serviceListingForm.onSubmit((values) =>
-            isUpdate
-              ? handleUpdateService(values)
-              : handleCreateService(values),
+            handleAction(values),
           )}
         >
           <TextInput

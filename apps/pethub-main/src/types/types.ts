@@ -105,7 +105,7 @@ export interface CreateServiceListingPayload {
   tagIds: number[];
 }
 
-export interface UploadServiceListingPayload {
+export interface UpdateServiceListingPayload {
   serviceListingId: number;
   title: string;
   description: string;

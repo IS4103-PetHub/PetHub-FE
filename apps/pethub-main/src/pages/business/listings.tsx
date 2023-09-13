@@ -45,7 +45,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     setIsCreateServiceModalOpen(false);
   };
 
-  const { data: servcieListings, refetch: refetchServiceListings } =
+  const { data: serviceListings, refetch: refetchServiceListings } =
     useGetServiceListingByPetBusinessIdAndAccountType(userId);
 
   return (
@@ -71,7 +71,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       </Group>
 
       <ServiceListTable
-        serviceListings={servcieListings}
+        serviceListings={serviceListings}
         userId={userId}
         refetch={refetchServiceListings}
       />

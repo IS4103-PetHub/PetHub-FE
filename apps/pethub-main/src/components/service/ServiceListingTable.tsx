@@ -48,7 +48,7 @@ const ServiceListTable = ({
       refetch();
     } catch (error) {
       notifications.show({
-        title: "Error Deleting Account",
+        title: "Error Deleting Service Listing",
         color: "red",
         icon: <IconX />,
         message:
@@ -160,7 +160,7 @@ const ServiceListTable = ({
         title="Are you sure you want to delete this service listing?"
       >
         <Button variant="danger" onClick={handleDeleteService}>
-          Yes, Delete
+          Confirm
         </Button>
         <Button variant="outline" onClick={closeDelete}>
           Cancel
