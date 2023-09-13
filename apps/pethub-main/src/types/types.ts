@@ -1,5 +1,12 @@
-import { AccountStatusEnum, AccountTypeEnum } from "./constants";
+import {
+  AccountStatusEnum,
+  AccountTypeEnum,
+  ServiceCategoryEnum,
+} from "./constants";
 
+/*
+ * USER MANAGEMENT
+ */
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -64,4 +71,46 @@ export interface PetOwner extends User {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+}
+
+/*
+ * SERVICE MANAGEMENT
+ */
+export interface ServiceListing {
+  serviceListingId: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  // address
+  dateCreated: string;
+  lastUpdated?: string;
+}
+
+export interface Tag {
+  tagId: number;
+  name: string;
+  dateCreated: string;
+  lastUpdated?: string;
+}
+
+export interface CreateServiceListingPayload {
+  title: string;
+  description: string;
+  petBusinessId: number;
+  category: ServiceCategoryEnum;
+  basePrice: number;
+  // address
+  tagIds: number[];
+}
+
+export interface UploadServiceListingPayload {
+  serviceListingId: number;
+  title: string;
+  description: string;
+  category: ServiceCategoryEnum;
+  basePrice: number;
+  // address
+  tagIds: number[];
 }

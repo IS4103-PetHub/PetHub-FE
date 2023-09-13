@@ -9,7 +9,11 @@ import {
   Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUser } from "@tabler/icons-react";
+import {
+  IconBoxMultiple,
+  IconLayoutDashboard,
+  IconUser,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -74,6 +78,16 @@ const useStyles = createStyles((theme) => ({
 
 const data = [
   { link: "/business/account", label: "My Account", icon: IconUser },
+  {
+    link: "/business/dashboard",
+    label: "Dashboard",
+    icon: IconLayoutDashboard,
+  },
+  {
+    link: "/business/listings",
+    label: "Service Listings",
+    icon: IconBoxMultiple,
+  },
 ];
 
 const SideNavBar = () => {
