@@ -18,7 +18,13 @@ import UserDetails from "./UserDetails";
 
 const PAGE_SIZE = 15;
 
-export default function InternalUserTable() {
+interface InternalUserTableProps {
+  sessionUserId: number;
+}
+
+export default function InternalUserTable({
+  sessionUserId,
+}: InternalUserTableProps) {
   const {
     data: internalUsers = [],
     isLoading,
@@ -194,6 +200,7 @@ export default function InternalUserTable() {
             }
             refetch();
           }}
+          sessionUserId={sessionUserId}
         />
       </Modal>
       <Modal

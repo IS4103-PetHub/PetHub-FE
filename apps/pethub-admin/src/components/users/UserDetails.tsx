@@ -23,6 +23,7 @@ import { InternalUser, PetBusiness, PetOwner, User } from "@/types/types";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted: (success: boolean) => void;
+  sessionUserId: number;
 };
 
 const getUserName = (user: any): string => {
@@ -252,6 +253,7 @@ type DeleteAccountModalProps = {
   name: string;
   userId: number;
   onUserDeleted: (success: boolean) => void;
+  sessionUserId: number;
 };
 
 const DeleteAccountModal = ({
@@ -260,6 +262,7 @@ const DeleteAccountModal = ({
   name,
   userId,
   onUserDeleted,
+  sessionUserId,
 }: DeleteAccountModalProps) => {
   const form = useForm({
     initialValues: {
@@ -273,27 +276,37 @@ const DeleteAccountModal = ({
     event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
-    try {
-      await deleteInternalUserMutation.mutateAsync(userId);
-      notifications.show({
-        title: "Account Deleted",
-        color: "green",
-        icon: <IconCheck />,
-        message: `Internal User deleted successfully!`,
-      });
-      onUserDeleted(true);
-      closeModal();
-    } catch (error: any) {
+    if (sessionUserId !== userId) {
+      try {
+        await deleteInternalUserMutation.mutateAsync(userId);
+        notifications.show({
+          title: "Account Deleted",
+          color: "green",
+          icon: <IconCheck />,
+          message: `Internal User deleted successfully!`,
+        });
+        onUserDeleted(true);
+        closeModal();
+      } catch (error: any) {
+        onUserDeleted(false);
+        notifications.show({
+          title: "Error Deleting Account",
+          color: "red",
+          icon: <IconX />,
+          message:
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message,
+        });
+      }
+    } else {
       onUserDeleted(false);
       notifications.show({
         title: "Error Deleting Account",
         color: "red",
         icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        message: "You are trying to delete yourself!",
       });
     }
   };
@@ -327,7 +340,11 @@ const DeleteAccountModal = ({
   );
 };
 
-const UserDetails = ({ user, onUserDeleted }: UserDetailsProps) => {
+const UserDetails = ({
+  user,
+  onUserDeleted,
+  sessionUserId,
+}: UserDetailsProps) => {
   const [opened, { open, close }] = useDisclosure(false);
 
   if (!user) return null;
@@ -375,6 +392,7 @@ const UserDetails = ({ user, onUserDeleted }: UserDetailsProps) => {
         name={userName}
         userId={user.userId}
         onUserDeleted={onUserDeleted}
+        sessionUserId={sessionUserId}
       />
     </>
   );

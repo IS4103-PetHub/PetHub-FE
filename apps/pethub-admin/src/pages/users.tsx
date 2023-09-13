@@ -8,7 +8,11 @@ import PetBusinessTable from "@/components/users/PetBusinessTable";
 import PetOwnerTable from "@/components/users/PetOwnerTable";
 import { AccountTypeEnum } from "@/types/constants";
 
-function AccountTabs() {
+interface AccountTabsProps {
+  sessionUserId: number;
+}
+
+function AccountTabs({ sessionUserId }: AccountTabsProps) {
   return (
     <Tabs defaultValue={AccountTypeEnum.PetOwner}>
       <Tabs.List>
@@ -41,13 +45,17 @@ function AccountTabs() {
       </Tabs.Panel>
 
       <Tabs.Panel value={AccountTypeEnum.InternalUser} pt="xs">
-        <InternalUserTable />
+        <InternalUserTable sessionUserId={sessionUserId} />
       </Tabs.Panel>
     </Tabs>
   );
 }
 
-export default function UsersManagement() {
+interface UsersManagementProps {
+  userId: number;
+}
+
+export default function UsersManagement({ userId }: UsersManagementProps) {
   return (
     <>
       <Head>
@@ -59,9 +67,19 @@ export default function UsersManagement() {
       <main>
         <Container fluid>
           <PageTitle title="Users Management" />
-          <AccountTabs />
+          <AccountTabs sessionUserId={userId} />
         </Container>
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (!session) return { props: {} };
+
+  const userId = (session.user as any)["userId"];
+
+  return { props: { userId } };
 }
