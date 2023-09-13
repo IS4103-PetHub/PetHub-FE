@@ -15,7 +15,6 @@
     "eslint-config-custom": "*",
     "eslint-plugin-prettier": "^5.0.0",
     "prettier": "^3.0.0",
-    "react": "^17.0.2",
     "typescript": "^4.5.2"
   },
   "dependencies": {
@@ -28,6 +27,7 @@
     "@tabler/icons-react": "^2.31.0",
     "mantine-datatable": "^2.9.11",
     "next": "^13.4.19",
+    "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-password-strength-bar": "^0.4.1"
   }
