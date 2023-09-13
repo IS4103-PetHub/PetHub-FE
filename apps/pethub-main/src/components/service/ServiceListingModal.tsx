@@ -187,8 +187,8 @@ const ServiceListingModal = ({
         isUpdate
           ? "Update Service Listing"
           : isView
-          ? "View Service Listing"
-          : "Create Service Listing"
+            ? "View Service Listing"
+            : "Create Service Listing"
       }
       centered
       size="80%"
