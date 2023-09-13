@@ -1,7 +1,7 @@
 import { Button, Divider, Grid, Group, TextInput } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { TransformedValues, isEmail, useForm } from "@mantine/form";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconCalendar,
@@ -10,8 +10,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
 import { PetBusiness, PetOwner } from "@/types/types";
@@ -29,9 +28,7 @@ const AccountInfoForm = ({
   refetch,
 }: AccountInfoFormProps) => {
   const queryClient = useQueryClient();
-  const router = useRouter();
   const [isEditing, setIsEditing] = useToggle();
-  const [visible, { toggle }] = useDisclosure(false);
 
   const form = useForm({
     initialValues: {

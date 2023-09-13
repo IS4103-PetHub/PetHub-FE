@@ -56,3 +56,23 @@ export interface CreateInternalUserPayload {
   adminRole: string;
   password: string;
 }
+export interface CreateUserGroupPayload {
+  name: string;
+  description: string;
+  permissionIds?: number[];
+}
+
+export interface UserGroup {
+  groupId: number;
+  name: string;
+  description: string;
+  permissions?: Permission[];
+  userGroupMemberships?: any[];
+}
+
+export interface Permission {
+  permissionId: number;
+  code: string;
+  name: string;
+  description: string;
+}
