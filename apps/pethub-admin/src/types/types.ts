@@ -23,6 +23,7 @@ export interface UserGroup {
   name: string;
   description: string;
   permissions?: Permission[];
+  userGroupMemberships?: any[];
 }
 
 export interface Permission {

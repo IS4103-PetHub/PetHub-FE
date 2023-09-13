@@ -8,7 +8,6 @@ const RBAC_PERMISSIONS_API = "api/rbac/permissions";
 export const useGetAllUserGroups = () => {
   return useQuery({
     queryKey: ["user-groups"],
-    refetchOnMount: true,
     queryFn: async () =>
       (
         await axios.get(
@@ -28,9 +27,15 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
         )
       ).data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["user-groups"],
+    onSuccess: (data) => {
+      const newUserGroup: UserGroup = {
+        groupId: data.groupId,
+        name: data.name,
+        description: data.description,
+      };
+      queryClient.setQueryData<UserGroup[]>(["user-groups"], (old = []) => {
+        return [...old, newUserGroup];
+        // appends newly created record to cache
       });
     },
   });
@@ -48,7 +53,7 @@ export const useDeleteUserGroup = (queryClient: QueryClient) => {
     onSuccess: (data, id) => {
       queryClient.setQueryData<UserGroup[]>(["user-groups"], (old = []) => {
         return old.filter((group) => group.groupId !== id);
-        // removes deleted record from cached data
+        // removes deleted record from cache
       });
     },
   });

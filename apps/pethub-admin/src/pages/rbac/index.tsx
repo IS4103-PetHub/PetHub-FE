@@ -8,12 +8,7 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
-import {
-  useCreateUserGroup,
-  useDeleteUserGroup,
-  useGetAllUserGroups,
-} from "@/hooks/rbac";
-import { CreateUserGroupPayload } from "@/types/types";
+import { useDeleteUserGroup, useGetAllUserGroups } from "@/hooks/rbac";
 
 export default function RBAC() {
   const router = useRouter();
@@ -30,7 +25,7 @@ export default function RBAC() {
         title: "User Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: "User group deleted successfully.",
+        message: `User group ${id} deleted successfully.`,
       });
       // refetch();
     } catch (error: any) {

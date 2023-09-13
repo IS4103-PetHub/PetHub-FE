@@ -20,6 +20,19 @@ interface UserGroupFormProps {
 }
 
 const UserGroupForm = ({ permissions, form, onCreate }: UserGroupFormProps) => {
+  const handleCheckSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.currentTarget.checked) {
+      // append all permissions id to checked permissionIds
+      form.setFieldValue(
+        "permissionIds",
+        permissions.map((permission) => permission.permissionId),
+      );
+    } else {
+      // reset permissionIds to empty
+      form.setFieldValue("permissionIds", []);
+    }
+  };
+
   const permissionsCheckboxes = (
     <Grid gutter="xl">
       {permissions.map((permission) => (
@@ -53,14 +66,7 @@ const UserGroupForm = ({ permissions, form, onCreate }: UserGroupFormProps) => {
           label="Select all"
           mb={-8}
           checked={form.values.permissionIds.length === permissions.length}
-          onChange={(event) =>
-            event.currentTarget.checked
-              ? form.setFieldValue(
-                  "permissionIds",
-                  permissions.map((permission) => permission.permissionId),
-                )
-              : form.setFieldValue("permissionIds", [])
-          }
+          onChange={(event) => handleCheckSelectAll(event)}
         />
       </Group>
       <Divider mb="md" />

@@ -6,10 +6,6 @@ import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { UserGroup } from "@/types/types";
 
-/* 
-  THIS IMPLEMENTATION USES MANTINE DATATABLE AND PAGINATION. May move pagination into backend rendering in the future.
-*/
-
 const PAGE_SIZE = 15;
 interface UserGroupsTableProps {
   userGroups: UserGroup[];
