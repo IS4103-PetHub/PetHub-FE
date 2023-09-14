@@ -8,6 +8,7 @@ import {
   Title,
   Grid,
   Col,
+  TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
@@ -17,12 +18,22 @@ import { IconX } from "@tabler/icons-react";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import { formatAccountTypeEnum } from "@/components/util/EnumHelper";
-import { useDeleteInternalUser } from "@/hooks/internal-user";
-import { AccountTypeEnum } from "@/types/constants";
-import { InternalUser, PetBusiness, PetOwner, User } from "@/types/types";
+import {
+  useDeleteInternalUser,
+  useUpdateInternalUser,
+} from "@/hooks/internal-user";
+import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
+import {
+  InternalUser,
+  PetBusiness,
+  PetOwner,
+  UpdateInternalUserPayload,
+  User,
+} from "@/types/types";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
+  onUserUpdated?: (success: boolean) => void;
   sessionUserId?: number;
 };
 
@@ -96,20 +107,14 @@ const UserDetail = ({ user, userName }: { user: User; userName: string }) => (
   </>
 );
 
-const DeleteButton = ({
-  user,
-  openModal,
-}: {
-  user: User;
-  openModal: () => void;
-}) => (
+const DeleteButton = ({ openDeleteModal }: { openDeleteModal: () => void }) => (
   <Grid gutter="md">
     <Col span={12}>
       <Button
         fullWidth
         variant="outline"
         size="lg"
-        onClick={openModal}
+        onClick={openDeleteModal}
         color="red"
       >
         Delete
@@ -118,13 +123,31 @@ const DeleteButton = ({
   </Grid>
 );
 
+const UpdateButton = ({ openUpdateModal }: { openUpdateModal: () => void }) => (
+  <Grid gutter="md">
+    <Col span={12}>
+      <Button
+        fullWidth
+        variant="outline"
+        size="lg"
+        onClick={openUpdateModal}
+        color="yellow"
+      >
+        Update
+      </Button>
+    </Col>
+  </Grid>
+);
+
 const InternalUserDetails = ({
   user,
-  open,
+  openDeleteModal,
+  openUpdateModal,
   userName,
 }: {
   user: InternalUser;
-  open: () => void;
+  openDeleteModal: () => void;
+  openUpdateModal: () => void;
   userName: string;
 }) => (
   <>
@@ -151,19 +174,22 @@ const InternalUserDetails = ({
         <Col span={6}>
           <Text>{user.adminRole}</Text>
         </Col>
+        <Col span={6}>
+          <UpdateButton openUpdateModal={openUpdateModal} />
+        </Col>
+        <Col span={6}>
+          <DeleteButton openDeleteModal={openDeleteModal} />
+        </Col>
       </Grid>
     </Paper>
-    <DeleteButton user={user} openModal={open} />
   </>
 );
 
 const PetBusinessDetails = ({
   user,
-  open,
   userName,
 }: {
   user: PetBusiness;
-  open: () => void;
   userName: string;
 }) => (
   <>
@@ -204,11 +230,9 @@ const PetBusinessDetails = ({
 
 const PetOwnerDetails = ({
   user,
-  open,
   userName,
 }: {
   user: PetOwner;
-  open: () => void;
   userName: string;
 }) => (
   <>
@@ -247,8 +271,9 @@ const PetOwnerDetails = ({
   </>
 );
 
+//Delete Logic
 type DeleteAccountModalProps = {
-  closeModal: () => void;
+  closeDeleteModal: () => void;
   opened: boolean;
   name: string;
   userId: number;
@@ -257,7 +282,7 @@ type DeleteAccountModalProps = {
 };
 
 const DeleteAccountModal = ({
-  closeModal,
+  closeDeleteModal,
   opened,
   name,
   userId,
@@ -286,7 +311,7 @@ const DeleteAccountModal = ({
           message: `Internal User deleted successfully!`,
         });
         onUserDeleted(true);
-        closeModal();
+        closeDeleteModal();
       } catch (error: any) {
         onUserDeleted(false);
         notifications.show({
@@ -315,7 +340,7 @@ const DeleteAccountModal = ({
     <>
       <Modal
         opened={opened}
-        onClose={closeModal}
+        onClose={closeDeleteModal}
         closeOnClickOutside={false}
         closeOnEscape={false}
         withCloseButton={false}
@@ -324,10 +349,9 @@ const DeleteAccountModal = ({
         size="md"
       >
         <Title order={2}>Are you sure you want to delete {name} account?</Title>
-        {/* the follow values should be the user ID */}
         <form onSubmit={form.onSubmit(deleteInternalUserAccount)}>
-          <Group mt="25px" position="right">
-            <Button type="reset" color="gray" onClick={closeModal}>
+          <Group mt="25px" position="center">
+            <Button type="reset" color="gray" onClick={closeDeleteModal}>
               Cancel
             </Button>
             <Button color="red" type="submit">
@@ -340,14 +364,119 @@ const DeleteAccountModal = ({
   );
 };
 
+//Update Logic
+type UpdateInternalUserModalProps = {
+  closeUpdateModal: () => void;
+  opened: boolean;
+  user: InternalUser;
+  onUserUpdated: (success: boolean) => void;
+};
+
+const UpdateInternalUserModal = ({
+  closeUpdateModal,
+  opened,
+  user,
+  onUserUpdated,
+}: UpdateInternalUserModalProps) => {
+  const form = useForm({
+    initialValues: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+    },
+  });
+
+  type FormValues = typeof form.values;
+  const updateInternalUserMutation = useUpdateInternalUser();
+  const updateInternalUserAccount = async (
+    payload: UpdateInternalUserPayload,
+  ) => {
+    try {
+      await updateInternalUserMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Account Updated",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Internal User updated successfully!`,
+      });
+      onUserUpdated(true);
+      closeUpdateModal();
+    } catch (error: any) {
+      onUserUpdated(false);
+      notifications.show({
+        title: "Error Updating Account",
+        color: "red",
+        icon: <IconX />,
+        message: error.message,
+      });
+    }
+  };
+
+  function handleSubmit(values: FormValues) {
+    const payload: UpdateInternalUserPayload = {
+      userId: user.userId,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      //default to create adminRole ADMINISTRATOR
+      adminRole: InternalUserRoleEnum.admin,
+    };
+    updateInternalUserAccount(payload);
+  }
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={closeUpdateModal}
+      closeOnClickOutside={false}
+      closeOnEscape={false}
+      withCloseButton={false}
+      centered
+      padding="1.5rem"
+      size="md"
+    >
+      <Title order={2}>Update User Details</Title>
+      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+        <Grid mt="md" mb="md">
+          <Grid.Col span={12}>
+            <TextInput
+              label="First name"
+              placeholder="First name"
+              {...form.getInputProps("firstName")}
+            />
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <TextInput
+              label="Last name"
+              placeholder="Last name"
+              {...form.getInputProps("lastName")}
+            />
+          </Grid.Col>
+        </Grid>
+        <Group mt="25px" position="center">
+          <Button type="reset" color="gray" onClick={closeUpdateModal}>
+            Cancel
+          </Button>
+          <Button type="submit" color="yellow">
+            Update
+          </Button>
+        </Group>
+      </form>
+    </Modal>
+  );
+};
+
 const UserDetails = ({
   user,
   onUserDeleted,
   sessionUserId,
+  onUserUpdated,
 }: UserDetailsProps) => {
-  const [opened, { open, close }] = useDisclosure(false);
+  const [deleteModalOpened, { open: openDelete, close: closeDelete }] =
+    useDisclosure(false);
+  const [updateModalOpened, { open: openUpdate, close: closeUpdate }] =
+    useDisclosure(false);
   const propSessionUserId = sessionUserId || -1;
   const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
+  const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
 
   if (!user) return null;
 
@@ -359,27 +488,20 @@ const UserDetails = ({
       UserDetailsComponent = (
         <InternalUserDetails
           user={user as InternalUser}
-          open={open}
+          openDeleteModal={openDelete}
+          openUpdateModal={openUpdate}
           userName={userName}
         />
       );
       break;
     case AccountTypeEnum.PetBusiness:
       UserDetailsComponent = (
-        <PetBusinessDetails
-          user={user as PetBusiness}
-          open={open}
-          userName={userName}
-        />
+        <PetBusinessDetails user={user as PetBusiness} userName={userName} />
       );
       break;
     case AccountTypeEnum.PetOwner:
       UserDetailsComponent = (
-        <PetOwnerDetails
-          user={user as PetOwner}
-          open={open}
-          userName={userName}
-        />
+        <PetOwnerDetails user={user as PetOwner} userName={userName} />
       );
       break;
     default:
@@ -389,12 +511,18 @@ const UserDetails = ({
     <>
       {UserDetailsComponent}
       <DeleteAccountModal
-        closeModal={close}
-        opened={opened}
+        closeDeleteModal={closeDelete}
+        opened={deleteModalOpened}
         name={userName}
         userId={user.userId}
         onUserDeleted={propOnUserDeleted}
         sessionUserId={propSessionUserId}
+      />
+      <UpdateInternalUserModal
+        closeUpdateModal={closeUpdate}
+        opened={updateModalOpened}
+        user={user as InternalUser}
+        onUserUpdated={propOnUserUpdated}
       />
     </>
   );

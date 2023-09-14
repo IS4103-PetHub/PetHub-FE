@@ -200,6 +200,12 @@ export default function InternalUserTable({
             }
             refetch();
           }}
+          onUserUpdated={(success) => {
+            if (success) {
+              handleViewDetailsCloseModal();
+            }
+            refetch();
+          }}
           sessionUserId={sessionUserId}
         />
       </Modal>

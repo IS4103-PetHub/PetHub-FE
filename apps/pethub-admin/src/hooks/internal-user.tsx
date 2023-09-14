@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { CreateInternalUserPayload, InternalUser } from "@/types/types";
+import {
+  CreateInternalUserPayload,
+  InternalUser,
+  UpdateInternalUserPayload,
+} from "@/types/types";
 
 const INTERNAL_USER_API = "api/users/internal-users";
 
@@ -47,6 +51,19 @@ export const useDeleteInternalUser = () => {
       return (
         await axios.delete(
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${userId}`,
+        )
+      ).data;
+    },
+  });
+};
+
+export const useUpdateInternalUser = () => {
+  return useMutation({
+    mutationFn: async (payload: UpdateInternalUserPayload) => {
+      return (
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${payload.userId}`,
+          payload,
         )
       ).data;
     },
