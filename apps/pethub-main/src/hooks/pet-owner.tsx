@@ -31,11 +31,6 @@ export const useUpdatePetOwner = (queryClient: QueryClient) => {
         )
       ).data;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ["pet-owners", data.user.accountType, data.userId],
-      });
-    },
   });
 };
 
