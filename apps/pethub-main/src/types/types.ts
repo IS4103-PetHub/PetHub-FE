@@ -67,9 +67,11 @@ export interface PetOwner extends User {
 }
 
 export interface Address {
-  name: string;
+  addressId?: string;
+  addressName: string;
   line1: string;
   line2: string;
-  postal: string;
-  isDefault: boolean;
+  postalCode: string;
+  petBusinessId?: Number;
+  petBusinessApplicationId?: Number;
 }

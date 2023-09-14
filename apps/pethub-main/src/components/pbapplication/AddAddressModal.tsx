@@ -20,8 +20,6 @@ export const AddAddressModal = ({
 }) => {
   const router = useRouter();
   const theme = useMantineTheme();
-  const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
-    useState(false);
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -29,7 +27,6 @@ export const AddAddressModal = ({
       // Let closing animation finish so it's not visible
       const timer = setTimeout(() => {
         addAddressForm.reset();
-        setIsForgotPasswordSuccessful(false);
       }, 800);
     }
   }, [opened]);
@@ -53,6 +50,7 @@ export const AddAddressModal = ({
         duration: 300,
         timingFunction: "linear",
       }}
+      title="Add a new address"
     >
       <form
         onSubmit={addAddressForm.onSubmit((values: any) =>
@@ -60,33 +58,34 @@ export const AddAddressModal = ({
         )}
       >
         <Box>
-          <Title align="center" mb="sm">
-            Add a new address
-          </Title>
           <TextInput
+            mb="sm"
             withAsterisk
-            label="Address Name"
+            label="Address name"
             placeholder="Service HQ"
-            {...addAddressForm.getInputProps("name")}
+            {...addAddressForm.getInputProps("addressName")}
           />
           <TextInput
+            mb="sm"
             withAsterisk
-            label="Address Line 1"
+            label="Address line 1"
             placeholder="2 Esplanade Road"
             {...addAddressForm.getInputProps("line1")}
           />
           <TextInput
-            label="Address Line 2"
+            mb="sm"
+            label="Address line 2"
             {...addAddressForm.getInputProps("line2")}
           />
           <TextInput
+            mb="sm"
             withAsterisk
-            label="Address Postal Code"
-            placeholder="SG123456"
-            {...addAddressForm.getInputProps("postal")}
+            label="Postal code"
+            placeholder="123456"
+            {...addAddressForm.getInputProps("postalCode")}
           />
           <Group position="right">
-            <Button mt="xs" mb="sm" onClick={() => close()} color="red">
+            <Button mt="xs" mb="sm" onClick={() => close()} color="gray">
               Cancel
             </Button>
             <Button mt="xs" type="submit" mb="sm">

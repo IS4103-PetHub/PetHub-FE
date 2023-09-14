@@ -75,7 +75,7 @@ const useStyles = createStyles((theme) => ({
 const data = [
   {
     link: "/business/application", // This link should be active provided that the PB session's AccountStatus is "INACTIVE" (change it to "NEW" in backend or smth?)
-    label: "Apply as Pet Business partner",
+    label: "Business Partner Application",
     icon: IconUser,
   },
   {

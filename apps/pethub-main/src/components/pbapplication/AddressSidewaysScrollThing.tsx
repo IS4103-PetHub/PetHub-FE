@@ -7,14 +7,12 @@ type AddressSidewaysScrollThingProps = {
   addressList: Address[];
   openModal: () => void;
   onRemoveAddress: (address: Address) => void;
-  onSetDefaultAddress: (address: Address) => void;
 };
 
 export const AddressSidewaysScrollThing = ({
   addressList,
   openModal,
   onRemoveAddress,
-  onSetDefaultAddress,
 }: AddressSidewaysScrollThingProps) => {
   const addresses = addressList.map((address, idx) => (
     <Box
@@ -27,7 +25,6 @@ export const AddressSidewaysScrollThing = ({
       <AddressCard
         address={address}
         onRemoveAddress={() => onRemoveAddress(address)}
-        onSetDefaultAddress={() => onSetDefaultAddress(address)}
       />
     </Box>
   ));
@@ -42,12 +39,13 @@ export const AddressSidewaysScrollThing = ({
         borderRadius: theme.radius.md,
         borderWidth: "10px",
       })}
+      pt="0.4rem"
     >
       <Box
+        p="sm"
         style={{
           overflowX: "auto",
           whiteSpace: "nowrap",
-          padding: "10px 0",
           width: "100%",
         }}
       >

@@ -184,7 +184,7 @@ export default function SignUp() {
       handleLogin({
         email: payload.email,
         password: payload.password,
-        accountType: AccountTypeEnum.PetOwner,
+        accountType: AccountTypeEnum.PetBusiness,
       });
     } catch (error: any) {
       notifications.show({

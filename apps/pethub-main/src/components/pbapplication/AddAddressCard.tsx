@@ -8,17 +8,22 @@ export const AddAddressCard = () => {
     <Card
       w={190}
       h={125}
-      padding="md"
       shadow="xs"
       withBorder
       radius="md"
       ml="xs"
       mr="xs"
-      sx={{ backgroundColor: "rgba(231, 245, 255, 1)", cursor: "pointer" }}
+      sx={(theme) => ({
+        cursor: "pointer",
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[8]
+            : theme.colors.gray[2],
+      })}
     >
       <Card.Section sx={{ height: "100%" }}>
-        <Center sx={{ height: "100%" }}>
-          <IconPlus size="4rem" color="#228be6" />
+        <Center sx={{ height: "100%" }} pt="md">
+          <IconPlus size="3rem" />
         </Center>
       </Card.Section>
     </Card>

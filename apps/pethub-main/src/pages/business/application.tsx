@@ -9,23 +9,34 @@ import {
   FileInput,
   Text,
   SimpleGrid,
+  Select,
+  Alert,
 } from "@mantine/core";
 import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconSend, IconUpload } from "@tabler/icons-react";
+import { IconSend, IconUpload, IconAlertCircle } from "@tabler/icons-react";
 import React from "react";
 import { PageTitle } from "web-ui";
 import FileMiniIcon from "@/components/common/file/FileMiniIcon";
 import { PDFPreview } from "@/components/common/file/PDFPreview";
 import { AddAddressModal } from "@/components/pbapplication/AddAddressModal";
 import { AddressSidewaysScrollThing } from "@/components/pbapplication/AddressSidewaysScrollThing";
-import { PetBusinessTypeEnum } from "@/types/constants";
+import ApplicationStatusBadge from "@/components/pbapplication/ApplicationStatusAlert";
+import ApplicationStatusAlert from "@/components/pbapplication/ApplicationStatusAlert";
+import {
+  BusinessApplicationStatusEnum,
+  PetBusinessTypeEnum,
+} from "@/types/constants";
 import { Address } from "@/types/types";
+import { validateAddressName } from "@/util";
 
 export default function Application() {
   const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
+
+  // temporary hardcode
+  const applicationStatus = BusinessApplicationStatusEnum.Pending;
 
   const businessTypeData = Object.entries(PetBusinessTypeEnum).map(
     ([key, value]) => ({
@@ -36,8 +47,7 @@ export default function Application() {
 
   const applicationForm = useForm({
     initialValues: {
-      businessIcon: null,
-      businessType: [],
+      businessType: "",
       businessAddresses: [],
       businessEmail: "",
       websiteURL: "",
@@ -46,9 +56,7 @@ export default function Application() {
     },
 
     validate: {
-      businessIcon: (value) => null,
-      businessType: (value) =>
-        value.length === 0 ? "Business type is required." : null,
+      businessType: (value) => (!value ? "Business type is required." : null),
       businessEmail: (value) =>
         /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
           ? null
@@ -56,7 +64,7 @@ export default function Application() {
       businessAddresses: (value) => null,
       websiteURL: (value) =>
         !/^(http|https):\/\/[^ "]+$/.test(value) || !value
-          ? "Invalid or missing website URL."
+          ? "Invalid or missing website URL. Website must start with http:// or https://"
           : null,
       attachments: (value) => null,
     },
@@ -64,16 +72,16 @@ export default function Application() {
 
   const addressForm = useForm({
     initialValues: {
-      name: "",
+      addressName: "",
       line1: "",
       line2: "",
-      postal: "",
-      isDefault: false,
+      postalCode: "",
     },
     validate: {
-      name: (value) => (!value ? "Address name is required." : null),
+      addressName: (value) => validateAddressName(value),
       line1: (value) => (!value ? "Address is required." : null),
-      postal: (value) => (!value ? "Address postal code is required." : null),
+      postalCode: (value) =>
+        !value ? "Address postal code is required." : null,
     },
   });
 
@@ -87,11 +95,6 @@ export default function Application() {
   */
   type addressFormValues = typeof addressForm.values;
   function handleAddAddress(values: addressFormValues) {
-    // Check if this is the first address being added, if yes set it to default
-    if (applicationForm.values.businessAddresses.length === 0) {
-      values.isDefault = true;
-    }
-
     const updatedAddresses = [
       ...applicationForm.values.businessAddresses,
       values,
@@ -102,29 +105,6 @@ export default function Application() {
     });
     close();
     addressForm.reset();
-  }
-
-  function handleSetDefaultAddress(address: Address) {
-    // Reset the default values of all other addresses to false except the chosen one
-    const updatedAddresses = applicationForm.values.businessAddresses.map(
-      (a) => {
-        if (a === address) {
-          return {
-            ...a,
-            isDefault: true,
-          };
-        } else {
-          return {
-            ...a,
-            isDefault: false,
-          };
-        }
-      },
-    );
-    applicationForm.setValues({
-      ...applicationForm.values,
-      businessAddresses: updatedAddresses,
-    });
   }
 
   function handleRemoveAddress(address: Address) {
@@ -160,37 +140,31 @@ export default function Application() {
   };
 
   return (
-    <Container p="lg">
-      <Group>
-        <PageTitle title="Business Partner Application" />
+    <Container mt="50px" mb="xl">
+      <ApplicationStatusAlert applicationStatus={applicationStatus} />{" "}
+      {/*Render this only when there is an attached PB application to the PB*/}
+      <Group position="left">
+        <PageTitle title="Pet Business Application" />
       </Group>
-
+      <Text size="sm" color="dimmed">
+        Apply to be a Pet Business Partner with us today!
+      </Text>
       <form
         onSubmit={applicationForm.onSubmit((values: any) =>
           handleSubmit(values),
         )}
       >
         <Grid mt="sm" mb="sm" gutter="lg">
-          <Grid.Col span={10}>
-            <FileInput
-              valueComponent={FileMiniIcon}
-              accept="image/png,image/jpeg"
-              label="Business profile image"
-              placeholder="Upload an icon here"
-              icon={<IconUpload size="1rem" />}
-              {...applicationForm.getInputProps("businessIcon")}
-            />
-          </Grid.Col>
-          <Grid.Col span={10}>
-            <MultiSelect
+          <Grid.Col span={12}>
+            <Select
               withAsterisk
               data={businessTypeData}
               label="Business type"
-              placeholder="Select all the business types that apply"
+              placeholder="Select a business type"
               {...applicationForm.getInputProps("businessType")}
             />
           </Grid.Col>
-          <Grid.Col span={10}>
+          <Grid.Col span={12}>
             <TextInput
               withAsterisk
               label="Business email"
@@ -198,7 +172,7 @@ export default function Application() {
               {...applicationForm.getInputProps("businessEmail")}
             />
           </Grid.Col>
-          <Grid.Col span={10}>
+          <Grid.Col span={12}>
             <TextInput
               withAsterisk
               placeholder="https://www.igroomdoggos.com"
@@ -206,7 +180,7 @@ export default function Application() {
               {...applicationForm.getInputProps("websiteURL")}
             />
           </Grid.Col>
-          <Grid.Col span={10}>
+          <Grid.Col span={12}>
             <Textarea
               placeholder="Description of services..."
               label="Business description"
@@ -216,7 +190,7 @@ export default function Application() {
               {...applicationForm.getInputProps("businessDescription")}
             />
           </Grid.Col>
-          <Grid.Col span={10}>
+          <Grid.Col span={12}>
             <Text fz="0.875rem" color="#212529" fw={500}>
               Business address
             </Text>
@@ -224,10 +198,9 @@ export default function Application() {
               addressList={applicationForm.values.businessAddresses}
               openModal={open}
               onRemoveAddress={handleRemoveAddress}
-              onSetDefaultAddress={handleSetDefaultAddress}
             />
           </Grid.Col>
-          <Grid.Col span={10}>
+          <Grid.Col span={12}>
             <Dropzone
               styles={{ inner: { pointerEvents: "all" } }}
               accept={PDF_MIME_TYPE}
@@ -248,7 +221,7 @@ export default function Application() {
               </SimpleGrid>
             </Dropzone>
           </Grid.Col>
-          <Grid.Col span={10}>
+          <Grid.Col span={12}>
             <Button
               type="submit"
               fullWidth

@@ -16,3 +16,9 @@ export const enum AccountStatusEnum {
   Inactive = "INACTIVE",
   Suspended = "SUSPENDED",
 }
+
+export const enum BusinessApplicationStatusEnum {
+  Pending = "PENDING",
+  Rejected = "REJECTED",
+  Approved = "APPROVED",
+}
