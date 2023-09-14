@@ -22,11 +22,12 @@ export interface UserGroup {
   groupId: number;
   name: string;
   description: string;
-  permissions?: Permission[];
+  userGroupPermissions?: Permission[];
   userGroupMemberships?: any[];
 }
 
 export interface Permission {
+  groupId?: number;
   permissionId: number;
   code: string;
   name: string;

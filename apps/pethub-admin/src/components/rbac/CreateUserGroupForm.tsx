@@ -13,13 +13,17 @@ import React from "react";
 import { Permission } from "@/types/types";
 import PermissionsCheckboxCard from "./PermissionsCheckboxCard";
 
-interface UserGroupFormProps {
+interface CreateUserGroupFormProps {
   permissions: Permission[];
   form: any;
   onCreate(values: any): void;
 }
 
-const UserGroupForm = ({ permissions, form, onCreate }: UserGroupFormProps) => {
+const CreateUserGroupForm = ({
+  permissions,
+  form,
+  onCreate,
+}: CreateUserGroupFormProps) => {
   const handleCheckSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.currentTarget.checked) {
       // append all permissions id to checked permissionIds
@@ -78,4 +82,4 @@ const UserGroupForm = ({ permissions, form, onCreate }: UserGroupFormProps) => {
   );
 };
 
-export default UserGroupForm;
+export default CreateUserGroupForm;

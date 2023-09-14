@@ -5,7 +5,7 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { PageTitle } from "web-ui";
-import UserGroupForm from "@/components/rbac/UserGroupForm";
+import CreateUserGroupForm from "@/components/rbac/CreateUserGroupForm";
 import { useCreateUserGroup, useGetAllPermissions } from "@/hooks/rbac";
 import { CreateUserGroupPayload } from "@/types/types";
 
@@ -60,7 +60,7 @@ export default function CreateUserGroup() {
   return (
     <Container fluid>
       <PageTitle title="Create User Group" mb="md" />
-      <UserGroupForm
+      <CreateUserGroupForm
         permissions={permissions}
         form={form}
         onCreate={handleCreateUserGroup}

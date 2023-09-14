@@ -59,6 +59,21 @@ export const useDeleteUserGroup = (queryClient: QueryClient) => {
   });
 };
 
+export const useGetUserGroupById = (id: number) => {
+  return useQuery({
+    queryKey: ["user-groups", id],
+    queryFn: async () => {
+      return (
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${id}`,
+        )
+      ).data as UserGroup;
+    },
+  });
+};
+
+// permissions hook
+
 export const useGetAllPermissions = () => {
   return useQuery({
     queryKey: ["permissions"],

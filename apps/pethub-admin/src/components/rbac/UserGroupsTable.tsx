@@ -1,12 +1,10 @@
-import { Button, Group } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
-import sortBy from "lodash/sortBy";
+import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import React from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { useGetAllUserGroups } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
 interface UserGroupsTableProps {
@@ -26,6 +24,7 @@ const UserGroupsTable = ({
   onSortStatusChange,
   onPageChange,
 }: UserGroupsTableProps) => {
+  const router = useRouter();
   return (
     <DataTable
       minHeight={150}
@@ -52,9 +51,9 @@ const UserGroupsTable = ({
           render: (group) => (
             <Group>
               <ViewActionButton
-                onClick={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
+                onClick={() =>
+                  router.push(`${router.asPath}/user-groups/${group.groupId}`)
+                }
               />
               <EditActionButton
                 onClick={function (): void {
