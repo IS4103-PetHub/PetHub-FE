@@ -109,7 +109,7 @@ export function CreateInternalUserForm({
 
   return (
     <>
-      <Container className={classes.whiteBackground} p="50px">
+      <Container className={classes.whiteBackground} p="10px">
         <Group>
           <IconUserCog size="2rem" />
           <PageTitle title="Create Internal User" />

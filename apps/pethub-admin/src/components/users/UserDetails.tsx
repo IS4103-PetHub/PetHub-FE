@@ -17,6 +17,7 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import { formatAccountTypeEnum } from "@/components/util/EnumHelper";
 import {
   useDeleteInternalUser,
@@ -51,7 +52,7 @@ const getUserName = (user: any): string => {
 
 const UserDetail = ({ user, userName }: { user: User; userName: string }) => (
   <>
-    <Paper p="md" shadow="xs" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Text align="center" size="xl" weight={500}>
         {userName}
       </Text>
@@ -126,14 +127,8 @@ const DeleteButton = ({ openDeleteModal }: { openDeleteModal: () => void }) => (
 const UpdateButton = ({ openUpdateModal }: { openUpdateModal: () => void }) => (
   <Grid gutter="md">
     <Col span={12}>
-      <Button
-        fullWidth
-        variant="outline"
-        size="lg"
-        onClick={openUpdateModal}
-        color="yellow"
-      >
-        Update
+      <Button fullWidth variant="outline" size="lg" onClick={openUpdateModal}>
+        Edit
       </Button>
     </Col>
   </Grid>
@@ -152,7 +147,7 @@ const InternalUserDetails = ({
 }) => (
   <>
     <UserDetail user={user} userName={userName} />
-    <Paper p="md" shadow="xs" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Grid gutter="md">
         <Col span={6}>
           <Text>First Name:</Text>
@@ -166,13 +161,6 @@ const InternalUserDetails = ({
         </Col>
         <Col span={6}>
           <Text>{user.lastName}</Text>
-        </Col>
-
-        <Col span={6}>
-          <Text>Admin Role:</Text>
-        </Col>
-        <Col span={6}>
-          <Text>{user.adminRole}</Text>
         </Col>
         <Col span={6}>
           <UpdateButton openUpdateModal={openUpdateModal} />
@@ -194,7 +182,7 @@ const PetBusinessDetails = ({
 }) => (
   <>
     <UserDetail user={user} userName={userName} />
-    <Paper p="md" shadow="xs" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Grid gutter="md">
         <Col span={6}>
           <Text>UEN:</Text>
@@ -210,12 +198,12 @@ const PetBusinessDetails = ({
           <Text>{user.businessType || "-"}</Text>
         </Col>
 
-        <Col span={6}>
+        {/* <Col span={6}>
           <Text>Business Description:</Text>
         </Col>
         <Col span={6}>
           <Text>{user.businessDescription || "-"}</Text>
-        </Col>
+        </Col> */}
 
         <Col span={6}>
           <Text>Website:</Text>
@@ -237,7 +225,7 @@ const PetOwnerDetails = ({
 }) => (
   <>
     <UserDetail user={user} userName={userName} />
-    <Paper p="md" shadow="xs" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Grid gutter="md">
         <Col span={6}>
           <Text>First Name:</Text>
@@ -350,7 +338,7 @@ const DeleteAccountModal = ({
       >
         <Title order={2}>Are you sure you want to delete {name} account?</Title>
         <form onSubmit={form.onSubmit(deleteInternalUserAccount)}>
-          <Group mt="25px" position="center">
+          <Group mt="25px" position="right">
             <Button type="reset" color="gray" onClick={closeDeleteModal}>
               Cancel
             </Button>
@@ -455,9 +443,7 @@ const UpdateInternalUserModal = ({
           <Button type="reset" color="gray" onClick={closeUpdateModal}>
             Cancel
           </Button>
-          <Button type="submit" color="yellow">
-            Update
-          </Button>
+          <Button type="submit">Save</Button>
         </Group>
       </form>
     </Modal>
