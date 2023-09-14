@@ -13,7 +13,6 @@ function isSharedPage(path: string) {
 /*
   Current page protection rules:
 
-  1. A non-logged in user can access any path (e.g. /signup) as long as the path is not prepended with /business, /customer, 
       or the path does not end with a shared page route (e.g. /account)
 
   2. A path prepended with /business can only be accessed by PB, /customer can only be accessed by PO, 
@@ -77,6 +76,7 @@ export default withAuth(
       return NextResponse.redirect(new URL("/", req.url));
     }
   },
+
   {
     callbacks: {
       // Bypass the authorized callback that NextAuth checks for by allowing everything (and using the Next.js middleware function to check instead)

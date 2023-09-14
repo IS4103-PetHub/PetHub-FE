@@ -11,3 +11,24 @@ export interface ResetPasswordPayload {
   token: string | null;
   newPassword: string;
 }
+
+export interface CreateUserGroupPayload {
+  name: string;
+  description: string;
+  permissionIds?: number[];
+}
+
+export interface UserGroup {
+  groupId: number;
+  name: string;
+  description: string;
+  permissions?: Permission[];
+  userGroupMemberships?: any[];
+}
+
+export interface Permission {
+  permissionId: number;
+  code: string;
+  name: string;
+  description: string;
+}

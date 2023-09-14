@@ -9,3 +9,10 @@ export enum PetBusinessTypeEnum {
   Service = "Pet Services",
   Healthcare = "Healthcare",
 }
+
+export const enum AccountStatusEnum {
+  Pending = "PENDING",
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+  Suspended = "SUSPENDED",
+}

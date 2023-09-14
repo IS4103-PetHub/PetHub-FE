@@ -16,7 +16,6 @@ import { IconChevronDown } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { AccountTypeEnum } from "@/types/constants";
 import { LoginModal } from "../login/LoginModal";
 const HEADER_HEIGHT = rem(80);
 

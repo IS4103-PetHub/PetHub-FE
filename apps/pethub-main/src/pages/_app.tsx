@@ -50,7 +50,7 @@ export function App({ Component, pageProps }: AppProps) {
     }
   }
 
-  function SideBarCheck() {
+  function sideBarCheck() {
     if (
       status !== "authenticated" ||
       (session && session.user["accountType"] !== AccountTypeEnum.PetBusiness)
@@ -87,7 +87,7 @@ export function App({ Component, pageProps }: AppProps) {
               <Notifications />
               <AppShell
                 header={headerBarCheck()}
-                navbar={SideBarCheck()}
+                navbar={sideBarCheck()}
                 padding={0}
               >
                 {status === "loading" ? (
@@ -99,7 +99,7 @@ export function App({ Component, pageProps }: AppProps) {
                       justifyContent: "center",
                     }}
                   >
-                    <Loader size="5rem" />
+                    <Loader size="3rem" />
                   </Container>
                 ) : (
                   <Component {...pageProps} />
