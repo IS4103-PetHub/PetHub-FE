@@ -32,3 +32,10 @@ export interface Permission {
   name: string;
   description: string;
 }
+
+export interface Tag {
+  tagId: number;
+  name: string;
+  dateCreated: string;
+  lastUpdated: string;
+}
