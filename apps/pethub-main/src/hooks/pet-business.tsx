@@ -31,11 +31,6 @@ export const useUpdatePetBusiness = (queryClient: QueryClient) => {
         )
       ).data;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ["pet-businesses", data.user.accountType, data.userId],
-      });
-    },
   });
 };
 
