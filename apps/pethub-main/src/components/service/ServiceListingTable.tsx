@@ -1,4 +1,4 @@
-import { Container, Modal, Paper, Table, Button } from "@mantine/core";
+import { Container, Modal, Paper, Group, Button, Badge } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
@@ -8,7 +8,11 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { DataTable } from "mantine-datatable";
 import { useState } from "react";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import EditActionButton from "web-ui/shared/EditActionButton";
+import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/serviceListingHooks";
 import { ServiceListing } from "@/types/types";
 import ServiceListingModal from "./ServiceListingModal";
@@ -34,11 +38,10 @@ const ServiceListTable = ({
 
   const queryClient = useQueryClient();
   const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
-  const handleDeleteService = async () => {
+  const handleDeleteService = async (serviceListingId: number) => {
     try {
-      const result = await deleteServiceListingMutation.mutateAsync(
-        selectedService.serviceListingId,
-      );
+      const result =
+        await deleteServiceListingMutation.mutateAsync(serviceListingId);
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",
@@ -60,76 +63,111 @@ const ServiceListTable = ({
     }
   };
 
-  const rows = serviceListings
-    ? serviceListings.map((listing) => (
-        <tr key={listing.serviceListingId}>
-          <td>{listing.title}</td>
-          <td>{listing.description}</td>
-          <td>{listing.category}</td>
-          <td>${listing.basePrice.toFixed(2)}</td>
-          <td>
-            <ul>
-              {listing.tags.map((tag) => (
-                <li key={tag.tagId}>{tag.name}</li>
-              ))}
-            </ul>
-          </td>
-          <td>
-            <Button.Group orientation="vertical">
-              <Button
-                onClick={() => {
-                  setSelectedService(listing);
-                  openView();
-                }}
-                leftIcon={<IconEye />}
-                variant="light"
-              >
-                View
-              </Button>
-              <Button
-                onClick={() => {
-                  setSelectedService(listing);
-                  openUpdate();
-                }}
-                leftIcon={<IconPencil />}
-                variant="light"
-              >
-                Update
-              </Button>
-              <Button
-                onClick={() => {
-                  setSelectedService(listing);
-                  openDelete();
-                }}
-                leftIcon={<IconTrashFilled />}
-                variant="light"
-                color="red"
-              >
-                Delete
-              </Button>
-            </Button.Group>
-          </td>
-        </tr>
-      ))
-    : [];
-
   return (
     <>
-      <Table highlightOnHover withBorder withColumnBorders>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Base Price</th>
-            <th>Tags</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
+      <DataTable
+        minHeight={150}
+        columns={[
+          {
+            accessor: "title",
+            title: "Title",
+            textAlignment: "left",
+            width: "10vw", // Width in viewport width (vw) units
+            sortable: true,
+          },
+          {
+            accessor: "description",
+            title: "Description",
+            textAlignment: "left",
+            width: "30vw",
+            sortable: true,
+            render: (record) => (
+              <div
+                style={{
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "break-word",
+                  wordWrap: "break-word",
+                }}
+              >
+                {record.description}
+              </div>
+            ),
+          },
+          {
+            accessor: "basePrice",
+            title: "Price",
+            textAlignment: "left",
+            width: "10vw", // Width in viewport width (vw) units
+            sortable: true,
+            render: (record) => {
+              return `$ ${record.basePrice.toFixed(2)}`;
+            },
+          },
+          {
+            accessor: "category",
+            title: "Category",
+            textAlignment: "left",
+            width: "10vw", // Width in viewport width (vw) units
+            sortable: true,
+            render: (record) =>
+              record.category
+                .replace(/_/g, " ")
+                .toLowerCase()
+                .replace(/\b\w/g, (char) => char.toUpperCase()),
+          },
+          {
+            accessor: "tags",
+            title: "Tags",
+            textAlignment: "left",
+            width: "10vw", // Width in viewport width (vw) units
+            render: (record) =>
+              record.tags.length > 0 ? (
+                record.tags.map((tag) => (
+                  <Badge key={tag.tagId} color="blue">
+                    {tag.name}
+                  </Badge>
+                ))
+              ) : (
+                <Badge color="gray">No tags</Badge>
+              ),
+          },
+          {
+            // actions
+            accessor: "",
+            title: "Actions",
+            width: "10vw", // Width in viewport width (vw) units
+            render: (service) => (
+              <Group>
+                <ViewActionButton
+                  onClick={function (): void {
+                    setSelectedService(service);
+                    openView();
+                  }}
+                />
+                <EditActionButton
+                  onClick={function (): void {
+                    setSelectedService(service);
+                    openUpdate();
+                  }}
+                />
+                <DeleteActionButtonModal
+                  title={`Are you sure you want to delete ${service.title}?`}
+                  subtitle="The customer would no longer be able to view this Service."
+                  onDelete={() => handleDeleteService(service.serviceListingId)}
+                />
+              </Group>
+            ),
+          },
+        ]}
+        records={serviceListings}
+        withBorder
+        withColumnBorders
+        striped
+        verticalSpacing="sm"
+        idAccessor="serviceListingId"
+      />
 
-      {/* Update */}
+      {/* View */}
       <ServiceListingModal
         opened={isServiceModalOpen}
         onClose={closeView}
@@ -150,22 +188,6 @@ const ServiceListTable = ({
         userId={userId}
         refetch={refetch}
       />
-
-      {/* Delete */}
-      <Modal
-        opened={isDeleteModalOpen}
-        onClose={closeDelete}
-        centered
-        size="50%"
-        title="Are you sure you want to delete this service listing?"
-      >
-        <Button variant="danger" onClick={handleDeleteService}>
-          Confirm
-        </Button>
-        <Button variant="outline" onClick={closeDelete}>
-          Cancel
-        </Button>
-      </Modal>
     </>
   );
 };

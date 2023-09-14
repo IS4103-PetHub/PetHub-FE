@@ -21,6 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import ServiceListingModal from "@/components/service/ServiceListingModal";
 import ServiceListTable from "@/components/service/ServiceListingTable";
 import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/serviceListingHooks";
@@ -53,9 +54,10 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       <PageTitle title="Service Listings Management" />
 
       <Group mt="xl" position="right">
-        <Button onClick={openCreateServiceModal}>
-          Create New Service Listing
-        </Button>
+        <LargeCreateButton
+          text="Create Service Listing"
+          onClick={openCreateServiceModal}
+        />
       </Group>
 
       <Group mt="xs">

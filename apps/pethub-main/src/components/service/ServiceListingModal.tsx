@@ -1,4 +1,3 @@
-import { close } from "fs";
 import {
   Container,
   TextInput,
@@ -9,21 +8,20 @@ import {
   Group,
   Select,
   NumberInput,
-  Slider,
   FileInput,
   Image,
+  Stack,
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { getSession } from "next-auth/react";
 
 import React, { useEffect, useState } from "react";
 import {
   useCreateServiceListing,
-  usePatchServiceListingByServiceId,
+  useUpdateServiceListing,
 } from "@/hooks/serviceListingHooks";
 import { useGetAllTags } from "@/hooks/tagsHooks";
 import { ServiceCategoryEnum } from "@/types/constants";
@@ -81,8 +79,7 @@ const ServiceListingModal = ({
 
   const queryClient = useQueryClient();
   const createServiceListingMutation = useCreateServiceListing();
-  const updateServiceListingMutation =
-    usePatchServiceListingByServiceId(queryClient);
+  const updateServiceListingMutation = useUpdateServiceListing(queryClient);
   const handleAction = async (values: ServiceFormValues) => {
     try {
       if (isUpdate) {
@@ -156,7 +153,7 @@ const ServiceListingModal = ({
       if (!values.basePrice) errors.basePrice = "Price is mandatory.";
       // if (!values.address) errors.location = 'Address is mandatory.';
       // if (!values.attachments) errors.attachments = 'Attachments are mandatory.';
-      if (!values.confirmation)
+      if (!values.confirmation && !isUpdate)
         errors.confirmation = "Confirmation is mandatory.";
       if (values.description.length > 500) {
         errors.description = "Description cannot exceed 500 characters.";
@@ -202,49 +199,51 @@ const ServiceListingModal = ({
             handleAction(values),
           )}
         >
-          <TextInput
-            withAsterisk
-            disabled={isView}
-            label="Title"
-            placeholder=""
-            {...serviceListingForm.getInputProps("title")}
-          />
+          <Stack ml="lg">
+            <TextInput
+              withAsterisk
+              disabled={isView}
+              label="Title"
+              placeholder=""
+              {...serviceListingForm.getInputProps("title")}
+            />
 
-          <TextInput
-            withAsterisk
-            disabled={isView}
-            label="Description"
-            placeholder=""
-            {...serviceListingForm.getInputProps("description")}
-          />
+            <Textarea
+              withAsterisk
+              disabled={isView}
+              label="Description"
+              placeholder=""
+              autosize
+              {...serviceListingForm.getInputProps("description")}
+            />
 
-          <Select
-            withAsterisk
-            disabled={isView}
-            label="Category"
-            placeholder="Pick one"
-            // need change to this to use enums
-            data={categoryOptions}
-            {...serviceListingForm.getInputProps("category")}
-          />
+            <Select
+              withAsterisk
+              disabled={isView}
+              label="Category"
+              placeholder="Pick one"
+              // need change to this to use enums
+              data={categoryOptions}
+              {...serviceListingForm.getInputProps("category")}
+            />
 
-          <NumberInput
-            withAsterisk
-            disabled={isView}
-            label="Price"
-            min={0}
-            step={0.01}
-            precision={2}
-            {...serviceListingForm.getInputProps("basePrice")}
-          />
+            <NumberInput
+              withAsterisk
+              disabled={isView}
+              label="Price"
+              min={0}
+              step={0.01}
+              precision={2}
+              {...serviceListingForm.getInputProps("basePrice")}
+            />
 
-          {/*
+            {/*
                         TODO: this is for addresss
                         - once the BE has address, get the list of address from the pet business
                         - let user select the address from the list of addresss
                     */}
 
-          {/* <Select
+            {/* <Select
                         withAsterisk
                         disabled={isView}
                         label="Select an Address"
@@ -255,7 +254,7 @@ const ServiceListingModal = ({
                         {...serviceListingForm.getInputProps('address')}
                     /> */}
 
-          {/* <FileInput
+            {/* <FileInput
                         withAsterisk
                         disabled={isView}
                         label="Upload Display Image"
@@ -270,39 +269,40 @@ const ServiceListingModal = ({
                         <Image src={imagePreview} alt="Image Preview" style={{ maxWidth: "100%" }} />
                     )} */}
 
-          <MultiSelect
-            disabled={isView}
-            label="Tags"
-            placeholder="Select your Tags"
-            data={
-              tags
-                ? tags.map((tag) => ({
-                    value: tag.tagId.toString(),
-                    label: tag.name,
-                  }))
-                : []
-            }
-            {...serviceListingForm.getInputProps("tags")}
-          />
+            <MultiSelect
+              disabled={isView}
+              label="Tags"
+              placeholder="Select your Tags"
+              data={
+                tags
+                  ? tags.map((tag) => ({
+                      value: tag.tagId.toString(),
+                      label: tag.name,
+                    }))
+                  : []
+              }
+              {...serviceListingForm.getInputProps("tags")}
+            />
 
-          {!isView && (
-            <>
-              <Checkbox
-                mt="md"
-                label={
-                  isUpdate
-                    ? "I confirm that I want to update this service listing "
-                    : "I agree to all the terms and conditions."
-                }
-                {...serviceListingForm.getInputProps("confirmation", {
-                  type: "checkbox",
-                })}
-              />
-              <Group position="right" mt="md">
-                <Button type="submit">{isUpdate ? "Update" : "Create"}</Button>
-              </Group>
-            </>
-          )}
+            {!isView && (
+              <>
+                {!isUpdate && (
+                  <Checkbox
+                    mt="md"
+                    label={"I agree to all the terms and conditions."}
+                    {...serviceListingForm.getInputProps("confirmation", {
+                      type: "checkbox",
+                    })}
+                  />
+                )}
+                <Group position="right" mt="md">
+                  <Button type="submit">
+                    {isUpdate ? "Update" : "Create"}
+                  </Button>
+                </Group>
+              </>
+            )}
+          </Stack>
         </form>
       </Container>
     </Modal>

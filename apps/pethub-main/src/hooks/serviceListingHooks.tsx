@@ -35,7 +35,7 @@ export const useGetServiceListingByPetBusinessIdAndAccountType = (
 };
 
 // PATCH Service Listing by Serivce Id
-export const usePatchServiceListingByServiceId = (queryClient: QueryClient) => {
+export const useUpdateServiceListing = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(
