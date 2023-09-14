@@ -11,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
+import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
 import { PetBusiness, PetOwner } from "@/types/types";
@@ -108,6 +109,11 @@ const AccountInfoForm = ({
           error.message,
       });
     }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    form.reset();
   };
 
   const handleSubmit = (values: TransformedValues<typeof form>) => {
@@ -278,29 +284,11 @@ const AccountInfoForm = ({
         </Grid.Col>
       </Grid>
 
-      <Group mt={25}>
-        <Button
-          type="reset"
-          display={isEditing ? "block" : "none"}
-          color="gray"
-          onClick={() => {
-            setIsEditing(false);
-            form.reset();
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          display={isEditing ? "none" : "block"}
-          leftIcon={<IconPencil size="1rem" />}
-          onClick={() => setIsEditing(true)}
-        >
-          Edit
-        </Button>
-        <Button type="submit" display={isEditing ? "block" : "none"}>
-          Save
-        </Button>
-      </Group>
+      <EditCancelSaveButtons
+        isEditing={isEditing}
+        onClickCancel={handleCancel}
+        onClickEdit={() => setIsEditing(true)}
+      />
     </form>
   );
 };
