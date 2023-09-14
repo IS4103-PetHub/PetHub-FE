@@ -5,15 +5,22 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
+  IconCheck,
   IconClipboardText,
   IconLockOpen,
   IconUsersGroup,
+  IconX,
 } from "@tabler/icons-react";
-import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import UserGroupInfoForm from "@/components/rbac/UserGroupInfoForm";
-import { useGetUserGroupById } from "@/hooks/rbac";
+import UserGroupPermissionsForm from "@/components/rbac/UserGroupPermissionsForm";
+import { useGetUserGroupById, useUpdateUserGroup } from "@/hooks/rbac";
 
 interface UserGroupDetailsProps {
   groupId: number;
@@ -21,15 +28,126 @@ interface UserGroupDetailsProps {
 
 export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
 
-  const { data: userGroup } = useGetUserGroupById(groupId);
-  console.log(userGroup);
+  const [isEditingGroupInfo, setIsEditingGroupInfo] = useToggle();
+  const [isEditingPermissions, setIsEditingPermissions] = useToggle();
+  const [openedAccordions, setOpenedAccordions] = useState<string[]>([
+    "groupInfo",
+    "groupPermissions",
+  ]);
 
-  const defaultValues = ["groupInfo", "groupPermissions"];
+  const { data: userGroup, refetch } = useGetUserGroupById(groupId);
+  // group info form
+  const groupInfoForm = useForm({
+    initialValues: {
+      name: userGroup?.name ?? "",
+      description: userGroup?.description ?? "",
+    },
+  });
+
+  // permissions form
+  function getCurrentPermissionIds() {
+    return (
+      userGroup?.userGroupPermissions?.map(
+        (userGroupPermission) => userGroupPermission.permissionId,
+      ) ?? []
+    );
+  }
+
+  const permissionsForm = useForm({
+    initialValues: {
+      permissionIds: getCurrentPermissionIds(),
+    },
+  });
+
+  useEffect(() => {
+    // update form values from fetched object
+    groupInfoForm.setFieldValue("name", userGroup?.name ?? "");
+    groupInfoForm.setFieldValue("description", userGroup?.description ?? "");
+    permissionsForm.setFieldValue("permissionIds", getCurrentPermissionIds());
+  }, [userGroup]);
+
+  const handleChangeAccordion = (values: string[]) => {
+    // prevent user from closing an accordion when updating
+    if (!values.includes("groupInfo") && isEditingGroupInfo) {
+      return;
+    }
+    if (!values.includes("groupPermissions") && isEditingPermissions) {
+      return;
+    }
+    setOpenedAccordions(values);
+  };
+
+  const handleCancelEditGroupInfo = () => {
+    setIsEditingGroupInfo(false);
+    groupInfoForm.setFieldValue("name", userGroup?.name ?? "");
+    groupInfoForm.setFieldValue("description", userGroup?.description ?? "");
+  };
+
+  const handleCancelEditPermissions = () => {
+    setIsEditingPermissions(false);
+    permissionsForm.setFieldValue("permissionIds", getCurrentPermissionIds());
+  };
+
+  const updateUserGroupMutation = useUpdateUserGroup(queryClient);
+
+  const handleUpdateUserGroup = async (values: any) => {
+    const isUpdatingPermissions = Object.keys(values).includes("permissionIds");
+    const payload = isUpdatingPermissions
+      ? {
+          groupId: userGroup?.groupId,
+          name: userGroup?.name,
+          description: userGroup?.description,
+          permissionIds: values.permissionIds,
+        }
+      : {
+          groupId: userGroup?.groupId,
+          name: values.name,
+          description: values.description,
+          permissionIds: getCurrentPermissionIds(),
+        };
+    try {
+      await updateUserGroupMutation.mutateAsync(payload);
+      notifications.show({
+        title: "User Group Updated",
+        color: "green",
+        icon: <IconCheck />,
+        message: isUpdatingPermissions
+          ? "User group permissions updated successfully!"
+          : "User group info updated successfully!",
+      });
+      refetch();
+
+      if (isUpdatingPermissions) {
+        setIsEditingPermissions(false);
+        permissionsForm.reset();
+      } else {
+        setIsEditingGroupInfo(false);
+        groupInfoForm.reset();
+      }
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Updating User Group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   return (
     <Container fluid>
       <PageTitle title="User Group Details" />
-      <Accordion multiple defaultValue={defaultValues}>
+      <Accordion
+        multiple
+        value={openedAccordions}
+        onChange={(values) => handleChangeAccordion(values)}
+      >
         <Accordion.Item value="groupInfo">
           <Accordion.Control>
             <Group>
@@ -40,7 +158,14 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
             </Group>
           </Accordion.Control>
           <Accordion.Panel>
-            <UserGroupInfoForm userGroup={userGroup} />
+            <UserGroupInfoForm
+              userGroup={userGroup}
+              form={groupInfoForm}
+              isEditing={isEditingGroupInfo}
+              onCancel={handleCancelEditGroupInfo}
+              onClickEdit={() => setIsEditingGroupInfo(true)}
+              onSubmit={handleUpdateUserGroup}
+            />
           </Accordion.Panel>
         </Accordion.Item>
 
@@ -49,13 +174,23 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
             <Group>
               <IconLockOpen color={theme.colors.indigo[5]} />
               <Text weight={600} size="xl">
-                Permissions ({userGroup?.userGroupPermissions?.length})
+                Permissions (
+                {isEditingPermissions
+                  ? permissionsForm.values.permissionIds.length
+                  : getCurrentPermissionIds().length}
+                )
               </Text>
             </Group>
           </Accordion.Control>
           <Accordion.Panel>
-            Configure components appearance and behavior with vast amount of
-            settings or overwrite any part of component styles
+            <UserGroupPermissionsForm
+              userGroup={userGroup}
+              form={permissionsForm}
+              isEditing={isEditingPermissions}
+              onCancel={handleCancelEditPermissions}
+              onClickEdit={() => setIsEditingPermissions(true)}
+              onSubmit={handleUpdateUserGroup}
+            />
           </Accordion.Panel>
         </Accordion.Item>
 
@@ -68,10 +203,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
               </Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
-            With new :focus-visible pseudo-class focus ring appears only when
-            user navigates with keyboard
-          </Accordion.Panel>
+          <Accordion.Panel>Memberships</Accordion.Panel>
         </Accordion.Item>
       </Accordion>
     </Container>

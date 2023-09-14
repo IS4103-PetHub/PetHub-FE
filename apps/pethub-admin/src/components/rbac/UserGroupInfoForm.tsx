@@ -1,5 +1,5 @@
 import { Stack, TextInput, Textarea, Text, Box } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { UseFormReturnType, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import React from "react";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
@@ -7,24 +7,23 @@ import { UserGroup } from "@/types/types";
 
 interface UserGroupInfoFormProps {
   userGroup?: UserGroup;
+  form: UseFormReturnType<any>;
+  isEditing: boolean;
+  onCancel(): void;
+  onClickEdit(): void;
+  onSubmit(values: any): void;
 }
 
-const UserGroupInfoForm = ({ userGroup }: UserGroupInfoFormProps) => {
-  const [isEditing, setIsEditing] = useToggle();
-  const form = useForm({
-    initialValues: {
-      name: userGroup?.name,
-      description: userGroup?.description,
-    },
-  });
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    form.reset();
-  };
-
+const UserGroupInfoForm = ({
+  userGroup,
+  form,
+  isEditing,
+  onCancel,
+  onClickEdit,
+  onSubmit,
+}: UserGroupInfoFormProps) => {
   return (
-    <form onSubmit={form.onSubmit((values) => console.log(values))}>
+    <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
       {isEditing ? (
         <Stack mb="xl">
           <TextInput
@@ -46,14 +45,14 @@ const UserGroupInfoForm = ({ userGroup }: UserGroupInfoFormProps) => {
           </Box>
           <Box>
             <Text weight="600">Description:</Text>
-            <Text>{userGroup?.description}</Text>
+            <Text>{userGroup?.description ? userGroup?.description : "-"}</Text>
           </Box>
         </>
       )}
       <EditCancelSaveButtons
         isEditing={isEditing}
-        onClickCancel={handleCancel}
-        onClickEdit={() => setIsEditing(true)}
+        onClickCancel={onCancel}
+        onClickEdit={onClickEdit}
       />
     </form>
   );

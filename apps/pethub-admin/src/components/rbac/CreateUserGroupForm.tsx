@@ -9,13 +9,15 @@ import {
   Checkbox,
   Group,
 } from "@mantine/core";
+import { UseFormReturnType } from "@mantine/form";
 import React from "react";
 import { Permission } from "@/types/types";
 import PermissionsCheckboxCard from "./PermissionsCheckboxCard";
+import SelectAllPermissionsCheckbox from "./SelectAllPermissionsCheckbox";
 
 interface CreateUserGroupFormProps {
   permissions: Permission[];
-  form: any;
+  form: UseFormReturnType<any>;
   onCreate(values: any): void;
 }
 
@@ -24,19 +26,6 @@ const CreateUserGroupForm = ({
   form,
   onCreate,
 }: CreateUserGroupFormProps) => {
-  const handleCheckSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.currentTarget.checked) {
-      // append all permissions id to checked permissionIds
-      form.setFieldValue(
-        "permissionIds",
-        permissions.map((permission) => permission.permissionId),
-      );
-    } else {
-      // reset permissionIds to empty
-      form.setFieldValue("permissionIds", []);
-    }
-  };
-
   const permissionsCheckboxes = (
     <Grid gutter="xl">
       {permissions.map((permission) => (
@@ -65,13 +54,7 @@ const CreateUserGroupForm = ({
         <Text size="xl" weight={600} mt="lg" mb="xs">
           Permissions ({form.values.permissionIds.length})
         </Text>
-        <Checkbox
-          size="md"
-          label="Select all"
-          mb={-8}
-          checked={form.values.permissionIds.length === permissions.length}
-          onChange={(event) => handleCheckSelectAll(event)}
-        />
+        <SelectAllPermissionsCheckbox permissions={permissions} form={form} />
       </Group>
       <Divider mb="md" />
       {permissionsCheckboxes}

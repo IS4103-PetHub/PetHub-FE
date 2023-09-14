@@ -41,6 +41,25 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
   });
 };
 
+export const useUpdateUserGroup = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      const payloadWithoutId = Object.fromEntries(
+        Object.entries(payload).filter(([key]) => !["groupId"].includes(key)),
+      );
+      return (
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${payload.groupId}`,
+          payloadWithoutId,
+        )
+      ).data;
+    },
+    onSuccess: (data, id) => {
+      queryClient.invalidateQueries(["user-groups", id]);
+    },
+  });
+};
+
 export const useDeleteUserGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (id: number) => {

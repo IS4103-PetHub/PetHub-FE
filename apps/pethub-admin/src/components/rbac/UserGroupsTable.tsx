@@ -55,11 +55,6 @@ const UserGroupsTable = ({
                   router.push(`${router.asPath}/user-groups/${group.groupId}`)
                 }
               />
-              <EditActionButton
-                onClick={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
               <DeleteActionButtonModal
                 title={`Are you sure you want to delete ${group.name}?`}
                 subtitle="Any users currently assigned to this user group will be unassigned."
