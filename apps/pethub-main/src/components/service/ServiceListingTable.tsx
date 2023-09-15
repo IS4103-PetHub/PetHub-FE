@@ -8,12 +8,13 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { DataTable } from "mantine-datatable";
-import { useState } from "react";
+import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import React, { useState } from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
+import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { ServiceListing } from "@/types/types";
 import ServiceListingModal from "./ServiceListingModal";
 
@@ -21,12 +22,20 @@ interface ServiceListTableProps {
   serviceListings?: ServiceListing[];
   userId: number;
   refetch(): void;
+  page: number;
+  sortStatus: DataTableSortStatus;
+  onSortStatusChange: any;
+  onPageChange(p: number): void;
 }
 
 const ServiceListTable = ({
   serviceListings,
   userId,
   refetch,
+  page,
+  sortStatus,
+  onSortStatusChange,
+  onPageChange,
 }: ServiceListTableProps) => {
   const [selectedService, setSelectedService] = useState(null);
   const [isServiceModalOpen, { close: closeView, open: openView }] =
@@ -65,48 +74,20 @@ const ServiceListTable = ({
   return (
     <>
       <DataTable
-        minHeight={150}
+        minHeight={100}
         columns={[
           {
             accessor: "title",
             title: "Title",
             textAlignment: "left",
-            width: "10vw", // Width in viewport width (vw) units
+            width: "10vw",
             sortable: true,
-          },
-          {
-            accessor: "description",
-            title: "Description",
-            textAlignment: "left",
-            width: "30vw",
-            sortable: true,
-            render: (record) => (
-              <div
-                style={{
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "break-word",
-                  wordWrap: "break-word",
-                }}
-              >
-                {record.description}
-              </div>
-            ),
-          },
-          {
-            accessor: "basePrice",
-            title: "Price",
-            textAlignment: "left",
-            width: "10vw", // Width in viewport width (vw) units
-            sortable: true,
-            render: (record) => {
-              return `$ ${record.basePrice.toFixed(2)}`;
-            },
           },
           {
             accessor: "category",
             title: "Category",
             textAlignment: "left",
-            width: "10vw", // Width in viewport width (vw) units
+            width: "10vw",
             sortable: true,
             render: (record) =>
               record.category
@@ -118,23 +99,31 @@ const ServiceListTable = ({
             accessor: "tags",
             title: "Tags",
             textAlignment: "left",
-            width: "10vw", // Width in viewport width (vw) units
+            width: "10vw",
             render: (record) =>
-              record.tags.length > 0 ? (
-                record.tags.map((tag) => (
-                  <Badge key={tag.tagId} color="blue">
-                    {tag.name}
-                  </Badge>
-                ))
-              ) : (
-                <Badge color="gray">No tags</Badge>
-              ),
+              record.tags.map((tag, index) => (
+                <React.Fragment key={tag.tagId}>
+                  <Badge color="blue">{tag.name}</Badge>
+                  {index < record.tags.length - 1 && "\u00A0"}{" "}
+                  {/* Add space if not the last tag */}
+                </React.Fragment>
+              )),
+          },
+          {
+            accessor: "basePrice",
+            title: "Price ($)",
+            textAlignment: "right",
+            width: "10vw",
+            sortable: true,
+            render: (record) => {
+              return `${record.basePrice.toFixed(2)}`;
+            },
           },
           {
             // actions
             accessor: "",
             title: "Actions",
-            width: "10vw", // Width in viewport width (vw) units
+            width: "10vw",
             render: (service) => (
               <Group>
                 <ViewActionButton
@@ -151,7 +140,7 @@ const ServiceListTable = ({
                 />
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${service.title}?`}
-                  subtitle="The customer would no longer be able to view this Service."
+                  subtitle="The customer would no longer be able to view this service listing."
                   onDelete={() => handleDeleteService(service.serviceListingId)}
                 />
               </Group>
@@ -164,6 +153,14 @@ const ServiceListTable = ({
         striped
         verticalSpacing="sm"
         idAccessor="serviceListingId"
+        //sorting
+        sortStatus={sortStatus}
+        onSortStatusChange={onSortStatusChange}
+        //pagination
+        totalRecords={serviceListings ? serviceListings.length : 0}
+        recordsPerPage={TABLE_PAGE_SIZE}
+        page={page}
+        onPageChange={(p) => onPageChange(p)}
       />
 
       {/* View */}

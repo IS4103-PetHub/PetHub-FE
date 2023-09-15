@@ -18,3 +18,5 @@ export enum ServiceCategoryEnum {
   PetRetail = "PET_RETAIL",
   PetBoarding = "PET_BOARDING",
 }
+
+export const TABLE_PAGE_SIZE = 15;

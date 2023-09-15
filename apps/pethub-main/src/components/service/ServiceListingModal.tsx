@@ -52,6 +52,8 @@ const ServiceListingModal = ({
 }: ServiceListingModalProps) => {
   // Image functions
   const [imagePreview, setImagePreview] = useState(null);
+  const [isUpdating, setUpdating] = useState(isUpdate);
+  const [isViewing, setViewing] = useState(isView);
   const handleFileInputChange = (file: File) => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
@@ -82,7 +84,7 @@ const ServiceListingModal = ({
   const updateServiceListingMutation = useUpdateServiceListing(queryClient);
   const handleAction = async (values: ServiceFormValues) => {
     try {
-      if (isUpdate) {
+      if (isUpdating) {
         const payload: UpdateServiceListingPayload = {
           serviceListingId: values.serviceListingId,
           title: values.title,
@@ -119,7 +121,7 @@ const ServiceListingModal = ({
       onClose();
     } catch (error) {
       notifications.show({
-        title: isUpdate
+        title: isUpdating
           ? "Error Updating Service Listing"
           : "Error Creating Service Listing",
         color: "red",
@@ -156,9 +158,9 @@ const ServiceListingModal = ({
           return "Price must be a positive number with two decimal places.";
         }
       },
-      confirmation: (value) => {
-        if (!value && !isUpdate) return "Confirmation is mandatory.";
-      },
+      // confirmation: (value) => {
+      //   if (!value && !isUpdating) return "Confirmation is mandatory.";
+      // },
       // if (!values.address) errors.location = 'Address is mandatory.';
       // if (!values.attachments) errors.attachments = 'Attachments are mandatory.';
     },
@@ -166,26 +168,41 @@ const ServiceListingModal = ({
 
   useEffect(() => {
     if (serviceListing) {
-      const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
-      serviceListingForm.setValues({
-        ...serviceListing,
-        // TODO: add address in when the BE is ready
-        // address: serviceListing.address.addressId.toString(),
-        tags: tagIds,
-      });
+      setServiceListingFields();
     }
   }, [serviceListing]);
+
+  const closeAndResetForm = () => {
+    if (isUpdating || isViewing) {
+      setServiceListingFields();
+    } else {
+      serviceListingForm.reset();
+    }
+    setUpdating(isUpdate);
+    setViewing(isView);
+    onClose();
+  };
+
+  const setServiceListingFields = () => {
+    const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
+    serviceListingForm.setValues({
+      ...serviceListing,
+      // TODO: add address in when the BE is ready
+      // address: serviceListing.address.addressId.toString(),
+      tags: tagIds,
+    });
+  };
 
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={closeAndResetForm}
       title={
-        isUpdate
+        isUpdating
           ? "Update Service Listing"
-          : isView
-            ? "View Service Listing"
-            : "Create Service Listing"
+          : isViewing
+          ? "View Service Listing"
+          : "Create Service Listing"
       }
       centered
       size="80%"
@@ -199,7 +216,7 @@ const ServiceListingModal = ({
           <Stack>
             <TextInput
               withAsterisk
-              disabled={isView}
+              disabled={isViewing}
               label="Title"
               placeholder=""
               {...serviceListingForm.getInputProps("title")}
@@ -207,7 +224,7 @@ const ServiceListingModal = ({
 
             <Textarea
               withAsterisk
-              disabled={isView}
+              disabled={isViewing}
               label="Description"
               placeholder=""
               autosize
@@ -216,7 +233,7 @@ const ServiceListingModal = ({
 
             <Select
               withAsterisk
-              disabled={isView}
+              disabled={isViewing}
               label="Category"
               placeholder="Pick one"
               // need change to this to use enums
@@ -226,11 +243,12 @@ const ServiceListingModal = ({
 
             <NumberInput
               withAsterisk
-              disabled={isView}
+              disabled={isViewing}
               label="Price"
               min={0}
               step={0.01}
               precision={2}
+              formatter={(value) => `$ ${value}`}
               {...serviceListingForm.getInputProps("basePrice")}
             />
 
@@ -242,7 +260,7 @@ const ServiceListingModal = ({
 
             {/* <Select
                         withAsterisk
-                        disabled={isView}
+                        disabled={isViewing}
                         label="Select an Address"
                         data={dummyAddress.map((address) => ({
                             value: address.addressId.toString(),
@@ -253,7 +271,7 @@ const ServiceListingModal = ({
 
             {/* <FileInput
                         withAsterisk
-                        disabled={isView}
+                        disabled={isViewing}
                         label="Upload Display Image"
                         placeholder="No file selected"
                         accept="image/*"
@@ -267,7 +285,7 @@ const ServiceListingModal = ({
                     )} */}
 
             <MultiSelect
-              disabled={isView}
+              disabled={isViewing}
               label="Tags"
               placeholder="Select your Tags"
               data={
@@ -281,9 +299,10 @@ const ServiceListingModal = ({
               {...serviceListingForm.getInputProps("tags")}
             />
 
-            {!isView && (
+            {!isViewing && (
               <>
-                {!isUpdate && (
+                {/* TODO: link to page with terms and conditions  */}
+                {/* {!isUpdating && (
                   <Checkbox
                     mt="md"
                     label={"I agree to all the terms and conditions."}
@@ -291,10 +310,38 @@ const ServiceListingModal = ({
                       type: "checkbox",
                     })}
                   />
-                )}
-                <Group position="right" mt="md">
+                )} */}
+                <Group position="right" mt="sm" mb="sm">
+                  {!isViewing && (
+                    <Button
+                      type="reset"
+                      color="gray"
+                      onClick={() => {
+                        closeAndResetForm();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  )}
                   <Button type="submit">
-                    {isUpdate ? "Update" : "Create"}
+                    {isUpdating ? "Save" : "Create"}
+                  </Button>
+                </Group>
+              </>
+            )}
+
+            {isViewing && (
+              <>
+                <Group position="right" mt="md">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      // TODO: toggle between edit and view
+                      setUpdating(true);
+                      setViewing(false);
+                    }}
+                  >
+                    Edit
                   </Button>
                 </Group>
               </>
