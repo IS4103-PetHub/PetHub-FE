@@ -9,7 +9,7 @@ import {
   Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUser, IconUserShield } from "@tabler/icons-react";
+import { IconUser, IconHome, IconUserShield } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -73,6 +73,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
+  { link: "/", label: "Home", icon: IconHome },
   { link: "/users", label: "Users", icon: IconUser },
   { link: "/rbac", label: "Role-based Access Control", icon: IconUserShield },
 ];

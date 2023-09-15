@@ -10,4 +10,7 @@ export const enum AccountStatusEnum {
   Inactive = "INACTIVE",
 }
 
+export const enum InternalUserRoleEnum {
+  admin = "ADMINISTRATOR",
+}
 export const TABLE_PAGE_SIZE = 10;
