@@ -8,7 +8,12 @@ interface ViewButtonProps extends ButtonProps {
 
 export const ViewButton = ({ onClick, ...props }: ViewButtonProps) => {
   return (
-    <Button size="sm" leftIcon={<IconSearch />} onClick={onClick} {...props}>
+    <Button
+      size="sm"
+      leftIcon={<IconSearch size="1rem" />}
+      onClick={onClick}
+      {...props}
+    >
       View
     </Button>
   );
