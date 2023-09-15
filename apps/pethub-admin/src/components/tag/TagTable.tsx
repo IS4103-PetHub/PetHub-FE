@@ -14,7 +14,7 @@ interface TagTableProps {
   tags: Tag[];
   page: number;
   sortStatus: DataTableSortStatus;
-  //onDelete(id: number): void;
+  onDelete(id: number): void;
   onSortStatusChange: any;
   onPageChange(p: number): void;
 }
@@ -23,7 +23,7 @@ const TagTable = ({
   tags,
   page,
   sortStatus,
-  //onDelete,
+  onDelete,
   onSortStatusChange,
   onPageChange,
 }: TagTableProps) => {
@@ -66,9 +66,18 @@ const TagTable = ({
             title: "Actions",
             width: "10vw",
             render: (record) => (
-              <Center style={{ height: "100%" }}>
-                {/* <ViewButton onClick={() => handleOpenModal(record)} /> */}
-              </Center>
+              <Group>
+                <EditActionButton
+                  onClick={function (): void {
+                    throw new Error("Function not implemented.");
+                  }}
+                />
+                <DeleteActionButtonModal
+                  title={`Are you sure you want to delete the tag: ${record.name}?`}
+                  subtitle="Any service listing currently assigned to this tag will be unassigned."
+                  onDelete={() => onDelete(record.tagId)}
+                />
+              </Group>
             ),
           },
         ]}
@@ -87,46 +96,6 @@ const TagTable = ({
         onPageChange={(p) => onPageChange(p)}
         idAccessor="tagId"
       />
-      {/* <Modal
-        opened={isViewDetailsModalOpen}
-        onClose={handleViewDetailsCloseModal}
-        title="Internal User Details"
-        size="lg"
-        padding="md"
-      >
-        <TagDetails
-          user={selectedRecord}
-          onUserDeleted={(success) => {
-            if (success) {
-              handleViewDetailsCloseModal();
-            }
-            refetch();
-          }}
-          onUserUpdated={(success) => {
-            if (success) {
-              handleViewDetailsCloseModal();
-            }
-            refetch();
-          }}
-          sessionUserId={sessionUserId}
-        />
-      </Modal>
-      <Modal
-        opened={isCreateModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        title="Create New Internal User"
-        size="lg"
-        padding="md"
-      >
-        <CreateInternalUserForm
-          onUserCreated={(success) => {
-            if (success) {
-              setCreateModalOpen(false);
-            }
-            refetch();
-          }}
-        />
-      </Modal> */}
     </>
   );
 };

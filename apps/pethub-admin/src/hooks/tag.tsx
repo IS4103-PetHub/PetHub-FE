@@ -12,3 +12,20 @@ export const useGetAllTags = () => {
         .data as Tag[],
   });
 };
+export const useDeleteTag = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${TAG_API}/${id}`,
+        )
+      ).data;
+    },
+    onSuccess: (data, id) => {
+      queryClient.setQueryData<Tag[]>(["tags"], (old = []) => {
+        return old.filter((tag) => tag.tagId !== id);
+        // removes deleted record from cache
+      });
+    },
+  });
+};

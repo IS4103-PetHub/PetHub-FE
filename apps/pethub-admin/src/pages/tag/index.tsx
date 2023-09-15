@@ -15,7 +15,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
 import TagTable from "@/components/tag/TagTable";
-import { useGetAllTags } from "@/hooks/tag";
+import { useDeleteTag, useGetAllTags } from "@/hooks/tag";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Tag, UserGroup } from "@/types/types";
 
@@ -49,30 +49,30 @@ export default function Tags() {
     setRecords(newRecords);
   }, [page, sortStatus, tags]);
 
-  // const deleteTagMutation = useDeleteTag(queryClient);
-  // const handleDeleteTagGroup = async (id: number) => {
-  //   try {
-  //     await deleteTagMutation.mutateAsync(id);
-  //     notifications.show({
-  //       title: "Tag Deleted",
-  //       color: "green",
-  //       icon: <IconCheck />,
-  //       message: `Tag ${id} deleted successfully.`,
-  //     });
-  //     // refetch();
-  //   } catch (error: any) {
-  //     notifications.show({
-  //       title: "Error Deleting Tag",
-  //       color: "red",
-  //       icon: <IconX />,
-  //       message:
-  //         (error.response &&
-  //           error.response.data &&
-  //           error.response.data.message) ||
-  //         error.message,
-  //     });
-  //   }
-  // };
+  const deleteTagMutation = useDeleteTag(queryClient);
+  const handleDeleteTag = async (id: number) => {
+    try {
+      await deleteTagMutation.mutateAsync(id);
+      notifications.show({
+        title: "Tag Deleted",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Tag ${id} deleted successfully.`,
+      });
+      // refetch();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Deleting Tag",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
 
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
@@ -100,7 +100,7 @@ export default function Tags() {
         // still fetching
         <CenterLoader />;
       }
-      // no user groups fetched
+      // no tags fetched
       return (
         <SadDimmedMessage
           title="No tags found"
@@ -116,7 +116,7 @@ export default function Tags() {
         ) : (
           <TagTable
             tags={records}
-            //onDelete={handleDeleteUserGroup}
+            onDelete={handleDeleteTag}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
