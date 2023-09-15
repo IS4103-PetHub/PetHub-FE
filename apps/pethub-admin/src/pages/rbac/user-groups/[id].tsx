@@ -31,7 +31,6 @@ interface UserGroupDetailsProps {
 
 export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
   const theme = useMantineTheme();
-  const queryClient = useQueryClient();
 
   const [isEditingGroupInfo, setIsEditingGroupInfo] = useToggle();
   const [isEditingPermissions, setIsEditingPermissions] = useToggle();
@@ -98,24 +97,12 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
     permissionsForm.setFieldValue("permissionIds", getCurrentPermissionIds());
   };
 
-  const updateUserGroupMutation = useUpdateUserGroup(queryClient);
+  const updateUserGroupMutation = useUpdateUserGroup();
 
   const handleUpdateUserGroup = async (values: any) => {
     const isUpdatingPermissions = Object.keys(values).includes("permissionIds");
-    // to refactor after BE change the update endpoint
-    const payload = isUpdatingPermissions
-      ? {
-          groupId: userGroup?.groupId,
-          name: userGroup?.name,
-          description: userGroup?.description,
-          permissionIds: values.permissionIds,
-        }
-      : {
-          groupId: userGroup?.groupId,
-          name: values.name,
-          description: values.description,
-          permissionIds: getCurrentPermissionIds(),
-        };
+    const payload = { groupId: userGroup?.groupId, ...values };
+
     try {
       await updateUserGroupMutation.mutateAsync(payload);
       notifications.show({
@@ -156,6 +143,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
         multiple
         value={openedAccordions}
         onChange={(values) => handleChangeAccordion(values)}
+        mb="xl"
       >
         <Accordion.Item value="groupInfo">
           <Accordion.Control>
@@ -166,7 +154,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
               </Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
+          <Accordion.Panel mb="xs">
             <UserGroupInfoForm
               userGroup={userGroup}
               form={groupInfoForm}
@@ -191,7 +179,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
               </Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
+          <Accordion.Panel mb="xs">
             <UserGroupPermissionsForm
               userGroup={userGroup}
               form={permissionsForm}
@@ -208,15 +196,15 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
             <Group>
               <IconUsersGroup color={theme.colors.indigo[5]} />
               <Text weight={600} size="xl">
-                Memberships ({userGroup?.userGroupMemberships?.length})
+                Members ({userGroup?.userGroupMemberships?.length})
               </Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>
-            <AddUsersToUserGroupModal />
+          <Accordion.Panel mb="xs">
+            <AddUsersToUserGroupModal userGroup={userGroup} refetch={refetch} />
             {userGroup?.userGroupMemberships &&
             userGroup.userGroupMemberships.length > 0 ? (
-              <MembershipsTable userGroup={userGroup} />
+              <MembershipsTable userGroup={userGroup} refetch={refetch} />
             ) : null}
           </Accordion.Panel>
         </Accordion.Item>

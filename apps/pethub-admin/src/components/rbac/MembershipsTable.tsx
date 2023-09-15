@@ -1,16 +1,19 @@
 import { Button } from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconTrash, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useState, useEffect } from "react";
+import { useRemoveUserFromUserGroup } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup, UserGroupMembership } from "@/types/types";
 import RemoveUserFromGroupButton from "./RemoveUserFromGroupButton";
 
 interface MembershipsTableProps {
   userGroup?: UserGroup;
+  refetch(): void;
 }
 
-const MembershipsTable = ({ userGroup }: MembershipsTableProps) => {
+const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
   const [userGroupMemberships, setUserGroupMemberships] = useState<
     UserGroupMembership[]
   >(userGroup?.userGroupMemberships ?? []);
@@ -30,6 +33,33 @@ const MembershipsTable = ({ userGroup }: MembershipsTableProps) => {
     );
   }, [page, userGroup]);
 
+  const removeUserFromGroupMutation = useRemoveUserFromUserGroup();
+  const handleRemoveUser = async (id: number) => {
+    const payload = { groupId: userGroup?.groupId, userId: id };
+    try {
+      await removeUserFromGroupMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Member Removed",
+        color: "green",
+        icon: <IconCheck />,
+        message:
+          "The selected user have been removed from this group successfully!",
+      });
+      refetch();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Removing Member",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   return (
     <DataTable
       minHeight={userGroupMemberships.length > 0 ? 100 : 150}
@@ -41,23 +71,35 @@ const MembershipsTable = ({ userGroup }: MembershipsTableProps) => {
           width: 80,
         },
         {
+          accessor: "firstName",
+          width: "15vw",
+          ellipsis: true,
+          render: (userGroupPermission) =>
+            userGroupPermission.user.internalUser.firstName,
+        },
+        {
+          accessor: "lastName",
+          width: "15vw",
+          ellipsis: true,
+          render: (userGroupPermission) =>
+            userGroupPermission.user.internalUser.lastName,
+        },
+        {
           accessor: "email",
-          width: "35vw",
+          width: "25vw",
           ellipsis: true,
           render: (userGroupPermission) => userGroupPermission.user.email,
         },
         {
           // actions
-          accessor: "",
+          accessor: "actions",
           title: "Actions",
           width: "10vw",
           render: (userGroupPermission) => (
             <RemoveUserFromGroupButton
-              userName={userGroupPermission?.user?.email}
+              userName={`${userGroupPermission?.user?.internalUser.firstName} ${userGroupPermission?.user?.internalUser.lastName}`}
               groupName={userGroup?.name ?? "this group"}
-              onDelete={function (): void {
-                throw new Error("Function not implemented.");
-              }}
+              onDelete={() => handleRemoveUser(userGroupPermission.userId)}
             />
           ),
         },

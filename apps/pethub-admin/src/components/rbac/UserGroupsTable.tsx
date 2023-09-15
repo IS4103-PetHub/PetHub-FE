@@ -48,7 +48,7 @@ const UserGroupsTable = ({
         },
         {
           // actions
-          accessor: "",
+          accessor: "actions",
           title: "Actions",
           width: "10vw",
           render: (group) => (

@@ -41,7 +41,7 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
   });
 };
 
-export const useUpdateUserGroup = (queryClient: QueryClient) => {
+export const useUpdateUserGroup = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(
@@ -104,7 +104,7 @@ export const useGetAllPermissions = () => {
 
 // assign and unassign users
 
-export const useAddMultipleUsersToUserGroup = (queryClient: QueryClient) => {
+export const useAddMultipleUsersToUserGroup = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(
@@ -120,18 +120,12 @@ export const useAddMultipleUsersToUserGroup = (queryClient: QueryClient) => {
   });
 };
 
-export const useRemoveUserFromUserGroup = (queryClient: QueryClient) => {
+export const useRemoveUserFromUserGroup = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(
-          ([key]) => !["groupId", "userId"].includes(key),
-        ),
-      );
       return (
         await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${payload.groupId}/remove-users/${payload.userId}`,
-          payloadWithoutId,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${payload.groupId}/remove-user/${payload.userId}`,
         )
       ).data;
     },

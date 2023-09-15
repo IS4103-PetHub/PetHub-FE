@@ -102,5 +102,9 @@ export interface UserGroupMembership {
     accountStatus: AccountStatusEnum;
     dateCreated: string;
     lastUpdated?: string;
+    internalUser: {
+      firstName: string;
+      lastName: string;
+    };
   };
 }
