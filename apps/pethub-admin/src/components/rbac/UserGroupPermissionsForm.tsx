@@ -55,12 +55,13 @@ const UserGroupPermissionsForm = ({
         </Box>
       ) : null}
 
-      {userGroup?.userGroupPermissions &&
-      userGroup?.userGroupPermissions?.length > 0 ? (
-        permissionsCheckboxes
-      ) : (
-        <Text color="dimmed">No assigned permissions</Text>
-      )}
+      {userGroup?.userGroupPermissions?.length === 0 && !isEditing ? (
+        <Text color="dimmed" mb="md">
+          No permissions assigned
+        </Text>
+      ) : null}
+
+      {permissionsCheckboxes}
       <EditCancelSaveButtons
         isEditing={isEditing}
         onClickCancel={onCancel}
