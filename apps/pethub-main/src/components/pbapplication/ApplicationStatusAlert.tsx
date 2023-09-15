@@ -52,7 +52,7 @@ const ApplicationStatusAlert = ({
         ],
         [
           "PENDING",
-          "Your application is pending review from our administrator staff. View your application",
+          "Your application is pending review from our administrator staff.",
         ],
       ])
     : new Map([
