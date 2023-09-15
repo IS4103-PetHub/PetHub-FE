@@ -30,7 +30,11 @@ const CreateUserGroupForm = ({
     <Grid gutter="xl">
       {permissions.map((permission) => (
         <Grid.Col span={6} key={permission.permissionId}>
-          <PermissionsCheckboxCard permission={permission} form={form} />
+          <PermissionsCheckboxCard
+            permission={permission}
+            form={form}
+            isEditing
+          />
         </Grid.Col>
       ))}
     </Grid>

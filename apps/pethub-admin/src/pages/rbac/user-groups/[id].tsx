@@ -2,6 +2,7 @@ import {
   Accordion,
   Container,
   Group,
+  Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
@@ -18,6 +19,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import AddUsersToUserGroupModal from "@/components/rbac/AddUsersToUserGroupModal";
+import MembershipsTable from "@/components/rbac/MembershipsTable";
 import UserGroupInfoForm from "@/components/rbac/UserGroupInfoForm";
 import UserGroupPermissionsForm from "@/components/rbac/UserGroupPermissionsForm";
 import { useGetUserGroupById, useUpdateUserGroup } from "@/hooks/rbac";
@@ -35,6 +38,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
   const [openedAccordions, setOpenedAccordions] = useState<string[]>([
     "groupInfo",
     "groupPermissions",
+    "groupMemberships",
   ]);
 
   const { data: userGroup, refetch } = useGetUserGroupById(groupId);
@@ -63,8 +67,10 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
 
   useEffect(() => {
     // update form values from fetched object
-    groupInfoForm.setFieldValue("name", userGroup?.name ?? "");
-    groupInfoForm.setFieldValue("description", userGroup?.description ?? "");
+    groupInfoForm.setValues({
+      name: userGroup?.name ?? "",
+      description: userGroup?.description ?? "",
+    });
     permissionsForm.setFieldValue("permissionIds", getCurrentPermissionIds());
   }, [userGroup]);
 
@@ -81,8 +87,10 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
 
   const handleCancelEditGroupInfo = () => {
     setIsEditingGroupInfo(false);
-    groupInfoForm.setFieldValue("name", userGroup?.name ?? "");
-    groupInfoForm.setFieldValue("description", userGroup?.description ?? "");
+    groupInfoForm.setValues({
+      name: userGroup?.name ?? "",
+      description: userGroup?.description ?? "",
+    });
   };
 
   const handleCancelEditPermissions = () => {
@@ -94,6 +102,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
 
   const handleUpdateUserGroup = async (values: any) => {
     const isUpdatingPermissions = Object.keys(values).includes("permissionIds");
+    // to refactor after BE change the update endpoint
     const payload = isUpdatingPermissions
       ? {
           groupId: userGroup?.groupId,
@@ -203,7 +212,13 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
               </Text>
             </Group>
           </Accordion.Control>
-          <Accordion.Panel>Memberships</Accordion.Panel>
+          <Accordion.Panel>
+            <AddUsersToUserGroupModal />
+            {userGroup?.userGroupMemberships &&
+            userGroup.userGroupMemberships.length > 0 ? (
+              <MembershipsTable userGroup={userGroup} />
+            ) : null}
+          </Accordion.Panel>
         </Accordion.Item>
       </Accordion>
     </Container>
