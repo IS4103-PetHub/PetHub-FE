@@ -33,10 +33,14 @@ export default function RBAC() {
     direction: "asc",
   });
 
+  // Recompute records whenever the current page or sort status changes
   const from = (page - 1) * TABLE_PAGE_SIZE;
   const to = from + TABLE_PAGE_SIZE;
 
-  // Recompute records whenever the current page or sort status changes
+  useEffect(() => {
+    setRecords(userGroups.slice(from, to));
+  }, [page, userGroups]);
+
   useEffect(() => {
     const sortedUserGroups = sortBy(userGroups, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
@@ -118,6 +122,7 @@ export default function RBAC() {
         ) : (
           <UserGroupsTable
             userGroups={records}
+            totalNumUserGroups={userGroups.length}
             onDelete={handleDeleteUserGroup}
             page={page}
             sortStatus={sortStatus}

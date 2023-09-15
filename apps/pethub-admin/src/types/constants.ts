@@ -10,4 +10,4 @@ export const enum AccountStatusEnum {
   Inactive = "INACTIVE",
 }
 
-export const TABLE_PAGE_SIZE = 15;
+export const TABLE_PAGE_SIZE = 10;

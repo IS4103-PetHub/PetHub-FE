@@ -1,14 +1,14 @@
 import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
 interface UserGroupsTableProps {
   userGroups: UserGroup[];
+  totalNumUserGroups: number;
   page: number;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
@@ -18,6 +18,7 @@ interface UserGroupsTableProps {
 
 const UserGroupsTable = ({
   userGroups,
+  totalNumUserGroups,
   page,
   sortStatus,
   onDelete,
@@ -25,6 +26,7 @@ const UserGroupsTable = ({
   onPageChange,
 }: UserGroupsTableProps) => {
   const router = useRouter();
+
   return (
     <DataTable
       minHeight={150}
@@ -39,9 +41,10 @@ const UserGroupsTable = ({
         { accessor: "name", width: "25vw", ellipsis: true, sortable: true },
         {
           accessor: "description",
-          width: "40vw",
+          width: "35vw",
           ellipsis: true,
           sortable: true,
+          render: (group) => (group.description ? group.description : "-"),
         },
         {
           // actions
@@ -73,7 +76,7 @@ const UserGroupsTable = ({
       sortStatus={sortStatus}
       onSortStatusChange={onSortStatusChange}
       //pagination
-      totalRecords={userGroups ? userGroups.length : 0}
+      totalRecords={totalNumUserGroups}
       recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
       onPageChange={(p) => onPageChange(p)}
