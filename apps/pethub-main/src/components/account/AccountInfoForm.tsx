@@ -10,7 +10,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect } from "react";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
@@ -31,18 +31,20 @@ const AccountInfoForm = ({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useToggle();
 
+  const formDefaultValues = {
+    companyName: petBusiness ? petBusiness.companyName : "",
+    uen: petBusiness ? petBusiness.uen : "",
+    firstName: petOwner ? petOwner.firstName : "",
+    lastName: petOwner ? petOwner.lastName : "",
+    dateOfBirth: petOwner ? new Date(petOwner.dateOfBirth) : "",
+    contactNumber: petOwner
+      ? petOwner.contactNumber
+      : petBusiness.contactNumber,
+    email: petOwner ? petOwner.email : petBusiness.email,
+  };
+
   const form = useForm({
-    initialValues: {
-      companyName: petBusiness ? petBusiness.companyName : "",
-      uen: petBusiness ? petBusiness.uen : "",
-      firstName: petOwner ? petOwner.firstName : "",
-      lastName: petOwner ? petOwner.lastName : "",
-      dateOfBirth: petOwner ? new Date(petOwner.dateOfBirth) : "",
-      contactNumber: petOwner
-        ? petOwner.contactNumber
-        : petBusiness.contactNumber,
-      email: petOwner ? petOwner.email : petBusiness.email,
-    },
+    initialValues: formDefaultValues,
 
     transformValues: (values) => ({
       ...values,
@@ -70,6 +72,11 @@ const AccountInfoForm = ({
     },
   });
 
+  useEffect(() => {
+    // update form values from fetched object
+    form.setValues(formDefaultValues);
+  }, [petOwner, petBusiness]);
+
   const updatePetOwnerMutation = useUpdatePetOwner(queryClient);
   const updatePetBusinessMutation = useUpdatePetBusiness(queryClient);
 
@@ -96,7 +103,7 @@ const AccountInfoForm = ({
         message: `Account updated successfully!`,
       });
       refetch();
-      form.reset();
+      form.setValues(formDefaultValues);
     } catch (error: any) {
       notifications.show({
         title: "Error Updating Account",
@@ -113,7 +120,7 @@ const AccountInfoForm = ({
 
   const handleCancel = () => {
     setIsEditing(false);
-    form.reset();
+    form.setValues(formDefaultValues);
   };
 
   const handleSubmit = (values: TransformedValues<typeof form>) => {
