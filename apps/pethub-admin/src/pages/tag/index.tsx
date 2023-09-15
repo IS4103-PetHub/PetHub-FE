@@ -13,11 +13,10 @@ import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import UserGroupsTable from "@/components/rbac/UserGroupsTable";
 import TagTable from "@/components/tag/TagTable";
 import { useDeleteTag, useGetAllTags } from "@/hooks/tag";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { Tag, UserGroup } from "@/types/types";
+import { Tag } from "@/types/types";
 
 export default function Tags() {
   const router = useRouter();

@@ -91,3 +91,7 @@ export interface Tag {
   dateCreated: string;
   lastUpdated: string;
 }
+
+export interface CreateTagPayload {
+  name: string;
+}

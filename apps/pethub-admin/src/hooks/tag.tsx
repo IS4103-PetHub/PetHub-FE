@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Tag } from "@/types/types";
+import { CreateTagPayload, Tag } from "@/types/types";
 
 const TAG_API = "api/tags";
 
@@ -25,6 +25,31 @@ export const useDeleteTag = (queryClient: QueryClient) => {
       queryClient.setQueryData<Tag[]>(["tags"], (old = []) => {
         return old.filter((tag) => tag.tagId !== id);
         // removes deleted record from cache
+      });
+    },
+  });
+};
+
+export const useCreateTag = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (payload: CreateTagPayload) => {
+      return (
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${TAG_API}`,
+          payload,
+        )
+      ).data;
+    },
+    onSuccess: (data) => {
+      const newTag: Tag = {
+        tagId: data.tagId,
+        name: data.name,
+        dateCreated: data.dateCreated,
+        lastUpdated: data.lastUpdated,
+      };
+      queryClient.setQueryData<Tag[]>(["tags"], (old = []) => {
+        return [...old, newTag];
+        // appends newly created record to cache
       });
     },
   });

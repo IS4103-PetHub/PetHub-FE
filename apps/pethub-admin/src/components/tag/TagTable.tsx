@@ -1,15 +1,9 @@
-import { Button, Group, Center, Modal } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
-import sortBy from "lodash/sortBy";
+import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React, { useEffect, useState } from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
-import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { useGetAllUserGroups } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Tag } from "@/types/types";
-import { ViewButton } from "../common/ViewButton";
 interface TagTableProps {
   tags: Tag[];
   page: number;
@@ -39,13 +33,13 @@ const TagTable = ({
             width: 80,
             sortable: true,
           },
-          { accessor: "name", width: "25vw", ellipsis: true, sortable: true },
+          { accessor: "name", width: "45vw", ellipsis: true, sortable: true },
           {
             accessor: "dateCreated",
             title: "Date Created",
             sortable: true,
             ellipsis: true,
-            width: "40vw",
+            width: "10vw",
             render: ({ dateCreated }) => {
               return new Date(dateCreated).toLocaleDateString();
             },
@@ -55,7 +49,7 @@ const TagTable = ({
             title: "Last Updated",
             sortable: true,
             ellipsis: true,
-            width: "40vw",
+            width: "10vw",
             render: ({ lastUpdated }) => {
               return new Date(lastUpdated).toLocaleDateString();
             },
@@ -66,7 +60,7 @@ const TagTable = ({
             title: "Actions",
             width: "10vw",
             render: (record) => (
-              <Group>
+              <Group position="center">
                 <EditActionButton
                   onClick={function (): void {
                     throw new Error("Function not implemented.");
