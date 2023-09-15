@@ -10,12 +10,11 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
+import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
+import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
-import { errorAlert } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
-
-const PAGE_SIZE = 15;
 
 export default function PetOwnerTable() {
   const { data: petOwners = [], isLoading, isError } = useGetAllPetOwners();
@@ -41,8 +40,8 @@ export default function PetOwnerTable() {
   };
 
   // Compute pagination slice indices based on the current page
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE;
+  const from = (page - 1) * TABLE_PAGE_SIZE;
+  const to = from + TABLE_PAGE_SIZE;
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
@@ -58,7 +57,7 @@ export default function PetOwnerTable() {
   }, [page, sortStatus, petOwners]);
 
   if (isError) {
-    return errorAlert("Pet Owners");
+    return ErrorAlert("Pet Owners");
   }
 
   const handleSearch = (searchStr: string) => {
@@ -106,9 +105,8 @@ export default function PetOwnerTable() {
             borderRadius="sm"
             withColumnBorders
             striped
-            highlightOnHover
             verticalAlignment="center"
-            minHeight={150}
+            minHeight={100}
             // provide data
             records={records}
             // define columns
@@ -176,7 +174,7 @@ export default function PetOwnerTable() {
             onSortStatusChange={setSortStatus}
             //pagination
             totalRecords={petOwners ? petOwners.length : 0}
-            recordsPerPage={PAGE_SIZE}
+            recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}
             idAccessor="userId"
@@ -187,20 +185,18 @@ export default function PetOwnerTable() {
   };
   return (
     <>
-      <Container fluid>
-        <PageTitle title="Pet Owners" />
-        {renderContent()}
+      <PageTitle title="Pet Owners" />
+      {renderContent()}
 
-        <Modal
-          opened={isModalOpen}
-          onClose={handleCloseModal}
-          title="Pet Owner Details"
-          size="lg"
-          padding="md"
-        >
-          <UserDetails user={selectedRecord} />
-        </Modal>
-      </Container>
+      <Modal
+        opened={isModalOpen}
+        onClose={handleCloseModal}
+        title="Pet Owner Details"
+        size="lg"
+        padding="md"
+      >
+        <UserDetails user={selectedRecord} />
+      </Modal>
     </>
   );
 }

@@ -10,12 +10,11 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
+import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
+import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
-import { errorAlert } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
-
-const PAGE_SIZE = 15;
 
 export default function PetBusinessTable() {
   const {
@@ -47,13 +46,12 @@ export default function PetBusinessTable() {
   };
 
   // Compute pagination slice indices based on the current page
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE;
+  const from = (page - 1) * TABLE_PAGE_SIZE;
+  const to = from + TABLE_PAGE_SIZE;
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
     // Sort petBusinesses based on the current sort status
-
     const sortedPetBusinesses = sortBy(
       petBusinesses,
       sortStatus.columnAccessor,
@@ -61,16 +59,14 @@ export default function PetBusinessTable() {
     if (sortStatus.direction === "desc") {
       sortedPetBusinesses.reverse();
     }
-
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetBusinesses.slice(from, to);
-
     // Update the records state
     setRecords(newRecords);
   }, [page, sortStatus, petBusinesses]);
 
   if (isError) {
-    return errorAlert("Pet Businesses");
+    return ErrorAlert("Pet Businesses");
   }
 
   const handleSearch = (searchStr: string) => {
@@ -122,9 +118,8 @@ export default function PetBusinessTable() {
             borderRadius="sm"
             withColumnBorders
             striped
-            highlightOnHover
             verticalAlignment="center"
-            minHeight={150}
+            minHeight={100}
             // provide data
             records={records}
             // define columns
@@ -192,7 +187,7 @@ export default function PetBusinessTable() {
             onSortStatusChange={setSortStatus}
             //pagination
             totalRecords={petBusinesses ? petBusinesses.length : 0}
-            recordsPerPage={PAGE_SIZE}
+            recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}
             idAccessor="userId"

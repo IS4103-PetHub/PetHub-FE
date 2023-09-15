@@ -1,4 +1,4 @@
-import { Modal, Center, Group, Button, Container } from "@mantine/core";
+import { Modal, Center, Group, Button, Container, Text } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
@@ -11,13 +11,12 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
+import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser } from "@/types/types";
+import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
-import { errorAlert } from "../util/TableHelper";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
 import UserDetails from "./UserDetails";
-
-const PAGE_SIZE = 15;
 
 interface InternalUserTableProps {
   sessionUserId: number;
@@ -61,8 +60,8 @@ export default function InternalUserTable({
   };
 
   // Compute pagination slice indices based on the current page
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE;
+  const from = (page - 1) * TABLE_PAGE_SIZE;
+  const to = from + TABLE_PAGE_SIZE;
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
@@ -81,7 +80,7 @@ export default function InternalUserTable({
   }, [page, sortStatus, internalUsers]);
 
   if (isError) {
-    return errorAlert("Internal Users");
+    return ErrorAlert("Internal Users");
   }
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
@@ -135,7 +134,6 @@ export default function InternalUserTable({
             borderRadius="sm"
             withColumnBorders
             striped
-            highlightOnHover
             verticalAlignment="center"
             minHeight={100}
             // provide data
@@ -207,7 +205,7 @@ export default function InternalUserTable({
             onSortStatusChange={setSortStatus}
             //pagination
             totalRecords={internalUsers ? internalUsers.length : 0}
-            recordsPerPage={PAGE_SIZE}
+            recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}
             idAccessor="userId"
@@ -219,59 +217,62 @@ export default function InternalUserTable({
 
   return (
     <>
-      <Container fluid>
-        <Group mb="xl" position="apart">
-          {/* wanted to use the CreateButton but thought that UserPlus is a better icon for this case */}
-          <PageTitle title="Internal Users" />
-          <Button
-            size="md"
-            leftIcon={<IconUserPlus />}
-            onClick={() => handleCreateInternalUserOpenModal()}
-          >
+      <Group mb="xl" position="apart">
+        {/* wanted to use the CreateButton but thought that UserPlus is a better icon for this case */}
+        <PageTitle title="Internal Users" />
+        <Button
+          size="md"
+          leftIcon={<IconUserPlus />}
+          onClick={() => handleCreateInternalUserOpenModal()}
+        >
+          Create Internal User
+        </Button>
+      </Group>
+      {renderContent()}
+      <Modal
+        opened={isViewDetailsModalOpen}
+        onClose={handleViewDetailsCloseModal}
+        title="Internal User Details"
+        size="lg"
+        padding="md"
+      >
+        <UserDetails
+          user={selectedRecord}
+          onUserDeleted={(success) => {
+            if (success) {
+              handleViewDetailsCloseModal();
+            }
+            refetch();
+          }}
+          onUserUpdated={(success) => {
+            if (success) {
+              handleViewDetailsCloseModal();
+            }
+            refetch();
+          }}
+          sessionUserId={sessionUserId}
+        />
+      </Modal>
+      <Modal
+        opened={isCreateModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        size="lg"
+        padding="md"
+        title={
+          <Text size="xl" weight={600} ml="xs">
             Create Internal User
-          </Button>
-        </Group>
-        {renderContent()}
-        <Modal
-          opened={isViewDetailsModalOpen}
-          onClose={handleViewDetailsCloseModal}
-          title="Internal User Details"
-          size="lg"
-          padding="md"
-        >
-          <UserDetails
-            user={selectedRecord}
-            onUserDeleted={(success) => {
-              if (success) {
-                handleViewDetailsCloseModal();
-              }
-              refetch();
-            }}
-            onUserUpdated={(success) => {
-              if (success) {
-                handleViewDetailsCloseModal();
-              }
-              refetch();
-            }}
-            sessionUserId={sessionUserId}
-          />
-        </Modal>
-        <Modal
-          opened={isCreateModalOpen}
-          onClose={() => setCreateModalOpen(false)}
-          size="lg"
-          padding="md"
-        >
-          <CreateInternalUserForm
-            onUserCreated={(success) => {
-              if (success) {
-                setCreateModalOpen(false);
-              }
-              refetch();
-            }}
-          />
-        </Modal>
-      </Container>
+          </Text>
+        }
+      >
+        <CreateInternalUserForm
+          onUserCreated={(success) => {
+            if (success) {
+              setCreateModalOpen(false);
+            }
+            refetch();
+          }}
+        />
+      </Modal>
     </>
   );
 }
