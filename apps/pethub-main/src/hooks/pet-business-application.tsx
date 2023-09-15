@@ -22,7 +22,6 @@ export const useCreatePetBusinessApplication = (queryClient: QueryClient) => {
 export const useUpdatePetBusinessApplication = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      console.log("payload", payload);
       const payloadWithoutId = Object.fromEntries(
         Object.entries(payload).filter(
           ([key]) => !["petBusinessApplicationId"].includes(key),

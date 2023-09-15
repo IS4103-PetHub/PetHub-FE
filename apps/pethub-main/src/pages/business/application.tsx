@@ -69,7 +69,6 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       setApplicationStatus(BusinessApplicationStatusEnum.Notfound);
       setIsDisabled(false);
     } else {
-      console.log("BTYPE", petBusinessApplication.businessType);
       setApplicationStatus(petBusinessApplication.applicationStatus);
       applicationForm.setValues({
         businessType: petBusinessApplication.businessType,
@@ -95,8 +94,6 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       label: value as string,
     }),
   );
-
-  console.log("BTYPER DATA", businessTypeData);
 
   const applicationForm = useForm({
     initialValues: {
@@ -351,7 +348,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
             </Grid.Col>
             <Grid.Col span={12}>
               <Text fz="0.875rem" color="#212529" fw={500}>
-                Business address
+                Addresses
               </Text>
               <AddressSidewaysScrollThing
                 addressList={applicationForm.values.businessAddresses}
