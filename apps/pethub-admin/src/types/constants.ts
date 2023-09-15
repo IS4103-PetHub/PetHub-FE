@@ -13,3 +13,16 @@ export const enum InternalUserRoleEnum {
   admin = "ADMINISTRATOR",
 }
 export const TABLE_PAGE_SIZE = 15;
+
+export enum PetBusinessTypeEnum {
+  Fnb = "FNB",
+  Service = "SERVICE",
+  Healthcare = "HEALTHCARE",
+}
+
+export const enum BusinessApplicationStatusEnum {
+  Notfound = "NOTFOUND",
+  Pending = "PENDING",
+  Rejected = "REJECTED",
+  Approved = "APPROVED",
+}
