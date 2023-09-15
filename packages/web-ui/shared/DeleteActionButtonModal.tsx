@@ -36,7 +36,7 @@ const DeleteActionButtonModal = ({
         <Title order={2}>{title}</Title>
         <Text mt="md">{subtitle}</Text>
 
-        <Group mt="25px" position="right">
+        <Group mt="md" position="right">
           <Button type="reset" color="gray" onClick={close}>
             Cancel
           </Button>
