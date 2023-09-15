@@ -5,9 +5,9 @@ export const enum AccountTypeEnum {
 }
 
 export enum PetBusinessTypeEnum {
-  Fnb = "Food & Beverages",
-  Service = "Pet Services",
-  Healthcare = "Healthcare",
+  FNB = "FNB",
+  SERVICE = "SERVICE",
+  HEALTHCARE = "HEALTHCARE",
 }
 
 export const enum AccountStatusEnum {
@@ -18,6 +18,7 @@ export const enum AccountStatusEnum {
 }
 
 export const enum BusinessApplicationStatusEnum {
+  Notfound = "NOTFOUND",
   Pending = "PENDING",
   Rejected = "REJECTED",
   Approved = "APPROVED",

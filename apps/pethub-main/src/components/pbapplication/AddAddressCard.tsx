@@ -22,7 +22,7 @@ export const AddAddressCard = () => {
       })}
     >
       <Card.Section sx={{ height: "100%" }}>
-        <Center sx={{ height: "100%" }} pt="md">
+        <Center sx={{ height: "100%" }} pt="lg">
           <IconPlus size="3rem" />
         </Center>
       </Card.Section>

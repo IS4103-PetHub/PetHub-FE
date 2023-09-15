@@ -11,13 +11,22 @@ import {
   SimpleGrid,
   Select,
   Alert,
+  Badge,
 } from "@mantine/core";
 import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconSend, IconUpload, IconAlertCircle } from "@tabler/icons-react";
-import React from "react";
+import {
+  IconSend,
+  IconUpload,
+  IconAlertCircle,
+  IconCheck,
+  IconX,
+} from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { getSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import FileMiniIcon from "@/components/common/file/FileMiniIcon";
 import { PDFPreview } from "@/components/common/file/PDFPreview";
@@ -26,21 +35,64 @@ import { AddressSidewaysScrollThing } from "@/components/pbapplication/AddressSi
 import ApplicationStatusBadge from "@/components/pbapplication/ApplicationStatusAlert";
 import ApplicationStatusAlert from "@/components/pbapplication/ApplicationStatusAlert";
 import {
+  useCreatePetBusinessApplication,
+  useGetPetBusinessApplicationByPBId,
+  useUpdatePetBusinessApplication,
+} from "@/hooks/pet-business-application";
+import {
+  AccountTypeEnum,
   BusinessApplicationStatusEnum,
   PetBusinessTypeEnum,
 } from "@/types/constants";
-import { Address } from "@/types/types";
+import { Address, CreatePetBusinessApplicationPayload } from "@/types/types";
 import { validateAddressName } from "@/util";
 
-export default function Application() {
-  const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
+interface ApplicationProps {
+  userId: number;
+  accountType: AccountTypeEnum;
+}
 
-  // temporary hardcode
-  const applicationStatus = BusinessApplicationStatusEnum.Pending;
+export default function Application({ userId, accountType }: ApplicationProps) {
+  const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
+  const [applicationStatus, setApplicationStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const {
+    data: petBusinessApplication,
+    refetch: refetchPetBusinessApplication,
+  } = useGetPetBusinessApplicationByPBId(userId);
+
+  console.log("PB APP", petBusinessApplication);
+
+  useEffect(() => {
+    if (!petBusinessApplication) {
+      setApplicationStatus(BusinessApplicationStatusEnum.Notfound);
+      setIsDisabled(false);
+    } else {
+      setApplicationStatus(petBusinessApplication.applicationStatus);
+      applicationForm.setValues({
+        businessType: petBusinessApplication.businessType,
+        businessAddresses: petBusinessApplication.businessAddresses,
+        businessEmail: petBusinessApplication.businessEmail,
+        websiteURL: petBusinessApplication.websiteURL,
+        businessDescription: petBusinessApplication.businessDescription,
+        attachments: [], // Not handled by BE yet
+      });
+      setIsDisabled(
+        petBusinessApplication.applicationStatus ===
+          BusinessApplicationStatusEnum.Approved ||
+          petBusinessApplication.applicationStatus ===
+            BusinessApplicationStatusEnum.Pending,
+      );
+    }
+    setLoading(false);
+  }, [petBusinessApplication]);
 
   const businessTypeData = Object.entries(PetBusinessTypeEnum).map(
     ([key, value]) => ({
-      value: key.toLowerCase(),
+      value: key,
       label: value as string,
     }),
   );
@@ -62,9 +114,11 @@ export default function Application() {
           ? null
           : "Invalid or missing email.",
       businessAddresses: (value) => null,
+      businessDescription: (value) =>
+        !value ? "Business description is required." : null,
       websiteURL: (value) =>
-        !/^(http|https):\/\/[^ "]+$/.test(value) || !value
-          ? "Invalid or missing website URL. Website must start with http:// or https://"
+        value && !/^(http|https):\/\/[^ "]+$/.test(value)
+          ? "Website must start with http:// or https://"
           : null,
       attachments: (value) => null,
     },
@@ -84,11 +138,6 @@ export default function Application() {
         !value ? "Address postal code is required." : null,
     },
   });
-
-  type applicationFormValues = typeof applicationForm.values;
-  function handleSubmit(values: applicationFormValues) {
-    console.log("Submitting", values);
-  }
 
   /*
     The below 3 functions are for handling addresses
@@ -118,7 +167,7 @@ export default function Application() {
   }
 
   /*
-    The below 2 functions are for PDF file handling in the attachment dropzone
+    The below are for PDF file handling in the attachment dropzone
   */
   const previews = applicationForm.values.attachments.map((file, index) => {
     return (
@@ -139,100 +188,220 @@ export default function Application() {
     });
   };
 
+  /*
+    The below are for application submission and updating
+  */
+
+  const createPetBusinessApplicationMutation =
+    useCreatePetBusinessApplication(queryClient);
+  const createPetBusinessApplication = async (
+    payload: CreatePetBusinessApplicationPayload,
+  ) => {
+    try {
+      await createPetBusinessApplicationMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Application Submitted",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Please wait for an administrator to review your application!`,
+      });
+      refetchPetBusinessApplication();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error submitting application",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const updatePetBusinessApplicationMutation =
+    useUpdatePetBusinessApplication(queryClient);
+  const updatePetBusinessApplication = async (
+    payload: CreatePetBusinessApplicationPayload,
+  ) => {
+    try {
+      await updatePetBusinessApplicationMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Application Updated",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Please wait for an administrator to review your application!`,
+      });
+      refetchPetBusinessApplication();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error updating application",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  type applicationFormValues = typeof applicationForm.values;
+  function handleSubmit(values: applicationFormValues) {
+    const payload: CreatePetBusinessApplicationPayload = {
+      petBusinessId: userId,
+      businessType: values.businessType as PetBusinessTypeEnum,
+      businessEmail: values.businessEmail,
+      websiteURL: values.websiteURL,
+      businessDescription: values.businessDescription,
+      businessAddresses: values.businessAddresses,
+      attachments: [], // not handled by BE yet
+    };
+    if (applicationStatus === BusinessApplicationStatusEnum.Notfound) {
+      createPetBusinessApplication(payload);
+    } else if (applicationStatus === BusinessApplicationStatusEnum.Rejected) {
+      payload.petBusinessApplicationId =
+        petBusinessApplication.petBusinessApplicationId; // Attach the application ID
+      updatePetBusinessApplication(payload);
+    } else {
+      notifications.show({
+        title: "Error sending application",
+        color: "red",
+        icon: <IconX />,
+        message: `Your application status is currently ${applicationStatus}.`,
+      });
+    }
+  }
+
   return (
     <Container mt="50px" mb="xl">
-      <ApplicationStatusAlert applicationStatus={applicationStatus} />{" "}
-      {/*Render this only when there is an attached PB application to the PB*/}
+      {petBusinessApplication &&
+        applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
+          <ApplicationStatusAlert
+            applicationStatus={applicationStatus}
+            remarks={
+              petBusinessApplication && petBusinessApplication.adminRemarks
+            }
+          />
+        )}
       <Group position="left">
         <PageTitle title="Pet Business Application" />
+        {applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
+          <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
+            <>
+              Application ID:{" "}
+              {petBusinessApplication &&
+                petBusinessApplication.petBusinessApplicationId}
+            </>
+          </Badge>
+        )}
       </Group>
       <Text size="sm" color="dimmed">
         Apply to be a Pet Business Partner with us today!
       </Text>
-      <form
-        onSubmit={applicationForm.onSubmit((values: any) =>
-          handleSubmit(values),
-        )}
-      >
-        <Grid mt="sm" mb="sm" gutter="lg">
-          <Grid.Col span={12}>
-            <Select
-              withAsterisk
-              data={businessTypeData}
-              label="Business type"
-              placeholder="Select a business type"
-              {...applicationForm.getInputProps("businessType")}
-            />
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <TextInput
-              withAsterisk
-              label="Business email"
-              placeholder="example@email.com"
-              {...applicationForm.getInputProps("businessEmail")}
-            />
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <TextInput
-              withAsterisk
-              placeholder="https://www.igroomdoggos.com"
-              label="Business website URL"
-              {...applicationForm.getInputProps("websiteURL")}
-            />
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <Textarea
-              placeholder="Description of services..."
-              label="Business description"
-              autosize
-              minRows={3}
-              maxRows={3}
-              {...applicationForm.getInputProps("businessDescription")}
-            />
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <Text fz="0.875rem" color="#212529" fw={500}>
-              Business address
-            </Text>
-            <AddressSidewaysScrollThing
-              addressList={applicationForm.values.businessAddresses}
-              openModal={open}
-              onRemoveAddress={handleRemoveAddress}
-            />
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <Dropzone
-              styles={{ inner: { pointerEvents: "all" } }}
-              accept={PDF_MIME_TYPE}
-              onDrop={(files) => {
-                applicationForm.setValues({
-                  ...applicationForm.values,
-                  attachments: files,
-                });
-              }}
-            >
-              <Text align="center">Drop licenses and permits (if any)</Text>
-              <SimpleGrid
-                cols={4}
-                breakpoints={[{ maxWidth: "xs", cols: 1 }]}
-                mt={previews.length > 0 ? "xl" : 0}
+      {!loading && (
+        <form
+          onSubmit={applicationForm.onSubmit((values: any) =>
+            handleSubmit(values),
+          )}
+        >
+          <Grid mt="sm" mb="sm" gutter="lg">
+            <Grid.Col span={12}>
+              <Select
+                disabled={isDisabled}
+                withAsterisk
+                data={businessTypeData}
+                label="Business type"
+                placeholder="Select a business type"
+                {...applicationForm.getInputProps("businessType")}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <TextInput
+                disabled={isDisabled}
+                withAsterisk
+                label="Business email"
+                placeholder="example@email.com"
+                {...applicationForm.getInputProps("businessEmail")}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <TextInput
+                disabled={isDisabled}
+                placeholder="https://www.igroomdoggos.com"
+                label="Business website URL"
+                {...applicationForm.getInputProps("websiteURL")}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Textarea
+                disabled={isDisabled}
+                withAsterisk
+                placeholder="Description of services..."
+                label="Business description"
+                autosize
+                minRows={3}
+                maxRows={3}
+                {...applicationForm.getInputProps("businessDescription")}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Text fz="0.875rem" color="#212529" fw={500}>
+                Business address
+              </Text>
+              <AddressSidewaysScrollThing
+                addressList={applicationForm.values.businessAddresses}
+                openModal={open}
+                onRemoveAddress={handleRemoveAddress}
+                isDisabled={isDisabled}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Dropzone
+                disabled={isDisabled}
+                styles={{ inner: { pointerEvents: "all" } }}
+                accept={PDF_MIME_TYPE}
+                onDrop={(files) => {
+                  applicationForm.setValues({
+                    ...applicationForm.values,
+                    attachments: files,
+                  });
+                }}
               >
-                {previews}
-              </SimpleGrid>
-            </Dropzone>
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <Button
-              type="submit"
-              fullWidth
-              leftIcon={<IconSend size="1rem" />}
-              uppercase
-            >
-              Submit Application
-            </Button>
-          </Grid.Col>
-        </Grid>
-      </form>
+                {isDisabled ? (
+                  <Text align="center">Licenses and permits</Text>
+                ) : (
+                  <Text align="center">
+                    Attach licenses and permits (if any)
+                  </Text>
+                )}
+                <SimpleGrid
+                  cols={4}
+                  breakpoints={[{ maxWidth: "xs", cols: 1 }]}
+                  mt={previews.length > 0 ? "xl" : 0}
+                >
+                  {previews}
+                </SimpleGrid>
+              </Dropzone>
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Button
+                type="submit"
+                fullWidth
+                leftIcon={<IconSend size="1rem" />}
+                uppercase
+                disabled={isDisabled}
+              >
+                {applicationStatus === BusinessApplicationStatusEnum.Rejected
+                  ? "Update Application"
+                  : "Submit Application"}
+              </Button>
+            </Grid.Col>
+          </Grid>
+        </form>
+      )}
       <AddAddressModal
         opened={isAddAddressModalOpened}
         open={open}
@@ -242,4 +411,15 @@ export default function Application() {
       />
     </Container>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) return null;
+
+  const userId = session.user["userId"];
+  const accountType = session.user["accountType"];
+
+  return { props: { userId, accountType } };
 }
