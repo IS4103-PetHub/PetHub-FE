@@ -64,8 +64,6 @@ export default function Application({ userId, accountType }: ApplicationProps) {
     refetch: refetchPetBusinessApplication,
   } = useGetPetBusinessApplicationByPBId(userId);
 
-  console.log("PB APP", petBusinessApplication);
-
   useEffect(() => {
     if (!petBusinessApplication) {
       setApplicationStatus(BusinessApplicationStatusEnum.Notfound);
@@ -281,6 +279,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
         applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
           <ApplicationStatusAlert
             applicationStatus={applicationStatus}
+            forDashboard={false}
             remarks={
               petBusinessApplication && petBusinessApplication.adminRemarks
             }

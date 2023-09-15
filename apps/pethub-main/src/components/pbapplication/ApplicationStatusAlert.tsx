@@ -1,38 +1,69 @@
-import { Alert, BadgeProps } from "@mantine/core";
+import { Alert, BadgeProps, Button } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import React from "react";
 
 interface ApplicationStatusAlertProps extends BadgeProps {
   applicationStatus: string;
+  forDashboard: boolean;
   remarks?: string[];
 }
 
 // Duplicated from AccountStatusBadge in shared/web-ui
 const ApplicationStatusAlert = ({
   applicationStatus,
+  forDashboard,
   remarks,
   ...props
 }: ApplicationStatusAlertProps) => {
+  const router = useRouter();
+
   const colourMap = new Map([
     ["REJECTED", "orange"],
     ["APPROVED", "green"],
     ["PENDING", "grey"],
+    ["NOTFOUND", "red"],
   ]);
 
-  const messageMap = new Map([
-    [
-      "REJECTED",
-      "Your application has been rejected. " +
-        (remarks.length > 0
-          ? "Please see the latest remark: " + remarks[remarks.length - 1]
-          : "[No remark available]"),
-    ],
-    ["APPROVED", "Your application has been approved!"],
-    [
-      "PENDING",
-      "Your application is pending review from our administrator staff.",
-    ],
-  ]);
+  const linkButton = (
+    <Button
+      compact
+      variant="gradient"
+      onClick={() => router.push("/business/application")}
+    >
+      Link to Application
+    </Button>
+  );
+
+  const messageMap = forDashboard
+    ? new Map([
+        [
+          "REJECTED",
+          "Your application has been rejected. Please update your application here ",
+        ],
+        [
+          "NOTFOUND",
+          "You are currently not a Pet Business Partner. Please apply as a Pet Business Partner here ",
+        ],
+        [
+          "PENDING",
+          "Your application is pending review from our administrator staff. View your application here ",
+        ],
+      ])
+    : new Map([
+        [
+          "REJECTED",
+          "Your application has been rejected. " +
+            (remarks.length > 0
+              ? "Please see the latest remark: " + remarks[remarks.length - 1]
+              : "[No remark available]"),
+        ],
+        ["APPROVED", "Your application has been approved!"],
+        [
+          "PENDING",
+          "Your application is pending review from our administrator staff.",
+        ],
+      ]);
 
   return (
     <Alert
@@ -43,12 +74,13 @@ const ApplicationStatusAlert = ({
       }
       {...props}
       icon={<IconAlertCircle size="1rem" />}
-      title={applicationStatus}
+      title={applicationStatus === "NOTFOUND" ? "Notice" : applicationStatus}
       mb="md"
     >
       {messageMap.has(applicationStatus)
         ? messageMap.get(applicationStatus)
         : "An error has occured."}
+      {forDashboard && <>{linkButton}</>}
     </Alert>
   );
 };

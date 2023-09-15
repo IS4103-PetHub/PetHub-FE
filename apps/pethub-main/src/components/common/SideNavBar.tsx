@@ -9,7 +9,7 @@ import {
   Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUser } from "@tabler/icons-react";
+import { IconUser, IconArticle, IconHome2 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -74,23 +74,18 @@ const useStyles = createStyles((theme) => ({
 
 const data = [
   {
-    link: "/business/application", // This link should be active provided that the PB session's AccountStatus is "INACTIVE" (change it to "NEW" in backend or smth?)
+    link: "/business/dashboard",
+    label: "Dashboard",
+    icon: IconHome2,
+  },
+  {
+    link: "/business/application",
     label: "Business Partner Application",
-    icon: IconUser,
+    icon: IconArticle,
   },
   {
     link: "/business/account",
     label: "Account",
-    icon: IconUser,
-  },
-  {
-    link: "/business/shared1",
-    label: "shared1",
-    icon: IconUser,
-  },
-  {
-    link: "/business/shared2",
-    label: "shared2",
     icon: IconUser,
   },
 ];
