@@ -42,15 +42,8 @@ export default function Dashboard({ userId, accountType }: DashboardProps) {
         />
       )}
       <Group position="left">
-        <PageTitle title="Dashboard" />
         {applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
-          <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
-            <>
-              Application ID:{" "}
-              {petBusinessApplication &&
-                petBusinessApplication.petBusinessApplicationId}
-            </>
-          </Badge>
+          <PageTitle title="Dashboard" />
         )}
       </Group>
     </Container>

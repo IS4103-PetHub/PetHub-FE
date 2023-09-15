@@ -1,4 +1,4 @@
-import { Alert, BadgeProps, Button } from "@mantine/core";
+import { Alert, BadgeProps, Button, Stack } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React from "react";
@@ -25,13 +25,19 @@ const ApplicationStatusAlert = ({
     ["NOTFOUND", "red"],
   ]);
 
-  const linkButton = (
+  const ApplyButton = (
     <Button
-      compact
-      variant="gradient"
+      mt="md"
       onClick={() => router.push("/business/application")}
+      variant="gradient"
     >
-      Link to Application
+      Apply now
+    </Button>
+  );
+
+  const LinkButton = (
+    <Button mt="md" onClick={() => router.push("/business/application")}>
+      View
     </Button>
   );
 
@@ -39,15 +45,15 @@ const ApplicationStatusAlert = ({
     ? new Map([
         [
           "REJECTED",
-          "Your application has been rejected. Please update your application here ",
+          "Your application has been rejected. Please update your application",
         ],
         [
           "NOTFOUND",
-          "You are currently not a Pet Business Partner. Please apply as a Pet Business Partner here ",
+          "Your pet business account currently has limited functionality. Apply and become a PetHub Partner to unleash the full potential of your pet business!",
         ],
         [
           "PENDING",
-          "Your application is pending review from our administrator staff. View your application here ",
+          "Your application is pending review from our administrator staff. View your application",
         ],
       ])
     : new Map([
@@ -74,13 +80,15 @@ const ApplicationStatusAlert = ({
       }
       {...props}
       icon={<IconAlertCircle size="1rem" />}
-      title={applicationStatus === "NOTFOUND" ? "Notice" : applicationStatus}
+      title={
+        applicationStatus === "NOTFOUND" ? "Wait, don't go!" : applicationStatus
+      }
       mb="md"
     >
       {messageMap.has(applicationStatus)
         ? messageMap.get(applicationStatus)
         : "An error has occured."}
-      {forDashboard && <>{linkButton}</>}
+      <div>{forDashboard && <>{ApplyButton}</>}</div>
     </Alert>
   );
 };
