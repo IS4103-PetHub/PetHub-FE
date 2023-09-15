@@ -42,7 +42,7 @@ export default function Dashboard({ userId, accountType }: DashboardProps) {
         />
       )}
       <Group position="left">
-        {applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
+        {applicationStatus === BusinessApplicationStatusEnum.Approved && (
           <PageTitle title="Dashboard" />
         )}
       </Group>

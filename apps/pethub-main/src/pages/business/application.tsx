@@ -69,6 +69,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       setApplicationStatus(BusinessApplicationStatusEnum.Notfound);
       setIsDisabled(false);
     } else {
+      console.log("BTYPE", petBusinessApplication.businessType);
       setApplicationStatus(petBusinessApplication.applicationStatus);
       applicationForm.setValues({
         businessType: petBusinessApplication.businessType,
@@ -90,10 +91,12 @@ export default function Application({ userId, accountType }: ApplicationProps) {
 
   const businessTypeData = Object.entries(PetBusinessTypeEnum).map(
     ([key, value]) => ({
-      value: key,
+      value: value as string,
       label: value as string,
     }),
   );
+
+  console.log("BTYPER DATA", businessTypeData);
 
   const applicationForm = useForm({
     initialValues: {
@@ -329,7 +332,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
             <Grid.Col span={12}>
               <TextInput
                 disabled={isDisabled}
-                placeholder="https://www.igroomdoggos.com"
+                placeholder="https://www.pet-groomer.com"
                 label="Business website URL"
                 {...applicationForm.getInputProps("websiteURL")}
               />

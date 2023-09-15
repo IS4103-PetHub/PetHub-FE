@@ -9,7 +9,6 @@ interface ApplicationStatusAlertProps extends BadgeProps {
   remarks?: string[];
 }
 
-// Duplicated from AccountStatusBadge in shared/web-ui
 const ApplicationStatusAlert = ({
   applicationStatus,
   forDashboard,
@@ -71,6 +70,22 @@ const ApplicationStatusAlert = ({
         ],
       ]);
 
+  const renderButton = () => {
+    if (!forDashboard) return null;
+
+    switch (applicationStatus) {
+      case "NOTFOUND":
+        return ApplyButton;
+      case "APPROVED":
+        return null;
+      case "PENDING":
+      case "REJECTED":
+        return LinkButton;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Alert
       color={
@@ -88,7 +103,7 @@ const ApplicationStatusAlert = ({
       {messageMap.has(applicationStatus)
         ? messageMap.get(applicationStatus)
         : "An error has occured."}
-      <div>{forDashboard && <>{ApplyButton}</>}</div>
+      <div>{renderButton()}</div>
     </Alert>
   );
 };

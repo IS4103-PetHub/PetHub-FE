@@ -5,9 +5,9 @@ export const enum AccountTypeEnum {
 }
 
 export enum PetBusinessTypeEnum {
-  FNB = "FNB",
-  SERVICE = "SERVICE",
-  HEALTHCARE = "HEALTHCARE",
+  Fnb = "FNB",
+  Service = "SERVICE",
+  Healthcare = "HEALTHCARE",
 }
 
 export const enum AccountStatusEnum {
