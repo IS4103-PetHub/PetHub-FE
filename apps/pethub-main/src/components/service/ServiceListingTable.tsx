@@ -13,7 +13,7 @@ import { useState } from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { useDeleteServiceListingById } from "@/hooks/serviceListingHooks";
+import { useDeleteServiceListingById } from "@/hooks/service-listing";
 import { ServiceListing } from "@/types/types";
 import ServiceListingModal from "./ServiceListingModal";
 
@@ -48,7 +48,6 @@ const ServiceListTable = ({
         autoClose: 5000,
       });
       closeDelete();
-      refetch();
     } catch (error) {
       notifications.show({
         title: "Error Deleting Service Listing",

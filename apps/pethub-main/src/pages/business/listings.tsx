@@ -24,7 +24,7 @@ import { PageTitle } from "web-ui";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import ServiceListingModal from "@/components/service/ServiceListingModal";
 import ServiceListTable from "@/components/service/ServiceListingTable";
-import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/serviceListingHooks";
+import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/service-listing";
 import { AccountTypeEnum } from "@/types/constants";
 
 // https://zumvet.com/blog/wp-content/uploads/2023/06/Pet-Angel-Blog-2022-14-1080x648-1.png

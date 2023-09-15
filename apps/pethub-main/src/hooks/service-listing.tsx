@@ -24,7 +24,7 @@ export const useGetServiceListingByPetBusinessIdAndAccountType = (
   userId: number,
 ) => {
   return useQuery({
-    queryKey: ["service-listings", userId],
+    queryKey: ["service-listings"],
     queryFn: async () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/pet-businesses/${userId}`,
@@ -57,17 +57,21 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
 export const useDeleteServiceListingById = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (serviceListingId: number) => {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${serviceListingId}`,
+      return (
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${serviceListingId}`,
+        )
+      ).data;
+    },
+    onSuccess: (data, serviceListingId) => {
+      queryClient.setQueryData<ServiceListing[]>(
+        ["service-listings"],
+        (oldServiceListings = []) => {
+          return oldServiceListings.filter(
+            (listing) => listing.serviceListingId !== serviceListingId,
+          );
+        },
       );
-      return serviceListingId;
-    },
-    onMutate: (serviceListingId) => {
-      queryClient.setQueryData(["service-listings", serviceListingId], null);
-      return { serviceListingId };
-    },
-    onSuccess: (serviceListingId) => {
-      queryClient.invalidateQueries(["service-listings", serviceListingId]);
     },
     onError: (error) => {
       console.error("Error deleting service listing:", error);

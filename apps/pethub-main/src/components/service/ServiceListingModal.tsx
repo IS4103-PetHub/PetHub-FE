@@ -13,7 +13,7 @@ import {
   Stack,
   Textarea,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,8 +22,8 @@ import React, { useEffect, useState } from "react";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
-} from "@/hooks/serviceListingHooks";
-import { useGetAllTags } from "@/hooks/tagsHooks";
+} from "@/hooks/service-listing";
+import { useGetAllTags } from "@/hooks/tags";
 import { ServiceCategoryEnum } from "@/types/constants";
 import {
   CreateServiceListingPayload,
@@ -145,25 +145,22 @@ const ServiceListingModal = ({
       tags: [],
       confirmation: false,
     },
-    validate: (values) => {
-      const errors: any = {};
-      if (!values.title) errors.title = "Title is mandatory.";
-      if (!values.description) errors.description = "Description is mandatory.";
-      if (!values.category) errors.category = "Category is mandatory.";
-      if (!values.basePrice) errors.basePrice = "Price is mandatory.";
+    validate: {
+      title: isNotEmpty("Title is mandatory."), // min max length
+      description: isNotEmpty("Description is mandatory."), // min max length
+      category: isNotEmpty("Category is mandatory."),
+      basePrice: (value) => {
+        if (!value) {
+          return "Price is mandatory.";
+        } else if (value < 0) {
+          return "Price must be a positive number with two decimal places.";
+        }
+      },
+      confirmation: (value) => {
+        if (!value && !isUpdate) return "Confirmation is mandatory.";
+      },
       // if (!values.address) errors.location = 'Address is mandatory.';
       // if (!values.attachments) errors.attachments = 'Attachments are mandatory.';
-      if (!values.confirmation && !isUpdate)
-        errors.confirmation = "Confirmation is mandatory.";
-      if (values.description.length > 500) {
-        errors.description = "Description cannot exceed 500 characters.";
-      }
-      if (values.basePrice < 0) {
-        errors.basePrice =
-          "Price must be a positive number with two decimal places.";
-      }
-      console.log("Logging errors:", errors);
-      return errors;
     },
   });
 
@@ -199,7 +196,7 @@ const ServiceListingModal = ({
             handleAction(values),
           )}
         >
-          <Stack ml="lg">
+          <Stack>
             <TextInput
               withAsterisk
               disabled={isView}
