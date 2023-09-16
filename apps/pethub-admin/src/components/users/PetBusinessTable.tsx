@@ -1,4 +1,4 @@
-import { Modal, Center } from "@mantine/core";
+import { Modal, Center, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -10,12 +10,12 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
+import { searchPetBusinesses } from "@/util";
+import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
-import { errorAlert } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
-
-const PAGE_SIZE = 10;
 
 export default function PetBusinessTable() {
   const {
@@ -31,6 +31,7 @@ export default function PetBusinessTable() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetBusiness[]>(petBusinesses);
   const [isSearching, setIsSearching] = useToggle();
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetBusiness | null>(
     null,
@@ -47,13 +48,15 @@ export default function PetBusinessTable() {
   };
 
   // Compute pagination slice indices based on the current page
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE;
+  const from = (page - 1) * TABLE_PAGE_SIZE;
+  const to = from + TABLE_PAGE_SIZE;
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    if (petBusinesses.length > 0 && hasNoFetchedRecords) {
+      sethasNoFetchedRecords(false);
+    }
     // Sort petBusinesses based on the current sort status
-
     const sortedPetBusinesses = sortBy(
       petBusinesses,
       sortStatus.columnAccessor,
@@ -61,16 +64,23 @@ export default function PetBusinessTable() {
     if (sortStatus.direction === "desc") {
       sortedPetBusinesses.reverse();
     }
-
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetBusinesses.slice(from, to);
-
-    // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, petBusinesses]);
+  }, [page, sortStatus, petBusinesses, hasNoFetchedRecords]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (petBusinesses.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isError) {
-    return errorAlert("Pet Businesses");
+    return ErrorAlert("Pet Businesses");
   }
 
   const handleSearch = (searchStr: string) => {
@@ -82,19 +92,7 @@ export default function PetBusinessTable() {
     }
     // search by id or company name or uen or email
     setIsSearching(true);
-    const results = petBusinesses.filter(
-      (petBusiness: PetBusiness) =>
-        petBusiness.companyName
-          .toLowerCase()
-          .includes(searchStr.toLowerCase()) ||
-        (petBusiness.uen &&
-          searchStr.includes(petBusiness.uen.toString()) &&
-          searchStr.length <= petBusiness.uen.toString().length) ||
-        petBusiness.email.toLowerCase().includes(searchStr.toLowerCase()) ||
-        (petBusiness.userId &&
-          searchStr.includes(petBusiness.userId.toString()) &&
-          searchStr.length <= petBusiness.userId.toString().length),
-    );
+    const results = searchPetBusinesses(petBusinesses, searchStr);
     setRecords(results);
     setPage(1);
   };
@@ -105,8 +103,24 @@ export default function PetBusinessTable() {
         // still fetching
         <CenterLoader />;
       }
-      // no user groups fetched
-      return <SadDimmedMessage title="No pet businesses found" subtitle="" />;
+      // no records fetched
+      return (
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No pet businesses found"
+                subtitle=""
+                disabled={!hasNoFetchedRecords}
+              />
+            </div>
+          )}
+        </Transition>
+      );
     }
     return (
       <>
@@ -122,9 +136,8 @@ export default function PetBusinessTable() {
             borderRadius="sm"
             withColumnBorders
             striped
-            highlightOnHover
             verticalAlignment="center"
-            minHeight={150}
+            minHeight={100}
             // provide data
             records={records}
             // define columns
@@ -192,8 +205,8 @@ export default function PetBusinessTable() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={petBusinesses ? petBusinesses.length : 0}
-            recordsPerPage={PAGE_SIZE}
+            totalRecords={isSearching ? records.length : petBusinesses?.length}
+            recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}
             idAccessor="userId"

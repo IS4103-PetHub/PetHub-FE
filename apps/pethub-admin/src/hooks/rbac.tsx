@@ -41,6 +41,22 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
   });
 };
 
+export const useUpdateUserGroup = () => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      const payloadWithoutId = Object.fromEntries(
+        Object.entries(payload).filter(([key]) => !["groupId"].includes(key)),
+      );
+      return (
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${payload.groupId}`,
+          payloadWithoutId,
+        )
+      ).data;
+    },
+  });
+};
+
 export const useDeleteUserGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (id: number) => {
@@ -59,6 +75,21 @@ export const useDeleteUserGroup = (queryClient: QueryClient) => {
   });
 };
 
+export const useGetUserGroupById = (id: number) => {
+  return useQuery({
+    queryKey: ["user-groups", id],
+    queryFn: async () => {
+      return (
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${id}`,
+        )
+      ).data as UserGroup;
+    },
+  });
+};
+
+// permissions hook
+
 export const useGetAllPermissions = () => {
   return useQuery({
     queryKey: ["permissions"],
@@ -68,5 +99,35 @@ export const useGetAllPermissions = () => {
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_PERMISSIONS_API}`,
         )
       ).data as Permission[],
+  });
+};
+
+// assign and unassign users
+
+export const useAddMultipleUsersToUserGroup = () => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      const payloadWithoutId = Object.fromEntries(
+        Object.entries(payload).filter(([key]) => !["groupId"].includes(key)),
+      );
+      return (
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${payload.groupId}/add-users`,
+          payloadWithoutId,
+        )
+      ).data;
+    },
+  });
+};
+
+export const useRemoveUserFromUserGroup = () => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      return (
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${RBAC_USER_GROUPS_API}/${payload.groupId}/remove-user/${payload.userId}`,
+        )
+      ).data;
+    },
   });
 };
