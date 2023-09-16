@@ -355,7 +355,10 @@ const DeleteAccountModal = ({
         padding="1.5rem"
         size="md"
       >
-        <Title order={2}>Are you sure you want to delete {name} account?</Title>
+        <Title
+          order={2}
+        >{`Are you sure you want to delete ${name}'s account?`}</Title>
+        <Text mt="md">This action cannot be undone.</Text>
         <form onSubmit={form.onSubmit(deleteInternalUserAccount)}>
           <Group mt="md" position="right">
             <Button type="reset" color="gray" onClick={closeDeleteModal}>
