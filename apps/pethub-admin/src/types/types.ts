@@ -120,3 +120,13 @@ export interface PetBusinessApplication {
   approverId?: Number;
   approver?: BusinessApplicationApprover;
 }
+
+export interface ApprovePetBusinessApplicationPayload {
+  petBusinessApplicationId: Number;
+  approverId: Number;
+}
+
+export interface RejectPetBusinessApplicationPayload {
+  petBusinessApplicationId: Number;
+  remark: String;
+}
