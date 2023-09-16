@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export function validatePassword(password: string) {
   if (password.length < 8) {
     return "Password must be at least 8 characters long.";
@@ -24,4 +26,9 @@ export function validateChangePassword(password: string, newPassword: string) {
     return "New password cannot be the same as current password.";
   }
   return validatePassword(newPassword);
+}
+
+export function formatISODateString(dateString: string) {
+  // e.g. 1 September 2023
+  return dayjs(dateString).format("D MMMM YYYY");
 }

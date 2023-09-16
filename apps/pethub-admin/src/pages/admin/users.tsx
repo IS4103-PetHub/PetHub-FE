@@ -14,7 +14,7 @@ interface AccountTabsProps {
 
 function AccountTabs({ sessionUserId }: AccountTabsProps) {
   return (
-    <Tabs defaultValue={AccountTypeEnum.PetOwner}>
+    <Tabs defaultValue={AccountTypeEnum.InternalUser}>
       <Tabs.List>
         <Tabs.Tab
           value={AccountTypeEnum.InternalUser}

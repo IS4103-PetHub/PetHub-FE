@@ -5,7 +5,7 @@ import { Permission } from "@/types/types";
 
 interface PermissionsCheckboxCardProps {
   permission: Permission;
-  form: UseFormReturnType<any>;
+  form?: UseFormReturnType<any>;
   isEditing?: boolean;
 }
 
@@ -17,6 +17,7 @@ const PermissionsCheckboxCard = ({
   const handleCheckPermission = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
+    if (!form) return;
     if (event.currentTarget.checked) {
       // append this permission's id to checked permissionIds
       form.setFieldValue("permissionIds", [
@@ -36,7 +37,7 @@ const PermissionsCheckboxCard = ({
 
   return (
     <Card shadow="sm" padding="lg" radius="sm" withBorder>
-      {isEditing ? (
+      {isEditing && form ? (
         <Checkbox
           size="md"
           value={permission.permissionId}

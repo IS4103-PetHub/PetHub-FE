@@ -22,13 +22,7 @@ import {
   useUpdateInternalUser,
 } from "@/hooks/internal-user";
 import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
-import {
-  InternalUser,
-  PetBusiness,
-  PetOwner,
-  UpdateInternalUserPayload,
-  User,
-} from "@/types/types";
+import { InternalUser, PetBusiness, PetOwner, User } from "@/types/types";
 import { formatAccountTypeEnum } from "@/util";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
@@ -374,9 +368,7 @@ const UpdateInternalUserModal = ({
 
   type FormValues = typeof form.values;
   const updateInternalUserMutation = useUpdateInternalUser();
-  const updateInternalUserAccount = async (
-    payload: UpdateInternalUserPayload,
-  ) => {
+  const updateInternalUserAccount = async (payload: any) => {
     try {
       await updateInternalUserMutation.mutateAsync(payload);
       notifications.show({
@@ -399,7 +391,7 @@ const UpdateInternalUserModal = ({
   };
 
   function handleSubmit(values: FormValues) {
-    const payload: UpdateInternalUserPayload = {
+    const payload = {
       userId: user.userId,
       firstName: values.firstName,
       lastName: values.lastName,
