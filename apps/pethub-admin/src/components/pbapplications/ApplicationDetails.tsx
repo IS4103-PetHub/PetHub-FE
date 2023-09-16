@@ -1,12 +1,8 @@
 import {
-  Grid,
   Container,
-  Box,
-  Center,
-  Card,
+  Button,
   Group,
   Accordion,
-  useMantineTheme,
   Textarea,
   rem,
   Text,
@@ -27,6 +23,8 @@ import ApplicationStatusAlert from "./ApplicationStatusAlert";
 interface ApplicationDetailsProps {
   applicationStatus: string | undefined;
   application: PetBusinessApplication | undefined;
+  onApprove?: () => void;
+  onReject?: () => void;
 }
 
 export default function ApplicationDetails({
@@ -43,6 +41,7 @@ export default function ApplicationDetails({
     "applicationDetails",
     "addresses",
     "description",
+    "action",
   ];
 
   return (
@@ -53,6 +52,7 @@ export default function ApplicationDetails({
         variant="separated"
         value={OPEN_FOREVER}
         onChange={() => {}}
+        chevronSize={0}
       >
         <Accordion.Item value="userDetails">
           <Accordion.Control icon={<IconUserExclamation size={rem(20)} />}>
@@ -136,6 +136,15 @@ export default function ApplicationDetails({
               onRemoveAddress={() => {}}
               isDisabled={true}
             />
+          </Accordion.Panel>
+        </Accordion.Item>
+
+        <Accordion.Item value="action">
+          <Accordion.Control icon={<IconAddressBook size={rem(20)} />}>
+            Action
+          </Accordion.Control>
+          <Accordion.Panel mr="xl" ml="md">
+            <Button fullWidth>Hello</Button>
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>

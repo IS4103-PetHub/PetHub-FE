@@ -13,6 +13,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { InternalUser } from "@/types/types";
 import { ViewButton } from "../common/ViewButton";
+import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import { errorAlert } from "../util/TableHelper";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
 import UserDetails from "./UserDetails";
@@ -131,6 +132,8 @@ export default function InternalUserTable({
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            onRowClick={(record) => handleViewDetailsOpenModal(record)}
+            rowStyle={{ cursor: "pointer" }}
             withBorder
             borderRadius="sm"
             withColumnBorders
@@ -195,8 +198,11 @@ export default function InternalUserTable({
                 width: 150,
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
-                    <ViewButton
-                      onClick={() => handleViewDetailsOpenModal(record)}
+                    <ViewButtonWithEvent
+                      onClick={(e: any) => {
+                        e.stopPropagation();
+                        handleViewDetailsOpenModal(record);
+                      }}
                     />
                   </Center>
                 ),

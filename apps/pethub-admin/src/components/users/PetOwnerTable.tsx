@@ -11,7 +11,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { PetOwner } from "@/types/types";
-import { ViewButton } from "../common/ViewButton";
+import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import { errorAlert } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
 
@@ -102,6 +102,8 @@ export default function PetOwnerTable() {
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            onRowClick={(record) => handleOpenModal(record)}
+            rowStyle={{ cursor: "pointer" }}
             withBorder
             borderRadius="sm"
             withColumnBorders
@@ -166,7 +168,12 @@ export default function PetOwnerTable() {
                 width: 150,
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
-                    <ViewButton onClick={() => handleOpenModal(record)} />
+                    <ViewButtonWithEvent
+                      onClick={(e: any) => {
+                        e.stopPropagation();
+                        handleOpenModal(record);
+                      }}
+                    />
                   </Center>
                 ),
               },

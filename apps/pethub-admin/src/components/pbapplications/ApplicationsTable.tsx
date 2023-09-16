@@ -11,7 +11,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-application";
 import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
-import { ViewButton } from "../common/ViewButton";
+import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import { formatEnum, formatEnumValue } from "../util/EnumHelper";
 import { errorAlert } from "../util/TableHelper";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
@@ -129,13 +129,19 @@ export default function ApplicationsTable({
       ) : (
         <>
           <SearchBar
-            text="Search by pet business application ID and other stuff"
+            text="Search by pet business application ID, UEN and business type"
             onSearch={handleSearch}
           />
           {isSearching && records.length === 0 ? (
             <NoSearchResultsMessage />
           ) : (
             <DataTable
+              onRowClick={(record) => {
+                router.push(
+                  `/pb-applications/${record.petBusinessApplicationId}`,
+                );
+              }}
+              rowStyle={{ cursor: "pointer" }}
               withBorder
               borderRadius="sm"
               withColumnBorders
@@ -210,16 +216,18 @@ export default function ApplicationsTable({
                   : []),
                 {
                   accessor: "",
-                  title: "View Details",
+                  title: "Action",
                   width: 140,
+                  textAlignment: "right",
                   render: (record) => (
                     <Center style={{ height: "100%" }}>
-                      <ViewButton
-                        onClick={() =>
+                      <ViewButtonWithEvent
+                        onClick={(e: any) => {
+                          e.stopPropagation();
                           router.push(
                             `/pb-applications/${record.petBusinessApplicationId}`,
-                          )
-                        }
+                          );
+                        }}
                       />
                     </Center>
                   ),
