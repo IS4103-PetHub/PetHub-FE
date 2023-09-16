@@ -7,9 +7,9 @@ import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { ForgotPasswordPayload } from "shared-utils";
 import { forgotPasswordService } from "@/api/userService";
 import { AccountTypeEnum } from "@/types/constants";
-import { ForgotPasswordPayload } from "@/types/types";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
 

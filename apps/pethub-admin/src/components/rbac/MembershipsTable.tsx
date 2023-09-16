@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconTrash, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
@@ -20,10 +19,9 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
   >(userGroup?.userGroupMemberships ?? []);
   const [page, setPage] = useState<number>(1);
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   useEffect(() => {
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     setUserGroupMemberships(
       userGroup?.userGroupMemberships?.slice(from, to) ?? [],
     );

@@ -42,14 +42,6 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface ForgotPasswordPayload {
-  email: string;
-}
-
-export interface ResetPasswordPayload {
-  token: string | null;
-  newPassword: string;
-}
 export interface CreateInternalUserPayload {
   firstName: string;
   lastName: string;

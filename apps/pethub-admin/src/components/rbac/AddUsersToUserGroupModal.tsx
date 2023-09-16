@@ -40,10 +40,9 @@ const AddUsersToUserGroupModal = ({
     setPage(1);
   };
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   useEffect(() => {
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     setRecords(internalUsers?.slice(from, to) ?? []);
   }, [page, internalUsers]);
 

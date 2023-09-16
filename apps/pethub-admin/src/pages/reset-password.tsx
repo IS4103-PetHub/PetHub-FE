@@ -11,10 +11,10 @@ import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
+import { ResetPasswordPayload } from "shared-utils";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { resetPasswordService } from "@/api/userService";
 import { RegularButton } from "@/components/common/RegularButton";
-import { ResetPasswordPayload } from "@/types/types";
 import { parseRouterQueryParam, validatePassword } from "@/util";
 
 export default function ResetPassword() {

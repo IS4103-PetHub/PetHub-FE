@@ -9,12 +9,21 @@
     "forceConsistentCasingInFileNames": true,
     "inlineSources": false,
     "isolatedModules": true,
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "Node",
+    "noEmit": true,
+    "resolveJsonModule": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "allowJs": true,
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "strictPropertyInitialization": false
   },
   "exclude": ["node_modules"]
 }
