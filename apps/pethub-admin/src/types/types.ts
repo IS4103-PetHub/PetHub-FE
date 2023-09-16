@@ -28,6 +28,7 @@ export interface PetBusiness extends User {
   // pet business attributes
   companyName: string;
   uen: string;
+  contactNumber: string;
   businessType?: string;
   businessDescription?: string;
   businessEmail?: string;

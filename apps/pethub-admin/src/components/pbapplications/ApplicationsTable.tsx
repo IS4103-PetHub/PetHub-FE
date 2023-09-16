@@ -12,7 +12,7 @@ import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-applicati
 import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
 import { ViewButton } from "../common/ViewButton";
-import { formatEnumValue } from "../util/EnumHelper";
+import { formatEnum, formatEnumValue } from "../util/EnumHelper";
 import { errorAlert } from "../util/TableHelper";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
 
@@ -53,10 +53,10 @@ export default function ApplicationsTable({
   );
   const router = useRouter();
   const [isSearching, setIsSearching] = useToggle();
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE;
 
   useEffect(() => {
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE;
     let filteredApplications = petBusinessApplications;
 
     // Filter the applications by the applicationStatus, unless it's 'All'
@@ -170,6 +170,9 @@ export default function ApplicationsTable({
                   title: "Business Type",
                   sortable: true,
                   ellipsis: true,
+                  render: ({ businessType }) => {
+                    return formatEnum(businessType);
+                  },
                 },
                 {
                   accessor: "dateCreated",
