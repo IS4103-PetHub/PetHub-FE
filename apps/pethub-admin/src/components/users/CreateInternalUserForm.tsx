@@ -6,14 +6,12 @@ import {
   createStyles,
   Grid,
   PasswordInput,
+  Text,
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconPlus, IconX } from "@tabler/icons-react";
-import { IconCheck } from "@tabler/icons-react";
-import { IconUserCog } from "@tabler/icons-react";
+import { IconPlus, IconX, IconCheck } from "@tabler/icons-react";
 import React, { useState } from "react";
-import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreateInternalUser } from "@/hooks/internal-user";
 import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
@@ -25,19 +23,6 @@ export function CreateInternalUserForm({
 }: {
   onUserCreated: (success: boolean) => void;
 }) {
-  const useStyles = createStyles((theme) => ({
-    backgroundEffect: {
-      height: "100%",
-      background:
-        "radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)",
-    },
-
-    whiteBackground: {
-      height: "100%",
-      backgroundColor: "white",
-    },
-  }));
-  const { classes } = useStyles();
   const form = useForm({
     initialValues: {
       accountType: AccountTypeEnum.InternalUser,
@@ -109,13 +94,9 @@ export function CreateInternalUserForm({
 
   return (
     <>
-      <Container className={classes.whiteBackground} p="10px">
-        <Group>
-          <IconUserCog size="2rem" />
-          <PageTitle title="Create Internal User" />
-        </Group>
+      <Container p="10px">
         <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <Grid mt="md" mb="md">
+          <Grid mb="md">
             <Grid.Col span={12}>
               <TextInput
                 label="First name"

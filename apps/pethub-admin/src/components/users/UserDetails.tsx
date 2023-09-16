@@ -17,8 +17,6 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
-import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import { formatAccountTypeEnum } from "@/components/util/EnumHelper";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
@@ -31,6 +29,7 @@ import {
   UpdateInternalUserPayload,
   User,
 } from "@/types/types";
+import { formatAccountTypeEnum } from "@/util";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
