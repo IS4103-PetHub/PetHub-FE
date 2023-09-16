@@ -1,7 +1,7 @@
 import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";

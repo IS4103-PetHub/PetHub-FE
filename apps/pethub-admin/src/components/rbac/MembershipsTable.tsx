@@ -1,5 +1,5 @@
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconTrash, IconX } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useState, useEffect } from "react";
 import { useRemoveUserFromUserGroup } from "@/hooks/rbac";
