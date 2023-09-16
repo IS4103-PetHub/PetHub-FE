@@ -190,9 +190,10 @@ export default function InternalUserTable({
               },
               {
                 // New column for the "view more details" button. Using an appended userId to avoid double child problem
-                accessor: "${record.userId}-button",
+                accessor: "actions",
                 title: "Actions",
                 width: 150,
+                textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
                     <ViewButton

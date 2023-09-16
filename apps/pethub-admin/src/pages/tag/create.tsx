@@ -21,7 +21,10 @@ export default function CreateTag() {
       name: "",
     },
     validate: {
-      name: isNotEmpty("Name required."),
+      name: (value) =>
+        isNotEmpty("Name required.") && value.length > 16
+          ? "Name should be a maximum of 16 characters."
+          : null,
     },
   });
 

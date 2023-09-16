@@ -1,13 +1,5 @@
-import {
-  Modal,
-  Title,
-  Text,
-  Button,
-  Group,
-  Grid,
-  TextInput,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { Modal, Title, Button, Group, Grid, TextInput } from "@mantine/core";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
 import EditActionButton from "web-ui/shared/EditActionButton";
@@ -29,6 +21,12 @@ const EditTagButtonModal = ({
   const form = useForm({
     initialValues: {
       name: currentName,
+    },
+    validate: {
+      name: (value) =>
+        isNotEmpty("Name required.") && value.length > 16
+          ? "Name should be a maximum of 16 characters."
+          : null,
     },
   });
 

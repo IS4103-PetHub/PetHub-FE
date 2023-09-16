@@ -60,11 +60,12 @@ const TagTable = ({
           },
           {
             // actions
-            accessor: "${record.tagId}-button",
+            accessor: "actions",
             title: "Actions",
-            width: "10vw",
+            width: 100,
+            textAlignment: "right",
             render: (record) => (
-              <Group position="center">
+              <Group position="right">
                 <EditTagButtonModal
                   tagId={record.tagId}
                   currentName={record.name}
