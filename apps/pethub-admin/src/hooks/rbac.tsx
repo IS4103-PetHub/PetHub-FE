@@ -1,5 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { AccountTypeEnum } from "@/types/constants";
 import { CreateUserGroupPayload, Permission, UserGroup } from "@/types/types";
 
 const RBAC_USER_GROUPS_API = "api/rbac/user-groups";
@@ -41,7 +42,7 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
   });
 };
 
-export const useUpdateUserGroup = () => {
+export const useUpdateUserGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(
@@ -53,6 +54,22 @@ export const useUpdateUserGroup = () => {
           payloadWithoutId,
         )
       ).data;
+    },
+    onSuccess: (data) => {
+      const userGroup: UserGroup = {
+        groupId: data.groupId,
+        name: data.name,
+        description: data.description,
+      };
+      queryClient.setQueryData<UserGroup[]>(["user-groups"], (old = []) => {
+        const oldDataIndex = old.findIndex(
+          (oldGroup) => oldGroup.groupId === data.groupId,
+        );
+        if (oldDataIndex === -1) return old;
+
+        old[oldDataIndex] = { ...userGroup }; // replaces old cached info with newly updated info
+        return old;
+      });
     },
   });
 };
@@ -129,5 +146,21 @@ export const useRemoveUserFromUserGroup = () => {
         )
       ).data;
     },
+  });
+};
+
+export const useGetPermissionsByUserIdAndAccountType = (
+  userId: number,
+  accountType: AccountTypeEnum,
+) => {
+  return useQuery({
+    queryKey: ["permissions", userId, accountType],
+    queryFn: async () =>
+      (
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+        )
+      ).data as Permission[],
+    enabled: accountType === AccountTypeEnum.InternalUser,
   });
 };

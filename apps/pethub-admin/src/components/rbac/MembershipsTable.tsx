@@ -1,6 +1,5 @@
-import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconTrash, IconX } from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useState, useEffect } from "react";
 import { useRemoveUserFromUserGroup } from "@/hooks/rbac";
@@ -20,10 +19,9 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
   >(userGroup?.userGroupMemberships ?? []);
   const [page, setPage] = useState<number>(1);
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   useEffect(() => {
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     setUserGroupMemberships(
       userGroup?.userGroupMemberships?.slice(from, to) ?? [],
     );
@@ -38,8 +36,7 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
         title: "Member Removed",
         color: "green",
         icon: <IconCheck />,
-        message:
-          "The selected user have been removed from this group successfully!",
+        message: `User ID: ${id} have been removed from this group successfully!`,
       });
       refetch();
     } catch (error: any) {
@@ -70,32 +67,32 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
           accessor: "firstName",
           width: "15vw",
           ellipsis: true,
-          render: (userGroupPermission) =>
-            userGroupPermission.user.internalUser.firstName,
+          render: (userGroupMembership) =>
+            userGroupMembership.user?.internalUser?.firstName,
         },
         {
           accessor: "lastName",
           width: "15vw",
           ellipsis: true,
-          render: (userGroupPermission) =>
-            userGroupPermission.user.internalUser.lastName,
+          render: (userGroupMembership) =>
+            userGroupMembership.user?.internalUser?.lastName,
         },
         {
           accessor: "email",
           width: "25vw",
           ellipsis: true,
-          render: (userGroupPermission) => userGroupPermission.user.email,
+          render: (userGroupMembership) => userGroupMembership.user?.email,
         },
         {
           // actions
           accessor: "actions",
           title: "Actions",
           width: "10vw",
-          render: (userGroupPermission) => (
+          render: (userGroupMembership) => (
             <RemoveUserFromGroupButton
-              userName={`${userGroupPermission?.user?.internalUser.firstName} ${userGroupPermission?.user?.internalUser.lastName}`}
+              userName={`${userGroupMembership?.user?.internalUser?.firstName} ${userGroupMembership?.user?.internalUser?.lastName}`}
               groupName={userGroup?.name ?? "this group"}
-              onDelete={() => handleRemoveUser(userGroupPermission.userId)}
+              onDelete={() => handleRemoveUser(userGroupMembership.userId)}
             />
           ),
         },

@@ -34,7 +34,7 @@ export function parseRouterQueryParam(param: string | string[] | undefined) {
   return param;
 }
 
-export function formatAccountTypeEnum(value: string): string {
+export function formatEnum(value: string): string {
   return value
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())

@@ -40,11 +40,10 @@ export default function RBAC() {
     direction: "asc",
   });
 
-  // Recompute records whenever the current page or sort status changes
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   useEffect(() => {
+    // Recompute records whenever the current page or sort status changes
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     const sortedUserGroups = sortBy(userGroups, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedUserGroups.reverse();
