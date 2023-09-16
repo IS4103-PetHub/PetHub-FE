@@ -81,7 +81,7 @@ const data = [
   { link: "/", label: "Home", icon: IconHome },
   { link: "/users", label: "Users", icon: IconUser },
   { link: "/rbac", label: "Role-based Access Control", icon: IconUserShield },
-  { link: "/tag", label: "Tags", icon: IconTags },
+  { link: "/admin/tag", label: "Tags", icon: IconTags },
 ];
 
 const SideNavBar = () => {

@@ -191,6 +191,13 @@ const PetBusinessDetails = ({
         </Col>
 
         <Col span={6}>
+          <Text>Contact Number:</Text>
+        </Col>
+        <Col span={6}>
+          <Text>{user.contactNumber}</Text>
+        </Col>
+
+        <Col span={6}>
           <Text>Business Type:</Text>
         </Col>
         <Col span={6}>

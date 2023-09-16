@@ -1,4 +1,4 @@
-import { Container, Group } from "@mantine/core";
+import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
@@ -15,7 +15,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import TagTable from "@/components/tag/TagTable";
 import { useDeleteTag, useGetAllTags, useUpdateTag } from "@/hooks/tag";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { Tag, UpdateTagPayload } from "@/types/types";
 
 export default function Tags() {
@@ -28,6 +28,7 @@ export default function Tags() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<Tag[]>(tags);
   const [isSearching, setIsSearching] = useToggle();
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "tagId",
     direction: "asc",
@@ -35,10 +36,6 @@ export default function Tags() {
 
   const from = (page - 1) * TABLE_PAGE_SIZE;
   const to = from + TABLE_PAGE_SIZE;
-
-  useEffect(() => {
-    setRecords(tags.slice(from, to));
-  }, [page, tags]);
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
@@ -51,6 +48,16 @@ export default function Tags() {
     // Update the records state
     setRecords(newRecords);
   }, [page, sortStatus, tags]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (tags.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   const deleteTagMutation = useDeleteTag(queryClient);
   const handleDeleteTag = async (id: number) => {
@@ -77,7 +84,7 @@ export default function Tags() {
     }
   };
 
-  const updateTagMutation = useUpdateTag(queryClient);
+  const updateTagMutation = useUpdateTag();
   const handleUpdateTag = async (payload: UpdateTagPayload) => {
     try {
       await updateTagMutation.mutateAsync(payload);
@@ -130,10 +137,20 @@ export default function Tags() {
       }
       // no tags fetched
       return (
-        <SadDimmedMessage
-          title="No tags found"
-          subtitle="Click 'Create Tag' to create a new tag"
-        />
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No tags found"
+                subtitle="Click 'Create Tag' to create a new tag"
+              />
+            </div>
+          )}
+        </Transition>
       );
     }
     return (
@@ -147,6 +164,7 @@ export default function Tags() {
             totalNumTags={tags.length}
             onDelete={handleDeleteTag}
             onUpdate={handleUpdateTag}
+            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}

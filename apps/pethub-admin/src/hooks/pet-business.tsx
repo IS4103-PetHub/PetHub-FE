@@ -16,6 +16,7 @@ export const useGetAllPetBusinesses = () => {
         uen: data.uen,
         businessType: data.businessType,
         businessDescription: data.businessDescription,
+        contactNumber: data.contactNumber,
         websiteURL: data.websiteURL,
         email: data.user.email,
         accountType: data.user.accountType,

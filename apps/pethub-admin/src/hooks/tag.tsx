@@ -55,9 +55,9 @@ export const useCreateTag = (queryClient: QueryClient) => {
   });
 };
 
-export const useUpdateTag = (queryClient: QueryClient) => {
+export const useUpdateTag = () => {
   return useMutation({
-    mutationFn: async (payload: UpdateTagPayload) => {
+    mutationFn: async (payload: any) => {
       return (
         await axios.patch(
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/${TAG_API}/${payload.tagId}`,
