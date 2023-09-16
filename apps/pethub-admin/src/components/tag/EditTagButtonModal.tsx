@@ -66,7 +66,7 @@ const EditTagButtonModal = ({
               />
             </Grid.Col>
           </Grid>
-          <Group mt="25px" position="center">
+          <Group mt="25px" position="right">
             <Button type="reset" color="gray" onClick={close}>
               Cancel
             </Button>
