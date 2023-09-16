@@ -182,23 +182,23 @@ export default function PetBusinessApplicationDetails({
 
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
-    const rejectPayload: RejectPetBusinessApplicationPayload = {
-      petBusinessApplicationId: applicationId,
-      remark: values.remark,
-    };
-    const approvePayload: ApprovePetBusinessApplicationPayload = {
-      petBusinessApplicationId: applicationId,
-      approverId: userId,
-    };
     if (
       applicationStatus === BusinessApplicationStatusEnum.Pending &&
       rejectButtonChosen
     ) {
+      const rejectPayload: RejectPetBusinessApplicationPayload = {
+        petBusinessApplicationId: applicationId,
+        remark: values.remark,
+      };
       rejectPetBusinessApplication(rejectPayload);
     } else if (
       applicationStatus === BusinessApplicationStatusEnum.Pending &&
       !rejectButtonChosen
     ) {
+      const approvePayload: ApprovePetBusinessApplicationPayload = {
+        petBusinessApplicationId: applicationId,
+        approverId: userId,
+      };
       approvePetBusinessApplication(approvePayload);
     } else {
       notifications.show({
