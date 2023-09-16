@@ -13,6 +13,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
+import { Inter } from "next/font/google";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
@@ -21,6 +22,8 @@ import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import { AccountTypeEnum } from "@/types/constants";
 import type { AppProps } from "next/app";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export function App({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
@@ -64,10 +67,11 @@ export function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <style>
-          @import
-          url(&#39;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&#39;);
-        </style>
+        <style jsx global>{`
+          html {
+            font-family: ${inter.style.fontFamily};
+          }
+        `}</style>
       </Head>
       <ColorSchemeProvider
         colorScheme={colorScheme}
