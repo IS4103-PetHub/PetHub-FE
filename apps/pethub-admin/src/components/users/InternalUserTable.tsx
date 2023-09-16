@@ -17,7 +17,7 @@ import { errorAlert } from "../util/TableHelper";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
 import UserDetails from "./UserDetails";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 interface InternalUserTableProps {
   sessionUserId: number;

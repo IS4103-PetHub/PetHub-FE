@@ -15,7 +15,7 @@ import { ViewButton } from "../common/ViewButton";
 import { errorAlert } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 export default function PetOwnerTable() {
   const { data: petOwners = [], isLoading, isError } = useGetAllPetOwners();

@@ -14,9 +14,9 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import TagTable from "@/components/tag/TagTable";
-import { useDeleteTag, useGetAllTags } from "@/hooks/tag";
+import { useDeleteTag, useGetAllTags, useUpdateTag } from "@/hooks/tag";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { Tag } from "@/types/types";
+import { Tag, UpdateTagPayload } from "@/types/types";
 
 export default function Tags() {
   const router = useRouter();
@@ -35,6 +35,10 @@ export default function Tags() {
 
   const from = (page - 1) * TABLE_PAGE_SIZE;
   const to = from + TABLE_PAGE_SIZE;
+
+  useEffect(() => {
+    setRecords(tags.slice(from, to));
+  }, [page, tags]);
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
@@ -62,6 +66,31 @@ export default function Tags() {
     } catch (error: any) {
       notifications.show({
         title: "Error Deleting Tag",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const updateTagMutation = useUpdateTag(queryClient);
+  const handleUpdateTag = async (payload: UpdateTagPayload) => {
+    try {
+      await updateTagMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Tag Updated",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Tag ${payload.tagId} updated successfully.`,
+      });
+      refetch();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Updating Tag",
         color: "red",
         icon: <IconX />,
         message:
@@ -115,7 +144,9 @@ export default function Tags() {
         ) : (
           <TagTable
             tags={records}
+            totalNumTags={tags.length}
             onDelete={handleDeleteTag}
+            onUpdate={handleUpdateTag}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}

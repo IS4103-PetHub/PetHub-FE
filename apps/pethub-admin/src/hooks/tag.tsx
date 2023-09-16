@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { CreateTagPayload, Tag } from "@/types/types";
+import { CreateTagPayload, Tag, UpdateTagPayload } from "@/types/types";
 
 const TAG_API = "api/tags";
 
@@ -51,6 +51,19 @@ export const useCreateTag = (queryClient: QueryClient) => {
         return [...old, newTag];
         // appends newly created record to cache
       });
+    },
+  });
+};
+
+export const useUpdateTag = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (payload: UpdateTagPayload) => {
+      return (
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${TAG_API}/${payload.tagId}`,
+          payload,
+        )
+      ).data;
     },
   });
 };

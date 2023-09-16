@@ -1,23 +1,27 @@
 import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import EditActionButton from "web-ui/shared/EditActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { Tag } from "@/types/types";
+import { Tag, UpdateTagPayload } from "@/types/types";
+import EditTagButtonModal from "./EditTagButtonModal";
 interface TagTableProps {
   tags: Tag[];
+  totalNumTags: number;
   page: number;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
+  onUpdate(payload: UpdateTagPayload): void;
   onSortStatusChange: any;
   onPageChange(p: number): void;
 }
 
 const TagTable = ({
   tags,
+  totalNumTags,
   page,
   sortStatus,
   onDelete,
+  onUpdate,
   onSortStatusChange,
   onPageChange,
 }: TagTableProps) => {
@@ -61,10 +65,10 @@ const TagTable = ({
             width: "10vw",
             render: (record) => (
               <Group position="center">
-                <EditActionButton
-                  onClick={function (): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                <EditTagButtonModal
+                  tagId={record.tagId}
+                  currentName={record.name}
+                  onUpdate={onUpdate}
                 />
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete the tag: ${record.name}?`}
@@ -84,7 +88,7 @@ const TagTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={tags ? tags.length : 0}
+        totalRecords={totalNumTags}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}

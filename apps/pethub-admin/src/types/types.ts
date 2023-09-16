@@ -95,3 +95,8 @@ export interface Tag {
 export interface CreateTagPayload {
   name: string;
 }
+
+export interface UpdateTagPayload {
+  tagId: number;
+  name: string;
+}
