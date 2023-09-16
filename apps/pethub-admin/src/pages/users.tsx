@@ -17,35 +17,37 @@ function AccountTabs({ sessionUserId }: AccountTabsProps) {
     <Tabs defaultValue={AccountTypeEnum.PetOwner}>
       <Tabs.List>
         <Tabs.Tab
-          value={AccountTypeEnum.PetOwner}
-          icon={<IconPaw size="0.8rem" />}
+          value={AccountTypeEnum.InternalUser}
+          icon={<IconUserCog size="0.8rem" />}
         >
-          Pet Owner
+          Internal User
         </Tabs.Tab>
+
         <Tabs.Tab
           value={AccountTypeEnum.PetBusiness}
           icon={<IconBuildingStore size="0.8rem" />}
         >
           Pet Business
         </Tabs.Tab>
+
         <Tabs.Tab
-          value={AccountTypeEnum.InternalUser}
-          icon={<IconUserCog size="0.8rem" />}
+          value={AccountTypeEnum.PetOwner}
+          icon={<IconPaw size="0.8rem" />}
         >
-          Internal User
+          Pet Owner
         </Tabs.Tab>
       </Tabs.List>
 
-      <Tabs.Panel value={AccountTypeEnum.PetOwner} pt="xs">
-        <PetOwnerTable />
+      <Tabs.Panel value={AccountTypeEnum.InternalUser} pt="xs">
+        <InternalUserTable sessionUserId={sessionUserId} />
       </Tabs.Panel>
 
       <Tabs.Panel value={AccountTypeEnum.PetBusiness} pt="xs">
         <PetBusinessTable />
       </Tabs.Panel>
 
-      <Tabs.Panel value={AccountTypeEnum.InternalUser} pt="xs">
-        <InternalUserTable sessionUserId={sessionUserId} />
+      <Tabs.Panel value={AccountTypeEnum.PetOwner} pt="xs">
+        <PetOwnerTable />
       </Tabs.Panel>
     </Tabs>
   );
