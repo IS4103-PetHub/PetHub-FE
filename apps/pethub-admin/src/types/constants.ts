@@ -14,3 +14,6 @@ export const enum InternalUserRoleEnum {
   admin = "ADMINISTRATOR",
 }
 export const TABLE_PAGE_SIZE = 10;
+
+// 500ms delay before the empty state message is shown
+export const EMPTY_STATE_DELAY_MS = 500;

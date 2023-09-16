@@ -1,14 +1,17 @@
 import { Button, Modal, Group, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
+import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { useAddMultipleUsersToUserGroup } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser, UserGroup } from "@/types/types";
+import { searchInternalUsers } from "@/util";
+import { ErrorAlert } from "../common/ErrorAlert";
 
 interface AddUsersToUserGroupModalProps {
   userGroup?: UserGroup;
@@ -21,11 +24,33 @@ const AddUsersToUserGroupModal = ({
 }: AddUsersToUserGroupModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
 
-  const { data: internalUsers = [] } = useGetAllInternalUsers();
+  const { data: internalUsers = [], isError } = useGetAllInternalUsers();
+
+  const [isSearching, setIsSearching] = useToggle();
   const [selectedRecords, setSelectedRecords] = useState<InternalUser[]>([]);
   const [records, setRecords] = useState<InternalUser[]>([]);
-
   const [page, setPage] = useState<number>(1);
+
+  function getMinTableHeight() {
+    // to account for pagination
+    if (internalUsers.length >= 10) {
+      return 560;
+    }
+    // 1 record to 9 records
+    if (internalUsers.length > 0) {
+      return 100;
+    }
+    // no records
+    return 150;
+  }
+
+  const handleCloseModal = () => {
+    // reset the table
+    close();
+    setIsSearching(false);
+    setRecords(internalUsers);
+    setPage(1);
+  };
 
   const from = (page - 1) * TABLE_PAGE_SIZE;
   const to = from + TABLE_PAGE_SIZE;
@@ -73,11 +98,29 @@ const AddUsersToUserGroupModal = ({
     }
   };
 
+  const handleSearch = (searchStr: string) => {
+    if (searchStr.length === 0) {
+      setIsSearching(false);
+      setRecords(internalUsers);
+      setPage(1);
+      return;
+    }
+    // search by id or first name or last name or email
+    setIsSearching(true);
+    const results = searchInternalUsers(internalUsers, searchStr);
+    setRecords(results);
+    setPage(1);
+  };
+
+  if (isError) {
+    return ErrorAlert("Internal Users");
+  }
+
   return (
     <>
       <Modal
         opened={opened}
-        onClose={close}
+        onClose={handleCloseModal}
         title={
           <Text size="xl" weight={600}>
             Add members
@@ -86,8 +129,12 @@ const AddUsersToUserGroupModal = ({
         size="80%"
         centered
       >
+        <SearchBar
+          text="Search by internal user ID, first name, last name, email"
+          onSearch={handleSearch}
+        />
         <DataTable
-          minHeight={internalUsers.length > 0 ? 100 : 150}
+          minHeight={getMinTableHeight()}
           columns={[
             {
               accessor: "userId",
@@ -127,6 +174,9 @@ const AddUsersToUserGroupModal = ({
           page={page}
           onPageChange={(p) => setPage(p)}
           idAccessor="userId"
+          noRecordsText={
+            isSearching ? "No matching records found" : "No records"
+          }
         />
         <Group mt="lg" position="right">
           <Button onClick={close} color="gray" type="reset">

@@ -1,4 +1,4 @@
-import { Modal, Center, Box, Container } from "@mantine/core";
+import { Modal, Center, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -10,8 +10,9 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
+import { searchPetOwners } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import UserDetails from "./UserDetails";
@@ -26,6 +27,7 @@ export default function PetOwnerTable() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetOwner[]>(petOwners);
   const [isSearching, setIsSearching] = useToggle();
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetOwner | null>(null);
 
@@ -45,6 +47,9 @@ export default function PetOwnerTable() {
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    if (petOwners.length > 0 && hasNoFetchedRecords) {
+      sethasNoFetchedRecords(false);
+    }
     // Sort the petOwners based on the current sort status
     const sortedPetOwners = sortBy(petOwners, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
@@ -52,9 +57,18 @@ export default function PetOwnerTable() {
     }
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetOwners.slice(from, to);
-    // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, petOwners]);
+  }, [page, sortStatus, petOwners, hasNoFetchedRecords]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (petOwners.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isError) {
     return ErrorAlert("Pet Owners");
@@ -69,15 +83,7 @@ export default function PetOwnerTable() {
     }
     // search by id or first name or last name or email
     setIsSearching(true);
-    const results = petOwners.filter(
-      (petOwner: PetOwner) =>
-        petOwner.firstName.toLowerCase().includes(searchStr.toLowerCase()) ||
-        petOwner.lastName.toLowerCase().includes(searchStr.toLowerCase()) ||
-        petOwner.email.toLowerCase().includes(searchStr.toLowerCase()) ||
-        (petOwner.userId &&
-          searchStr.includes(petOwner.userId.toString()) &&
-          searchStr.length <= petOwner.userId.toString().length),
-    );
+    const results = searchPetOwners(petOwners, searchStr);
     setRecords(results);
     setPage(1);
   };
@@ -88,8 +94,24 @@ export default function PetOwnerTable() {
         // still fetching
         <CenterLoader />;
       }
-      // no user groups fetched
-      return <SadDimmedMessage title="No pet owners found" subtitle="" />;
+      // no records fetched
+      return (
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No pet owners found"
+                subtitle=""
+                disabled={!hasNoFetchedRecords}
+              />
+            </div>
+          )}
+        </Transition>
+      );
     }
     return (
       <>
@@ -159,7 +181,7 @@ export default function PetOwnerTable() {
               },
               {
                 // New column for the "view more details" button. Using an appended userId to avoid double child problem
-                accessor: "${record.userId}-button",
+                accessor: "actions",
                 title: "Actions",
                 width: 150,
                 render: (record) => (

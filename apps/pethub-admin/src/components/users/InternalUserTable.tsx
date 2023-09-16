@@ -1,4 +1,4 @@
-import { Modal, Center, Group, Button, Container, Text } from "@mantine/core";
+import { Modal, Center, Group, Button, Text, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { IconUserPlus } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
@@ -11,8 +11,9 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser } from "@/types/types";
+import { searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
@@ -38,6 +39,7 @@ export default function InternalUserTable({
   });
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<InternalUser[]>(internalUsers);
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
   const [isViewDetailsModalOpen, setViewDetailsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<InternalUser | null>(
@@ -65,6 +67,9 @@ export default function InternalUserTable({
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    if (internalUsers.length > 0 && hasNoFetchedRecords) {
+      sethasNoFetchedRecords(false);
+    }
     // Sort internalUsers based on the current sort status
     const sortedInternalUsers = sortBy(
       internalUsers,
@@ -75,13 +80,23 @@ export default function InternalUserTable({
     }
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedInternalUsers.slice(from, to);
-    // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, internalUsers]);
+  }, [page, sortStatus, internalUsers, hasNoFetchedRecords]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (internalUsers.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isError) {
     return ErrorAlert("Internal Users");
   }
+
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
@@ -91,17 +106,7 @@ export default function InternalUserTable({
     }
     // search by id or first name or last name or email
     setIsSearching(true);
-    const results = internalUsers.filter(
-      (internalUser: InternalUser) =>
-        internalUser.firstName
-          .toLowerCase()
-          .includes(searchStr.toLowerCase()) ||
-        internalUser.lastName.toLowerCase().includes(searchStr.toLowerCase()) ||
-        internalUser.email.toLowerCase().includes(searchStr.toLowerCase()) ||
-        (internalUser.userId &&
-          searchStr.includes(internalUser.userId.toString()) &&
-          searchStr.length <= internalUser.userId.toString().length),
-    );
+    const results = searchInternalUsers(internalUsers, searchStr);
     setRecords(results);
     setPage(1);
   };
@@ -112,18 +117,28 @@ export default function InternalUserTable({
         // still fetching
         <CenterLoader />;
       }
-      // no user groups fetched
+      // no records fetched
       return (
-        <SadDimmedMessage
-          title="No Internal Users found"
-          subtitle="Click 'Create Internal User' to create a new user"
-        />
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No Internal Users found"
+                subtitle="Click 'Create Internal User' to create a new user"
+              />
+            </div>
+          )}
+        </Transition>
       );
     }
     return (
       <>
         <SearchBar
-          text="Search by internal ID, first name, last name, email"
+          text="Search by internal user ID, first name, last name, email"
           onSearch={handleSearch}
         />
         {isSearching && records.length === 0 ? (
@@ -188,7 +203,7 @@ export default function InternalUserTable({
               },
               {
                 // New column for the "view more details" button. Using an appended userId to avoid double child problem
-                accessor: "${record.userId}-button",
+                accessor: "actions",
                 title: "Actions",
                 width: 150,
                 render: (record) => (

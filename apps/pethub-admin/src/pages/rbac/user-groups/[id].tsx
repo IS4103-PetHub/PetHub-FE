@@ -17,13 +17,19 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import AddUsersToUserGroupModal from "@/components/rbac/AddUsersToUserGroupModal";
 import MembershipsTable from "@/components/rbac/MembershipsTable";
 import UserGroupInfoForm from "@/components/rbac/UserGroupInfoForm";
 import UserGroupPermissionsForm from "@/components/rbac/UserGroupPermissionsForm";
-import { useGetUserGroupById, useUpdateUserGroup } from "@/hooks/rbac";
+import {
+  useDeleteUserGroup,
+  useGetUserGroupById,
+  useUpdateUserGroup,
+} from "@/hooks/rbac";
 
 interface UserGroupDetailsProps {
   groupId: number;
@@ -31,6 +37,8 @@ interface UserGroupDetailsProps {
 
 export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const [isEditingGroupInfo, setIsEditingGroupInfo] = useToggle();
   const [isEditingPermissions, setIsEditingPermissions] = useToggle();
@@ -136,9 +144,45 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
     }
   };
 
+  const deleteUserGroupMutation = useDeleteUserGroup(queryClient);
+  const handleDeleteUserGroup = async (id?: number) => {
+    if (!id) return;
+    try {
+      await deleteUserGroupMutation.mutateAsync(id);
+      // redirect back to user groups table
+      router.push("/rbac");
+      notifications.show({
+        title: "User Group Deleted",
+        color: "green",
+        icon: <IconCheck />,
+        message: `User group ${id} deleted successfully.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Deleting User Group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   return (
     <Container fluid>
-      <PageTitle title="User Group Details" />
+      <Group position="apart">
+        <PageTitle title="User Group Details" />
+        <DeleteActionButtonModal
+          title={`Are you sure you want to delete ${userGroup?.name}?`}
+          subtitle="Any users currently assigned to this user group will be unassigned."
+          onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
+          large
+        />
+      </Group>
+
       <Accordion
         multiple
         value={openedAccordions}
