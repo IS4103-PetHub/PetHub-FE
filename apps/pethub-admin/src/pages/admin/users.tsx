@@ -14,7 +14,7 @@ interface AccountTabsProps {
 
 function AccountTabs({ sessionUserId }: AccountTabsProps) {
   return (
-    <Tabs defaultValue={AccountTypeEnum.InternalUser}>
+    <Tabs defaultValue={AccountTypeEnum.InternalUser} mt="md">
       <Tabs.List>
         <Tabs.Tab
           value={AccountTypeEnum.InternalUser}

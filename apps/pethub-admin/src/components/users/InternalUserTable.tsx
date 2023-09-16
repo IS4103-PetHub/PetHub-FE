@@ -232,7 +232,6 @@ export default function InternalUserTable({
   return (
     <>
       <Group mb="xl" position="apart">
-        {/* wanted to use the CreateButton but thought that UserPlus is a better icon for this case */}
         <PageTitle title="Internal Users" />
         <Button
           size="md"

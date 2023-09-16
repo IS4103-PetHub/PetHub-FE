@@ -1,5 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { AccountTypeEnum } from "@/types/constants";
 import { CreateUserGroupPayload, Permission, UserGroup } from "@/types/types";
 
 const RBAC_USER_GROUPS_API = "api/rbac/user-groups";
@@ -129,5 +130,21 @@ export const useRemoveUserFromUserGroup = () => {
         )
       ).data;
     },
+  });
+};
+
+export const useGetPermissionsByUserIdAndAccountType = (
+  userId: number,
+  accountType: AccountTypeEnum,
+) => {
+  return useQuery({
+    queryKey: ["permissions", userId, accountType],
+    queryFn: async () =>
+      (
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+        )
+      ).data as Permission[],
+    enabled: accountType === AccountTypeEnum.InternalUser,
   });
 };

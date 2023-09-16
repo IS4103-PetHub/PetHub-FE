@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { AccountTypeEnum } from "@/types/constants";
 import { CreateInternalUserPayload, InternalUser } from "@/types/types";
 
 const INTERNAL_USER_API = "api/users/internal-users";
