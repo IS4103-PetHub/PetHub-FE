@@ -15,6 +15,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
@@ -384,6 +385,7 @@ const UpdateInternalUserModal = ({
   user,
   onUserUpdated,
 }: UpdateInternalUserModalProps) => {
+  const queryClient = useQueryClient();
   const form = useForm({
     initialValues: {
       firstName: user.firstName,
@@ -392,7 +394,7 @@ const UpdateInternalUserModal = ({
   });
 
   type FormValues = typeof form.values;
-  const updateInternalUserMutation = useUpdateInternalUser();
+  const updateInternalUserMutation = useUpdateInternalUser(queryClient);
   const updateInternalUserAccount = async (payload: any) => {
     try {
       await updateInternalUserMutation.mutateAsync(payload);

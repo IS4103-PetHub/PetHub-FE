@@ -35,7 +35,7 @@ const AccountInfoForm = ({ internalUser, refetch }: AccountInfoFormProps) => {
     form.setValues(formDefaultValues);
   }, [internalUser]);
 
-  const updateInternalUserMutation = useUpdateInternalUser();
+  const updateInternalUserMutation = useUpdateInternalUser(queryClient);
 
   const KEY_SPAN = 3;
   const VALUE_SPAN = 12 - KEY_SPAN;
@@ -83,6 +83,28 @@ const AccountInfoForm = ({ internalUser, refetch }: AccountInfoFormProps) => {
       onSubmit={form.onSubmit((values) => handleUpdateInternalUser(values))}
     >
       <Grid>
+        <Grid.Col span={KEY_SPAN}>
+          <strong>First name</strong>
+        </Grid.Col>
+        <Grid.Col span={VALUE_SPAN}>
+          {isEditing ? (
+            <TextInput value={internalUser?.firstName} disabled />
+          ) : (
+            internalUser?.firstName
+          )}
+        </Grid.Col>
+
+        <Grid.Col span={KEY_SPAN}>
+          <strong>Last name</strong>
+        </Grid.Col>
+        <Grid.Col span={VALUE_SPAN}>
+          {isEditing ? (
+            <TextInput value={internalUser?.lastName} disabled />
+          ) : (
+            internalUser?.lastName
+          )}
+        </Grid.Col>
+
         <Grid.Col span={KEY_SPAN}>
           <strong>Email</strong>
         </Grid.Col>

@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { AccountTypeEnum } from "@/types/constants";
 import { CreateInternalUserPayload, InternalUser } from "@/types/types";
 
 const INTERNAL_USER_API = "api/users/internal-users";
@@ -78,7 +77,7 @@ export const useDeleteInternalUser = () => {
   });
 };
 
-export const useUpdateInternalUser = () => {
+export const useUpdateInternalUser = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
       return (
@@ -87,6 +86,32 @@ export const useUpdateInternalUser = () => {
           payload,
         )
       ).data;
+    },
+    onSuccess: (data) => {
+      const internalUser: InternalUser = {
+        userId: data.user.userId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        adminRole: data.adminRole,
+        email: data.user.email,
+        accountType: data.user.accountType,
+        accountStatus: data.user.accountStatus,
+        dateCreated: data.user.dateCreated,
+        lastUpdated: data.user.lastUpdated,
+      };
+      queryClient.setQueryData<InternalUser[]>(
+        ["internal-users"],
+        (old = []) => {
+          const oldDataIndex = old.findIndex(
+            (oldUsers) => oldUsers.userId === data.userId,
+          );
+          if (oldDataIndex === -1) return old;
+
+          old[oldDataIndex] = { ...internalUser }; // replaces old cached info with newly updated info
+          return old;
+        },
+      );
+      queryClient.setQueryData(["internal-users", data.userId], internalUser);
     },
   });
 };
