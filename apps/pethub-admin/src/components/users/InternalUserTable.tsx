@@ -219,7 +219,7 @@ export default function InternalUserTable({
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={internalUsers ? internalUsers.length : 0}
+            totalRecords={isSearching ? records.length : internalUsers?.length}
             recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}

@@ -147,9 +147,10 @@ export default function RBAC() {
           <NoSearchResultsMessage />
         ) : (
           <UserGroupsTable
-            userGroups={records}
+            records={records}
             totalNumUserGroups={userGroups.length}
             onDelete={handleDeleteUserGroup}
+            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}

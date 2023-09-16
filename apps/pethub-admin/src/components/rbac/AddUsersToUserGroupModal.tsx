@@ -49,6 +49,7 @@ const AddUsersToUserGroupModal = ({
     close();
     setIsSearching(false);
     setRecords(internalUsers);
+    setSelectedRecords([]);
     setPage(1);
   };
 
@@ -169,7 +170,7 @@ const AddUsersToUserGroupModal = ({
             !getCurrentMembershipUserIds().includes(record.userId)
           }
           //pagination
-          totalRecords={internalUsers?.length}
+          totalRecords={isSearching ? records.length : internalUsers?.length}
           recordsPerPage={TABLE_PAGE_SIZE}
           page={page}
           onPageChange={(p) => setPage(p)}

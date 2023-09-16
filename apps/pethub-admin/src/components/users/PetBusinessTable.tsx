@@ -204,7 +204,7 @@ export default function PetBusinessTable() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={petBusinesses ? petBusinesses.length : 0}
+            totalRecords={isSearching ? records.length : petBusinesses?.length}
             recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}

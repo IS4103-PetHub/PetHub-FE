@@ -7,9 +7,10 @@ import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
 interface UserGroupsTableProps {
-  userGroups: UserGroup[];
+  records: UserGroup[];
   totalNumUserGroups: number;
   page: number;
+  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
   onSortStatusChange: any;
@@ -17,9 +18,10 @@ interface UserGroupsTableProps {
 }
 
 const UserGroupsTable = ({
-  userGroups,
+  records,
   totalNumUserGroups,
   page,
+  isSearching,
   sortStatus,
   onDelete,
   onSortStatusChange,
@@ -67,7 +69,7 @@ const UserGroupsTable = ({
           ),
         },
       ]}
-      records={userGroups}
+      records={records}
       withBorder
       withColumnBorders
       striped
@@ -76,7 +78,7 @@ const UserGroupsTable = ({
       sortStatus={sortStatus}
       onSortStatusChange={onSortStatusChange}
       //pagination
-      totalRecords={totalNumUserGroups}
+      totalRecords={isSearching ? records.length : totalNumUserGroups}
       recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
       onPageChange={(p) => onPageChange(p)}

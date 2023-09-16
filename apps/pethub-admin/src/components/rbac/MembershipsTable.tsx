@@ -108,7 +108,7 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
       withBorder
       withColumnBorders
       striped
-      verticalSpacing="sm"
+      verticalSpacing="xs"
       //pagination
       totalRecords={userGroupMemberships ? userGroupMemberships.length : 0}
       recordsPerPage={TABLE_PAGE_SIZE}

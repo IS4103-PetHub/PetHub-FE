@@ -195,7 +195,7 @@ export default function PetOwnerTable() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={petOwners ? petOwners.length : 0}
+            totalRecords={isSearching ? records.length : petOwners?.length}
             recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}

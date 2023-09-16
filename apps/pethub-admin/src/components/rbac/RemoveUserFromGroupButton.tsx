@@ -51,6 +51,7 @@ const RemoveUserFromGroupButton = ({
       </Modal>
       <Button
         sx={{ border: "1.25px solid red" }}
+        size="xs"
         leftIcon={<IconTrash size="1rem" />}
         variant="light"
         color="red"
