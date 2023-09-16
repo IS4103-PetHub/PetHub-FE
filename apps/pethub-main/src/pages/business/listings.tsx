@@ -1,4 +1,4 @@
-import { Container, Group } from "@mantine/core";
+import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
@@ -13,8 +13,10 @@ import SearchBar from "web-ui/shared/SearchBar";
 import ServiceListingModal from "@/components/service/ServiceListingModal";
 import ServiceListTable from "@/components/service/ServiceListingTable";
 import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/service-listing";
+import { useGetAllTags } from "@/hooks/tags";
 import {
   AccountTypeEnum,
+  EMPTY_STATE_DELAY_MS,
   ServiceCategoryEnum,
   TABLE_PAGE_SIZE,
 } from "@/types/constants";
@@ -33,6 +35,10 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     isLoading,
     refetch: refetchServiceListings,
   } = useGetServiceListingByPetBusinessIdAndAccountType(userId);
+
+  /*
+   * Component State
+   */
   const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
     useState(false);
   const [page, setPage] = useState<number>(1);
@@ -42,12 +48,13 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const { data: tags } = useGetAllTags();
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
+  /*
+   * Modal Control Functions
+   */
   const openCreateServiceModal = () => {
-    console.log("opening service modal");
     setIsCreateServiceModalOpen(true);
   };
 
@@ -55,6 +62,11 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     setIsCreateServiceModalOpen(false);
   };
 
+  /*
+   * Effect Hooks
+   */
+  const from = (page - 1) * TABLE_PAGE_SIZE;
+  const to = from + TABLE_PAGE_SIZE;
   useEffect(() => {
     const sortedServiceListing = sortBy(
       serviceListings,
@@ -67,6 +79,19 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     setRecords(newRecords);
   }, [page, sortStatus, serviceListings]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (serviceListings.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  /*
+   * Search Functions
+   */
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
@@ -102,10 +127,20 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
         <CenterLoader />;
       }
       return (
-        <SadDimmedMessage
-          title="No service listings found"
-          subtitle="Click 'Create Service Listing' to create a new service"
-        />
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No service listings found"
+                subtitle="Click 'Create Service Listing' to create a new service"
+              />
+            </div>
+          )}
+        </Transition>
       );
     }
     return (
@@ -118,13 +153,16 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
           <NoSearchResultsMessage />
         ) : (
           <ServiceListTable
-            serviceListings={records}
+            records={records}
+            totalNumServiceListing={serviceListings.length}
             userId={userId}
             refetch={refetchServiceListings}
             page={page}
+            isSearching={isSearching}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
+            tags={tags}
           />
         )}
       </>
@@ -150,6 +188,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
           serviceListing={null}
           userId={userId}
           refetch={refetchServiceListings}
+          tags={tags}
         />
       </Group>
       {renderContent()}

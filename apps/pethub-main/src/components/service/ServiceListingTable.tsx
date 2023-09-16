@@ -1,5 +1,5 @@
 import { Container, Modal, Paper, Group, Button, Badge } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconEye,
@@ -15,38 +15,49 @@ import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { ServiceListing } from "@/types/types";
+import { ServiceListing, Tag } from "@/types/types";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
-  serviceListings?: ServiceListing[];
+  records: ServiceListing[];
+  totalNumServiceListing: number;
   userId: number;
   refetch(): void;
   page: number;
+  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
+  tags: Tag[];
 }
 
 const ServiceListTable = ({
-  serviceListings,
+  records,
+  totalNumServiceListing,
   userId,
   refetch,
   page,
+  isSearching,
   sortStatus,
   onSortStatusChange,
   onPageChange,
+  tags,
 }: ServiceListTableProps) => {
+  /*
+   * Component State
+   */
   const [selectedService, setSelectedService] = useState(null);
   const [isServiceModalOpen, { close: closeView, open: openView }] =
     useDisclosure(false);
   const [isUpdateModalOpen, { close: closeUpdate, open: openUpdate }] =
     useDisclosure(false);
-  const [isDeleteModalOpen, { close: closeDelete, open: openDelete }] =
-    useDisclosure(false);
 
   const queryClient = useQueryClient();
   const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
+
+  /*
+   * Service Handlers
+   */
   const handleDeleteService = async (serviceListingId: number) => {
     try {
       const result =
@@ -56,7 +67,6 @@ const ServiceListTable = ({
         color: "green",
         autoClose: 5000,
       });
-      closeDelete();
     } catch (error) {
       notifications.show({
         title: "Error Deleting Service Listing",
@@ -121,11 +131,12 @@ const ServiceListTable = ({
           },
           {
             // actions
-            accessor: "",
+            accessor: "actions",
             title: "Actions",
-            width: "10vw",
+            width: 150,
+            textAlignment: "right",
             render: (service) => (
-              <Group>
+              <Group position="right">
                 <ViewActionButton
                   onClick={function (): void {
                     setSelectedService(service);
@@ -147,7 +158,7 @@ const ServiceListTable = ({
             ),
           },
         ]}
-        records={serviceListings}
+        records={records}
         withBorder
         withColumnBorders
         striped
@@ -157,7 +168,7 @@ const ServiceListTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={serviceListings ? serviceListings.length : 0}
+        totalRecords={isSearching ? records.length : totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
@@ -172,6 +183,7 @@ const ServiceListTable = ({
         serviceListing={selectedService}
         userId={userId}
         refetch={refetch}
+        tags={tags}
       />
 
       {/* Update */}
@@ -183,6 +195,7 @@ const ServiceListTable = ({
         serviceListing={selectedService}
         userId={userId}
         refetch={refetch}
+        tags={tags}
       />
     </>
   );

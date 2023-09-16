@@ -20,3 +20,5 @@ export enum ServiceCategoryEnum {
 }
 
 export const TABLE_PAGE_SIZE = 15;
+
+export const EMPTY_STATE_DELAY_MS = 500;

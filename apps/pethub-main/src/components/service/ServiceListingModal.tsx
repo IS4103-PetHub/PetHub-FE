@@ -28,6 +28,7 @@ import { ServiceCategoryEnum } from "@/types/constants";
 import {
   CreateServiceListingPayload,
   ServiceListing,
+  Tag,
   UpdateServiceListingPayload,
 } from "@/types/types";
 
@@ -39,6 +40,7 @@ interface ServiceListingModalProps {
   serviceListing?: ServiceListing;
   userId: number;
   refetch(): void;
+  tags: Tag[];
 }
 
 const ServiceListingModal = ({
@@ -49,11 +51,15 @@ const ServiceListingModal = ({
   serviceListing,
   userId,
   refetch,
+  tags,
 }: ServiceListingModalProps) => {
-  // Image functions
+  /*
+   * Component State
+   */
   const [imagePreview, setImagePreview] = useState(null);
   const [isUpdating, setUpdating] = useState(isUpdate);
   const [isViewing, setViewing] = useState(isView);
+
   const handleFileInputChange = (file: File) => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
@@ -68,17 +74,59 @@ const ServiceListingModal = ({
     }
   };
 
-  const categoryOptions = Object.values(ServiceCategoryEnum).map(
-    (categoryValue) => ({
-      value: categoryValue,
-      label: categoryValue.replace(/_/g, " "),
-    }),
-  );
+  /*
+   * Effect Hooks
+   */
 
-  const { data: tags } = useGetAllTags();
+  useEffect(() => {
+    if (serviceListing) {
+      setServiceListingFields();
+    }
+  }, [serviceListing]);
 
+  /*
+   * Component Form
+   */
   type ServiceFormValues = typeof serviceListingForm.values;
+  const serviceListingForm = useForm({
+    initialValues: {
+      serviceListingId: null,
+      title: "",
+      description: "",
+      category: "",
+      basePrice: 0.0,
+      address: "", // TODO: address not in the BE yet
+      attachments: null,
+      tags: [],
+      confirmation: false,
+    },
+    validate: {
+      title: (value) => {
+        const minLength = 1;
+        const maxLength = 64;
+        if (!value) return "Title is mandatory.";
+        if (value.length < minLength || value.length > maxLength) {
+          return `Title must be between ${minLength} and ${maxLength} characters.`;
+        }
+      },
+      description: isNotEmpty("Description is mandatory."), // min max length
+      category: isNotEmpty("Category is mandatory."),
+      basePrice: (value) => {
+        if (!value) return "Price is mandatory.";
+        else if (value < 0)
+          return "Price must be a positive number with two decimal places.";
+      },
+      // confirmation: (value) => {
+      //   if (!value && !isUpdating) return "Confirmation is mandatory.";
+      // },
+      // if (!values.address) errors.location = 'Address is mandatory.';
+      // if (!values.attachments) errors.attachments = 'Attachments are mandatory.';
+    },
+  });
 
+  /*
+   * Service Handlers
+   */
   const queryClient = useQueryClient();
   const createServiceListingMutation = useCreateServiceListing();
   const updateServiceListingMutation = useUpdateServiceListing(queryClient);
@@ -135,42 +183,25 @@ const ServiceListingModal = ({
     }
   };
 
-  const serviceListingForm = useForm({
-    initialValues: {
-      serviceListingId: null,
-      title: "",
-      description: "",
-      category: "",
-      basePrice: 0.0,
-      address: "", // TODO: address not in the BE yet
-      attachments: null,
-      tags: [],
-      confirmation: false,
-    },
-    validate: {
-      title: isNotEmpty("Title is mandatory."), // min max length
-      description: isNotEmpty("Description is mandatory."), // min max length
-      category: isNotEmpty("Category is mandatory."),
-      basePrice: (value) => {
-        if (!value) {
-          return "Price is mandatory.";
-        } else if (value < 0) {
-          return "Price must be a positive number with two decimal places.";
-        }
-      },
-      // confirmation: (value) => {
-      //   if (!value && !isUpdating) return "Confirmation is mandatory.";
-      // },
-      // if (!values.address) errors.location = 'Address is mandatory.';
-      // if (!values.attachments) errors.attachments = 'Attachments are mandatory.';
-    },
-  });
+  /*
+   * Helper Functions
+   */
+  const categoryOptions = Object.values(ServiceCategoryEnum).map(
+    (categoryValue) => ({
+      value: categoryValue,
+      label: categoryValue.replace(/_/g, " "),
+    }),
+  );
 
-  useEffect(() => {
-    if (serviceListing) {
-      setServiceListingFields();
-    }
-  }, [serviceListing]);
+  const setServiceListingFields = () => {
+    const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
+    serviceListingForm.setValues({
+      ...serviceListing,
+      // TODO: add address in when the BE is ready
+      // address: serviceListing.address.addressId.toString(),
+      tags: tagIds,
+    });
+  };
 
   const closeAndResetForm = () => {
     if (isUpdating || isViewing) {
@@ -181,16 +212,6 @@ const ServiceListingModal = ({
     setUpdating(isUpdate);
     setViewing(isView);
     onClose();
-  };
-
-  const setServiceListingFields = () => {
-    const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
-    serviceListingForm.setValues({
-      ...serviceListing,
-      // TODO: add address in when the BE is ready
-      // address: serviceListing.address.addressId.toString(),
-      tags: tagIds,
-    });
   };
 
   return (
@@ -245,10 +266,19 @@ const ServiceListingModal = ({
               withAsterisk
               disabled={isViewing}
               label="Price"
+              defaultValue={0.0}
               min={0}
-              step={0.01}
               precision={2}
-              formatter={(value) => `$ ${value}`}
+              parser={(value) => {
+                const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
+                return isNaN(floatValue) ? "" : floatValue.toString();
+              }}
+              formatter={(value) => {
+                const formattedValue = parseFloat(
+                  value.replace(/\$\s?/, ""),
+                ).toFixed(2);
+                return `$ ${formattedValue}`;
+              }}
               {...serviceListingForm.getInputProps("basePrice")}
             />
 
