@@ -1,4 +1,7 @@
 import {
+  Modal,
+  Grid,
+  Col,
   Container,
   Button,
   Group,
@@ -8,6 +11,7 @@ import {
   Text,
   Stack,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconUserExclamation,
   IconArticle,
@@ -23,13 +27,13 @@ import ApplicationStatusAlert from "./ApplicationStatusAlert";
 interface ApplicationDetailsProps {
   applicationStatus: string | undefined;
   application: PetBusinessApplication | undefined;
-  onApprove?: () => void;
-  onReject?: () => void;
+  actionButtonGroup: any;
 }
 
 export default function ApplicationDetails({
   applicationStatus,
   application,
+  actionButtonGroup,
   ...props
 }: ApplicationDetailsProps) {
   if (!applicationStatus || !application) {
@@ -55,7 +59,9 @@ export default function ApplicationDetails({
         chevronSize={0}
       >
         <Accordion.Item value="userDetails">
-          <Accordion.Control icon={<IconUserExclamation size={rem(20)} />}>
+          <Accordion.Control
+            icon={<IconUserExclamation size={rem(20)} color="blue" />}
+          >
             User details
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
@@ -81,7 +87,7 @@ export default function ApplicationDetails({
         </Accordion.Item>
 
         <Accordion.Item value="applicationDetails">
-          <Accordion.Control icon={<IconArticle size={rem(20)} />}>
+          <Accordion.Control icon={<IconArticle size={rem(20)} color="blue" />}>
             Application details
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
@@ -112,7 +118,9 @@ export default function ApplicationDetails({
           </Accordion.Panel>
         </Accordion.Item>
         <Accordion.Item value="description">
-          <Accordion.Control icon={<IconFileDescription size={rem(20)} />}>
+          <Accordion.Control
+            icon={<IconFileDescription size={rem(20)} color="blue" />}
+          >
             Description
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
@@ -126,7 +134,9 @@ export default function ApplicationDetails({
         </Accordion.Item>
 
         <Accordion.Item value="addresses">
-          <Accordion.Control icon={<IconAddressBook size={rem(20)} />}>
+          <Accordion.Control
+            icon={<IconAddressBook size={rem(20)} color="blue" />}
+          >
             Addresses
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
@@ -140,11 +150,13 @@ export default function ApplicationDetails({
         </Accordion.Item>
 
         <Accordion.Item value="action">
-          <Accordion.Control icon={<IconAddressBook size={rem(20)} />}>
+          <Accordion.Control
+            icon={<IconAddressBook size={rem(20)} color="blue" />}
+          >
             Action
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
-            <Button fullWidth>Hello</Button>
+            {actionButtonGroup}
           </Accordion.Panel>
         </Accordion.Item>
       </Accordion>

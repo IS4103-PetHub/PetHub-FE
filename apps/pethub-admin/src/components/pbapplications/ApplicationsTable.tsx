@@ -42,6 +42,7 @@ export default function ApplicationsTable({
     data: petBusinessApplications = [],
     isLoading,
     isError,
+    refetch,
   } = useGetAllPetBusinessApplications();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "petBusinessApplicationId",

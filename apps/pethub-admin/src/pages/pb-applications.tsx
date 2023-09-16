@@ -23,25 +23,25 @@ function ApplicationStatusBar({ setActiveTab }: ApplicationStatusBarProps) {
       <Tabs.List>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.All}
-          icon={<IconBallTennis size="0.8rem" />}
+          icon={<IconBallTennis size="0.8rem" color="purple" />}
         >
           All
         </Tabs.Tab>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.Pending}
-          icon={<IconMenu2 size="0.8rem" />}
+          icon={<IconMenu2 size="0.8rem" color="purple" />}
         >
           Pending
         </Tabs.Tab>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.Rejected}
-          icon={<IconCircleX size="0.8rem" />}
+          icon={<IconCircleX size="0.8rem" color="purple" />}
         >
           Rejected
         </Tabs.Tab>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.Approved}
-          icon={<IconCheck size="0.8rem" />}
+          icon={<IconCheck size="0.8rem" color="purple" />}
         >
           Approved
         </Tabs.Tab>

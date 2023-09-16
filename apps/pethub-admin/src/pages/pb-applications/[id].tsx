@@ -1,5 +1,17 @@
-import { Container, Group, Box, Badge } from "@mantine/core";
+import {
+  Container,
+  Group,
+  Box,
+  Badge,
+  Modal,
+  Textarea,
+  Button,
+  Grid,
+  Col,
+  Text,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -34,6 +46,9 @@ export default function PetBusinessApplicationDetails({
     useState<BusinessApplicationStatusEnum>();
   const queryClient = useQueryClient();
   const [isDisabled, setIsDisabled] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [rejectButtonChosen, setRejectButtonChosen] = useState(false);
+
   const applicationId = Number(router.query.id);
 
   const {
@@ -68,7 +83,46 @@ export default function PetBusinessApplicationDetails({
     },
   });
 
-  console.log("PET APP", petBusinessApplication);
+  const ApproveButton = () => (
+    <Button
+      fullWidth
+      variant="light"
+      size="lg"
+      onClick={() => {
+        setRejectButtonChosen(false);
+        open();
+      }}
+      color="green"
+    >
+      Approve
+    </Button>
+  );
+
+  const RejectButton = () => (
+    <Button
+      fullWidth
+      variant="light"
+      size="lg"
+      onClick={() => {
+        setRejectButtonChosen(true);
+        open();
+      }}
+      color="red"
+    >
+      Reject
+    </Button>
+  );
+
+  const actionButtonGroup = (
+    <Group position="apart">
+      {applicationStatus === BusinessApplicationStatusEnum.Pending ? (
+        <>
+          <RejectButton />
+          <ApproveButton />
+        </>
+      ) : null}
+    </Group>
+  );
 
   const approvePetBusinessApplicationMutation =
     useApprovePetBusinessApplication(queryClient);
@@ -128,12 +182,24 @@ export default function PetBusinessApplicationDetails({
 
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
-    const payload: RejectPetBusinessApplicationPayload = {
-      petBusinessApplicationId: 1,
+    const rejectPayload: RejectPetBusinessApplicationPayload = {
+      petBusinessApplicationId: applicationId,
       remark: values.remark,
     };
-    if (applicationStatus === BusinessApplicationStatusEnum.Pending) {
-      rejectPetBusinessApplication(payload);
+    const approvePayload: ApprovePetBusinessApplicationPayload = {
+      petBusinessApplicationId: applicationId,
+      approverId: userId,
+    };
+    if (
+      applicationStatus === BusinessApplicationStatusEnum.Pending &&
+      rejectButtonChosen
+    ) {
+      rejectPetBusinessApplication(rejectPayload);
+    } else if (
+      applicationStatus === BusinessApplicationStatusEnum.Pending &&
+      !rejectButtonChosen
+    ) {
+      approvePetBusinessApplication(approvePayload);
     } else {
       notifications.show({
         title: "The application is not in the PENDING state",
@@ -159,16 +225,67 @@ export default function PetBusinessApplicationDetails({
         </Group>
         <LargeBackButton
           text="Back to applications"
-          onClick={() => router.back()}
+          onClick={() => {
+            window.location.href = "/pb-applications";
+          }}
         />
       </Group>
       <Box>
         <ApplicationDetails
           applicationStatus={applicationStatus}
           application={petBusinessApplication}
+          actionButtonGroup={actionButtonGroup}
         />
         <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))} />
       </Box>
+      <Modal
+        opened={opened}
+        onClose={close}
+        title="Confirm Action"
+        closeOnClickOutside={false}
+        closeOnEscape={false}
+        withCloseButton={false}
+        centered
+        padding="1.5rem"
+        size="md"
+      >
+        <Text>
+          {rejectButtonChosen
+            ? "Are you sure you want reject this application? You may specify an optional remark to help the pet business understand why their application was rejected and what they should update."
+            : "Are you sure you want to approve this application?"}
+        </Text>
+        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+          <Grid mt="md" mb="md">
+            <Grid.Col span={12}>
+              {rejectButtonChosen && (
+                <Textarea
+                  label="Remark"
+                  placeholder="Enter a remark here..."
+                  {...form.getInputProps("remark")}
+                />
+              )}
+            </Grid.Col>
+          </Grid>
+          <Group mt="25px" position="center">
+            <Button type="reset" color="gray" onClick={close}>
+              Cancel
+            </Button>
+            <Button type="submit" onClick={close}>
+              Confirm
+            </Button>
+          </Group>
+        </form>
+      </Modal>
     </Container>
   );
+}
+
+export async function getServerSideProps(context: any) {
+  const session = await getSession(context);
+
+  if (!session) return { props: {} };
+
+  const userId = (session.user as any)["userId"];
+
+  return { props: { userId } };
 }
