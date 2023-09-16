@@ -5,7 +5,6 @@ import { PetOwner } from "@/types/types";
 export const useGetAllPetOwners = () => {
   return useQuery({
     queryKey: ["pet-owners"],
-    refetchOnMount: true,
     queryFn: async () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners`,

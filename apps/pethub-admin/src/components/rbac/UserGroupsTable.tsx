@@ -1,7 +1,7 @@
 import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
@@ -40,7 +40,7 @@ const UserGroupsTable = ({
           width: 80,
           sortable: true,
         },
-        { accessor: "name", width: "25vw", ellipsis: true, sortable: true },
+        { accessor: "name", width: "20vw", ellipsis: true, sortable: true },
         {
           accessor: "description",
           width: "35vw",
@@ -52,9 +52,10 @@ const UserGroupsTable = ({
           // actions
           accessor: "actions",
           title: "Actions",
-          width: "10vw",
+          width: 100,
+          textAlignment: "right",
           render: (group) => (
-            <Group>
+            <Group position="right">
               <ViewActionButton
                 onClick={() =>
                   router.push(`${router.asPath}/user-groups/${group.groupId}`)

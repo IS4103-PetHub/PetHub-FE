@@ -43,27 +43,12 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface ForgotPasswordPayload {
-  email: string;
-}
-
-export interface ResetPasswordPayload {
-  token: string | null;
-  newPassword: string;
-}
 export interface CreateInternalUserPayload {
   firstName: string;
   lastName: string;
   email: string;
   adminRole: string;
   password: string;
-}
-
-export interface UpdateInternalUserPayload {
-  userId: number;
-  firstName: string;
-  lastName: string;
-  adminRole: string;
 }
 
 export interface CreateUserGroupPayload {

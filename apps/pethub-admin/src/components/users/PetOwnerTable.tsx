@@ -41,12 +41,11 @@ export default function PetOwnerTable() {
     setModalOpen(false);
   };
 
-  // Compute pagination slice indices based on the current page
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    // Compute pagination slice indices based on the current page
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     if (petOwners.length > 0 && hasNoFetchedRecords) {
       sethasNoFetchedRecords(false);
     }

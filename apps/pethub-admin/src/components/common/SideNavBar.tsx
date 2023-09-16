@@ -12,8 +12,9 @@ import { notifications } from "@mantine/notifications";
 import {
   IconTags,
   IconUser,
-  IconUserShield,
   IconHome,
+  IconUserShield,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -79,9 +80,14 @@ const useStyles = createStyles((theme) => ({
 
 const data = [
   { link: "/", label: "Home", icon: IconHome },
-  { link: "/users", label: "Users", icon: IconUser },
-  { link: "/rbac", label: "Role-based Access Control", icon: IconUserShield },
   { link: "/admin/tag", label: "Tags", icon: IconTags },
+  { link: "/admin/account", label: "My Account", icon: IconUser },
+  { link: "/admin/users", label: "Users", icon: IconUsersGroup },
+  {
+    link: "/admin/rbac",
+    label: "Role-based Access Control",
+    icon: IconUserShield,
+  },
 ];
 
 const SideNavBar = () => {
