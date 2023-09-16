@@ -10,7 +10,7 @@ import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { useAddMultipleUsersToUserGroup } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser, UserGroup } from "@/types/types";
-import { searchInternalUsers } from "@/util";
+import { getMinTableHeight, searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 
 interface AddUsersToUserGroupModalProps {
@@ -30,19 +30,6 @@ const AddUsersToUserGroupModal = ({
   const [selectedRecords, setSelectedRecords] = useState<InternalUser[]>([]);
   const [records, setRecords] = useState<InternalUser[]>([]);
   const [page, setPage] = useState<number>(1);
-
-  function getMinTableHeight() {
-    // to account for pagination
-    if (internalUsers.length >= 10) {
-      return 560;
-    }
-    // 1 record to 9 records
-    if (internalUsers.length > 0) {
-      return 100;
-    }
-    // no records
-    return 150;
-  }
 
   const handleCloseModal = () => {
     // reset the table
@@ -135,7 +122,7 @@ const AddUsersToUserGroupModal = ({
           onSearch={handleSearch}
         />
         <DataTable
-          minHeight={getMinTableHeight()}
+          minHeight={getMinTableHeight(internalUsers)}
           columns={[
             {
               accessor: "userId",

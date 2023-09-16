@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import { useRemoveUserFromUserGroup } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup, UserGroupMembership } from "@/types/types";
+import { getMinTableHeight } from "@/util";
 import RemoveUserFromGroupButton from "./RemoveUserFromGroupButton";
 
 interface MembershipsTableProps {
@@ -21,11 +22,6 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
 
   const from = (page - 1) * TABLE_PAGE_SIZE;
   const to = from + TABLE_PAGE_SIZE;
-
-  useEffect(() => {
-    setUserGroupMemberships(userGroup?.userGroupMemberships ?? []);
-    console.log(userGroupMemberships);
-  }, [userGroup]);
 
   useEffect(() => {
     setUserGroupMemberships(
@@ -62,7 +58,7 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
 
   return (
     <DataTable
-      minHeight={userGroupMemberships.length > 0 ? 100 : 150}
+      minHeight={getMinTableHeight(userGroup?.userGroupMemberships)}
       columns={[
         {
           accessor: "userId",
@@ -110,7 +106,7 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
       striped
       verticalSpacing="xs"
       //pagination
-      totalRecords={userGroupMemberships ? userGroupMemberships.length : 0}
+      totalRecords={userGroup?.userGroupMemberships?.length}
       recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
       onPageChange={(p) => setPage(p)}
