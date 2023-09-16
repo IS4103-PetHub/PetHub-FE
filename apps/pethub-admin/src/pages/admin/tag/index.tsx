@@ -9,14 +9,19 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
-import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import CreateTagButtonModal from "@/components/tag/CreateTagButtonModal";
 import TagTable from "@/components/tag/TagTable";
-import { useDeleteTag, useGetAllTags, useUpdateTag } from "@/hooks/tag";
+import {
+  useCreateTag,
+  useDeleteTag,
+  useGetAllTags,
+  useUpdateTag,
+} from "@/hooks/tag";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
-import { Tag, UpdateTagPayload } from "@/types/types";
+import { CreateTagPayload, Tag, UpdateTagPayload } from "@/types/types";
 
 export default function Tags() {
   const router = useRouter();
@@ -58,6 +63,26 @@ export default function Tags() {
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleSearch = (searchStr: string) => {
+    if (searchStr.length === 0) {
+      setIsSearching(false);
+      setRecords(tags);
+      setPage(1);
+      return;
+    }
+    // search by id or name
+    setIsSearching(true);
+    const results = tags.filter(
+      (tag: Tag) =>
+        tag.name.toLowerCase().includes(searchStr.toLowerCase()) ||
+        (tag.tagId &&
+          searchStr.includes(tag.tagId.toString()) &&
+          searchStr.length <= tag.tagId.toString().length),
+    );
+    setRecords(results);
+    setPage(1);
+  };
 
   const deleteTagMutation = useDeleteTag(queryClient);
   const handleDeleteTag = async (id: number) => {
@@ -109,24 +134,28 @@ export default function Tags() {
     }
   };
 
-  const handleSearch = (searchStr: string) => {
-    if (searchStr.length === 0) {
-      setIsSearching(false);
-      setRecords(tags);
-      setPage(1);
-      return;
+  const createTagMutation = useCreateTag(queryClient);
+  const handleCreateTag = async (payload: CreateTagPayload) => {
+    try {
+      await createTagMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Tag Created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Tag created successfully!`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Creating Tag",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
     }
-    // search by id or name
-    setIsSearching(true);
-    const results = tags.filter(
-      (tag: Tag) =>
-        tag.name.toLowerCase().includes(searchStr.toLowerCase()) ||
-        (tag.tagId &&
-          searchStr.includes(tag.tagId.toString()) &&
-          searchStr.length <= tag.tagId.toString().length),
-    );
-    setRecords(results);
-    setPage(1);
   };
 
   const renderContent = () => {
@@ -179,10 +208,7 @@ export default function Tags() {
     <Container fluid>
       <Group position="apart" mb="xl">
         <PageTitle title="Tag Management" />
-        <LargeCreateButton
-          text="Create Tag"
-          onClick={() => router.push(`${router.asPath}/create`)}
-        />
+        <CreateTagButtonModal onCreate={handleCreateTag} />
       </Group>
 
       {renderContent()}
