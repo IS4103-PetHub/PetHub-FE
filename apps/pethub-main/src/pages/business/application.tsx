@@ -28,11 +28,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
-import FileMiniIcon from "@/components/common/file/FileMiniIcon";
-import { PDFPreview } from "@/components/common/file/PDFPreview";
 import { AddAddressModal } from "@/components/pbapplication/AddAddressModal";
 import { AddressSidewaysScrollThing } from "@/components/pbapplication/AddressSidewaysScrollThing";
-import ApplicationStatusBadge from "@/components/pbapplication/ApplicationStatusAlert";
 import ApplicationStatusAlert from "@/components/pbapplication/ApplicationStatusAlert";
 import {
   useCreatePetBusinessApplication,
@@ -76,7 +73,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
         businessEmail: petBusinessApplication.businessEmail,
         websiteURL: petBusinessApplication.websiteURL,
         businessDescription: petBusinessApplication.businessDescription,
-        attachments: [], // Not handled by BE yet
+        attachments: [],
       });
       setIsDisabled(
         petBusinessApplication.applicationStatus ===
@@ -91,7 +88,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   const businessTypeData = Object.entries(PetBusinessTypeEnum).map(
     ([key, value]) => ({
       value: value as string,
-      label: value as string,
+      label: `${value.charAt(0)}${value.slice(1).toLowerCase()}`,
     }),
   );
 
@@ -164,32 +161,6 @@ export default function Application({ userId, accountType }: ApplicationProps) {
     });
   }
 
-  /*
-    The below are for PDF file handling in the attachment dropzone
-  */
-  const previews = applicationForm.values.attachments.map((file, index) => {
-    return (
-      <PDFPreview
-        key={file.name}
-        file={file}
-        onRemove={() => removePDF(index)}
-      />
-    );
-  });
-
-  const removePDF = (index: number) => {
-    const newFiles = [...applicationForm.values.attachments];
-    newFiles.splice(index, 1);
-    applicationForm.setValues({
-      ...applicationForm.values,
-      attachments: newFiles,
-    });
-  };
-
-  /*
-    The below are for application submission and updating
-  */
-
   const createPetBusinessApplicationMutation =
     useCreatePetBusinessApplication(queryClient);
   const createPetBusinessApplication = async (
@@ -255,7 +226,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       websiteURL: values.websiteURL,
       businessDescription: values.businessDescription,
       businessAddresses: values.businessAddresses,
-      attachments: [], // not handled by BE yet
+      attachments: [],
     };
     if (applicationStatus === BusinessApplicationStatusEnum.Notfound) {
       createPetBusinessApplication(payload);
@@ -356,34 +327,6 @@ export default function Application({ userId, accountType }: ApplicationProps) {
                 onRemoveAddress={handleRemoveAddress}
                 isDisabled={isDisabled}
               />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <Dropzone
-                disabled={isDisabled}
-                styles={{ inner: { pointerEvents: "all" } }}
-                accept={PDF_MIME_TYPE}
-                onDrop={(files) => {
-                  applicationForm.setValues({
-                    ...applicationForm.values,
-                    attachments: files,
-                  });
-                }}
-              >
-                {isDisabled ? (
-                  <Text align="center">Licenses and permits</Text>
-                ) : (
-                  <Text align="center">
-                    Attach licenses and permits (if any)
-                  </Text>
-                )}
-                <SimpleGrid
-                  cols={4}
-                  breakpoints={[{ maxWidth: "xs", cols: 1 }]}
-                  mt={previews.length > 0 ? "xl" : 0}
-                >
-                  {previews}
-                </SimpleGrid>
-              </Dropzone>
             </Grid.Col>
             <Grid.Col span={12}>
               <Button

@@ -1,8 +1,6 @@
 import { Box, Card, Center } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
-// WHY CANT I CENTER THE PLUS BUTTON VERTICALLY WHAT note: come back to this
-
 export const AddAddressCard = () => {
   return (
     <Card

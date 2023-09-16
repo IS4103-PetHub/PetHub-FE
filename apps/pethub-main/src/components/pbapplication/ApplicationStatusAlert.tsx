@@ -3,7 +3,7 @@ import { IconAlertCircle } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React from "react";
 
-interface ApplicationStatusAlertProps extends BadgeProps {
+interface ApplicationStatusAlertProps {
   applicationStatus: string;
   forDashboard: boolean;
   remarks?: string[];
