@@ -4,3 +4,7 @@ export function formatAccountTypeEnum(value: string): string {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 }
+
+export function formatEnumValue(value: string) {
+  return value.replace(/_/g, " ").toLowerCase();
+}

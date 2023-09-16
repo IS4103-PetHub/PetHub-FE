@@ -7,7 +7,7 @@ import {
 } from "@/types/types";
 const PET_BUSINESS_APPLICATION_API = "api/pb-applications";
 
-export const useGetPetBusinessApplicationByPBId = (
+export const useGetPetBusinessApplicationById = (
   petBusinessApplicationId: number,
 ) => {
   return useQuery({
@@ -15,7 +15,7 @@ export const useGetPetBusinessApplicationByPBId = (
     queryFn: async () => {
       const data = await (
         await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/pet-business/${petBusinessApplicationId}`,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/${petBusinessApplicationId}`,
         )
       ).data;
       const petBusinessApplication: PetBusinessApplication = {
@@ -33,9 +33,22 @@ export const useGetPetBusinessApplicationByPBId = (
         petBusinessId: data.petBusinessId,
         approverId: data.approverId,
         approver: data.approver,
+        petBusiness: data.petBusiness,
       };
       return petBusinessApplication as PetBusinessApplication;
     },
+  });
+};
+
+export const useGetAllPetBusinessApplications = () => {
+  return useQuery({
+    queryKey: ["pet-business-applications"],
+    queryFn: async () =>
+      (
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}`,
+        )
+      ).data as PetBusinessApplication[],
   });
 };
 
@@ -46,7 +59,7 @@ export const useApprovePetBusinessApplication = (queryClient: QueryClient) => {
       return (
         await axios.post(
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/approve/${petBusinessApplicationId}`,
-          payload,
+          restOfPayload,
         )
       ).data;
     },
@@ -60,7 +73,7 @@ export const useRejectPetBusinessApplication = (queryClient: QueryClient) => {
       return (
         await axios.post(
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/reject/${petBusinessApplicationId}`,
-          payload,
+          restOfPayload,
         )
       ).data;
     },

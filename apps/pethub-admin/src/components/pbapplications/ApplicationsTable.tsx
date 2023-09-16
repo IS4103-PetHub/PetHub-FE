@@ -1,206 +1,239 @@
-import { Modal, Center } from "@mantine/core";
+import { Center } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { PageTitle } from "web-ui";
-import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import { useGetAllPetBusinesses } from "@/hooks/pet-business";
-import { PetBusiness, PetBusinessApplication } from "@/types/types";
+import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-application";
+import { BusinessApplicationStatusEnum } from "@/types/constants";
+import { PetBusinessApplication } from "@/types/types";
 import { ViewButton } from "../common/ViewButton";
+import { formatEnumValue } from "../util/EnumHelper";
 import { errorAlert } from "../util/TableHelper";
-// import UserDetails from "./UserDetails";
+import ApplicationStatusBadge from "./ApplicationStatusBadge";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
-// interface ApplicationsTableProps {};
+// If applicationStatus is filtered by ALL, Pending should display first, then rejected, then approved
+const statusPriority = {
+  [BusinessApplicationStatusEnum.Pending]: 1,
+  [BusinessApplicationStatusEnum.Rejected]: 2,
+  [BusinessApplicationStatusEnum.Approved]: 3,
+};
 
-export default function ApplicationsTable() {
-  // const { data: petBusinessApplications = [], isLoading, isError } = useGetAllPetBusinessApplications();
+/*
+  Todo if have time (after PR is made):
+    * When filtered for ALL, applications should be sorted according to PENDING, REJECTED, APPROVED
+    * When filtered for PENDING, REJECTED, or APPROVED, applications should be sorted according to date last updated
+*/
 
-  // const [sortStatus, setSortStatus] = useState({
-  //   columnAccessor: "userId",
-  //   direction: "asc",
-  // });
-  // const [page, setPage] = useState<number>(1);
-  // const [records, setRecords] = useState<PetBusinessApplication[]>(petBusinessApplications);
-  // const [isSearching, setIsSearching] = useToggle();
-  // const [isModalOpen, setModalOpen] = useState(false);
-  // const [selectedRecord, setSelectedRecord] = (useState < PetBusinessApplication) | (null > useState(null));
+interface ApplicationsTableProps {
+  applicationStatus: BusinessApplicationStatusEnum;
+}
 
-  // const handleOpenModal = (record: PetBusinessApplication) => {
-  //   setSelectedRecord(record);
-  //   setModalOpen(true);
-  // };
+export default function ApplicationsTable({
+  applicationStatus,
+}: ApplicationsTableProps) {
+  const {
+    data: petBusinessApplications = [],
+    isLoading,
+    isError,
+  } = useGetAllPetBusinessApplications();
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+    columnAccessor: "petBusinessApplicationId",
+    direction: "asc",
+  });
+  const [page, setPage] = useState<number>(1);
+  const [records, setRecords] = useState<PetBusinessApplication[]>(
+    petBusinessApplications,
+  );
+  const router = useRouter();
+  const [isSearching, setIsSearching] = useToggle();
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE;
 
-  // const handleCloseModal = () => {
-  //   setSelectedRecord(null);
-  //   setModalOpen(false);
-  // };
+  useEffect(() => {
+    let filteredApplications = petBusinessApplications;
 
-  // // Compute pagination slice indices based on the current page
-  // const from = (page - 1) * PAGE_SIZE;
-  // const to = from + PAGE_SIZE;
+    // Filter the applications by the applicationStatus, unless it's 'All'
+    if (applicationStatus !== BusinessApplicationStatusEnum.All) {
+      filteredApplications = petBusinessApplications.filter(
+        (app) => app.applicationStatus === applicationStatus,
+      );
+    }
+    const sortedPetBusinessApplications = sortBy(
+      filteredApplications,
+      sortStatus.columnAccessor,
+    );
+    if (sortStatus.direction === "desc") {
+      sortedPetBusinessApplications.reverse();
+    }
+    const newRecords = sortedPetBusinessApplications.slice(from, to);
+    setRecords(newRecords);
+  }, [page, sortStatus, petBusinessApplications, applicationStatus]);
 
-  // // Recompute records whenever the current page or sort status changes
-  // useEffect(() => {
-  //   // Sort petBusinesses based on the current sort status
+  if (isError) {
+    return errorAlert("Error fetching Pet Business Applications");
+  }
 
-  //   const sortedPetBusinesses = sortBy(petBusinesses, sortStatus.columnAccessor);
-  //   if (sortStatus.direction === "desc") {
-  //     sortedPetBusinesses.reverse();
-  //   }
+  // Search based on filtered application status only
+  const handleSearch = (searchStr: string) => {
+    if (searchStr.length === 0) {
+      setIsSearching(false);
+      setRecords(petBusinessApplications);
+      setPage(1);
+      return;
+    }
 
-  //   // Slice the sorted array to get the records for the current page
-  //   const newRecords = sortedPetBusinesses.slice(from, to);
-
-  //   // Update the records state
-  //   setRecords(newRecords);
-  // }, [page, sortStatus, petBusinesses]);
-
-  // if (isError) {
-  //   return errorAlert("Pet Businesses");
-  // }
-
-  // const handleSearch = (searchStr: string) => {
-  //   if (searchStr.length === 0) {
-  //     setIsSearching(false);
-  //     setRecords(petBusinesses);
-  //     setPage(1);
-  //     return;
-  //   }
-  //   // search by id or company name or uen or email
-  //   setIsSearching(true);
-  //   const results = petBusinesses.filter(
-  //     (petBusiness: PetBusiness) =>
-  //       petBusiness.companyName.toLowerCase().includes(searchStr.toLowerCase()) ||
-  //       (petBusiness.uen &&
-  //         searchStr.includes(petBusiness.uen.toString()) &&
-  //         searchStr.length <= petBusiness.uen.toString().length) ||
-  //       petBusiness.email.toLowerCase().includes(searchStr.toLowerCase()) ||
-  //       (petBusiness.userId &&
-  //         searchStr.includes(petBusiness.userId.toString()) &&
-  //         searchStr.length <= petBusiness.userId.toString().length)
-  //   );
-  //   setRecords(results);
-  //   setPage(1);
-  // };
-
-  // const renderContent = () => {
-  //   if (petBusinesses.length === 0) {
-  //     if (isLoading) {
-  //       // still fetching
-  //       <CenterLoader />;
-  //     }
-  //     // no user groups fetched
-  //     return <SadDimmedMessage title="No pet businesses found" subtitle="" />;
-  //   }
-  //   return (
-  //     <>
-  //       <SearchBar text="Search by pet business ID, company name, uen, email" onSearch={handleSearch} />
-  //       {isSearching && records.length === 0 ? (
-  //         <NoSearchResultsMessage />
-  //       ) : (
-  //         <DataTable
-  //           withBorder
-  //           borderRadius="sm"
-  //           withColumnBorders
-  //           striped
-  //           highlightOnHover
-  //           verticalAlignment="center"
-  //           minHeight={150}
-  //           // provide data
-  //           records={records}
-  //           // define columns
-  //           columns={[
-  //             {
-  //               accessor: "userId",
-  //               title: "#",
-  //               textAlignment: "right",
-  //               width: 100,
-  //               sortable: true,
-  //             },
-  //             {
-  //               accessor: "companyName",
-  //               title: "Company Name",
-  //               sortable: true,
-  //               ellipsis: true,
-  //             },
-  //             {
-  //               accessor: "uen",
-  //               title: "UEN",
-  //               sortable: true,
-  //               ellipsis: true,
-  //             },
-  //             {
-  //               accessor: "email",
-  //               title: "Email",
-  //               sortable: true,
-  //               ellipsis: true,
-  //               width: 300,
-  //             },
-  //             {
-  //               accessor: "dateCreated",
-  //               title: "Date Created",
-  //               sortable: true,
-  //               ellipsis: true,
-  //               width: 150,
-  //               render: ({ dateCreated }) => {
-  //                 return new Date(dateCreated).toLocaleDateString();
-  //               },
-  //             },
-  //             {
-  //               accessor: "accountStatus",
-  //               title: "Status",
-  //               width: 150,
-  //               sortable: true,
-  //               // this column has custom cell data rendering
-  //               render: ({ accountStatus }) => <AccountStatusBadge accountStatus={accountStatus} size="lg" />,
-  //             },
-  //             {
-  //               // New column for the "view more details" button. Using an appended userId to avoid double child problem
-  //               accessor: "${record.userId}-button",
-  //               title: "Actions",
-  //               width: 150,
-  //               render: (record) => (
-  //                 <Center style={{ height: "100%" }}>
-  //                   <ViewButton onClick={() => handleOpenModal(record)} />
-  //                 </Center>
-  //               ),
-  //             },
-  //           ]}
-  //           //sorting
-  //           sortStatus={sortStatus}
-  //           onSortStatusChange={setSortStatus}
-  //           //pagination
-  //           totalRecords={petBusinesses ? petBusinesses.length : 0}
-  //           recordsPerPage={PAGE_SIZE}
-  //           page={page}
-  //           onPageChange={(p) => setPage(p)}
-  //           idAccessor="userId"
-  //         />
-  //       )}
-  //     </>
-  //   );
-  // };
+    setIsSearching(true);
+    const results = records.filter(
+      (petBusinessApplication: PetBusinessApplication) => {
+        const formattedBusinessType = formatEnumValue(
+          petBusinessApplication.businessType,
+        );
+        return (
+          petBusinessApplication.petBusiness.companyName
+            .toLowerCase()
+            .includes(searchStr.toLowerCase()) ||
+          (petBusinessApplication.petBusiness.uen &&
+            searchStr.includes(
+              petBusinessApplication.petBusiness.uen.toString(),
+            ) &&
+            searchStr.length <=
+              petBusinessApplication.petBusiness.uen.toString().length) ||
+          formattedBusinessType.includes(searchStr.toLowerCase()) ||
+          (petBusinessApplication.petBusinessApplicationId &&
+            searchStr.includes(
+              petBusinessApplication.petBusinessApplicationId.toString(),
+            ) &&
+            searchStr.length <=
+              petBusinessApplication.petBusinessApplicationId.toString().length)
+        );
+      },
+    );
+    setRecords(results);
+    setPage(1);
+  };
 
   return (
     <>
-      <PageTitle title="Pet Businesses" />
-      {/* {renderContent()}
-      <Modal
-        opened={isModalOpen}
-        onClose={handleCloseModal}
-        title="Pet Business Details"
-        size="lg"
-        padding="md"
-      >
-        <UserDetails user={selectedRecord} />
-      </Modal> */}
+      {petBusinessApplications.length === 0 ? (
+        <SadDimmedMessage
+          title="No Pet Business Applications found"
+          subtitle=""
+        />
+      ) : (
+        <>
+          <SearchBar
+            text="Search by pet business application ID and other stuff"
+            onSearch={handleSearch}
+          />
+          {isSearching && records.length === 0 ? (
+            <NoSearchResultsMessage />
+          ) : (
+            <DataTable
+              withBorder
+              borderRadius="sm"
+              withColumnBorders
+              sortStatus={sortStatus}
+              striped
+              highlightOnHover
+              verticalAlignment="center"
+              minHeight={150}
+              records={records}
+              columns={[
+                {
+                  accessor: "petBusinessApplicationId",
+                  title: "#",
+                  textAlignment: "right",
+                  width: 100,
+                  sortable: true,
+                },
+                {
+                  accessor: "petBusiness.companyName",
+                  title: "Company Name",
+                  sortable: true,
+                  ellipsis: true,
+                },
+                {
+                  accessor: "petBusiness.uen",
+                  title: "UEN",
+                  sortable: true,
+                  ellipsis: true,
+                },
+                {
+                  accessor: "businessType",
+                  title: "Business Type",
+                  sortable: true,
+                  ellipsis: true,
+                },
+                {
+                  accessor: "dateCreated",
+                  title: "Date Created",
+                  sortable: true,
+                  ellipsis: true,
+                  width: 150,
+                  render: ({ dateCreated }) => {
+                    return new Date(dateCreated).toLocaleDateString();
+                  },
+                },
+                {
+                  accessor: "lastUpdated",
+                  title: "Last Updated",
+                  sortable: true,
+                  ellipsis: true,
+                  width: 150,
+                  render: ({ lastUpdated }) => {
+                    return new Date(lastUpdated as any).toLocaleDateString();
+                  },
+                },
+                ...(applicationStatus === BusinessApplicationStatusEnum.All // This column will not render if applicationStatus is set to `ALL`
+                  ? [
+                      {
+                        accessor: "applicationStatus",
+                        title: "Status",
+                        sortable: true,
+                        render: ({ applicationStatus }: any) => (
+                          <ApplicationStatusBadge
+                            applicationStatus={applicationStatus}
+                          />
+                        ),
+                      },
+                    ]
+                  : []),
+                {
+                  accessor: "",
+                  title: "View Details",
+                  width: 140,
+                  render: (record) => (
+                    <Center style={{ height: "100%" }}>
+                      <ViewButton
+                        onClick={() =>
+                          router.push(
+                            `/pb-applications/${record.petBusinessApplicationId}`,
+                          )
+                        }
+                      />
+                    </Center>
+                  ),
+                },
+              ]}
+              onSortStatusChange={setSortStatus}
+              totalRecords={
+                petBusinessApplications ? petBusinessApplications.length : 0
+              }
+              recordsPerPage={PAGE_SIZE}
+              page={page}
+              onPageChange={(p) => setPage(p)}
+              idAccessor="petBusinessApplicationId"
+            />
+          )}
+        </>
+      )}
     </>
   );
 }

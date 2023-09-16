@@ -30,6 +30,8 @@ export interface PetBusiness extends User {
   uen: string;
   businessType?: string;
   businessDescription?: string;
+  businessEmail?: string;
+  businessAddresses?: Address[];
   websiteURL?: string;
 }
 
@@ -119,6 +121,7 @@ export interface PetBusinessApplication {
   petBusinessId: Number;
   approverId?: Number;
   approver?: BusinessApplicationApprover;
+  petBusiness: PetBusiness;
 }
 
 export interface ApprovePetBusinessApplicationPayload {

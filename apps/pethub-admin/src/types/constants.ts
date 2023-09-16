@@ -21,6 +21,7 @@ export enum PetBusinessTypeEnum {
 }
 
 export const enum BusinessApplicationStatusEnum {
+  All = "ALL",
   Notfound = "NOTFOUND",
   Pending = "PENDING",
   Rejected = "REJECTED",
