@@ -36,8 +36,7 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
         title: "Member Removed",
         color: "green",
         icon: <IconCheck />,
-        message:
-          "The selected user have been removed from this group successfully!",
+        message: `User ID: ${id} have been removed from this group successfully!`,
       });
       refetch();
     } catch (error: any) {

@@ -42,7 +42,7 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
   });
 };
 
-export const useUpdateUserGroup = () => {
+export const useUpdateUserGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(
@@ -54,6 +54,22 @@ export const useUpdateUserGroup = () => {
           payloadWithoutId,
         )
       ).data;
+    },
+    onSuccess: (data) => {
+      const userGroup: UserGroup = {
+        groupId: data.groupId,
+        name: data.name,
+        description: data.description,
+      };
+      queryClient.setQueryData<UserGroup[]>(["user-groups"], (old = []) => {
+        const oldDataIndex = old.findIndex(
+          (oldGroup) => oldGroup.groupId === data.groupId,
+        );
+        if (oldDataIndex === -1) return old;
+
+        old[oldDataIndex] = { ...userGroup }; // replaces old cached info with newly updated info
+        return old;
+      });
     },
   });
 };

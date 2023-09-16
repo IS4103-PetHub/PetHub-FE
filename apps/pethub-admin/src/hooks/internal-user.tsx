@@ -112,7 +112,7 @@ export const useUpdateInternalUser = (queryClient: QueryClient) => {
         ["internal-users"],
         (old = []) => {
           const oldDataIndex = old.findIndex(
-            (oldUsers) => oldUsers.userId === data.userId,
+            (oldUser) => oldUser.userId === data.userId,
           );
           if (oldDataIndex === -1) return old;
 

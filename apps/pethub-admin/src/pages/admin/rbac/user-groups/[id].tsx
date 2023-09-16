@@ -105,7 +105,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
     permissionsForm.setFieldValue("permissionIds", getCurrentPermissionIds());
   };
 
-  const updateUserGroupMutation = useUpdateUserGroup();
+  const updateUserGroupMutation = useUpdateUserGroup(queryClient);
 
   const handleUpdateUserGroup = async (values: any) => {
     const isUpdatingPermissions = Object.keys(values).includes("permissionIds");
@@ -125,10 +125,8 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
 
       if (isUpdatingPermissions) {
         setIsEditingPermissions(false);
-        permissionsForm.reset();
       } else {
         setIsEditingGroupInfo(false);
-        groupInfoForm.reset();
       }
     } catch (error: any) {
       notifications.show({

@@ -65,8 +65,7 @@ const AddUsersToUserGroupModal = ({
         title: "Group Membership Updated",
         color: "green",
         icon: <IconCheck />,
-        message:
-          "The selected user(s) have been assigned to this group successfully!",
+        message: `${selectedRecords.length} user(s) have been assigned to this group successfully!`,
       });
       refetch();
       close();
