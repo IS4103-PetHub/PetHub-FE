@@ -68,32 +68,32 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
           accessor: "firstName",
           width: "15vw",
           ellipsis: true,
-          render: (userGroupPermission) =>
-            userGroupPermission.user.internalUser.firstName,
+          render: (userGroupMembership) =>
+            userGroupMembership.user?.internalUser?.firstName,
         },
         {
           accessor: "lastName",
           width: "15vw",
           ellipsis: true,
-          render: (userGroupPermission) =>
-            userGroupPermission.user.internalUser.lastName,
+          render: (userGroupMembership) =>
+            userGroupMembership.user?.internalUser?.lastName,
         },
         {
           accessor: "email",
           width: "25vw",
           ellipsis: true,
-          render: (userGroupPermission) => userGroupPermission.user.email,
+          render: (userGroupMembership) => userGroupMembership.user?.email,
         },
         {
           // actions
           accessor: "actions",
           title: "Actions",
           width: "10vw",
-          render: (userGroupPermission) => (
+          render: (userGroupMembership) => (
             <RemoveUserFromGroupButton
-              userName={`${userGroupPermission?.user?.internalUser.firstName} ${userGroupPermission?.user?.internalUser.lastName}`}
+              userName={`${userGroupMembership?.user?.internalUser?.firstName} ${userGroupMembership?.user?.internalUser?.lastName}`}
               groupName={userGroup?.name ?? "this group"}
-              onDelete={() => handleRemoveUser(userGroupPermission.userId)}
+              onDelete={() => handleRemoveUser(userGroupMembership.userId)}
             />
           ),
         },

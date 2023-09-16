@@ -301,8 +301,8 @@ const DeleteAccountModal = ({
       userId: userId,
     },
   });
-
-  const deleteInternalUserMutation = useDeleteInternalUser();
+  const queryClient = useQueryClient();
+  const deleteInternalUserMutation = useDeleteInternalUser(queryClient);
   const deleteInternalUserAccount = async (
     values: { userId: number },
     event: FormEvent<HTMLFormElement>,

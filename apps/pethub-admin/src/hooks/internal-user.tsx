@@ -65,7 +65,7 @@ export const useCreateInternalUser = () => {
   });
 };
 
-export const useDeleteInternalUser = () => {
+export const useDeleteInternalUser = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (userId: number) => {
       return (
@@ -73,6 +73,15 @@ export const useDeleteInternalUser = () => {
           `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${userId}`,
         )
       ).data;
+    },
+    onSuccess: (data, userId) => {
+      queryClient.setQueryData<InternalUser[]>(
+        ["internal-users"],
+        (old = []) => {
+          return old.filter((user) => user.userId !== userId);
+          // removes deleted record from cache
+        },
+      );
     },
   });
 };
