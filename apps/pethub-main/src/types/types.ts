@@ -1,4 +1,9 @@
-import { AccountStatusEnum, AccountTypeEnum } from "./constants";
+import {
+  AccountStatusEnum,
+  AccountTypeEnum,
+  BusinessApplicationStatusEnum,
+  PetBusinessTypeEnum,
+} from "./constants";
 
 export interface LoginCredentials {
   email: string;
@@ -49,4 +54,49 @@ export interface PetOwner extends User {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+}
+
+export interface Address {
+  addressId?: string;
+  addressName: string;
+  line1: string;
+  line2: string;
+  postalCode: string;
+  petBusinessId?: Number;
+  petBusinessApplicationId?: Number;
+}
+
+export interface BusinessApplicationApprover {
+  firstName: String;
+  lastName: String;
+  adminRole: String;
+  userId: Number;
+}
+
+export interface CreatePetBusinessApplicationPayload {
+  petBusinessApplicationId?: Number;
+  petBusinessId: Number;
+  businessType: PetBusinessTypeEnum;
+  businessEmail: string;
+  websiteURL?: string;
+  businessDescription: string;
+  businessAddresses: Address[];
+  attachments: string[];
+}
+
+export interface PetBusinessApplication {
+  petBusinessApplicationId: Number;
+  businessType: PetBusinessTypeEnum;
+  businessEmail: string;
+  websiteURL?: string;
+  businessDescription: string;
+  businessAddresses: Address[];
+  attachments: string[];
+  applicationStatus: BusinessApplicationStatusEnum;
+  adminRemarks: string[];
+  dateCreated: string;
+  lastUpdated?: string;
+  petBusinessId: Number;
+  approverId?: Number;
+  approver?: BusinessApplicationApprover;
 }
