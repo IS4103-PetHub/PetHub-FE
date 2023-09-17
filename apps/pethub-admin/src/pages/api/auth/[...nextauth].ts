@@ -5,7 +5,6 @@ import { LoginCredentials } from "@/types/types";
 
 const useSecureCookies = process.env.NEXTAUTH_URL.startsWith("https://");
 const cookiePrefix = useSecureCookies ? "__Secure-" : "";
-console.log("cookieprefix", cookiePrefix);
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -17,12 +16,52 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: `${cookiePrefix}next-auth.session-token`,
+      name: `${cookiePrefix}next-auth.session-token-admin`,
       options: {
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "strict",
         path: "/",
-        secure: true,
+      },
+    },
+    callbackUrl: {
+      name: `${cookiePrefix}next-auth.callback-url-admin`,
+      options: {
+        sameSite: "strict",
+        path: "/",
+      },
+    },
+    csrfToken: {
+      name: `${cookiePrefix}next-auth.csrf-token-admin`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+      },
+    },
+    pkceCodeVerifier: {
+      name: `${cookiePrefix}next-auth.pkce.code_verifier-admin`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 900,
+      },
+    },
+    state: {
+      name: `${cookiePrefix}next-auth.state-admin`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 900,
+      },
+    },
+    nonce: {
+      name: `${cookiePrefix}next-auth.nonce-admin`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
       },
     },
   },
@@ -39,6 +78,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   callbacks: {
     jwt({ token, user }) {
       if (user) token.user = user;

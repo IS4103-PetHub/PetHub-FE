@@ -17,10 +17,51 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: `${cookiePrefix}next-auth.session-token`,
+      name: `${cookiePrefix}next-auth.session-token-main`,
       options: {
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "strict",
+        path: "/",
+      },
+    },
+    callbackUrl: {
+      name: `${cookiePrefix}next-auth.callback-url-main`,
+      options: {
+        sameSite: "strict",
+        path: "/",
+      },
+    },
+    csrfToken: {
+      name: `${cookiePrefix}next-auth.csrf-token-main`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+      },
+    },
+    pkceCodeVerifier: {
+      name: `${cookiePrefix}next-auth.pkce.code_verifier-main`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 900,
+      },
+    },
+    state: {
+      name: `${cookiePrefix}next-auth.state-main`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
+        path: "/",
+        maxAge: 900,
+      },
+    },
+    nonce: {
+      name: `${cookiePrefix}next-auth.nonce-main`,
+      options: {
+        httpOnly: true,
+        sameSite: "strict",
         path: "/",
       },
     },
