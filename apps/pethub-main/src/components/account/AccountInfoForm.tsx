@@ -304,24 +304,14 @@ const AccountInfoForm = ({
               <strong>Business description</strong>
             </Grid.Col>
             <Grid.Col span={VALUE_SPAN}>
-              {isEditing ? (
-                <Textarea
-                  autosize
-                  minRows={3}
-                  maxRows={3}
-                  placeholder="Business description"
-                  {...form.getInputProps("businessDescription")}
-                />
-              ) : (
-                <Textarea
-                  autosize
-                  minRows={3}
-                  maxRows={3}
-                  disabled
-                  placeholder="Business description"
-                  {...form.getInputProps("businessDescription")}
-                />
-              )}
+              <Textarea
+                disabled={!isEditing}
+                autosize
+                minRows={3}
+                maxRows={3}
+                placeholder="Business description"
+                {...form.getInputProps("businessDescription")}
+              />
             </Grid.Col>
             <Grid.Col span={12}>
               <Divider my="sm" />
