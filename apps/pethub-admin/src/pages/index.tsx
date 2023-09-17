@@ -1,4 +1,4 @@
-import { Container } from "@mantine/core";
+import { Container, Tabs } from "@mantine/core";
 import Head from "next/head";
 import { PageTitle } from "web-ui";
 

@@ -29,6 +29,8 @@
     "next": "^13.4.19",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-password-strength-bar": "^0.4.1"
+    "react-password-strength-bar": "^0.4.1",
+    "@tanstack/react-query": "^4.33.0",
+    "shared-utils": "*"
   }
 }

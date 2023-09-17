@@ -1,18 +1,22 @@
-import { Modal, Title, Text, Button, Group } from "@mantine/core";
+import { Modal, Title, Text, Button, Group, ButtonProps } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { IconTrash } from "@tabler/icons-react";
 import React from "react";
 import DeleteActionIcon from "./DeleteActionIcon";
 
-interface DeleteActionButtonModalProps {
+interface DeleteActionButtonModalProps extends ButtonProps {
   title: string;
   subtitle: string;
   onDelete(): void;
+  large?: boolean;
 }
 
 const DeleteActionButtonModal = ({
   title,
   subtitle,
   onDelete,
+  large,
+  ...props
 }: DeleteActionButtonModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -36,7 +40,7 @@ const DeleteActionButtonModal = ({
         <Title order={2}>{title}</Title>
         <Text mt="md">{subtitle}</Text>
 
-        <Group mt="25px" position="right">
+        <Group mt="md" position="right">
           <Button type="reset" color="gray" onClick={close}>
             Cancel
           </Button>
@@ -45,7 +49,19 @@ const DeleteActionButtonModal = ({
           </Button>
         </Group>
       </Modal>
-      <DeleteActionIcon onClick={open} />
+
+      {large ? (
+        <Button
+          color="red"
+          leftIcon={<IconTrash size={"1rem"} />}
+          onClick={open}
+          {...props}
+        >
+          Delete
+        </Button>
+      ) : (
+        <DeleteActionIcon onClick={open} />
+      )}
     </>
   );
 };

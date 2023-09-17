@@ -12,7 +12,7 @@ import {
   createStyles,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useForm, isEmail, hasLength, isNotEmpty } from "@mantine/form";
+import { useForm, isEmail } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import {
   IconBuildingStore,
@@ -23,10 +23,10 @@ import {
   IconPlus,
   IconX,
 } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/react";
 import React from "react";
+import { validatePassword } from "shared-utils";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
@@ -37,7 +37,6 @@ import {
   CreatePetOwnerPayload,
   LoginCredentials,
 } from "@/types/types";
-import { validatePassword } from "@/util";
 
 const useStyles = createStyles((theme) => ({
   backgroundEffect: {

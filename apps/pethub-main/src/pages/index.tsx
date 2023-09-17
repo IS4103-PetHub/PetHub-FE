@@ -1,10 +1,8 @@
 import { Container } from "@mantine/core";
 import Head from "next/head";
 import Banner from "@/components/common/landing/Banner";
-import { useExampleGet } from "@/hooks/example";
 
 export default function Home() {
-  const { refetch, data } = useExampleGet();
   return (
     <>
       <Head>

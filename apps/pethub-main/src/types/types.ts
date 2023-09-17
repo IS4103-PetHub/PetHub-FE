@@ -11,21 +11,6 @@ export interface LoginCredentials {
   accountType: string;
 }
 
-export interface ForgotPasswordPayload {
-  email: string;
-}
-
-export interface ResetPasswordPayload {
-  token: string | null;
-  newPassword: string;
-}
-
-export interface ChangePasswordPayload {
-  email: string;
-  password: string;
-  newPassword: string;
-}
-
 export interface CreatePetOwnerPayload {
   firstName: string;
   lastName: string;

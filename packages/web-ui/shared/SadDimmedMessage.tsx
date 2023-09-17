@@ -4,10 +4,18 @@ import { IconMoodSad } from "@tabler/icons-react";
 interface SadDimmedMessageProps {
   title: string;
   subtitle: string;
+  disabled?: boolean;
 }
 
-const SadDimmedMessage = ({ title, subtitle }: SadDimmedMessageProps) => {
+const SadDimmedMessage = ({
+  title,
+  subtitle,
+  disabled,
+}: SadDimmedMessageProps) => {
   const theme = useMantineTheme();
+
+  if (disabled) return null;
+
   return (
     <Container fluid className="center-vertically">
       <Box>

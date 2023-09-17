@@ -1,9 +1,6 @@
+import { ForgotPasswordPayload, ResetPasswordPayload } from "shared-utils";
 import { AccountTypeEnum } from "@/types/constants";
-import {
-  LoginCredentials,
-  ForgotPasswordPayload,
-  ResetPasswordPayload,
-} from "@/types/types";
+import { LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
 
 export const loginService = async ({ email, password }: LoginCredentials) => {

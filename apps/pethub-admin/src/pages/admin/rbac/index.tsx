@@ -1,4 +1,4 @@
-import { Container, Group } from "@mantine/core";
+import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
@@ -13,31 +13,37 @@ import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import { ErrorAlert } from "@/components/common/ErrorAlert";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
 import { useDeleteUserGroup, useGetAllUserGroups } from "@/hooks/rbac";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
 
 export default function RBAC() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: userGroups = [], isLoading, refetch } = useGetAllUserGroups();
+  const {
+    data: userGroups = [],
+    isLoading,
+    refetch,
+    isError,
+  } = useGetAllUserGroups();
 
   // for table
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<UserGroup[]>(userGroups);
   const [isSearching, setIsSearching] = useToggle();
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "groupId",
     direction: "asc",
   });
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
-  // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    // Recompute records whenever the current page or sort status changes
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     const sortedUserGroups = sortBy(userGroups, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedUserGroups.reverse();
@@ -47,6 +53,16 @@ export default function RBAC() {
     // Update the records state
     setRecords(newRecords);
   }, [page, sortStatus, userGroups]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (userGroups.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   const deleteUserGroupMutation = useDeleteUserGroup(queryClient);
   const handleDeleteUserGroup = async (id: number) => {
@@ -58,7 +74,6 @@ export default function RBAC() {
         icon: <IconCheck />,
         message: `User group ${id} deleted successfully.`,
       });
-      // refetch();
     } catch (error: any) {
       notifications.show({
         title: "Error Deleting User Group",
@@ -93,6 +108,10 @@ export default function RBAC() {
     setPage(1);
   };
 
+  if (isError) {
+    return ErrorAlert("User Groups");
+  }
+
   const renderContent = () => {
     if (userGroups.length === 0) {
       if (isLoading) {
@@ -101,10 +120,20 @@ export default function RBAC() {
       }
       // no user groups fetched
       return (
-        <SadDimmedMessage
-          title="No user groups found"
-          subtitle="Click 'Create User Group' to create a new group"
-        />
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No user groups found"
+                subtitle="Click 'Create User Group' to create a new group"
+              />
+            </div>
+          )}
+        </Transition>
       );
     }
     return (
@@ -117,8 +146,10 @@ export default function RBAC() {
           <NoSearchResultsMessage />
         ) : (
           <UserGroupsTable
-            userGroups={records}
+            records={records}
+            totalNumUserGroups={userGroups.length}
             onDelete={handleDeleteUserGroup}
+            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
