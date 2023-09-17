@@ -94,6 +94,7 @@ const ServiceListTable = ({
             textAlignment: "left",
             width: "10vw",
             sortable: true,
+            ellipsis: true,
           },
           {
             accessor: "category",

@@ -13,6 +13,7 @@ import {
   Stack,
   Textarea,
   Card,
+  CloseButton,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -95,6 +96,23 @@ const ServiceListingModal = ({
         if (!value) return "Price is mandatory.";
         else if (value < 0)
           return "Price must be a positive number with two decimal places.";
+      },
+      files: (value) => {
+        if (value.length > 6) {
+          console.log(value.length);
+          notifications.show({
+            title: isUpdating
+              ? "Error Updating Service Listing"
+              : "Error Creating Service Listing",
+            color: "red",
+            icon: <IconX />,
+            message: "There is a maximum of 6 images",
+          });
+          return (
+            <div style={{ color: "red" }}>Maximum of 6 images allowed.</div>
+          );
+        }
+        return null;
       },
     },
   });
@@ -247,11 +265,14 @@ const ServiceListingModal = ({
 
   const handleFileInputChange = (files: File[] | null) => {
     if (files && files.length > 0) {
-      const imageUrls = files.map((file) => URL.createObjectURL(file));
-      setImagePreview(imageUrls);
+      const newImageUrls = files.map((file) => URL.createObjectURL(file));
+      imagePreview.push(...newImageUrls);
+      const updatedFiles = [...serviceListingForm.values.files, ...files];
+
+      setImagePreview(imagePreview);
       serviceListingForm.setValues({
         ...serviceListingForm.values,
-        files: files,
+        files: updatedFiles,
       });
     } else {
       setImagePreview([]);
@@ -260,6 +281,19 @@ const ServiceListingModal = ({
         files: [],
       });
     }
+  };
+
+  const removeImage = (indexToRemove) => {
+    const updatedImagePreview = [...imagePreview];
+    updatedImagePreview.splice(indexToRemove, 1); // Remove the image at the specified index
+    setImagePreview(updatedImagePreview); // Update the state with the modified array
+
+    const updatedFiles = [...serviceListingForm.values.files];
+    updatedFiles.splice(indexToRemove, 1); // Remove the corresponding file from the files array in the form
+    serviceListingForm.setValues({
+      ...serviceListingForm.values,
+      files: updatedFiles, // Update the form's files array
+    });
   };
 
   return (
@@ -371,6 +405,15 @@ const ServiceListingModal = ({
                 imagePreview.map((imageUrl, index) => (
                   <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
                     <Card style={{ maxWidth: "100%" }}>
+                      {!isViewing && (
+                        <Group position="right">
+                          <CloseButton
+                            size="md"
+                            color="red"
+                            onClick={() => removeImage(index)}
+                          />
+                        </Group>
+                      )}
                       <Image
                         src={imageUrl}
                         alt={`Image Preview ${index}`}
