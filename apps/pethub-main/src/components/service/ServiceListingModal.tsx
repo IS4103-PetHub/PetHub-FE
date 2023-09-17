@@ -12,6 +12,7 @@ import {
   Image,
   Stack,
   Textarea,
+  Card,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -56,33 +57,9 @@ const ServiceListingModal = ({
   /*
    * Component State
    */
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState([]);
   const [isUpdating, setUpdating] = useState(isUpdate);
   const [isViewing, setViewing] = useState(isView);
-
-  const handleFileInputChange = (file: File) => {
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImagePreview(imageUrl);
-      serviceListingForm.setValues({
-        ...serviceListingForm.values,
-        attachments: file,
-      });
-    } else {
-      // If no file is selected, reset the image preview
-      setImagePreview(null);
-    }
-  };
-
-  /*
-   * Effect Hooks
-   */
-
-  useEffect(() => {
-    if (serviceListing) {
-      setServiceListingFields();
-    }
-  }, [serviceListing]);
 
   /*
    * Component Form
@@ -96,7 +73,7 @@ const ServiceListingModal = ({
       category: "",
       basePrice: 0.0,
       address: "", // TODO: address not in the BE yet
-      attachments: null,
+      files: [],
       tags: [],
       confirmation: false,
     },
@@ -125,6 +102,20 @@ const ServiceListingModal = ({
   });
 
   /*
+   * Effect Hooks
+   */
+
+  useEffect(() => {
+    const fetchAndSetServiceListingFields = async () => {
+      if (serviceListing) {
+        await setServiceListingFields(); // Wait for setServiceListingFields to complete
+      }
+    };
+
+    fetchAndSetServiceListingFields(); // Immediately invoke the async function
+  }, [serviceListing]);
+
+  /*
    * Service Handlers
    */
   const queryClient = useQueryClient();
@@ -140,6 +131,7 @@ const ServiceListingModal = ({
           category: values.category as ServiceCategoryEnum,
           basePrice: values.basePrice,
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
+          files: values.files,
         };
         const result = await updateServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -155,8 +147,9 @@ const ServiceListingModal = ({
           category: values.category as ServiceCategoryEnum,
           basePrice: values.basePrice,
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
+          files: values.files,
         };
-        await createServiceListingMutation.mutateAsync(payload);
+        const result = await createServiceListingMutation.mutateAsync(payload);
         notifications.show({
           message: "Service Successfully Created",
           color: "green",
@@ -165,7 +158,7 @@ const ServiceListingModal = ({
       }
       refetch();
       serviceListingForm.reset();
-      setImagePreview(null);
+      setImagePreview([]);
       onClose();
     } catch (error) {
       notifications.show({
@@ -193,25 +186,86 @@ const ServiceListingModal = ({
     }),
   );
 
-  const setServiceListingFields = () => {
-    const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
+  const downloadFile = async (url: string, fileName: string) => {
+    try {
+      const response = await fetch(url);
+      const buffer = await response.arrayBuffer();
+      return new File([buffer], fileName);
+    } catch (error) {
+      console.log("Error!!!!!!!!!!!!!:", error);
+    }
+  };
+
+  const extractFileName = (attachmentKeys: string) => {
+    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
+  };
+
+  const setServiceListing = async (serviceListing, tagIds, downloadedFiles) => {
     serviceListingForm.setValues({
       ...serviceListing,
       // TODO: add address in when the BE is ready
       // address: serviceListing.address.addressId.toString(),
       tags: tagIds,
+      files: downloadedFiles,
     });
   };
 
-  const closeAndResetForm = () => {
+  const setServiceListingFields = async () => {
+    const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
+    const fileNames = serviceListing.attachmentKeys.map((keys) =>
+      extractFileName(keys),
+    );
+
+    const downloadPromises = fileNames.map((filename, index) => {
+      const url = serviceListing.attachmentURLs[index];
+      return downloadFile(url, filename).catch((error) => {
+        console.error(`Error downloading file ${filename}:`, error);
+        return null; // Return null for failed downloads
+      });
+    });
+
+    const downloadedFiles: File[] = await Promise.all(downloadPromises);
+
+    serviceListingForm.setValues({
+      ...serviceListing,
+      title: serviceListing.title,
+      // TODO: add address in when the BE is ready
+      // address: serviceListing.address.addressId.toString(),
+      tags: tagIds,
+      files: downloadedFiles,
+    });
+
+    const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
+    setImagePreview(imageUrls);
+  };
+
+  const closeAndResetForm = async () => {
     if (isUpdating || isViewing) {
-      setServiceListingFields();
+      await setServiceListingFields();
     } else {
       serviceListingForm.reset();
+      setImagePreview([]);
     }
     setUpdating(isUpdate);
     setViewing(isView);
     onClose();
+  };
+
+  const handleFileInputChange = (files: File[] | null) => {
+    if (files && files.length > 0) {
+      const imageUrls = files.map((file) => URL.createObjectURL(file));
+      setImagePreview(imageUrls);
+      serviceListingForm.setValues({
+        ...serviceListingForm.values,
+        files: files,
+      });
+    } else {
+      setImagePreview([]);
+      serviceListingForm.setValues({
+        ...serviceListingForm.values,
+        files: [],
+      });
+    }
   };
 
   return (
@@ -299,20 +353,35 @@ const ServiceListingModal = ({
                         {...serviceListingForm.getInputProps('address')}
                     /> */}
 
-            {/* <FileInput
-                        withAsterisk
-                        disabled={isViewing}
-                        label="Upload Display Image"
-                        placeholder="No file selected"
-                        accept="image/*"
-                        name="image"
-                        {...serviceListingForm.getInputProps('attachments')}
-                        onChange={handleFileInputChange}
-                    />
+            <FileInput
+              disabled={isViewing}
+              label="Upload Display Images"
+              placeholder={
+                imagePreview.length == 0
+                  ? "No file selected"
+                  : "Upload new images"
+              }
+              accept="image/*"
+              name="images" // Update the name to reflect multiple images
+              multiple // Allow multiple file selection
+              onChange={(files) => handleFileInputChange(files)}
+            />
 
-                    {imagePreview && (
-                        <Image src={imagePreview} alt="Image Preview" style={{ maxWidth: "100%" }} />
-                    )} */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+              {imagePreview &&
+                imagePreview.length > 0 &&
+                imagePreview.map((imageUrl, index) => (
+                  <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
+                    <Card style={{ maxWidth: "100%" }}>
+                      <Image
+                        src={imageUrl}
+                        alt={`Image Preview ${index}`}
+                        style={{ maxWidth: "100%", display: "block" }}
+                      />
+                    </Card>
+                  </div>
+                ))}
+            </div>
 
             <MultiSelect
               disabled={isViewing}

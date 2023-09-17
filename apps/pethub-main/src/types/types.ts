@@ -86,6 +86,8 @@ export interface ServiceListing {
   // address
   dateCreated: string;
   lastUpdated?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
 }
 
 export interface Tag {
@@ -103,6 +105,7 @@ export interface CreateServiceListingPayload {
   basePrice: number;
   // address
   tagIds: number[];
+  files: File[];
 }
 
 export interface UpdateServiceListingPayload {
@@ -113,4 +116,5 @@ export interface UpdateServiceListingPayload {
   basePrice: number;
   // address
   tagIds: number[];
+  files: File[];
 }

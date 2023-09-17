@@ -1,7 +1,11 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { AccountTypeEnum } from "@/types/constants";
-import { CreateServiceListingPayload, ServiceListing } from "@/types/types";
+import {
+  CreateServiceListingPayload,
+  ServiceListing,
+  UpdateServiceListingPayload,
+} from "@/types/types";
 
 const SERVICE_LISTING_API = "api/service-listings";
 
@@ -9,12 +13,39 @@ const SERVICE_LISTING_API = "api/service-listings";
 export const useCreateServiceListing = () => {
   return useMutation({
     mutationFn: async (payload: CreateServiceListingPayload) => {
-      return (
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/`,
-          payload,
-        )
-      ).data;
+      const formData = new FormData();
+      formData.append("title", payload.title);
+      formData.append("description", payload.description);
+      formData.append("petBusinessId", payload.petBusinessId.toString());
+      formData.append("category", payload.category);
+      formData.append("basePrice", payload.basePrice.toString());
+      payload.tagIds.forEach((tagId) => {
+        formData.append("tagIds[]", tagId.toString());
+      });
+
+      // Add files to the form data
+      payload.files.forEach((file) => {
+        formData.append("file", file);
+      });
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      return response.data;
+    },
+    onSuccess: () => {
+      console.log("Successfully created service listing");
+    },
+    onError: (error) => {
+      console.error("Error creating service listing:", error);
+      throw error;
     },
   });
 };
@@ -37,16 +68,39 @@ export const useGetServiceListingByPetBusinessIdAndAccountType = (
 // PATCH Service Listing by Serivce Id
 export const useUpdateServiceListing = (queryClient: QueryClient) => {
   return useMutation({
-    mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(
-          ([key]) => !["serviceListingId"].includes(key),
-        ),
-      );
+    mutationFn: async (payload: UpdateServiceListingPayload) => {
+      // Extract the serviceListingId from the payload
+      const { serviceListingId, ...payloadWithoutId } = payload;
+
+      // Create a new FormData object to build the request body
+      const formData = new FormData();
+
+      // Append fields to the formData
+      formData.append("title", payloadWithoutId.title);
+      formData.append("description", payloadWithoutId.description);
+      formData.append("category", payloadWithoutId.category);
+      formData.append("basePrice", payloadWithoutId.basePrice.toString());
+
+      // Append tagIds as an array
+      payloadWithoutId.tagIds.forEach((tagId) => {
+        formData.append("tagIds", tagId.toString());
+      });
+
+      // Append files to the formData
+      payloadWithoutId.files.forEach((file) => {
+        formData.append("file", file);
+      });
+
+      // Send the PATCH request with formData
       return (
         await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${payload.serviceListingId}`,
-          payloadWithoutId,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${serviceListingId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
         )
       ).data;
     },
