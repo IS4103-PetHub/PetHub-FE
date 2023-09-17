@@ -12,9 +12,10 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
+import { errorAlert } from "@/util";
 import { getMinTableHeight, searchPetBusinesses } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
-import { ViewButton } from "../common/ViewButton";
+import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import UserDetails from "./UserDetails";
 
 export default function PetBusinessTable() {
@@ -131,6 +132,8 @@ export default function PetBusinessTable() {
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            onRowClick={(record) => handleOpenModal(record)}
+            rowStyle={{ cursor: "pointer" }}
             withBorder
             borderRadius="sm"
             withColumnBorders
@@ -195,7 +198,12 @@ export default function PetBusinessTable() {
                 textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
-                    <ViewButton onClick={() => handleOpenModal(record)} />
+                    <ViewButtonWithEvent
+                      onClick={(e: any) => {
+                        e.stopPropagation();
+                        handleOpenModal(record);
+                      }}
+                    />
                   </Center>
                 ),
               },

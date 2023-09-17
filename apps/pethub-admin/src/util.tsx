@@ -1,3 +1,5 @@
+import { Alert, Group, Loader } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { InternalUser, PetBusiness, PetOwner } from "./types/types";
 
 /*
@@ -34,12 +36,37 @@ export function parseRouterQueryParam(param: string | string[] | undefined) {
   return param;
 }
 
-export function formatEnum(value: string): string {
+export function formatEnumToLetterCase(value: string): string {
   return value
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
 }
+
+export function formatEnumValue(value: string) {
+  return value.replace(/_/g, " ").toLowerCase();
+}
+
+export const errorAlert = (accountType: string) => {
+  return (
+    <Alert icon={<IconAlertCircle size="1rem" />} title="Oh No!" color="red">
+      There was an error loading the list of {accountType}. Please try again
+      later.
+    </Alert>
+  );
+};
+
+export const loader = () => {
+  return (
+    <>
+      <div className="center-vertically">
+        <Group position="center">
+          <Loader size="xl" style={{ marginTop: "2rem" }} />
+        </Group>
+      </div>
+    </>
+  );
+};
 
 /*
   Search helpers for INTERNAL USER, PET BUSINESS, PET OWNER
