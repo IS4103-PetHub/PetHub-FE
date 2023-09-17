@@ -13,7 +13,7 @@ import {
   Alert,
   Badge,
 } from "@mantine/core";
-import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
+// import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
