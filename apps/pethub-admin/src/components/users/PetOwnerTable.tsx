@@ -12,9 +12,10 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
+import { errorAlert } from "@/util";
 import { getMinTableHeight, searchPetOwners } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
-import { ViewButton } from "../common/ViewButton";
+import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import UserDetails from "./UserDetails";
 
 export default function PetOwnerTable() {
@@ -122,6 +123,8 @@ export default function PetOwnerTable() {
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            onRowClick={(record) => handleOpenModal(record)}
+            rowStyle={{ cursor: "pointer" }}
             withBorder
             borderRadius="sm"
             withColumnBorders
@@ -186,7 +189,12 @@ export default function PetOwnerTable() {
                 textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
-                    <ViewButton onClick={() => handleOpenModal(record)} />
+                    <ViewButtonWithEvent
+                      onClick={(e: any) => {
+                        e.stopPropagation();
+                        handleOpenModal(record);
+                      }}
+                    />
                   </Center>
                 ),
               },

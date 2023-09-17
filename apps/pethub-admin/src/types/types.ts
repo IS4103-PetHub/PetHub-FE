@@ -1,7 +1,9 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  BusinessApplicationStatusEnum,
   InternalUserRoleEnum,
+  PetBusinessTypeEnum,
 } from "./constants";
 
 export abstract class User {
@@ -28,6 +30,8 @@ export interface PetBusiness extends User {
   uen: string;
   businessType?: string;
   businessDescription?: string;
+  businessEmail?: string;
+  businessAddresses?: Address[];
   contactNumber: string;
   websiteURL?: string;
 }
@@ -108,4 +112,49 @@ export interface UserGroupMembership {
       lastName: string;
     };
   };
+}
+
+export interface Address {
+  addressId?: string;
+  addressName: string;
+  line1: string;
+  line2: string;
+  postalCode: string;
+  petBusinessId?: Number;
+  petBusinessApplicationId?: Number;
+}
+
+export interface BusinessApplicationApprover {
+  firstName: String;
+  lastName: String;
+  adminRole: String;
+  userId: Number;
+}
+
+export interface PetBusinessApplication {
+  petBusinessApplicationId: Number;
+  businessType: PetBusinessTypeEnum;
+  businessEmail: string;
+  websiteURL?: string;
+  businessDescription: string;
+  businessAddresses: Address[];
+  attachments: string[];
+  applicationStatus: BusinessApplicationStatusEnum;
+  adminRemarks: string[];
+  dateCreated: string;
+  lastUpdated?: string;
+  petBusinessId: Number;
+  approverId?: Number;
+  approver?: BusinessApplicationApprover;
+  petBusiness: PetBusiness;
+}
+
+export interface ApprovePetBusinessApplicationPayload {
+  petBusinessApplicationId: Number;
+  approverId: Number;
+}
+
+export interface RejectPetBusinessApplicationPayload {
+  petBusinessApplicationId: Number;
+  remark: String;
 }

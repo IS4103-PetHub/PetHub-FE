@@ -15,6 +15,7 @@ import {
   IconHome,
   IconUserShield,
   IconUsersGroup,
+  IconArticle,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -87,6 +88,11 @@ const data = [
     link: "/admin/rbac",
     label: "Role-based Access Control",
     icon: IconUserShield,
+  },
+  {
+    link: "/admin/pb-applications",
+    label: "Pet Business Applications",
+    icon: IconArticle,
   },
 ];
 
