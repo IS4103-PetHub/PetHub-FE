@@ -12,7 +12,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
-import { searchPetOwners } from "@/util";
+import { getMinTableHeight, searchPetOwners } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import UserDetails from "./UserDetails";
@@ -127,7 +127,7 @@ export default function PetOwnerTable() {
             withColumnBorders
             striped
             verticalAlignment="center"
-            minHeight={100}
+            minHeight={getMinTableHeight(records)}
             // provide data
             records={records}
             // define columns
@@ -183,6 +183,7 @@ export default function PetOwnerTable() {
                 accessor: "actions",
                 title: "Actions",
                 width: 150,
+                textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
                     <ViewButton onClick={() => handleOpenModal(record)} />

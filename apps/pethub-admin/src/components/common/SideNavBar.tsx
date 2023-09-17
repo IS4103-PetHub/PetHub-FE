@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
+  IconTags,
   IconUser,
   IconHome,
   IconUserShield,
@@ -81,6 +82,7 @@ const data = [
   { link: "/", label: "Home", icon: IconHome },
   { link: "/admin/account", label: "My Account", icon: IconUser },
   { link: "/admin/users", label: "Users", icon: IconUsersGroup },
+  { link: "/admin/tags", label: "Tags", icon: IconTags },
   {
     link: "/admin/rbac",
     label: "Role-based Access Control",

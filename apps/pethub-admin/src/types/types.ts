@@ -28,6 +28,7 @@ export interface PetBusiness extends User {
   uen: string;
   businessType?: string;
   businessDescription?: string;
+  contactNumber: string;
   websiteURL?: string;
 }
 
@@ -71,6 +72,21 @@ export interface Permission {
   description: string;
 }
 
+export interface Tag {
+  tagId: number;
+  name: string;
+  dateCreated: string;
+  lastUpdated: string;
+}
+
+export interface CreateTagPayload {
+  name: string;
+}
+
+export interface UpdateTagPayload {
+  tagId: number;
+  name: string;
+}
 export interface UserGroupPermission {
   groupId: number;
   permissionId: number;

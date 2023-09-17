@@ -211,6 +211,13 @@ const PetBusinessDetails = ({
         </Grid.Col>
 
         <Grid.Col span={6}>
+          <Text>Contact Number:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>{user.contactNumber}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
           <Text>Business Type:</Text>
         </Grid.Col>
         <Grid.Col span={6}>

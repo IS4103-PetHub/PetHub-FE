@@ -12,7 +12,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
-import { searchPetBusinesses } from "@/util";
+import { getMinTableHeight, searchPetBusinesses } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import UserDetails from "./UserDetails";
@@ -136,7 +136,7 @@ export default function PetBusinessTable() {
             withColumnBorders
             striped
             verticalAlignment="center"
-            minHeight={100}
+            minHeight={getMinTableHeight(records)}
             // provide data
             records={records}
             // define columns
@@ -192,6 +192,7 @@ export default function PetBusinessTable() {
                 accessor: "actions",
                 title: "Actions",
                 width: 150,
+                textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
                     <ViewButton onClick={() => handleOpenModal(record)} />
