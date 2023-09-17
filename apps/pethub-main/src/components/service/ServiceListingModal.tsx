@@ -27,6 +27,7 @@ import {
 import { useGetAllTags } from "@/hooks/tags";
 import { ServiceCategoryEnum } from "@/types/constants";
 import {
+  Address,
   CreateServiceListingPayload,
   ServiceListing,
   Tag,
@@ -42,6 +43,7 @@ interface ServiceListingModalProps {
   userId: number;
   refetch(): void;
   tags: Tag[];
+  addresses: Address[];
 }
 
 const ServiceListingModal = ({
@@ -53,6 +55,7 @@ const ServiceListingModal = ({
   userId,
   refetch,
   tags,
+  addresses,
 }: ServiceListingModalProps) => {
   /*
    * Component State
@@ -72,7 +75,7 @@ const ServiceListingModal = ({
       description: "",
       category: "",
       basePrice: 0.0,
-      address: "", // TODO: address not in the BE yet
+      addresses: [],
       files: [],
       tags: [],
       confirmation: false,
@@ -93,11 +96,6 @@ const ServiceListingModal = ({
         else if (value < 0)
           return "Price must be a positive number with two decimal places.";
       },
-      // confirmation: (value) => {
-      //   if (!value && !isUpdating) return "Confirmation is mandatory.";
-      // },
-      // if (!values.address) errors.location = 'Address is mandatory.';
-      // if (!values.attachments) errors.attachments = 'Attachments are mandatory.';
     },
   });
 
@@ -132,6 +130,7 @@ const ServiceListingModal = ({
           basePrice: values.basePrice,
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
+          addressIds: values.addresses,
         };
         const result = await updateServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -148,6 +147,7 @@ const ServiceListingModal = ({
           basePrice: values.basePrice,
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
+          addressIds: values.addresses,
         };
         const result = await createServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -200,18 +200,11 @@ const ServiceListingModal = ({
     return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
   };
 
-  const setServiceListing = async (serviceListing, tagIds, downloadedFiles) => {
-    serviceListingForm.setValues({
-      ...serviceListing,
-      // TODO: add address in when the BE is ready
-      // address: serviceListing.address.addressId.toString(),
-      tags: tagIds,
-      files: downloadedFiles,
-    });
-  };
-
   const setServiceListingFields = async () => {
     const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
+    const addressIds = serviceListing.addresses.map((address) =>
+      address.addressId.toString(),
+    );
     const fileNames = serviceListing.attachmentKeys.map((keys) =>
       extractFileName(keys),
     );
@@ -233,6 +226,7 @@ const ServiceListingModal = ({
       // address: serviceListing.address.addressId.toString(),
       tags: tagIds,
       files: downloadedFiles,
+      addresses: addressIds,
     });
 
     const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
@@ -342,16 +336,20 @@ const ServiceListingModal = ({
                         - let user select the address from the list of addresss
                     */}
 
-            {/* <Select
-                        withAsterisk
-                        disabled={isViewing}
-                        label="Select an Address"
-                        data={dummyAddress.map((address) => ({
-                            value: address.addressId.toString(),
-                            label: address.addressName,
-                        }))}
-                        {...serviceListingForm.getInputProps('address')}
-                    /> */}
+            <MultiSelect
+              disabled={isViewing}
+              label="Address"
+              placeholder="Select your address"
+              data={
+                addresses
+                  ? addresses.map((address) => ({
+                      value: address.addressId.toString(),
+                      label: address.addressName,
+                    }))
+                  : []
+              }
+              {...serviceListingForm.getInputProps("addresses")}
+            />
 
             <FileInput
               disabled={isViewing}

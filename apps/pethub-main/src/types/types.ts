@@ -51,6 +51,7 @@ export interface PetBusiness extends User {
   businessType?: string;
   businessDescription?: string;
   websiteURL?: string;
+  businessAddresses?: Address[];
 }
 
 export interface PetOwner extends User {
@@ -120,6 +121,7 @@ export interface ServiceListing {
   lastUpdated?: string;
   attachmentKeys: string[];
   attachmentURLs: string[];
+  addresses: Address[];
 }
 
 export interface Tag {
@@ -138,6 +140,7 @@ export interface CreateServiceListingPayload {
   // address
   tagIds: number[];
   files: File[];
+  addressIds: number[];
 }
 
 export interface UpdateServiceListingPayload {
@@ -149,4 +152,5 @@ export interface UpdateServiceListingPayload {
   // address
   tagIds: number[];
   files: File[];
+  addressIds: number[];
 }

@@ -15,7 +15,7 @@ import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { ServiceListing, Tag } from "@/types/types";
+import { Address, ServiceListing, Tag } from "@/types/types";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
@@ -29,6 +29,7 @@ interface ServiceListTableProps {
   onSortStatusChange: any;
   onPageChange(p: number): void;
   tags: Tag[];
+  addresses: Address[];
 }
 
 const ServiceListTable = ({
@@ -42,6 +43,7 @@ const ServiceListTable = ({
   onSortStatusChange,
   onPageChange,
   tags,
+  addresses,
 }: ServiceListTableProps) => {
   /*
    * Component State
@@ -184,6 +186,7 @@ const ServiceListTable = ({
         userId={userId}
         refetch={refetch}
         tags={tags}
+        addresses={addresses ? addresses : []}
       />
 
       {/* Update */}
@@ -196,6 +199,7 @@ const ServiceListTable = ({
         userId={userId}
         refetch={refetch}
         tags={tags}
+        addresses={addresses ? addresses : []}
       />
     </>
   );

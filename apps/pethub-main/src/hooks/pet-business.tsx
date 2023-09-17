@@ -58,6 +58,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         accountType: data.useraccountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
+        businessAddresses: data.businessAddresses,
       };
       return petBusiness as PetBusiness;
     },

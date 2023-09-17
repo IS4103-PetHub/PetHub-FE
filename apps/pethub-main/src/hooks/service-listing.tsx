@@ -28,6 +28,10 @@ export const useCreateServiceListing = () => {
         formData.append("file", file);
       });
 
+      payload.addressIds.forEach((address) => {
+        formData.append("addressIds[]", address.toString());
+      });
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/`,
         formData,
@@ -83,7 +87,11 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
 
       // Append tagIds as an array
       payloadWithoutId.tagIds.forEach((tagId) => {
-        formData.append("tagIds", tagId.toString());
+        formData.append("tagIds[]", tagId.toString());
+      });
+
+      payload.addressIds.forEach((address) => {
+        formData.append("addressIds[]", address.toString());
       });
 
       // Append files to the formData

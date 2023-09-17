@@ -12,6 +12,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import ServiceListingModal from "@/components/service/ServiceListingModal";
 import ServiceListTable from "@/components/service/ServiceListingTable";
+import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
 import {
@@ -20,7 +21,7 @@ import {
   ServiceCategoryEnum,
   TABLE_PAGE_SIZE,
 } from "@/types/constants";
-import { ServiceListing } from "@/types/types";
+import { PetBusiness, ServiceListing } from "@/types/types";
 
 // https://zumvet.com/blog/wp-content/uploads/2023/06/Pet-Angel-Blog-2022-14-1080x648-1.png
 
@@ -30,6 +31,9 @@ interface MyAccountProps {
 }
 
 export default function Listings({ userId, accountType }: MyAccountProps) {
+  /*
+   * Fetch data
+   */
   const {
     data: serviceListings = [],
     isLoading,
@@ -50,6 +54,17 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   });
   const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const { data: tags } = useGetAllTags();
+  const [petBusiness, setPetBusiness] = useState(null);
+  const { data: petBusinessData } = useGetPetBusinessByIdAndAccountType(
+    userId,
+    accountType,
+  );
+
+  useEffect(() => {
+    if (petBusinessData) {
+      setPetBusiness(petBusinessData);
+    }
+  }, [petBusinessData]);
 
   /*
    * Modal Control Functions
@@ -163,6 +178,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
             tags={tags}
+            addresses={petBusiness ? petBusiness.businessAddresses : []}
           />
         )}
       </>
@@ -189,6 +205,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
           userId={userId}
           refetch={refetchServiceListings}
           tags={tags}
+          addresses={petBusiness ? petBusiness.businessAddresses : []}
         />
       </Group>
       {renderContent()}
