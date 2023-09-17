@@ -107,20 +107,23 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           </Accordion.Panel>
         </Accordion.Item>
 
-        <Accordion.Item value="addresses">
-          <Accordion.Control>
-            <Group>
-              <IconAddressBook color={theme.colors.indigo[5]} />
-              <Text size="lg">Manage addresses</Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel p="md">
-            <AddressInfoForm
-              petBusiness={petBusiness}
-              refetch={refetchPetBusiness}
-            />
-          </Accordion.Panel>
-        </Accordion.Item>
+        {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
+          petBusiness.accountStatus !== AccountStatusEnum.Pending && (
+            <Accordion.Item value="addresses">
+              <Accordion.Control>
+                <Group>
+                  <IconAddressBook color={theme.colors.indigo[5]} />
+                  <Text size="lg">Manage addresses</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md">
+                <AddressInfoForm
+                  petBusiness={petBusiness}
+                  refetch={refetchPetBusiness}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
 
         <Accordion.Item value="password">
           <Accordion.Control>

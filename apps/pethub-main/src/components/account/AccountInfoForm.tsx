@@ -1,11 +1,4 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  Group,
-  TextInput,
-  Textarea,
-} from "@mantine/core";
+import { Divider, Grid, TextInput, Textarea } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { TransformedValues, isEmail, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
@@ -17,13 +10,9 @@ import { formatISODateString } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
-import {
-  AccountStatusEnum,
-  BusinessApplicationStatusEnum,
-} from "@/types/constants";
-import { Address, PetBusiness, PetOwner } from "@/types/types";
-import { validateAddressName, validateWebsiteURL } from "@/util";
-import { AddressSidewaysScrollThing } from "../pbapplication/AddressSidewaysScrollThing";
+import { AccountStatusEnum } from "@/types/constants";
+import { PetBusiness, PetOwner } from "@/types/types";
+import { validateWebsiteURL } from "@/util";
 
 interface AccountInfoFormProps {
   petOwner?: PetOwner;
@@ -39,8 +28,6 @@ const AccountInfoForm = ({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useToggle();
 
-  console.log("petBusiness", petBusiness);
-
   const formDefaultValues = {
     companyName: petBusiness ? petBusiness.companyName : "",
     uen: petBusiness ? petBusiness.uen : "",
@@ -54,6 +41,7 @@ const AccountInfoForm = ({
     businessEmail: petBusiness ? petBusiness.businessEmail : "",
     websiteURL: petBusiness ? petBusiness.websiteURL : "",
     businessDescription: petBusiness ? petBusiness.businessDescription : "",
+    businessAddresses: petBusiness ? petBusiness.businessAddresses : [],
   };
 
   const form = useForm({
@@ -82,13 +70,14 @@ const AccountInfoForm = ({
       email: isEmail("Invalid email."),
       dateOfBirth: (value, values) =>
         petOwner && !value ? "Date of birth required." : null,
-      businessEmail: isEmail("Invalid email."),
+      businessEmail: (value) =>
+        value && !isEmail("Invalid email.") ? "Invalid email." : null,
       websiteURL: (value) =>
         value && validateWebsiteURL(value)
           ? "Website must start with http:// or https://"
           : null,
-      businessDescription: (value) =>
-        !value ? "Business description is required." : null,
+      businessDescription: (value) => null,
+      businessAddresses: (value) => null,
     },
   });
 
@@ -145,6 +134,7 @@ const AccountInfoForm = ({
   };
 
   const handleSubmit = (values: TransformedValues<typeof form>) => {
+    console.log("HELLO");
     const valuesToUpdate = {};
     let payload = {};
 
@@ -264,6 +254,7 @@ const AccountInfoForm = ({
           <TextInput
             placeholder="Unique Entity Number (UEN)"
             {...form.getInputProps("uen")}
+            disabled
           />
         ) : (
           petBusiness.uen
@@ -273,8 +264,7 @@ const AccountInfoForm = ({
         <Divider my="sm" />
       </Grid.Col>
 
-      {petBusiness.petBusinessApplication &&
-        petBusiness.petBusinessApplication.petBusinessApplicationId &&
+      {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
         petBusiness.accountStatus !== AccountStatusEnum.Pending && (
           <>
             {" "}
@@ -378,7 +368,6 @@ const AccountInfoForm = ({
           )}
         </Grid.Col>
       </Grid>
-
       <EditCancelSaveButtons
         isEditing={isEditing}
         onClickCancel={handleCancel}

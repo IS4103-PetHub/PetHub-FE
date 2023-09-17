@@ -111,8 +111,7 @@ const AddressInfoForm = ({ petBusiness, refetch }: AddressInfoFormProps) => {
   };
 
   const handleSubmit = (values: TransformedValues<typeof form>) => {
-    let payload = {};
-    payload = {
+    let payload = {
       userId: petBusiness.userId,
       businessAddresses: values.businessAddresses,
     };
