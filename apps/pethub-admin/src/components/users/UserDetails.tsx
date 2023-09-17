@@ -18,7 +18,6 @@ import { IconX } from "@tabler/icons-react";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import { formatAccountTypeEnum } from "@/components/util/EnumHelper";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
@@ -31,6 +30,7 @@ import {
   UpdateInternalUserPayload,
   User,
 } from "@/types/types";
+import { formatEnumToLetterCase } from "@/util";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
@@ -77,7 +77,7 @@ const UserDetail = ({ user, userName }: { user: User; userName: string }) => (
           <Text>Account Type:</Text>
         </Col>
         <Col span={6}>
-          <Text>{formatAccountTypeEnum(user.accountType)}</Text>
+          <Text>{formatEnumToLetterCase(user.accountType)}</Text>
         </Col>
 
         <Col span={6}>

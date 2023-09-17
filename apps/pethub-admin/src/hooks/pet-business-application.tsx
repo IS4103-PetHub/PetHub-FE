@@ -13,29 +13,10 @@ export const useGetPetBusinessApplicationById = (
   return useQuery({
     queryKey: ["pet-business-application", petBusinessApplicationId],
     queryFn: async () => {
-      const data = await (
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/${petBusinessApplicationId}`,
-        )
-      ).data;
-      const petBusinessApplication: PetBusinessApplication = {
-        petBusinessApplicationId: data.petBusinessApplicationId,
-        businessType: data.businessType,
-        businessEmail: data.businessEmail,
-        websiteURL: data.websiteURL,
-        businessDescription: data.businessDescription,
-        businessAddresses: data.businessAddresses,
-        attachments: data.attachments,
-        applicationStatus: data.applicationStatus,
-        adminRemarks: data.adminRemarks,
-        dateCreated: data.dateCreated,
-        lastUpdated: data.lastUpdated,
-        petBusinessId: data.petBusinessId,
-        approverId: data.approverId,
-        approver: data.approver,
-        petBusiness: data.petBusiness,
-      };
-      return petBusinessApplication as PetBusinessApplication;
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/${petBusinessApplicationId}`,
+      );
+      return response.data as PetBusinessApplication;
     },
   });
 };

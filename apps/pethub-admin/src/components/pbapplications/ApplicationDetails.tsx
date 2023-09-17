@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react";
 import React from "react";
 import { PetBusinessApplication } from "@/types/types";
-import { formatEnum } from "../util/EnumHelper";
+import { formatEnumToLetterCase } from "@/util";
 import { AddressSidewaysScrollThing } from "./AddressSidewaysScrollThing";
 import ApplicationStatusAlert from "./ApplicationStatusAlert";
 
@@ -94,7 +94,7 @@ export default function ApplicationDetails({
             <Stack>
               <Group position="apart">
                 <Text fw={700}>Business type</Text>
-                <Text>{formatEnum(application.businessType)}</Text>
+                <Text>{formatEnumToLetterCase(application.businessType)}</Text>
               </Group>
               <Group position="apart">
                 <Text fw={700}>Business email</Text>
@@ -142,9 +142,6 @@ export default function ApplicationDetails({
           <Accordion.Panel mr="xl" ml="md">
             <AddressSidewaysScrollThing
               addressList={application.businessAddresses}
-              openModal={() => {}}
-              onRemoveAddress={() => {}}
-              isDisabled={true}
             />
           </Accordion.Panel>
         </Accordion.Item>

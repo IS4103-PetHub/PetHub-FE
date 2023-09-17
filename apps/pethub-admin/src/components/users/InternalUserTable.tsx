@@ -12,9 +12,9 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { InternalUser } from "@/types/types";
+import { errorAlert } from "@/util";
 import { ViewButton } from "../common/ViewButton";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
-import { errorAlert } from "../util/TableHelper";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
 import UserDetails from "./UserDetails";
 

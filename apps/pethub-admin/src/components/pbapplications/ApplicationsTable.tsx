@@ -11,9 +11,9 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-application";
 import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
+import { formatEnumToLetterCase, formatEnumValue } from "@/util";
+import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
-import { formatEnum, formatEnumValue } from "../util/EnumHelper";
-import { errorAlert } from "../util/TableHelper";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
 
 const PAGE_SIZE = 10;
@@ -150,7 +150,7 @@ export default function ApplicationsTable({
               striped
               highlightOnHover
               verticalAlignment="center"
-              minHeight={150}
+              minHeight={records.length === 0 ? 200 : 100}
               records={records}
               columns={[
                 {
@@ -178,7 +178,7 @@ export default function ApplicationsTable({
                   sortable: true,
                   ellipsis: true,
                   render: ({ businessType }) => {
-                    return formatEnum(businessType);
+                    return formatEnumToLetterCase(businessType);
                   },
                 },
                 {
@@ -216,8 +216,8 @@ export default function ApplicationsTable({
                     ]
                   : []),
                 {
-                  accessor: "",
-                  title: "Action",
+                  accessor: "actions",
+                  title: "Actions",
                   width: 140,
                   textAlignment: "right",
                   render: (record) => (

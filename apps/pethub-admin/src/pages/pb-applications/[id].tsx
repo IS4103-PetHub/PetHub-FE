@@ -7,8 +7,8 @@ import {
   Textarea,
   Button,
   Grid,
-  Col,
   Text,
+  Center,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
@@ -21,7 +21,6 @@ import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import ApplicationDetails from "@/components/pbapplications/ApplicationDetails";
-import ApplicationStatusAlert from "@/components/pbapplications/ApplicationStatusAlert";
 import {
   useApprovePetBusinessApplication,
   useGetPetBusinessApplicationById,
@@ -30,7 +29,6 @@ import {
 import { BusinessApplicationStatusEnum } from "@/types/constants";
 import {
   ApprovePetBusinessApplicationPayload,
-  PetBusinessApplication,
   RejectPetBusinessApplicationPayload,
 } from "@/types/types";
 
@@ -114,14 +112,15 @@ export default function PetBusinessApplicationDetails({
   );
 
   const actionButtonGroup = (
-    <Group position="apart">
+    <Center>
       {applicationStatus === BusinessApplicationStatusEnum.Pending ? (
         <>
           <RejectButton />
+          &nbsp;
           <ApproveButton />
         </>
       ) : null}
-    </Group>
+    </Center>
   );
 
   const approvePetBusinessApplicationMutation =
@@ -242,9 +241,6 @@ export default function PetBusinessApplicationDetails({
         opened={opened}
         onClose={close}
         title="Confirm Action"
-        closeOnClickOutside={false}
-        closeOnEscape={false}
-        withCloseButton={false}
         centered
         padding="1.5rem"
         size="md"
@@ -266,13 +262,19 @@ export default function PetBusinessApplicationDetails({
               )}
             </Grid.Col>
           </Grid>
-          <Group mt="25px" position="center">
+          <Group mt="25px" position="right">
             <Button type="reset" color="gray" onClick={close}>
               Cancel
             </Button>
-            <Button type="submit" onClick={close}>
-              Confirm
-            </Button>
+            {rejectButtonChosen ? (
+              <Button type="submit" onClick={close} color="red">
+                Reject
+              </Button>
+            ) : (
+              <Button type="submit" onClick={close} color="green">
+                Approve
+              </Button>
+            )}
           </Group>
         </form>
       </Modal>

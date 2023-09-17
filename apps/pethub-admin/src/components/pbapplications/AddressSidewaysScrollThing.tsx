@@ -4,29 +4,11 @@ import { AddressCard } from "./AddressCard";
 
 type AddressSidewaysScrollThingProps = {
   addressList: Address[];
-  isDisabled: boolean;
-  openModal: () => void;
-  onRemoveAddress: (address: Address) => void;
 };
 
 export const AddressSidewaysScrollThing = ({
   addressList,
-  isDisabled,
-  openModal,
-  onRemoveAddress,
 }: AddressSidewaysScrollThingProps) => {
-  const enum ActionType {
-    AddAddress = "ADDADDRESS",
-    RemoveAddress = "REMOVEADDRESS",
-  }
-
-  const checkEditable = (actionType: ActionType) => {
-    if (isDisabled) {
-      return () => {};
-    }
-    return actionType === ActionType.AddAddress ? openModal : onRemoveAddress;
-  };
-
   const addresses = addressList.map((address, idx) => (
     <Box
       key={idx}
@@ -35,10 +17,7 @@ export const AddressSidewaysScrollThing = ({
         position: "relative",
       }}
     >
-      <AddressCard
-        address={address}
-        onRemoveAddress={checkEditable(ActionType.RemoveAddress)}
-      />
+      <AddressCard address={address} />
     </Box>
   ));
 

@@ -11,8 +11,8 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { PetOwner } from "@/types/types";
+import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
-import { errorAlert } from "../util/TableHelper";
 import UserDetails from "./UserDetails";
 
 const PAGE_SIZE = 15;
