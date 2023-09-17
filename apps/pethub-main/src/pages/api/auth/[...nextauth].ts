@@ -1,7 +1,11 @@
-import NextAuth, { NextAuthOptions, User } from "next-auth";
+import { URLPattern } from "next/server";
+import NextAuth, { CookieOption, NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginService } from "@/api/userService";
 import { LoginCredentials } from "@/types/types";
+
+const useSecureCookies = process.env.NEXTAUTH_URL.startsWith("https://");
+const cookiePrefix = useSecureCookies ? "__Secure-" : "";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -10,6 +14,16 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/",
+  },
+  cookies: {
+    sessionToken: {
+      name: `${cookiePrefix}next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+      },
+    },
   },
   providers: [
     CredentialsProvider({
