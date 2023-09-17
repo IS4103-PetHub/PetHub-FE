@@ -40,10 +40,9 @@ const AddUsersToUserGroupModal = ({
     setPage(1);
   };
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   useEffect(() => {
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     setRecords(internalUsers?.slice(from, to) ?? []);
   }, [page, internalUsers]);
 
@@ -66,8 +65,7 @@ const AddUsersToUserGroupModal = ({
         title: "Group Membership Updated",
         color: "green",
         icon: <IconCheck />,
-        message:
-          "The selected user(s) have been assigned to this group successfully!",
+        message: `${selectedRecords.length} user(s) have been assigned to this group successfully!`,
       });
       refetch();
       close();

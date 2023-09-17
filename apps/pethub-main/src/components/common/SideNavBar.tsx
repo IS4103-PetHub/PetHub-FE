@@ -13,6 +13,8 @@ import {
   IconBoxMultiple,
   IconLayoutDashboard,
   IconUser,
+  IconArticle,
+  IconHome2,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -77,11 +79,20 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-  { link: "/business/account", label: "My Account", icon: IconUser },
   {
     link: "/business/dashboard",
     label: "Dashboard",
-    icon: IconLayoutDashboard,
+    icon: IconHome2,
+  },
+  {
+    link: "/business/application",
+    label: "Business Partner Application",
+    icon: IconArticle,
+  },
+  {
+    link: "/business/account",
+    label: "Account",
+    icon: IconUser,
   },
   {
     link: "/business/listings",
@@ -132,7 +143,7 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

@@ -9,7 +9,13 @@ import {
   Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUser, IconHome, IconUserShield } from "@tabler/icons-react";
+import {
+  IconTags,
+  IconUser,
+  IconHome,
+  IconUserShield,
+  IconUsersGroup,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -74,8 +80,14 @@ const useStyles = createStyles((theme) => ({
 
 const data = [
   { link: "/", label: "Home", icon: IconHome },
-  { link: "/users", label: "Users", icon: IconUser },
-  { link: "/rbac", label: "Role-based Access Control", icon: IconUserShield },
+  { link: "/admin/account", label: "My Account", icon: IconUser },
+  { link: "/admin/users", label: "Users", icon: IconUsersGroup },
+  { link: "/admin/tags", label: "Tags", icon: IconTags },
+  {
+    link: "/admin/rbac",
+    label: "Role-based Access Control",
+    icon: IconUserShield,
+  },
 ];
 
 const SideNavBar = () => {
@@ -120,7 +132,7 @@ const SideNavBar = () => {
           >
             PetHub Admin
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

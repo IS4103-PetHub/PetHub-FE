@@ -7,29 +7,31 @@ import {
   Modal,
   Title,
   Grid,
-  Col,
   TextInput,
+  List,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
 } from "@/hooks/internal-user";
+import { useGetPermissionsByUserIdAndAccountType } from "@/hooks/rbac";
 import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
 import {
   InternalUser,
+  Permission,
   PetBusiness,
   PetOwner,
-  UpdateInternalUserPayload,
   User,
 } from "@/types/types";
-import { formatAccountTypeEnum } from "@/util";
+import { formatEnum } from "@/util";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
@@ -51,86 +53,85 @@ const getUserName = (user: any): string => {
 
 const UserDetail = ({ user, userName }: { user: User; userName: string }) => (
   <>
-    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" pt={0} style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Text align="center" size="xl" weight={500}>
         {userName}
       </Text>
-      <Divider my="sm" variant="dashed" />
+      <Divider my="md" />
 
       <Grid gutter="md">
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>User ID:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.userId}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Email:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.email}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Account Type:</Text>
-        </Col>
-        <Col span={6}>
-          <Text>{formatAccountTypeEnum(user.accountType)}</Text>
-        </Col>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>{formatEnum(user.accountType)}</Text>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Account Status:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <AccountStatusBadge accountStatus={user.accountStatus} size="lg" />
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Date Created:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{new Date(user.dateCreated).toLocaleDateString()}</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>Date Last Updated:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>
             {user.lastUpdated
               ? new Date(user.lastUpdated).toLocaleDateString()
               : "-"}
           </Text>
-        </Col>
+        </Grid.Col>
       </Grid>
     </Paper>
   </>
 );
 
 const DeleteButton = ({ openDeleteModal }: { openDeleteModal: () => void }) => (
-  <Grid gutter="md">
-    <Col span={12}>
-      <Button
-        fullWidth
-        variant="outline"
-        size="lg"
-        onClick={openDeleteModal}
-        color="red"
-      >
-        Delete
-      </Button>
-    </Col>
-  </Grid>
+  <Button
+    fullWidth
+    variant="outline"
+    size="md"
+    onClick={openDeleteModal}
+    color="red"
+    mt="xs"
+  >
+    Delete
+  </Button>
 );
 
 const UpdateButton = ({ openUpdateModal }: { openUpdateModal: () => void }) => (
-  <Grid gutter="md">
-    <Col span={12}>
-      <Button fullWidth variant="outline" size="lg" onClick={openUpdateModal}>
-        Edit
-      </Button>
-    </Col>
-  </Grid>
+  <Button
+    fullWidth
+    variant="outline"
+    size="md"
+    onClick={openUpdateModal}
+    mt="xs"
+  >
+    Edit
+  </Button>
 );
 
 const InternalUserDetails = ({
@@ -138,35 +139,54 @@ const InternalUserDetails = ({
   openDeleteModal,
   openUpdateModal,
   userName,
+  permissions,
 }: {
   user: InternalUser;
   openDeleteModal: () => void;
   openUpdateModal: () => void;
   userName: string;
+  permissions: Permission[];
 }) => (
   <>
     <UserDetail user={user} userName={userName} />
-    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" pt={0} style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Grid gutter="md">
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>First Name:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.firstName}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Last Name:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.lastName}</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
+          <Text>Permissions:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          {permissions.length > 0 ? (
+            <List type="ordered">
+              {permissions.map((permission) => (
+                <List.Item mb={5} key={permission.permissionId}>
+                  {permission.name}
+                </List.Item>
+              ))}
+            </List>
+          ) : (
+            "-"
+          )}
+        </Grid.Col>
+        <Grid.Col span={6}>
           <UpdateButton openUpdateModal={openUpdateModal} />
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <DeleteButton openDeleteModal={openDeleteModal} />
-        </Col>
+        </Grid.Col>
       </Grid>
     </Paper>
   </>
@@ -181,35 +201,42 @@ const PetBusinessDetails = ({
 }) => (
   <>
     <UserDetail user={user} userName={userName} />
-    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" pt={0} style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Grid gutter="md">
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>UEN:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.uen}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
+          <Text>Contact Number:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>{user.contactNumber}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
           <Text>Business Type:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.businessType || "-"}</Text>
-        </Col>
+        </Grid.Col>
 
-        {/* <Col span={6}>
+        {/* <Grid.Col span={6}>
           <Text>Business Description:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.businessDescription || "-"}</Text>
-        </Col> */}
+        </Grid.Col> */}
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Website:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.websiteURL || "-"}</Text>
-        </Col>
+        </Grid.Col>
       </Grid>
     </Paper>
   </>
@@ -224,35 +251,35 @@ const PetOwnerDetails = ({
 }) => (
   <>
     <UserDetail user={user} userName={userName} />
-    <Paper p="md" style={{ maxWidth: "600px", margin: "0 auto" }}>
+    <Paper p="md" pt={0} style={{ maxWidth: "600px", margin: "0 auto" }}>
       <Grid gutter="md">
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>First Name:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.firstName}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Last Name:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.lastName}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Date of Birth:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{new Date(user.dateOfBirth).toLocaleDateString()}</Text>
-        </Col>
+        </Grid.Col>
 
-        <Col span={6}>
+        <Grid.Col span={6}>
           <Text>Contact Number:</Text>
-        </Col>
-        <Col span={6}>
+        </Grid.Col>
+        <Grid.Col span={6}>
           <Text>{user.contactNumber}</Text>
-        </Col>
+        </Grid.Col>
       </Grid>
     </Paper>
   </>
@@ -281,8 +308,8 @@ const DeleteAccountModal = ({
       userId: userId,
     },
   });
-
-  const deleteInternalUserMutation = useDeleteInternalUser();
+  const queryClient = useQueryClient();
+  const deleteInternalUserMutation = useDeleteInternalUser(queryClient);
   const deleteInternalUserAccount = async (
     values: { userId: number },
     event: FormEvent<HTMLFormElement>,
@@ -335,9 +362,12 @@ const DeleteAccountModal = ({
         padding="1.5rem"
         size="md"
       >
-        <Title order={2}>Are you sure you want to delete {name} account?</Title>
+        <Title
+          order={2}
+        >{`Are you sure you want to delete ${name}'s account?`}</Title>
+        <Text mt="md">This action cannot be undone.</Text>
         <form onSubmit={form.onSubmit(deleteInternalUserAccount)}>
-          <Group mt="25px" position="right">
+          <Group mt="md" position="right">
             <Button type="reset" color="gray" onClick={closeDeleteModal}>
               Cancel
             </Button>
@@ -365,6 +395,7 @@ const UpdateInternalUserModal = ({
   user,
   onUserUpdated,
 }: UpdateInternalUserModalProps) => {
+  const queryClient = useQueryClient();
   const form = useForm({
     initialValues: {
       firstName: user.firstName,
@@ -373,10 +404,8 @@ const UpdateInternalUserModal = ({
   });
 
   type FormValues = typeof form.values;
-  const updateInternalUserMutation = useUpdateInternalUser();
-  const updateInternalUserAccount = async (
-    payload: UpdateInternalUserPayload,
-  ) => {
+  const updateInternalUserMutation = useUpdateInternalUser(queryClient);
+  const updateInternalUserAccount = async (payload: any) => {
     try {
       await updateInternalUserMutation.mutateAsync(payload);
       notifications.show({
@@ -399,7 +428,7 @@ const UpdateInternalUserModal = ({
   };
 
   function handleSubmit(values: FormValues) {
-    const payload: UpdateInternalUserPayload = {
+    const payload = {
       userId: user.userId,
       firstName: values.firstName,
       lastName: values.lastName,
@@ -438,7 +467,7 @@ const UpdateInternalUserModal = ({
             />
           </Grid.Col>
         </Grid>
-        <Group mt="25px" position="center">
+        <Group mt="md" position="right">
           <Button type="reset" color="gray" onClick={closeUpdateModal}>
             Cancel
           </Button>
@@ -463,6 +492,9 @@ const UserDetails = ({
   const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
   const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
 
+  const { data: internalUserPermissions = [] } =
+    useGetPermissionsByUserIdAndAccountType(user?.userId, user?.accountType);
+
   if (!user) return null;
 
   const userName = getUserName(user);
@@ -476,6 +508,7 @@ const UserDetails = ({
           openDeleteModal={openDelete}
           openUpdateModal={openUpdate}
           userName={userName}
+          permissions={internalUserPermissions}
         />
       );
       break;

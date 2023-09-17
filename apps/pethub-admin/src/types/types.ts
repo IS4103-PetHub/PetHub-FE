@@ -28,6 +28,7 @@ export interface PetBusiness extends User {
   uen: string;
   businessType?: string;
   businessDescription?: string;
+  contactNumber: string;
   websiteURL?: string;
 }
 
@@ -42,27 +43,12 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface ForgotPasswordPayload {
-  email: string;
-}
-
-export interface ResetPasswordPayload {
-  token: string | null;
-  newPassword: string;
-}
 export interface CreateInternalUserPayload {
   firstName: string;
   lastName: string;
   email: string;
   adminRole: string;
   password: string;
-}
-
-export interface UpdateInternalUserPayload {
-  userId: number;
-  firstName: string;
-  lastName: string;
-  adminRole: string;
 }
 
 export interface CreateUserGroupPayload {
@@ -86,6 +72,21 @@ export interface Permission {
   description: string;
 }
 
+export interface Tag {
+  tagId: number;
+  name: string;
+  dateCreated: string;
+  lastUpdated: string;
+}
+
+export interface CreateTagPayload {
+  name: string;
+}
+
+export interface UpdateTagPayload {
+  tagId: number;
+  name: string;
+}
 export interface UserGroupPermission {
   groupId: number;
   permissionId: number;

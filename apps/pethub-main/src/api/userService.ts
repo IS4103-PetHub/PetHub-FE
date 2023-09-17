@@ -1,9 +1,6 @@
+import { ForgotPasswordPayload, ResetPasswordPayload } from "shared-utils";
 import { AccountTypeEnum } from "@/types/constants";
-import {
-  ForgotPasswordPayload,
-  LoginCredentials,
-  ResetPasswordPayload,
-} from "@/types/types";
+import { LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
 
 // TODO: Change stuff to fit the format of the finalized API after
@@ -23,10 +20,10 @@ export const loginService = async ({
         ? "/users/pet-owners/login"
         : "/users/pet-businesses/login";
     let res = await api.post(url, body);
-    // console.log(
-    //   "Calling Service: [userService - userLogin] with response:",
-    //   res
-    // );
+    console.log(
+      "Calling Service: [userService - userLogin] with response:",
+      res,
+    );
     if (res.data && res.status == 200) {
       return res.data;
     } else {

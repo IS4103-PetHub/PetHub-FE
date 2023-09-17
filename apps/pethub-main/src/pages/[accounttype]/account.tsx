@@ -6,17 +6,18 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { IconUser, IconKey, IconAlertOctagon } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 import React from "react";
+import { formatISODateString } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
+import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
-import ChangePasswordForm from "@/components/account/ChangePasswordForm";
 import DeactivateReactivateAccountModal from "@/components/account/DeactivateReactivateAccountModal";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
-import { formatISODateString } from "@/util";
 
 interface MyAccountProps {
   userId: number;
@@ -25,6 +26,7 @@ interface MyAccountProps {
 
 export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const theme = useMantineTheme();
+  const queryClient = useQueryClient();
 
   const defaultValues = ["account"];
 
@@ -92,6 +94,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           </Accordion.Control>
           <Accordion.Panel p="md">
             <ChangePasswordForm
+              queryClient={queryClient}
               email={petOwner ? petOwner.email : petBusiness.email}
             />
           </Accordion.Panel>

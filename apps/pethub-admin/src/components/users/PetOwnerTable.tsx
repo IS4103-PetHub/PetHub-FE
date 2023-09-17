@@ -12,7 +12,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
-import { searchPetOwners } from "@/util";
+import { getMinTableHeight, searchPetOwners } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import UserDetails from "./UserDetails";
@@ -41,12 +41,11 @@ export default function PetOwnerTable() {
     setModalOpen(false);
   };
 
-  // Compute pagination slice indices based on the current page
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    // Compute pagination slice indices based on the current page
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     if (petOwners.length > 0 && hasNoFetchedRecords) {
       sethasNoFetchedRecords(false);
     }
@@ -128,7 +127,7 @@ export default function PetOwnerTable() {
             withColumnBorders
             striped
             verticalAlignment="center"
-            minHeight={100}
+            minHeight={getMinTableHeight(records)}
             // provide data
             records={records}
             // define columns
@@ -184,6 +183,7 @@ export default function PetOwnerTable() {
                 accessor: "actions",
                 title: "Actions",
                 width: 150,
+                textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
                     <ViewButton onClick={() => handleOpenModal(record)} />

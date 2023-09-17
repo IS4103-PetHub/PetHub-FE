@@ -13,7 +13,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser } from "@/types/types";
-import { searchInternalUsers } from "@/util";
+import { getMinTableHeight, searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
@@ -61,12 +61,11 @@ export default function InternalUserTable({
     setCreateModalOpen(true);
   };
 
-  // Compute pagination slice indices based on the current page
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    // Compute pagination slice indices based on the current page
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     if (internalUsers.length > 0 && hasNoFetchedRecords) {
       sethasNoFetchedRecords(false);
     }
@@ -150,7 +149,7 @@ export default function InternalUserTable({
             withColumnBorders
             striped
             verticalAlignment="center"
-            minHeight={100}
+            minHeight={getMinTableHeight(records)}
             // provide data
             records={records}
             // define columns
@@ -206,6 +205,7 @@ export default function InternalUserTable({
                 accessor: "actions",
                 title: "Actions",
                 width: 150,
+                textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
                     <ViewButton
@@ -233,7 +233,6 @@ export default function InternalUserTable({
   return (
     <>
       <Group mb="xl" position="apart">
-        {/* wanted to use the CreateButton but thought that UserPlus is a better icon for this case */}
         <PageTitle title="Internal Users" />
         <Button
           size="md"
