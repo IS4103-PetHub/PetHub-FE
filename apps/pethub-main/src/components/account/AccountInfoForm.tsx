@@ -1,4 +1,11 @@
-import { Button, Divider, Grid, Group, TextInput } from "@mantine/core";
+import {
+  Button,
+  Divider,
+  Grid,
+  Group,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { TransformedValues, isEmail, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
@@ -10,7 +17,13 @@ import { formatISODateString } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
-import { PetBusiness, PetOwner } from "@/types/types";
+import {
+  AccountStatusEnum,
+  BusinessApplicationStatusEnum,
+} from "@/types/constants";
+import { Address, PetBusiness, PetOwner } from "@/types/types";
+import { validateAddressName, validateWebsiteURL } from "@/util";
+import { AddressSidewaysScrollThing } from "../pbapplication/AddressSidewaysScrollThing";
 
 interface AccountInfoFormProps {
   petOwner?: PetOwner;
@@ -26,6 +39,8 @@ const AccountInfoForm = ({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useToggle();
 
+  console.log("petBusiness", petBusiness);
+
   const formDefaultValues = {
     companyName: petBusiness ? petBusiness.companyName : "",
     uen: petBusiness ? petBusiness.uen : "",
@@ -36,6 +51,9 @@ const AccountInfoForm = ({
       ? petOwner.contactNumber
       : petBusiness.contactNumber,
     email: petOwner ? petOwner.email : petBusiness.email,
+    businessEmail: petBusiness ? petBusiness.businessEmail : "",
+    websiteURL: petBusiness ? petBusiness.websiteURL : "",
+    businessDescription: petBusiness ? petBusiness.businessDescription : "",
   };
 
   const form = useForm({
@@ -64,6 +82,13 @@ const AccountInfoForm = ({
       email: isEmail("Invalid email."),
       dateOfBirth: (value, values) =>
         petOwner && !value ? "Date of birth required." : null,
+      businessEmail: isEmail("Invalid email."),
+      websiteURL: (value) =>
+        value && validateWebsiteURL(value)
+          ? "Website must start with http:// or https://"
+          : null,
+      businessDescription: (value) =>
+        !value ? "Business description is required." : null,
     },
   });
 
@@ -81,6 +106,7 @@ const AccountInfoForm = ({
 
   const KEY_SPAN = petOwner ? 3 : 4;
   const VALUE_SPAN = 12 - KEY_SPAN;
+  const BUSINESS_DESCRIPTION_MAX_CHARACTERS = 50;
 
   const updateAccount = async (payload: any) => {
     try {
@@ -143,6 +169,7 @@ const AccountInfoForm = ({
       payload = {
         userId: petBusiness.userId,
         ...valuesToUpdate,
+        businessAddresses: petBusiness.businessAddresses, // Addresses have to be passed in regardless of changes
       };
     }
     if (Object.keys(valuesToUpdate).length === 0) {
@@ -245,6 +272,72 @@ const AccountInfoForm = ({
       <Grid.Col span={12}>
         <Divider my="sm" />
       </Grid.Col>
+
+      {petBusiness.petBusinessApplication &&
+        petBusiness.petBusinessApplication.petBusinessApplicationId &&
+        petBusiness.accountStatus !== AccountStatusEnum.Pending && (
+          <>
+            {" "}
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Business email</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <TextInput
+                  placeholder="Business email"
+                  {...form.getInputProps("businessEmail")}
+                />
+              ) : (
+                petBusiness.businessEmail
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Website URL</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <TextInput
+                  placeholder="Website URL"
+                  {...form.getInputProps("websiteURL")}
+                />
+              ) : (
+                petBusiness.websiteURL
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Business description</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <Textarea
+                  autosize
+                  minRows={3}
+                  maxRows={3}
+                  placeholder="Business description"
+                  {...form.getInputProps("businessDescription")}
+                />
+              ) : (
+                <Textarea
+                  autosize
+                  minRows={3}
+                  maxRows={3}
+                  disabled
+                  placeholder="Business description"
+                  {...form.getInputProps("businessDescription")}
+                />
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+          </>
+        )}
     </>
   );
 
