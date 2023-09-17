@@ -13,7 +13,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser } from "@/types/types";
-import { searchInternalUsers } from "@/util";
+import { getMinTableHeight, searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButton } from "../common/ViewButton";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
@@ -149,7 +149,7 @@ export default function InternalUserTable({
             withColumnBorders
             striped
             verticalAlignment="center"
-            minHeight={100}
+            minHeight={getMinTableHeight(records)}
             // provide data
             records={records}
             // define columns

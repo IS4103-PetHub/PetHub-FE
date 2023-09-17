@@ -3,6 +3,7 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Tag, UpdateTagPayload } from "@/types/types";
+import { getMinTableHeight } from "@/util";
 import EditTagButtonModal from "./EditTagButtonModal";
 interface TagTableProps {
   tags: Tag[];
@@ -30,7 +31,7 @@ const TagTable = ({
   return (
     <>
       <DataTable
-        minHeight={150}
+        minHeight={getMinTableHeight(tags)}
         columns={[
           {
             accessor: "tagId",

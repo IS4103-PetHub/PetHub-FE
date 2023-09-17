@@ -12,8 +12,8 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import CreateTagButtonModal from "@/components/tag/CreateTagButtonModal";
-import TagTable from "@/components/tag/TagTable";
+import CreateTagButtonModal from "@/components/tags/CreateTagButtonModal";
+import TagTable from "@/components/tags/TagTable";
 import {
   useCreateTag,
   useDeleteTag,
@@ -39,11 +39,10 @@ export default function Tags() {
     direction: "asc",
   });
 
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     const sortedTags = sortBy(tags, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedTags.reverse();
@@ -207,7 +206,7 @@ export default function Tags() {
   return (
     <Container fluid>
       <Group position="apart" mb="xl">
-        <PageTitle title="Tag Management" />
+        <PageTitle title="Tags Management" />
         <CreateTagButtonModal onCreate={handleCreateTag} />
       </Group>
 
