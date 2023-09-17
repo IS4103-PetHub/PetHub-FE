@@ -139,7 +139,7 @@ export default function ApplicationsTable({
             <DataTable
               onRowClick={(record) => {
                 router.push(
-                  `/pb-applications/${record.petBusinessApplicationId}`,
+                  `/admin/pb-applications/${record.petBusinessApplicationId}`,
                 );
               }}
               rowStyle={{ cursor: "pointer" }}
@@ -226,7 +226,7 @@ export default function ApplicationsTable({
                         onClick={(e: any) => {
                           e.stopPropagation();
                           router.push(
-                            `/pb-applications/${record.petBusinessApplicationId}`,
+                            `/admin/pb-applications/${record.petBusinessApplicationId}`,
                           );
                         }}
                       />

@@ -90,7 +90,7 @@ const data = [
     icon: IconUserShield,
   },
   {
-    link: "/pb-applications",
+    link: "/admin/pb-applications",
     label: "Pet Business Applications",
     icon: IconArticle,
   },
