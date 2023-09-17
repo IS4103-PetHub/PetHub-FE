@@ -3,12 +3,26 @@ import { withAuth } from "next-auth/middleware";
 import { AccountTypeEnum } from "./types/constants";
 
 // Put all shared pages here
-const sharedPages = ["/account"];
+const sharedPages = ["/account", "/shared1", "/shared2"];
 
 // This checks the last page path of the URL
 function isSharedPage(path: string) {
   return sharedPages.some((page) => path.endsWith(page));
 }
+
+/*
+  Current page protection rules:
+
+      or the path does not end with a shared page route (e.g. /account)
+
+  2. A path prepended with /business can only be accessed by PB, /customer can only be accessed by PO, 
+      else, redirect to the respective home pages ('/' for PO, /business/dashboard for PB)
+
+  3. If a user is a PB and the path is not prepended with /business, redirect to /business/dashboard
+
+  4. If the end of the path is valid (e.g. /account), prepending it with something thats invalid like /potato will redirect to the home page '/'. 
+      (This only applies to POs, as PBs will already get redirected during rule 3 to the business dashboard)
+*/
 
 export default withAuth(
   function middleware(req) {

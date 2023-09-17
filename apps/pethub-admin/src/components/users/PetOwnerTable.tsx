@@ -1,4 +1,4 @@
-import { Modal, Center, Box, Container } from "@mantine/core";
+import { Modal, Center, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -10,12 +10,13 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
 import { errorAlert } from "@/util";
+import { getMinTableHeight, searchPetOwners } from "@/util";
+import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import UserDetails from "./UserDetails";
-
-const PAGE_SIZE = 15;
 
 export default function PetOwnerTable() {
   const { data: petOwners = [], isLoading, isError } = useGetAllPetOwners();
@@ -27,6 +28,7 @@ export default function PetOwnerTable() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetOwner[]>(petOwners);
   const [isSearching, setIsSearching] = useToggle();
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetOwner | null>(null);
 
@@ -40,12 +42,14 @@ export default function PetOwnerTable() {
     setModalOpen(false);
   };
 
-  // Compute pagination slice indices based on the current page
-  const from = (page - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE;
-
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
+    // Compute pagination slice indices based on the current page
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
+    if (petOwners.length > 0 && hasNoFetchedRecords) {
+      sethasNoFetchedRecords(false);
+    }
     // Sort the petOwners based on the current sort status
     const sortedPetOwners = sortBy(petOwners, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
@@ -53,12 +57,21 @@ export default function PetOwnerTable() {
     }
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetOwners.slice(from, to);
-    // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, petOwners]);
+  }, [page, sortStatus, petOwners, hasNoFetchedRecords]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after 0.8s
+      if (petOwners.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (isError) {
-    return errorAlert("Pet Owners");
+    return ErrorAlert("Pet Owners");
   }
 
   const handleSearch = (searchStr: string) => {
@@ -70,15 +83,7 @@ export default function PetOwnerTable() {
     }
     // search by id or first name or last name or email
     setIsSearching(true);
-    const results = petOwners.filter(
-      (petOwner: PetOwner) =>
-        petOwner.firstName.toLowerCase().includes(searchStr.toLowerCase()) ||
-        petOwner.lastName.toLowerCase().includes(searchStr.toLowerCase()) ||
-        petOwner.email.toLowerCase().includes(searchStr.toLowerCase()) ||
-        (petOwner.userId &&
-          searchStr.includes(petOwner.userId.toString()) &&
-          searchStr.length <= petOwner.userId.toString().length),
-    );
+    const results = searchPetOwners(petOwners, searchStr);
     setRecords(results);
     setPage(1);
   };
@@ -89,8 +94,24 @@ export default function PetOwnerTable() {
         // still fetching
         <CenterLoader />;
       }
-      // no user groups fetched
-      return <SadDimmedMessage title="No pet owners found" subtitle="" />;
+      // no records fetched
+      return (
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No pet owners found"
+                subtitle=""
+                disabled={!hasNoFetchedRecords}
+              />
+            </div>
+          )}
+        </Transition>
+      );
     }
     return (
       <>
@@ -108,9 +129,8 @@ export default function PetOwnerTable() {
             borderRadius="sm"
             withColumnBorders
             striped
-            highlightOnHover
             verticalAlignment="center"
-            minHeight={150}
+            minHeight={getMinTableHeight(records)}
             // provide data
             records={records}
             // define columns
@@ -163,9 +183,10 @@ export default function PetOwnerTable() {
               },
               {
                 // New column for the "view more details" button. Using an appended userId to avoid double child problem
-                accessor: "${record.userId}-button",
+                accessor: "actions",
                 title: "Actions",
                 width: 150,
+                textAlignment: "right",
                 render: (record) => (
                   <Center style={{ height: "100%" }}>
                     <ViewButtonWithEvent
@@ -182,8 +203,8 @@ export default function PetOwnerTable() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={petOwners ? petOwners.length : 0}
-            recordsPerPage={PAGE_SIZE}
+            totalRecords={isSearching ? records.length : petOwners?.length}
+            recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}
             idAccessor="userId"
@@ -194,20 +215,18 @@ export default function PetOwnerTable() {
   };
   return (
     <>
-      <Container fluid>
-        <PageTitle title="Pet Owners" />
-        {renderContent()}
+      <PageTitle title="Pet Owners" />
+      {renderContent()}
 
-        <Modal
-          opened={isModalOpen}
-          onClose={handleCloseModal}
-          title="Pet Owner Details"
-          size="lg"
-          padding="md"
-        >
-          <UserDetails user={selectedRecord} />
-        </Modal>
-      </Container>
+      <Modal
+        opened={isModalOpen}
+        onClose={handleCloseModal}
+        title="Pet Owner Details"
+        size="lg"
+        padding="md"
+      >
+        <UserDetails user={selectedRecord} />
+      </Modal>
     </>
   );
 }

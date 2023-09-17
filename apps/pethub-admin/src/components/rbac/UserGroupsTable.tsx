@@ -1,17 +1,16 @@
-import { Button, Group } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
-import sortBy from "lodash/sortBy";
+import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import React from "react";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { useGetAllUserGroups } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
 interface UserGroupsTableProps {
-  userGroups: UserGroup[];
+  records: UserGroup[];
+  totalNumUserGroups: number;
   page: number;
+  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
   onSortStatusChange: any;
@@ -19,13 +18,17 @@ interface UserGroupsTableProps {
 }
 
 const UserGroupsTable = ({
-  userGroups,
+  records,
+  totalNumUserGroups,
   page,
+  isSearching,
   sortStatus,
   onDelete,
   onSortStatusChange,
   onPageChange,
 }: UserGroupsTableProps) => {
+  const router = useRouter();
+
   return (
     <DataTable
       minHeight={150}
@@ -37,29 +40,26 @@ const UserGroupsTable = ({
           width: 80,
           sortable: true,
         },
-        { accessor: "name", width: "25vw", ellipsis: true, sortable: true },
+        { accessor: "name", width: "20vw", ellipsis: true, sortable: true },
         {
           accessor: "description",
-          width: "40vw",
+          width: "35vw",
           ellipsis: true,
           sortable: true,
+          render: (group) => (group.description ? group.description : "-"),
         },
         {
           // actions
-          accessor: "",
+          accessor: "actions",
           title: "Actions",
-          width: "10vw",
+          width: 100,
+          textAlignment: "right",
           render: (group) => (
-            <Group>
+            <Group position="right">
               <ViewActionButton
-                onClick={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-              <EditActionButton
-                onClick={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
+                onClick={() =>
+                  router.push(`${router.asPath}/user-groups/${group.groupId}`)
+                }
               />
               <DeleteActionButtonModal
                 title={`Are you sure you want to delete ${group.name}?`}
@@ -70,7 +70,7 @@ const UserGroupsTable = ({
           ),
         },
       ]}
-      records={userGroups}
+      records={records}
       withBorder
       withColumnBorders
       striped
@@ -79,7 +79,7 @@ const UserGroupsTable = ({
       sortStatus={sortStatus}
       onSortStatusChange={onSortStatusChange}
       //pagination
-      totalRecords={userGroups ? userGroups.length : 0}
+      totalRecords={isSearching ? records.length : totalNumUserGroups}
       recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
       onPageChange={(p) => onPageChange(p)}

@@ -32,7 +32,10 @@ export const authOptions: NextAuthOptions = {
     },
     session({ session, token }) {
       session.user = token.user;
-      console.log("Session object", session);
+      console.log(
+        "Session object [from pages/api/auth/[...nextauth]]",
+        session,
+      );
       return session;
     },
   },

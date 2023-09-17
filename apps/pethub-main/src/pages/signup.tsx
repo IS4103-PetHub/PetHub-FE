@@ -26,6 +26,7 @@ import {
 import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/react";
 import React from "react";
+import { validatePassword } from "shared-utils";
 import { PageTitle } from "web-ui";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
@@ -36,7 +37,6 @@ import {
   CreatePetOwnerPayload,
   LoginCredentials,
 } from "@/types/types";
-import { validatePassword } from "@/util";
 
 const useStyles = createStyles((theme) => ({
   backgroundEffect: {

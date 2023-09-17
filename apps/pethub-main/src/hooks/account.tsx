@@ -1,19 +1,7 @@
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { ChangePasswordPayload } from "@/types/types";
 
-export const useChangePassword = (queryClient: QueryClient) => {
-  return useMutation({
-    mutationFn: async (payload: ChangePasswordPayload) => {
-      return (
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/change-password`,
-          payload,
-        )
-      ).data;
-    },
-  });
-};
+const USERS_API = "api/users";
 
 export const useDeactivateAccount = (queryClient: QueryClient) => {
   return useMutation({
@@ -23,7 +11,7 @@ export const useDeactivateAccount = (queryClient: QueryClient) => {
       );
       return (
         await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/${payload.userId}/deactivate-user`,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${USERS_API}/${payload.userId}/deactivate-user`,
           payloadWithoutId,
         )
       ).data;
@@ -39,7 +27,7 @@ export const useActivateAccount = (queryClient: QueryClient) => {
       );
       return (
         await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/${payload.userId}/activate-user`,
+          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${USERS_API}/${payload.userId}/activate-user`,
           payloadWithoutId,
         )
       ).data;

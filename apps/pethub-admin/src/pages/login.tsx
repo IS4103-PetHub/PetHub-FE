@@ -6,10 +6,10 @@ import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { ForgotPasswordPayload } from "shared-utils";
 import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
 import { LoginBox } from "@/components/login/LoginBox";
-import { ForgotPasswordPayload } from "@/types/types";
 
 export default function Login() {
   const { data: session, status } = useSession();
