@@ -94,11 +94,6 @@ export default function Login() {
         autoClose: 5000,
       });
     } else {
-      notifications.show({
-        message: "Login Successful",
-        color: "green",
-        autoClose: 5000,
-      });
       router.push("/");
     }
   };

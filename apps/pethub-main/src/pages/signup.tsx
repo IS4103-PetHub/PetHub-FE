@@ -125,11 +125,6 @@ export default function SignUp() {
         } else {
           router.push("/");
         }
-        notifications.show({
-          message: "Login Successful",
-          color: "green",
-          autoClose: 5000,
-        });
       }
     }
     setTimeout(() => {
