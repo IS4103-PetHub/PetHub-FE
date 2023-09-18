@@ -3,8 +3,12 @@ import {
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
   PetBusinessTypeEnum,
+  ServiceCategoryEnum,
 } from "./constants";
 
+/*
+ * USER MANAGEMENT
+ */
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -102,4 +106,53 @@ export interface PetBusinessApplication {
   petBusinessId: Number;
   approverId?: Number;
   approver?: BusinessApplicationApprover;
+}
+
+/*
+ * SERVICE MANAGEMENT
+ */
+export interface ServiceListing {
+  serviceListingId: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  // address
+  dateCreated: string;
+  lastUpdated?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  addresses: Address[];
+}
+
+export interface Tag {
+  tagId: number;
+  name: string;
+  dateCreated: string;
+  lastUpdated?: string;
+}
+
+export interface CreateServiceListingPayload {
+  title: string;
+  description: string;
+  petBusinessId: number;
+  category: ServiceCategoryEnum;
+  basePrice: number;
+  // address
+  tagIds: number[];
+  files: File[];
+  addressIds: number[];
+}
+
+export interface UpdateServiceListingPayload {
+  serviceListingId: number;
+  title: string;
+  description: string;
+  category: ServiceCategoryEnum;
+  basePrice: number;
+  // address
+  tagIds: number[];
+  files: File[];
+  addressIds: number[];
 }

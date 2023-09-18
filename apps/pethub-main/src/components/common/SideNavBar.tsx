@@ -9,7 +9,13 @@ import {
   Button,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconUser, IconArticle, IconHome2 } from "@tabler/icons-react";
+import {
+  IconBoxMultiple,
+  IconLayoutDashboard,
+  IconUser,
+  IconArticle,
+  IconHome2,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -87,6 +93,11 @@ const data = [
     link: "/business/account",
     label: "Account",
     icon: IconUser,
+  },
+  {
+    link: "/business/listings",
+    label: "Service Listings",
+    icon: IconBoxMultiple,
   },
 ];
 
