@@ -134,7 +134,6 @@ const AccountInfoForm = ({
   };
 
   const handleSubmit = (values: TransformedValues<typeof form>) => {
-    console.log("HELLO");
     const valuesToUpdate = {};
     let payload = {};
 
