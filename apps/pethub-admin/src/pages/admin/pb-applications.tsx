@@ -1,13 +1,13 @@
 import { Container, Group, Tabs } from "@mantine/core";
 import {
-  IconBallTennis,
   IconMenu2,
   IconCircleX,
   IconCheck,
+  IconClock,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { PageTitle } from "web-ui";
-import ApplicationsTable from "@/components/pbapplications/ApplicationsTable";
+import ApplicationsTable from "@/components/pb-applications/ApplicationsTable";
 import { BusinessApplicationStatusEnum } from "@/types/constants";
 
 interface ApplicationStatusBarProps {
@@ -23,25 +23,25 @@ function ApplicationStatusBar({ setActiveTab }: ApplicationStatusBarProps) {
       <Tabs.List>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.All}
-          icon={<IconBallTennis size="0.8rem" color="purple" />}
+          icon={<IconMenu2 size="1rem" color="gray" />}
         >
           All
         </Tabs.Tab>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.Pending}
-          icon={<IconMenu2 size="0.8rem" color="purple" />}
+          icon={<IconClock size="1rem" color="gray" />}
         >
           Pending
         </Tabs.Tab>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.Rejected}
-          icon={<IconCircleX size="0.8rem" color="purple" />}
+          icon={<IconCircleX size="1rem" color="gray" />}
         >
           Rejected
         </Tabs.Tab>
         <Tabs.Tab
           value={BusinessApplicationStatusEnum.Approved}
-          icon={<IconCheck size="0.8rem" color="purple" />}
+          icon={<IconCheck size="1rem" color="gray" />}
         >
           Approved
         </Tabs.Tab>

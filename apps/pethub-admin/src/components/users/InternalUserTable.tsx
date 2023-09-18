@@ -67,9 +67,7 @@ export default function InternalUserTable({
     // Compute pagination slice indices based on the current page
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    if (internalUsers.length > 0 && hasNoFetchedRecords) {
-      sethasNoFetchedRecords(false);
-    }
+
     // Sort internalUsers based on the current sort status
     const sortedInternalUsers = sortBy(
       internalUsers,
@@ -85,7 +83,7 @@ export default function InternalUserTable({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // display empty state message if no records fetched after 0.8s
+      // display empty state message if no records fetched after some time
       if (internalUsers.length === 0) {
         sethasNoFetchedRecords(true);
       }

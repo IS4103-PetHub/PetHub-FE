@@ -18,21 +18,21 @@ function AccountTabs({ sessionUserId }: AccountTabsProps) {
       <Tabs.List>
         <Tabs.Tab
           value={AccountTypeEnum.InternalUser}
-          icon={<IconUserCog size="0.8rem" />}
+          icon={<IconUserCog size="1rem" color="gray" />}
         >
           Internal User
         </Tabs.Tab>
 
         <Tabs.Tab
           value={AccountTypeEnum.PetBusiness}
-          icon={<IconBuildingStore size="0.8rem" />}
+          icon={<IconBuildingStore size="1rem" color="gray" />}
         >
           Pet Business
         </Tabs.Tab>
 
         <Tabs.Tab
           value={AccountTypeEnum.PetOwner}
-          icon={<IconPaw size="0.8rem" />}
+          icon={<IconPaw size="1rem" color="gray" />}
         >
           Pet Owner
         </Tabs.Tab>

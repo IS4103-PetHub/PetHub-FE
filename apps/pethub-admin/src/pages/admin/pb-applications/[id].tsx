@@ -20,7 +20,7 @@ import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
-import ApplicationDetails from "@/components/pbapplications/ApplicationDetails";
+import ApplicationDetails from "@/components/pb-applications/ApplicationDetails";
 import {
   useApprovePetBusinessApplication,
   useGetPetBusinessApplicationById,
