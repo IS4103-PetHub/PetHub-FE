@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, Group, TextInput } from "@mantine/core";
+import { Divider, Grid, TextInput, Textarea } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { TransformedValues, isEmail, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
@@ -10,7 +10,9 @@ import { formatISODateString } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
+import { AccountStatusEnum } from "@/types/constants";
 import { PetBusiness, PetOwner } from "@/types/types";
+import { validateWebsiteURL } from "@/util";
 
 interface AccountInfoFormProps {
   petOwner?: PetOwner;
@@ -36,6 +38,10 @@ const AccountInfoForm = ({
       ? petOwner.contactNumber
       : petBusiness.contactNumber,
     email: petOwner ? petOwner.email : petBusiness.email,
+    businessEmail: petBusiness ? petBusiness.businessEmail : "",
+    websiteURL: petBusiness ? petBusiness.websiteURL : "",
+    businessDescription: petBusiness ? petBusiness.businessDescription : "",
+    businessAddresses: petBusiness ? petBusiness.businessAddresses : [],
   };
 
   const form = useForm({
@@ -64,6 +70,14 @@ const AccountInfoForm = ({
       email: isEmail("Invalid email."),
       dateOfBirth: (value, values) =>
         petOwner && !value ? "Date of birth required." : null,
+      businessEmail: (value) =>
+        value && !isEmail("Invalid email.") ? "Invalid email." : null,
+      websiteURL: (value) =>
+        value && validateWebsiteURL(value)
+          ? "Website must start with http:// or https://"
+          : null,
+      businessDescription: (value) => null,
+      businessAddresses: (value) => null,
     },
   });
 
@@ -81,6 +95,7 @@ const AccountInfoForm = ({
 
   const KEY_SPAN = petOwner ? 3 : 4;
   const VALUE_SPAN = 12 - KEY_SPAN;
+  const BUSINESS_DESCRIPTION_MAX_CHARACTERS = 50;
 
   const updateAccount = async (payload: any) => {
     try {
@@ -119,6 +134,7 @@ const AccountInfoForm = ({
   };
 
   const handleSubmit = (values: TransformedValues<typeof form>) => {
+    console.log("HELLO");
     const valuesToUpdate = {};
     let payload = {};
 
@@ -143,6 +159,7 @@ const AccountInfoForm = ({
       payload = {
         userId: petBusiness.userId,
         ...valuesToUpdate,
+        businessAddresses: petBusiness.businessAddresses, // Addresses have to be passed in regardless of changes
       };
     }
     if (Object.keys(valuesToUpdate).length === 0) {
@@ -237,6 +254,7 @@ const AccountInfoForm = ({
           <TextInput
             placeholder="Unique Entity Number (UEN)"
             {...form.getInputProps("uen")}
+            disabled
           />
         ) : (
           petBusiness.uen
@@ -245,6 +263,61 @@ const AccountInfoForm = ({
       <Grid.Col span={12}>
         <Divider my="sm" />
       </Grid.Col>
+
+      {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
+        petBusiness.accountStatus !== AccountStatusEnum.Pending && (
+          <>
+            {" "}
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Business email</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <TextInput
+                  placeholder="Business email"
+                  {...form.getInputProps("businessEmail")}
+                />
+              ) : (
+                petBusiness.businessEmail
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Website URL</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <TextInput
+                  placeholder="Website URL"
+                  {...form.getInputProps("websiteURL")}
+                />
+              ) : (
+                petBusiness.websiteURL
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Business description</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              <Textarea
+                disabled={!isEditing}
+                autosize
+                minRows={3}
+                maxRows={3}
+                placeholder="Business description"
+                {...form.getInputProps("businessDescription")}
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+          </>
+        )}
     </>
   );
 
@@ -285,7 +358,6 @@ const AccountInfoForm = ({
           )}
         </Grid.Col>
       </Grid>
-
       <EditCancelSaveButtons
         isEditing={isEditing}
         onClickCancel={handleCancel}

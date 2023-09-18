@@ -52,6 +52,8 @@ export interface PetBusiness extends User {
   businessDescription?: string;
   websiteURL?: string;
   businessAddresses?: Address[];
+  businessEmail?: string;
+  petBusinessApplication: PetBusinessApplication;
 }
 
 export interface PetOwner extends User {
