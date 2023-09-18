@@ -5,10 +5,17 @@ import {
   IconCheck,
   IconClock,
 } from "@tabler/icons-react";
+import axios from "axios";
+import { getSession } from "next-auth/react";
 import { useState } from "react";
 import { PageTitle } from "web-ui";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import ApplicationsTable from "@/components/pb-applications/ApplicationsTable";
-import { BusinessApplicationStatusEnum } from "@/types/constants";
+import {
+  BusinessApplicationStatusEnum,
+  PermissionsCodeEnum,
+} from "@/types/constants";
+import { Permission, PetBusinessApplication } from "@/types/types";
 
 interface ApplicationStatusBarProps {
   setActiveTab: (value: BusinessApplicationStatusEnum) => void;
@@ -50,8 +57,28 @@ function ApplicationStatusBar({ setActiveTab }: ApplicationStatusBarProps) {
   );
 }
 
-export default function PetBusinessApplications() {
+interface PetBusinessApplicationsProps {
+  permissions: Permission[];
+}
+
+export default function PetBusinessApplications({
+  permissions,
+}: PetBusinessApplicationsProps) {
   const [activeTab, setActiveTab] = useState(BusinessApplicationStatusEnum.All);
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WritePBApplications,
+  );
+  const canRead = permissionCodes.includes(
+    PermissionsCodeEnum.ReadPBApplications,
+  );
+
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   return (
     <Container fluid>
       <Group position="apart" mb="md">
@@ -61,4 +88,17 @@ export default function PetBusinessApplications() {
       <ApplicationsTable applicationStatus={activeTab} />
     </Container>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { permissions } };
 }

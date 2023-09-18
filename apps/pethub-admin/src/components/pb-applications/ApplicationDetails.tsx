@@ -1,9 +1,5 @@
 import {
-  Modal,
-  Grid,
-  Col,
   Container,
-  Button,
   Group,
   Accordion,
   Textarea,
@@ -11,7 +7,6 @@ import {
   Text,
   Stack,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
   IconUserExclamation,
   IconArticle,
@@ -28,13 +23,14 @@ interface ApplicationDetailsProps {
   applicationStatus: string | undefined;
   application: PetBusinessApplication | undefined;
   actionButtonGroup: any;
+  disabled?: boolean;
 }
 
 export default function ApplicationDetails({
   applicationStatus,
   application,
   actionButtonGroup,
-  ...props
+  disabled,
 }: ApplicationDetailsProps) {
   if (!applicationStatus || !application) {
     return null;
@@ -146,16 +142,18 @@ export default function ApplicationDetails({
           </Accordion.Panel>
         </Accordion.Item>
 
-        <Accordion.Item value="action">
-          <Accordion.Control
-            icon={<IconAddressBook size={rem(20)} color="blue" />}
-          >
-            Action
-          </Accordion.Control>
-          <Accordion.Panel mr="xl" ml="md">
-            {actionButtonGroup}
-          </Accordion.Panel>
-        </Accordion.Item>
+        {disabled ? null : (
+          <Accordion.Item value="action">
+            <Accordion.Control
+              icon={<IconAddressBook size={rem(20)} color="blue" />}
+            >
+              Action
+            </Accordion.Control>
+            <Accordion.Panel mr="xl" ml="md">
+              {actionButtonGroup}
+            </Accordion.Panel>
+          </Accordion.Item>
+        )}
       </Accordion>
     </Container>
   );

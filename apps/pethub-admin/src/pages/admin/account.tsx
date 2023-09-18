@@ -113,11 +113,9 @@ export default function MyAccount({ userId, permissions }: MyAccountProps) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
-
   const permissions = await (
     await axios.get(
       `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,

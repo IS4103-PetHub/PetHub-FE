@@ -1,17 +1,31 @@
-import { Container } from "@mantine/core";
+import { Container, Text } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import CreateUserGroupForm from "@/components/rbac/CreateUserGroupForm";
 import { useCreateUserGroup, useGetAllPermissions } from "@/hooks/rbac";
-import { CreateUserGroupPayload } from "@/types/types";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { CreateUserGroupPayload, Permission } from "@/types/types";
 
-export default function CreateUserGroup() {
+interface CreateUserGroupProps {
+  userPermissions: Permission[];
+}
+
+export default function CreateUserGroup({
+  userPermissions,
+}: CreateUserGroupProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  //permissions
+  const permissionCodes = userPermissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteRbac);
 
   const { data: permissions = [] } = useGetAllPermissions();
   const createUserGroupMutation = useCreateUserGroup(queryClient);
@@ -58,13 +72,32 @@ export default function CreateUserGroup() {
   };
 
   return (
-    <Container fluid>
-      <PageTitle title="Create User Group" mb="md" />
-      <CreateUserGroupForm
-        permissions={permissions}
-        form={form}
-        onCreate={handleCreateUserGroup}
-      />
-    </Container>
+    <>
+      {canWrite ? (
+        <Container fluid>
+          <PageTitle title="Create User Group" mb="md" />
+          <CreateUserGroupForm
+            permissions={permissions}
+            form={form}
+            onCreate={handleCreateUserGroup}
+          />
+        </Container>
+      ) : (
+        <NoPermissionsMessage />
+      )}
+    </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+
+  const userId = session.user["userId"];
+  const userPermissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { userPermissions } };
 }

@@ -15,6 +15,7 @@ interface TagTableProps {
   onUpdate(payload: UpdateTagPayload): void;
   onSortStatusChange: any;
   onPageChange(p: number): void;
+  disabled?: boolean;
 }
 
 const TagTable = ({
@@ -27,6 +28,7 @@ const TagTable = ({
   onUpdate,
   onSortStatusChange,
   onPageChange,
+  disabled,
 }: TagTableProps) => {
   return (
     <>
@@ -67,6 +69,7 @@ const TagTable = ({
             title: "Actions",
             width: 100,
             textAlignment: "right",
+            hidden: disabled,
             render: (record) => (
               <Group position="right">
                 <EditTagButtonModal

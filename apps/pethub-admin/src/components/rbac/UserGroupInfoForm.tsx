@@ -11,6 +11,7 @@ interface UserGroupInfoFormProps {
   onCancel(): void;
   onClickEdit(): void;
   onSubmit(values: any): void;
+  disabled?: boolean;
 }
 
 const UserGroupInfoForm = ({
@@ -20,6 +21,7 @@ const UserGroupInfoForm = ({
   onCancel,
   onClickEdit,
   onSubmit,
+  disabled,
 }: UserGroupInfoFormProps) => {
   return (
     <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
@@ -48,11 +50,14 @@ const UserGroupInfoForm = ({
           </Box>
         </>
       )}
-      <EditCancelSaveButtons
-        isEditing={isEditing}
-        onClickCancel={onCancel}
-        onClickEdit={onClickEdit}
-      />
+
+      {disabled ? null : (
+        <EditCancelSaveButtons
+          isEditing={isEditing}
+          onClickCancel={onCancel}
+          onClickEdit={onClickEdit}
+        />
+      )}
     </form>
   );
 };

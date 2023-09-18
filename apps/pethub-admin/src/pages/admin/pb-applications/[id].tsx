@@ -15,31 +15,49 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import ApplicationDetails from "@/components/pb-applications/ApplicationDetails";
 import {
   useApprovePetBusinessApplication,
   useGetPetBusinessApplicationById,
   useRejectPetBusinessApplication,
 } from "@/hooks/pet-business-application";
-import { BusinessApplicationStatusEnum } from "@/types/constants";
+import {
+  BusinessApplicationStatusEnum,
+  PermissionsCodeEnum,
+} from "@/types/constants";
 import {
   ApprovePetBusinessApplicationPayload,
+  Permission,
   RejectPetBusinessApplicationPayload,
 } from "@/types/types";
 
 interface PetBusinessApplicationDetailsProps {
   userId: number;
+  permissions: Permission[];
 }
 
 export default function PetBusinessApplicationDetails({
   userId,
+  permissions,
 }: PetBusinessApplicationDetailsProps) {
   const router = useRouter();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WritePBApplications,
+  );
+  const canRead = permissionCodes.includes(
+    PermissionsCodeEnum.ReadPBApplications,
+  );
+
   const [applicationStatus, setApplicationStatus] =
     useState<BusinessApplicationStatusEnum>();
   const queryClient = useQueryClient();
@@ -213,6 +231,10 @@ export default function PetBusinessApplicationDetails({
     return null;
   }
 
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   return (
     <Container fluid>
       <Group position="apart" mb="xl">
@@ -234,6 +256,7 @@ export default function PetBusinessApplicationDetails({
           applicationStatus={applicationStatus}
           application={petBusinessApplication}
           actionButtonGroup={actionButtonGroup}
+          disabled={!canWrite}
         />
         <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))} />
       </Box>
@@ -282,12 +305,15 @@ export default function PetBusinessApplicationDetails({
   );
 }
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context) {
   const session = await getSession(context);
-
   if (!session) return { props: {} };
 
-  const userId = (session.user as any)["userId"];
-
-  return { props: { userId } };
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { userId, permissions } };
 }

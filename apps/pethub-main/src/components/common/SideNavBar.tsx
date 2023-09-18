@@ -132,7 +132,7 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          {/* <LightDarkModeToggle /> */}
+          <LightDarkModeToggle />
         </Group>
         {links}
       </Navbar.Section>

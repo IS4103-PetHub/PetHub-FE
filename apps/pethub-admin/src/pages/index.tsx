@@ -1,8 +1,14 @@
-import { Container, Tabs } from "@mantine/core";
+import { Container, Text } from "@mantine/core";
+import axios from "axios";
 import Head from "next/head";
+import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
 
-export default function Home() {
+interface HomeProps {
+  name: string;
+}
+
+export default function Home({ name }: HomeProps) {
   return (
     <>
       <Head>
@@ -13,9 +19,29 @@ export default function Home() {
       </Head>
       <main>
         <Container fluid>
-          <PageTitle title="Welcome" />
+          <Text color="dimmed" w="50vw" size="md">
+            PetHub Administrative Portal
+          </Text>
+          <PageTitle title={`Welcome, ${name}`} />
         </Container>
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) return { props: {} };
+
+  const userId = session.user["userId"];
+  const user = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/internal-users/${userId}`,
+    )
+  ).data;
+
+  const name = `${user.firstName} ${user.lastName}`;
+
+  return { props: { name } };
 }

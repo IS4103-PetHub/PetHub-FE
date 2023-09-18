@@ -18,10 +18,13 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import AddUsersToUserGroupModal from "@/components/rbac/AddUsersToUserGroupModal";
 import MembershipsTable from "@/components/rbac/MembershipsTable";
 import UserGroupInfoForm from "@/components/rbac/UserGroupInfoForm";
@@ -31,15 +34,26 @@ import {
   useGetUserGroupById,
   useUpdateUserGroup,
 } from "@/hooks/rbac";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { Permission } from "@/types/types";
 
 interface UserGroupDetailsProps {
   groupId: number;
+  permissions: Permission[];
 }
 
-export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
+export default function UserGroupDetails({
+  groupId,
+  permissions,
+}: UserGroupDetailsProps) {
   const theme = useMantineTheme();
   const queryClient = useQueryClient();
   const router = useRouter();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteRbac);
+  const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadRbac);
 
   const [isEditingGroupInfo, setIsEditingGroupInfo] = useToggle();
   const [isEditingPermissions, setIsEditingPermissions] = useToggle();
@@ -170,6 +184,10 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
     }
   };
 
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   return (
     <Container fluid>
       <Group position="apart">
@@ -177,12 +195,14 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
           <PageTitle title="User Group Details" />
           <Badge size="lg">Group Id: {groupId}</Badge>
         </Group>
-        <DeleteActionButtonModal
-          title={`Are you sure you want to delete ${userGroup?.name}?`}
-          subtitle="Any users currently assigned to this user group will be unassigned."
-          onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
-          large
-        />
+        {canWrite ? (
+          <DeleteActionButtonModal
+            title={`Are you sure you want to delete ${userGroup?.name}?`}
+            subtitle="Any users currently assigned to this user group will be unassigned."
+            onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
+            large
+          />
+        ) : null}
       </Group>
 
       <Accordion
@@ -208,6 +228,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
               onCancel={handleCancelEditGroupInfo}
               onClickEdit={() => setIsEditingGroupInfo(true)}
               onSubmit={handleUpdateUserGroup}
+              disabled={!canWrite}
             />
           </Accordion.Panel>
         </Accordion.Item>
@@ -233,6 +254,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
               onCancel={handleCancelEditPermissions}
               onClickEdit={() => setIsEditingPermissions(true)}
               onSubmit={handleUpdateUserGroup}
+              disabled={!canWrite}
             />
           </Accordion.Panel>
         </Accordion.Item>
@@ -247,10 +269,19 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
             </Group>
           </Accordion.Control>
           <Accordion.Panel mb="xs">
-            <AddUsersToUserGroupModal userGroup={userGroup} refetch={refetch} />
+            {canWrite ? (
+              <AddUsersToUserGroupModal
+                userGroup={userGroup}
+                refetch={refetch}
+              />
+            ) : null}
             {userGroup?.userGroupMemberships &&
             userGroup.userGroupMemberships.length > 0 ? (
-              <MembershipsTable userGroup={userGroup} refetch={refetch} />
+              <MembershipsTable
+                userGroup={userGroup}
+                refetch={refetch}
+                disabled={!canWrite}
+              />
             ) : null}
           </Accordion.Panel>
         </Accordion.Item>
@@ -258,8 +289,16 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
     </Container>
   );
 }
-
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context) {
   const groupId = context.params.id;
-  return { props: { groupId } };
+  const session = await getSession(context);
+  if (!session) return { props: { groupId } };
+
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { groupId, permissions } };
 }

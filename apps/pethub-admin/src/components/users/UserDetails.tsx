@@ -18,7 +18,6 @@ import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
-import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
@@ -38,6 +37,7 @@ type UserDetailsProps = {
   onUserDeleted?: (success: boolean) => void;
   onUserUpdated?: (success: boolean) => void;
   sessionUserId?: number;
+  disabled: boolean;
 };
 
 const getUserName = (user: any): string => {
@@ -413,7 +413,7 @@ const UpdateInternalUserModal = ({
         title: "Account Updated",
         color: "green",
         icon: <IconCheck />,
-        message: `Internal User updated successfully!`,
+        message: `Internal user updated successfully!`,
       });
       onUserUpdated(true);
       closeUpdateModal();
@@ -484,14 +484,15 @@ const UserDetails = ({
   onUserDeleted,
   sessionUserId,
   onUserUpdated,
+  disabled,
 }: UserDetailsProps) => {
   const [deleteModalOpened, { open: openDelete, close: closeDelete }] =
     useDisclosure(false);
   const [updateModalOpened, { open: openUpdate, close: closeUpdate }] =
     useDisclosure(false);
-  const propSessionUserId = sessionUserId || -1;
-  const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
-  const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
+  // const propSessionUserId = sessionUserId || -1;
+  // const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
+  // const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
 
   const { data: internalUserPermissions = [] } =
     useGetPermissionsByUserIdAndAccountType(user?.userId, user?.accountType);
@@ -529,20 +530,24 @@ const UserDetails = ({
   return (
     <>
       {UserDetailsComponent}
-      <DeleteAccountModal
-        closeDeleteModal={closeDelete}
-        opened={deleteModalOpened}
-        name={userName}
-        userId={user.userId}
-        onUserDeleted={propOnUserDeleted}
-        sessionUserId={propSessionUserId}
-      />
-      <UpdateInternalUserModal
-        closeUpdateModal={closeUpdate}
-        opened={updateModalOpened}
-        user={user as InternalUser}
-        onUserUpdated={propOnUserUpdated}
-      />
+      {disabled ? null : (
+        <>
+          <DeleteAccountModal
+            closeDeleteModal={closeDelete}
+            opened={deleteModalOpened}
+            name={userName}
+            userId={user.userId}
+            onUserDeleted={onUserDeleted}
+            sessionUserId={sessionUserId}
+          />
+          <UpdateInternalUserModal
+            closeUpdateModal={closeUpdate}
+            opened={updateModalOpened}
+            user={user as InternalUser}
+            onUserUpdated={onUserUpdated}
+          />
+        </>
+      )}
     </>
   );
 };

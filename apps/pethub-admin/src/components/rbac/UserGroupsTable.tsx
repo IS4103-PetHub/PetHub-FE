@@ -15,6 +15,7 @@ interface UserGroupsTableProps {
   onDelete(id: number): void;
   onSortStatusChange: any;
   onPageChange(p: number): void;
+  disabled?: boolean;
 }
 
 const UserGroupsTable = ({
@@ -26,6 +27,7 @@ const UserGroupsTable = ({
   onDelete,
   onSortStatusChange,
   onPageChange,
+  disabled,
 }: UserGroupsTableProps) => {
   const router = useRouter();
 
@@ -54,6 +56,7 @@ const UserGroupsTable = ({
           title: "Actions",
           width: 100,
           textAlignment: "right",
+          hidden: disabled,
           render: (group) => (
             <Group position="right">
               <ViewActionButton
