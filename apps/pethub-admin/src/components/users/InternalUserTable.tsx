@@ -85,7 +85,7 @@ export default function InternalUserTable({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // display empty state message if no records fetched after 0.8s
+      // display empty state message if no records fetched after some time
       if (internalUsers.length === 0) {
         sethasNoFetchedRecords(true);
       }

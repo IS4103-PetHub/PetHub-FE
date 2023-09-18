@@ -80,9 +80,9 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   /*
    * Effect Hooks
    */
-  const from = (page - 1) * TABLE_PAGE_SIZE;
-  const to = from + TABLE_PAGE_SIZE;
   useEffect(() => {
+    const from = (page - 1) * TABLE_PAGE_SIZE;
+    const to = from + TABLE_PAGE_SIZE;
     const sortedServiceListing = sortBy(
       serviceListings,
       sortStatus.columnAccessor,
@@ -96,7 +96,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // display empty state message if no records fetched after 0.8s
+      // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
         sethasNoFetchedRecords(true);
       }
