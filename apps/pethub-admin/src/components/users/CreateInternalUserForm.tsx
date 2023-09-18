@@ -62,7 +62,7 @@ export function CreateInternalUserForm({
         title: "Account Created",
         color: "green",
         icon: <IconCheck />,
-        message: `Internal User created successfully!`,
+        message: `Internal user account created successfully!`,
       });
 
       onUserCreated(true);

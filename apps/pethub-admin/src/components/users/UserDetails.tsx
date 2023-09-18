@@ -323,7 +323,7 @@ const DeleteAccountModal = ({
           title: "Account Deleted",
           color: "green",
           icon: <IconCheck />,
-          message: `Internal User deleted successfully!`,
+          message: `Internal user ID: ${userId} deleted successfully!`,
         });
         onUserDeleted(true);
         closeDeleteModal();

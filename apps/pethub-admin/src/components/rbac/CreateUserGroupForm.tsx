@@ -6,7 +6,6 @@ import {
   Button,
   Grid,
   Divider,
-  Checkbox,
   Group,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
@@ -62,7 +61,7 @@ const CreateUserGroupForm = ({
       </Group>
       <Divider mb="md" />
       {permissionsCheckboxes}
-      <Button type="submit" mt={50} size="md" fullWidth>
+      <Button type="submit" mt="xl" mb="xl" size="md" fullWidth>
         Create User Group
       </Button>
     </form>

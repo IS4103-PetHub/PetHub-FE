@@ -91,7 +91,7 @@ export default function Tags() {
         title: "Tag Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `Tag ${id} deleted successfully.`,
+        message: `Tag ID: ${id} deleted successfully.`,
       });
       // refetch();
     } catch (error: any) {

@@ -34,15 +34,15 @@ export default function CreateUserGroup() {
       ...values,
     };
     try {
-      await createUserGroupMutation.mutateAsync(payload);
+      const data = await createUserGroupMutation.mutateAsync(payload);
       notifications.show({
         title: "User Group Created",
         color: "green",
         icon: <IconCheck />,
         message: `User group created successfully!`,
       });
-      // redirect to RBAC page
-      router.push("/rbac");
+      // redirect to group details page
+      router.push(`/admin/rbac/user-groups/${data.groupId}`);
     } catch (error: any) {
       notifications.show({
         title: "Error Creating User Group",

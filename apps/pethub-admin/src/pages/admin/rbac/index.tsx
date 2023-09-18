@@ -72,7 +72,7 @@ export default function RBAC() {
         title: "User Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `User group ${id} deleted successfully.`,
+        message: `User group ID: ${id} deleted successfully.`,
       });
     } catch (error: any) {
       notifications.show({

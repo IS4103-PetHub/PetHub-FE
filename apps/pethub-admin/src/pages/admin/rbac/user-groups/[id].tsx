@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Badge,
   Container,
   Group,
   Stack,
@@ -153,7 +154,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
         title: "User Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `User group ${id} deleted successfully.`,
+        message: `User group ID: ${id} deleted successfully.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -172,7 +173,10 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
   return (
     <Container fluid>
       <Group position="apart">
-        <PageTitle title="User Group Details" />
+        <Group position="left">
+          <PageTitle title="User Group Details" />
+          <Badge size="lg">Group Id: {groupId}</Badge>
+        </Group>
         <DeleteActionButtonModal
           title={`Are you sure you want to delete ${userGroup?.name}?`}
           subtitle="Any users currently assigned to this user group will be unassigned."

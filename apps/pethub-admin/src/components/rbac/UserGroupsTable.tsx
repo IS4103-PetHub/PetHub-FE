@@ -46,7 +46,7 @@ const UserGroupsTable = ({
           width: "35vw",
           ellipsis: true,
           sortable: true,
-          render: (group) => (group.description ? group.description : "-"),
+          render: ({ description }) => (description ? description : "-"),
         },
         {
           // actions
