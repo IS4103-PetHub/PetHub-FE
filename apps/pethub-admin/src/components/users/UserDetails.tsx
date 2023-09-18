@@ -37,7 +37,7 @@ type UserDetailsProps = {
   onUserDeleted?: (success: boolean) => void;
   onUserUpdated?: (success: boolean) => void;
   sessionUserId?: number;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 const getUserName = (user: any): string => {
