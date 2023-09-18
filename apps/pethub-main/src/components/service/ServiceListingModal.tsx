@@ -106,7 +106,7 @@ const ServiceListingModal = ({
               : "Error Creating Service Listing",
             color: "red",
             icon: <IconX />,
-            message: "There is a maximum of 6 images",
+            message: "A maximum of 6 images can be uploaded.",
           });
           return (
             <div style={{ color: "red" }}>Maximum of 6 images allowed.</div>
