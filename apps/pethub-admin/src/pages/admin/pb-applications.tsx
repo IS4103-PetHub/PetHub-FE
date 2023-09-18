@@ -6,6 +6,7 @@ import {
   IconClock,
 } from "@tabler/icons-react";
 import axios from "axios";
+import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
 import { PageTitle } from "web-ui";
@@ -80,13 +81,19 @@ export default function PetBusinessApplications({
   }
 
   return (
-    <Container fluid>
-      <Group position="apart" mb="md">
-        <PageTitle title="Pet Business Applications" />
-      </Group>
-      <ApplicationStatusBar setActiveTab={setActiveTab} />
-      <ApplicationsTable applicationStatus={activeTab} />
-    </Container>
+    <>
+      <Head>
+        <title>Pet Business Applications - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart" mb="md">
+          <PageTitle title="Pet Business Applications" />
+        </Group>
+        <ApplicationStatusBar setActiveTab={setActiveTab} />
+        <ApplicationsTable applicationStatus={activeTab} />
+      </Container>
+    </>
   );
 }
 

@@ -3,6 +3,7 @@ import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
@@ -119,61 +120,67 @@ export default function Login() {
   };
 
   return (
-    status !== "authenticated" && (
-      <Container fluid>
-        {type === "login" ? (
-          <div className="center-vertically">
-            <Box>
-              <Title align="center">PetHub</Title>
-              <Text size="md" align="center" mt={5}>
-                Admin Management Portal
-              </Text>
-              <Paper
-                withBorder
-                shadow="sm"
-                p={30}
-                mt={30}
-                radius="sm"
-                w="460px"
-              >
-                <LoginBox
-                  changeBoxToggle={changeBoxToggle}
-                  loginForm={loginForm}
-                  handleLogin={handleLogin}
-                />
-              </Paper>
-            </Box>
-          </div>
-        ) : (
-          <Container size={460}>
+    <>
+      <Head>
+        <title>Login - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      {status !== "authenticated" && (
+        <Container fluid>
+          {type === "login" ? (
             <div className="center-vertically">
               <Box>
-                <Title align="center">Forgot your password?</Title>
-                <Text fz="sm" ta="center" mt="sm">
-                  Enter your email address to get a reset link if your email
-                  address is tied to an account in our system.
+                <Title align="center">PetHub</Title>
+                <Text size="md" align="center" mt={5}>
+                  Admin Management Portal
                 </Text>
                 <Paper
                   withBorder
-                  shadow="md"
+                  shadow="sm"
                   p={30}
+                  mt={30}
                   radius="sm"
-                  mt="xl"
                   w="460px"
                 >
-                  <ForgotPasswordBox
+                  <LoginBox
                     changeBoxToggle={changeBoxToggle}
-                    isForgotPasswordSuccessful={isForgotPasswordSuccessful}
-                    forgotPasswordForm={forgotPasswordForm}
-                    handleForgotPassword={handleForgotPassword}
-                    isSubmitButtonLoading={isSubmitButtonLoading}
+                    loginForm={loginForm}
+                    handleLogin={handleLogin}
                   />
                 </Paper>
               </Box>
             </div>
-          </Container>
-        )}
-      </Container>
-    )
+          ) : (
+            <Container size={460}>
+              <div className="center-vertically">
+                <Box>
+                  <Title align="center">Forgot your password?</Title>
+                  <Text fz="sm" ta="center" mt="sm">
+                    Enter your email address to get a reset link if your email
+                    address is tied to an account in our system.
+                  </Text>
+                  <Paper
+                    withBorder
+                    shadow="md"
+                    p={30}
+                    radius="sm"
+                    mt="xl"
+                    w="460px"
+                  >
+                    <ForgotPasswordBox
+                      changeBoxToggle={changeBoxToggle}
+                      isForgotPasswordSuccessful={isForgotPasswordSuccessful}
+                      forgotPasswordForm={forgotPasswordForm}
+                      handleForgotPassword={handleForgotPassword}
+                      isSubmitButtonLoading={isSubmitButtonLoading}
+                    />
+                  </Paper>
+                </Box>
+              </div>
+            </Container>
+          )}
+        </Container>
+      )}
+    </>
   );
 }

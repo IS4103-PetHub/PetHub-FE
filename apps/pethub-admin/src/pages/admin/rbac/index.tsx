@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -182,19 +183,25 @@ export default function Rbac({ permissions }: RbacProps) {
   };
 
   return (
-    <Container fluid>
-      <Group position="apart" mb="xl">
-        <PageTitle title="Role-based Access Control" />
-        {canWrite ? (
-          <LargeCreateButton
-            text="Create User Group"
-            onClick={() => router.push(`${router.asPath}/create`)}
-          />
-        ) : null}
-      </Group>
+    <>
+      <Head>
+        <title>RBAC User Groups - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart" mb="xl">
+          <PageTitle title="Role-based Access Control" />
+          {canWrite ? (
+            <LargeCreateButton
+              text="Create User Group"
+              onClick={() => router.push(`${router.asPath}/create`)}
+            />
+          ) : null}
+        </Group>
 
-      {renderContent()}
-    </Container>
+        {renderContent()}
+      </Container>
+    </>
   );
 }
 

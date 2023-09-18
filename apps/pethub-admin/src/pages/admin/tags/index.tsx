@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -230,14 +231,22 @@ export default function Tags({ permissions }: TagsProps) {
   };
 
   return (
-    <Container fluid>
-      <Group position="apart" mb="xl">
-        <PageTitle title="Tags Management" />
-        {canWrite ? <CreateTagButtonModal onCreate={handleCreateTag} /> : null}
-      </Group>
+    <>
+      <Head>
+        <title>Tags - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart" mb="xl">
+          <PageTitle title="Tags Management" />
+          {canWrite ? (
+            <CreateTagButtonModal onCreate={handleCreateTag} />
+          ) : null}
+        </Group>
 
-      {renderContent()}
-    </Container>
+        {renderContent()}
+      </Container>
+    </>
   );
 }
 

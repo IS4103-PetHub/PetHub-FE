@@ -12,15 +12,14 @@ export default function Home({ name }: HomeProps) {
   return (
     <>
       <Head>
-        <title>PetHub - Admin Portal</title>
+        <title>Admin Portal - PetHub</title>
         <meta name="description" content="Admin portal for PetHub" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <Container fluid>
           <Text color="dimmed" w="50vw" size="md">
-            PetHub Administrative Portal
+            Admin Management Portal
           </Text>
           <PageTitle title={`Welcome, ${name}`} />
         </Container>

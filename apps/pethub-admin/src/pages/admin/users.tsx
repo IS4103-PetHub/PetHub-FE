@@ -123,10 +123,8 @@ export default function UsersManagement({
   return (
     <>
       <Head>
-        <title>PetHub - Admin Portal</title>
-        <meta name="description" content="Admin portal for PetHub" />
+        <title>Users - Admin Portal - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <Container fluid>

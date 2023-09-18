@@ -4,6 +4,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
@@ -73,6 +74,10 @@ export default function CreateUserGroup({
 
   return (
     <>
+      <Head>
+        <title>Create User Group - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
       {canWrite ? (
         <Container fluid>
           <PageTitle title="Create User Group" mb="md" />
