@@ -210,7 +210,7 @@ const ServiceListingModal = ({
       const buffer = await response.arrayBuffer();
       return new File([buffer], fileName);
     } catch (error) {
-      console.log("Error!!!!!!!!!!!!!:", error);
+      console.log("Error:", error);
     }
   };
 
@@ -472,7 +472,7 @@ const ServiceListingModal = ({
 
             {isViewing && (
               <>
-                <Group position="right" mt="md">
+                <Group position="right" mt="md" mb="md">
                   <Button
                     type="button"
                     onClick={() => {
