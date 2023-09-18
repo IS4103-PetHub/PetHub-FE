@@ -1,0 +1,39 @@
+{
+  "name": "pethub-main",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@mantine/core": "^6.0.19",
+    "@mantine/dates": "^6.0.19",
+    "@mantine/form": "^6.0.19",
+    "@mantine/hooks": "^6.0.19",
+    "@mantine/notifications": "^6.0.19",
+    "@tabler/icons-react": "^2.32.0",
+    "@tanstack/react-query": "^4.33.0",
+    "axios": "^1.4.0",
+    "dayjs": "^1.11.9",
+    "mantine-datatable": "^2.9.11",
+    "next": "^13.4.19",
+    "next-auth": "^4.23.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "shared-utils": "*",
+    "web-ui": "*"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "^13.4.19",
+    "@types/node": "^20.5.6",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "eslint-config-custom": "*",
+    "ts-config": "*",
+    "typescript": "^5.2.2"
+  }
+}
