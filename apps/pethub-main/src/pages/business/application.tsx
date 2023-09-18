@@ -135,7 +135,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   });
 
   /*
-    The below 3 functions are for handling addresses
+    The below 2 functions are for handling addresses
   */
   type addressFormValues = typeof addressForm.values;
   function handleAddAddress(values: addressFormValues) {
