@@ -29,3 +29,7 @@ export function validateAddressName(addressName: string) {
 
   return null;
 }
+
+export function validateWebsiteURL(url: string) {
+  return !/^https?:\/\/.+\..+$/.test(url);
+}

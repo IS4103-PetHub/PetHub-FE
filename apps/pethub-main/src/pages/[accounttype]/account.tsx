@@ -12,6 +12,7 @@ import {
   IconAddressBook,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
 import { formatISODateString } from "shared-utils";
@@ -74,101 +75,110 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
   };
 
   return (
-    <Container mt="50px" mb="xl">
-      <Group position="left">
-        <PageTitle title="My account" />
-        <AccountStatusBadge accountStatus={accountStatus} size="lg" />
-      </Group>
-      <Text size="sm" color="dimmed">
-        Member since {dateCreated}
-      </Text>
-      <Accordion
-        variant="separated"
-        mt="xl"
-        multiple
-        defaultValue={defaultValues}
-      >
-        <Accordion.Item value="account">
-          <Accordion.Control>
-            <Group>
-              <IconUser color={theme.colors.indigo[5]} />
-              <Text size="lg">Account information</Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel p="md">
-            {petOwner ? (
-              <AccountInfoForm petOwner={petOwner} refetch={refetchPetOwner} />
-            ) : (
-              <AccountInfoForm
-                petBusiness={petBusiness}
-                refetch={refetchPetBusiness}
-              />
-            )}
-          </Accordion.Panel>
-        </Accordion.Item>
+    <>
+      <Head>
+        <title>My Account - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container mt="50px" mb="xl">
+        <Group position="left">
+          <PageTitle title="My account" />
+          <AccountStatusBadge accountStatus={accountStatus} size="lg" />
+        </Group>
+        <Text size="sm" color="dimmed">
+          Member since {dateCreated}
+        </Text>
+        <Accordion
+          variant="separated"
+          mt="xl"
+          multiple
+          defaultValue={defaultValues}
+        >
+          <Accordion.Item value="account">
+            <Accordion.Control>
+              <Group>
+                <IconUser color={theme.colors.indigo[5]} />
+                <Text size="lg">Account information</Text>
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel p="md">
+              {petOwner ? (
+                <AccountInfoForm
+                  petOwner={petOwner}
+                  refetch={refetchPetOwner}
+                />
+              ) : (
+                <AccountInfoForm
+                  petBusiness={petBusiness}
+                  refetch={refetchPetBusiness}
+                />
+              )}
+            </Accordion.Panel>
+          </Accordion.Item>
 
-        {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
-          petBusiness.accountStatus !== AccountStatusEnum.Pending && (
-            <Accordion.Item value="addresses">
+          {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
+            petBusiness.accountStatus !== AccountStatusEnum.Pending && (
+              <Accordion.Item value="addresses">
+                <Accordion.Control>
+                  <Group>
+                    <IconAddressBook color={theme.colors.indigo[5]} />
+                    <Text size="lg">Addresses</Text>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel p="md">
+                  <AddressInfoForm
+                    petBusiness={petBusiness}
+                    refetch={refetchPetBusiness}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+
+          <Accordion.Item value="password">
+            <Accordion.Control>
+              <Group>
+                <IconKey color={theme.colors.indigo[5]} />
+                <Text size="lg">Change password</Text>
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel p="md">
+              <ChangePasswordForm
+                queryClient={queryClient}
+                email={petOwner ? petOwner.email : petBusiness.email}
+              />
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          {checkDisplayDeactivateReactivate() && (
+            <Accordion.Item value="deactivate-reactivate">
               <Accordion.Control>
                 <Group>
-                  <IconAddressBook color={theme.colors.indigo[5]} />
-                  <Text size="lg">Addresses</Text>
+                  <IconAlertOctagon color={theme.colors.indigo[5]} />
+                  <Text size="lg">{action} account</Text>
                 </Group>
               </Accordion.Control>
               <Accordion.Panel p="md">
-                <AddressInfoForm
-                  petBusiness={petBusiness}
-                  refetch={refetchPetBusiness}
+                <Text color="dimmed" mb="lg">
+                  {action === "Deactivate"
+                    ? `If you deactivate your account, your profile and content
+                will be hidden from other public users of
+                PetHub. If you change your mind, you may reactivate your account from this page.`
+                    : `If you reactivate your account, your profile and content
+                  will be visible to other public users of
+                  PetHub.`}
+                </Text>
+
+                <DeactivateReactivateAccountModal
+                  userId={petOwner ? petOwner.userId : petBusiness.userId}
+                  action={action}
+                  refetch={petOwner ? refetchPetOwner : refetchPetBusiness}
                 />
               </Accordion.Panel>
             </Accordion.Item>
           )}
-
-        <Accordion.Item value="password">
-          <Accordion.Control>
-            <Group>
-              <IconKey color={theme.colors.indigo[5]} />
-              <Text size="lg">Change password</Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel p="md">
-            <ChangePasswordForm
-              queryClient={queryClient}
-              email={petOwner ? petOwner.email : petBusiness.email}
-            />
-          </Accordion.Panel>
-        </Accordion.Item>
-
-        {checkDisplayDeactivateReactivate() && (
-          <Accordion.Item value="deactivate-reactivate">
-            <Accordion.Control>
-              <Group>
-                <IconAlertOctagon color={theme.colors.indigo[5]} />
-                <Text size="lg">{action} account</Text>
-              </Group>
-            </Accordion.Control>
-            <Accordion.Panel p="md">
-              <Text color="dimmed" mb="lg">
-                {action === "Deactivate"
-                  ? `If you deactivate your account, your profile and content
-                will be hidden from other public users of
-                PetHub. If you change your mind, you may reactivate your account from this page.`
-                  : `If you reactivate your account, your profile and content
-                  will be visible to other public users of
-                  PetHub.`}
-              </Text>
-
-              <DeactivateReactivateAccountModal
-                userId={petOwner ? petOwner.userId : petBusiness.userId}
-                action={action}
-                refetch={petOwner ? refetchPetOwner : refetchPetBusiness}
-              />
-            </Accordion.Panel>
-          </Accordion.Item>
-        )}
-      </Accordion>
-    </Container>
+        </Accordion>
+      </Container>
+    </>
   );
 }
 
