@@ -30,8 +30,17 @@ function AccountTabs({
   canReadPetBusinesses,
   canReadPetOwners,
 }: AccountTabsProps) {
+  function getDefaultTab() {
+    if (canReadInternalUsers) {
+      return AccountTypeEnum.InternalUser;
+    }
+    if (canReadPetBusinesses) {
+      return AccountTypeEnum.PetBusiness;
+    }
+    return AccountTypeEnum.PetOwner;
+  }
   return (
-    <Tabs defaultValue={AccountTypeEnum.InternalUser} mt="md">
+    <Tabs defaultValue={getDefaultTab()} mt="md">
       <Tabs.List>
         {canReadInternalUsers ? (
           <Tabs.Tab

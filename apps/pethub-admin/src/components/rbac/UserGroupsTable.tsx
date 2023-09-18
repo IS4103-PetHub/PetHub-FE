@@ -56,7 +56,6 @@ const UserGroupsTable = ({
           title: "Actions",
           width: 100,
           textAlignment: "right",
-          hidden: disabled,
           render: (group) => (
             <Group position="right">
               <ViewActionButton
@@ -64,11 +63,13 @@ const UserGroupsTable = ({
                   router.push(`${router.asPath}/user-groups/${group.groupId}`)
                 }
               />
-              <DeleteActionButtonModal
-                title={`Are you sure you want to delete ${group.name}?`}
-                subtitle="Any users currently assigned to this user group will be unassigned."
-                onDelete={() => onDelete(group.groupId)}
-              />
+              {disabled ? null : (
+                <DeleteActionButtonModal
+                  title={`Are you sure you want to delete ${group.name}?`}
+                  subtitle="Any users currently assigned to this user group will be unassigned."
+                  onDelete={() => onDelete(group.groupId)}
+                />
+              )}
             </Group>
           ),
         },

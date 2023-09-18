@@ -34,7 +34,7 @@ export const enum BusinessApplicationStatusEnum {
 
 export const enum PermissionsCodeEnum {
   // right side is permissions code
-  WriteInternalUsers = "WRITE_USERS",
+  WriteInternalUsers = "WRITE_INTERNAL_USERS",
   ReadInternalUsers = "READ_INTERNAL_USERS",
   WritePetOwners = "WRITE_PET_OWNERS",
   ReadPetOwners = "READ_PET_OWNERS",
