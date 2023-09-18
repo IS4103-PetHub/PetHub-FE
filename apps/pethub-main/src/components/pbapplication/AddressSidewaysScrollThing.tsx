@@ -63,15 +63,17 @@ export const AddressSidewaysScrollThing = ({
           width: "100%",
         }}
       >
-        <Box
-          style={{
-            display: "inline-block",
-            position: "relative",
-          }}
-          onClick={checkEditable(ActionType.AddAddress) as any}
-        >
-          <AddAddressCard />
-        </Box>
+        {!isDisabled && (
+          <Box
+            style={{
+              display: "inline-block",
+              position: "relative",
+            }}
+            onClick={checkEditable(ActionType.AddAddress) as any}
+          >
+            <AddAddressCard />
+          </Box>
+        )}
         {addresses}
       </Box>
     </Box>

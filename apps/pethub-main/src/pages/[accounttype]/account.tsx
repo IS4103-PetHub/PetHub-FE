@@ -5,9 +5,13 @@ import {
   Group,
   useMantineTheme,
 } from "@mantine/core";
-import { IconUser, IconKey, IconAlertOctagon } from "@tabler/icons-react";
+import {
+  IconUser,
+  IconKey,
+  IconAlertOctagon,
+  IconAddressBook,
+} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
 import { formatISODateString } from "shared-utils";
@@ -15,10 +19,12 @@ import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
+import AddressInfoForm from "@/components/account/AddressInfoForm";
 import DeactivateReactivateAccountModal from "@/components/account/DeactivateReactivateAccountModal";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
+import Head from "next/head";
 
 interface MyAccountProps {
   userId: number;
@@ -39,7 +45,6 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
   if (!petOwner && !petBusiness) {
     return null;
   }
-
   const accountStatus = petOwner
     ? petOwner.accountStatus
     : petBusiness.accountStatus;
@@ -49,8 +54,25 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
     accountStatus === AccountStatusEnum.Active ? "Deactivate" : " Reactivate";
 
   const dateCreated = formatISODateString(
-    petOwner ? petOwner.dateCreated : petBusiness.dateCreated,
+    petOwner ? petOwner.dateCreated : petBusiness.dateCreated
   );
+
+  // Determine if deactivate/reactivate button should be shown for clarity
+  const checkDisplayDeactivateReactivate = () => {
+    if (accountStatus === AccountStatusEnum.Active) {
+      return true; // any active account can see this
+    } else if (accountStatus === AccountStatusEnum.Inactive && petOwner) {
+      return true; // any inactive pet owner can see this
+    } else if (
+      accountStatus === AccountStatusEnum.Inactive &&
+      petBusiness &&
+      petBusiness.petBusinessApplication
+    ) {
+      return true; // any inactive pet business with a pre-existing application can see this
+    } else {
+      return false;
+    }
+  };
 
   return (
     <>
@@ -94,6 +116,24 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
             </Accordion.Panel>
           </Accordion.Item>
 
+          {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
+            petBusiness.accountStatus !== AccountStatusEnum.Pending && (
+              <Accordion.Item value="addresses">
+                <Accordion.Control>
+                  <Group>
+                    <IconAddressBook color={theme.colors.indigo[5]} />
+                    <Text size="lg">Addresses</Text>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel p="md">
+                  <AddressInfoForm
+                    petBusiness={petBusiness}
+                    refetch={refetchPetBusiness}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+
           <Accordion.Item value="password">
             <Accordion.Control>
               <Group>
@@ -109,8 +149,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
             </Accordion.Panel>
           </Accordion.Item>
 
-          {accountStatus === AccountStatusEnum.Active ||
-          accountStatus === AccountStatusEnum.Inactive ? (
+          {checkDisplayDeactivateReactivate() && (
             <Accordion.Item value="deactivate-reactivate">
               <Accordion.Control>
                 <Group>
@@ -136,7 +175,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                 />
               </Accordion.Panel>
             </Accordion.Item>
-          ) : null}
+          )}
         </Accordion>
       </Container>
     </>
