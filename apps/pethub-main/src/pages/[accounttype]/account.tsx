@@ -113,7 +113,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
               <Accordion.Control>
                 <Group>
                   <IconAddressBook color={theme.colors.indigo[5]} />
-                  <Text size="lg">Manage addresses</Text>
+                  <Text size="lg">Addresses</Text>
                 </Group>
               </Accordion.Control>
               <Accordion.Panel p="md">
