@@ -15,6 +15,7 @@ interface UserGroupPermissionsForm {
   onCancel(): void;
   onClickEdit(): void;
   onSubmit(values: any): void;
+  disabled?: boolean;
 }
 
 const UserGroupPermissionsForm = ({
@@ -24,6 +25,7 @@ const UserGroupPermissionsForm = ({
   onCancel,
   onClickEdit,
   onSubmit,
+  disabled,
 }: UserGroupPermissionsForm) => {
   const { data: permissions = [] } = useGetAllPermissions();
 
@@ -62,11 +64,13 @@ const UserGroupPermissionsForm = ({
       ) : null}
 
       {permissionsCheckboxes}
-      <EditCancelSaveButtons
-        isEditing={isEditing}
-        onClickCancel={onCancel}
-        onClickEdit={onClickEdit}
-      />
+      {disabled ? null : (
+        <EditCancelSaveButtons
+          isEditing={isEditing}
+          onClickCancel={onCancel}
+          onClickEdit={onClickEdit}
+        />
+      )}
     </form>
   );
 };

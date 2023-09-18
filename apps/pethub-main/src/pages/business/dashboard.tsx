@@ -1,4 +1,5 @@
 import { Badge, Container, Group, Text } from "@mantine/core";
+import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
@@ -31,22 +32,28 @@ export default function Dashboard({ userId, accountType }: DashboardProps) {
   }, [petBusinessApplication]);
 
   return (
-    <Container mt="50px" mb="xl">
-      {applicationStatus !== BusinessApplicationStatusEnum.Approved && (
-        <ApplicationStatusAlert
-          forDashboard={true}
-          applicationStatus={applicationStatus}
-          remarks={
-            petBusinessApplication && petBusinessApplication.adminRemarks
-          }
-        />
-      )}
-      <Group position="left">
-        {applicationStatus === BusinessApplicationStatusEnum.Approved && (
-          <PageTitle title="Dashboard" />
+    <>
+      <Head>
+        <title>Business Dashboard - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container mt="50px" mb="xl">
+        {applicationStatus !== BusinessApplicationStatusEnum.Approved && (
+          <ApplicationStatusAlert
+            forDashboard={true}
+            applicationStatus={applicationStatus}
+            remarks={
+              petBusinessApplication && petBusinessApplication.adminRemarks
+            }
+          />
         )}
-      </Group>
-    </Container>
+        <Group position="left">
+          {applicationStatus === BusinessApplicationStatusEnum.Approved && (
+            <PageTitle title="Dashboard" />
+          )}
+        </Group>
+      </Container>
+    </>
   );
 }
 

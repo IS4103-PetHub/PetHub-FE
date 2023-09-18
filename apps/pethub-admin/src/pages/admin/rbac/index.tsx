@@ -3,9 +3,12 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import Head from "next/head";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -14,14 +17,28 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
 import { useDeleteUserGroup, useGetAllUserGroups } from "@/hooks/rbac";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
-import { UserGroup } from "@/types/types";
+import {
+  EMPTY_STATE_DELAY_MS,
+  PermissionsCodeEnum,
+  TABLE_PAGE_SIZE,
+} from "@/types/constants";
+import { Permission, UserGroup } from "@/types/types";
 
-export default function RBAC() {
+interface RbacProps {
+  permissions: Permission[];
+}
+
+export default function Rbac({ permissions }: RbacProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteRbac);
+  const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadRbac);
 
   const {
     data: userGroups = [],
@@ -72,7 +89,7 @@ export default function RBAC() {
         title: "User Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `User group ${id} deleted successfully.`,
+        message: `User group ID: ${id} deleted successfully.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -110,6 +127,10 @@ export default function RBAC() {
 
   if (isError) {
     return ErrorAlert("User Groups");
+  }
+
+  if (!canRead) {
+    return <NoPermissionsMessage />;
   }
 
   const renderContent = () => {
@@ -154,6 +175,7 @@ export default function RBAC() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
+            disabled={!canWrite}
           />
         )}
       </>
@@ -161,16 +183,37 @@ export default function RBAC() {
   };
 
   return (
-    <Container fluid>
-      <Group position="apart" mb="xl">
-        <PageTitle title="Role-based Access Control" />
-        <LargeCreateButton
-          text="Create User Group"
-          onClick={() => router.push(`${router.asPath}/create`)}
-        />
-      </Group>
+    <>
+      <Head>
+        <title>RBAC User Groups - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart" mb="xl">
+          <PageTitle title="Role-based Access Control" />
+          {canWrite ? (
+            <LargeCreateButton
+              text="Create User Group"
+              onClick={() => router.push(`${router.asPath}/create`)}
+            />
+          ) : null}
+        </Group>
 
-      {renderContent()}
-    </Container>
+        {renderContent()}
+      </Container>
+    </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { permissions } };
 }

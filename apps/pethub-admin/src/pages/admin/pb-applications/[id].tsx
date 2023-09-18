@@ -15,31 +15,50 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
-import ApplicationDetails from "@/components/pbapplications/ApplicationDetails";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
+import ApplicationDetails from "@/components/pb-applications/ApplicationDetails";
 import {
   useApprovePetBusinessApplication,
   useGetPetBusinessApplicationById,
   useRejectPetBusinessApplication,
 } from "@/hooks/pet-business-application";
-import { BusinessApplicationStatusEnum } from "@/types/constants";
+import {
+  BusinessApplicationStatusEnum,
+  PermissionsCodeEnum,
+} from "@/types/constants";
 import {
   ApprovePetBusinessApplicationPayload,
+  Permission,
   RejectPetBusinessApplicationPayload,
 } from "@/types/types";
 
 interface PetBusinessApplicationDetailsProps {
   userId: number;
+  permissions: Permission[];
 }
 
 export default function PetBusinessApplicationDetails({
   userId,
+  permissions,
 }: PetBusinessApplicationDetailsProps) {
   const router = useRouter();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WritePBApplications,
+  );
+  const canRead = permissionCodes.includes(
+    PermissionsCodeEnum.ReadPBApplications,
+  );
+
   const [applicationStatus, setApplicationStatus] =
     useState<BusinessApplicationStatusEnum>();
   const queryClient = useQueryClient();
@@ -213,81 +232,97 @@ export default function PetBusinessApplicationDetails({
     return null;
   }
 
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   return (
-    <Container fluid>
-      <Group position="apart" mb="xl">
-        <Group>
-          <PageTitle title="Viewing Application Details" />
-          <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
-            <>Application ID: {applicationId}</>
-          </Badge>
-        </Group>
-        <LargeBackButton
-          text="Back to applications"
-          onClick={() => {
-            window.location.href = "/admin/pb-applications";
-          }}
-        />
-      </Group>
-      <Box>
-        <ApplicationDetails
-          applicationStatus={applicationStatus}
-          application={petBusinessApplication}
-          actionButtonGroup={actionButtonGroup}
-        />
-        <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))} />
-      </Box>
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Confirm Action"
-        centered
-        padding="1.5rem"
-        size="md"
-      >
-        <Text>
-          {rejectButtonChosen
-            ? "Are you sure you want reject this application? You may specify an optional remark to help the pet business understand why their application was rejected and what they should update."
-            : "Are you sure you want to approve this application?"}
-        </Text>
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <Grid mt="md" mb="md">
-            <Grid.Col span={12}>
-              {rejectButtonChosen && (
-                <Textarea
-                  label="Remark"
-                  placeholder="Enter a remark here..."
-                  {...form.getInputProps("remark")}
-                />
-              )}
-            </Grid.Col>
-          </Grid>
-          <Group mt="25px" position="right">
-            <Button type="reset" color="gray" onClick={close}>
-              Cancel
-            </Button>
-            {rejectButtonChosen ? (
-              <Button type="submit" onClick={close} color="red">
-                Reject
-              </Button>
-            ) : (
-              <Button type="submit" onClick={close} color="green">
-                Approve
-              </Button>
-            )}
+    <>
+      <Head>
+        <title>Pet Business Application Details - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart" mb="xl">
+          <Group>
+            <PageTitle title="Viewing Application Details" />
+            <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
+              <>Application ID: {applicationId}</>
+            </Badge>
           </Group>
-        </form>
-      </Modal>
-    </Container>
+          <LargeBackButton
+            text="Back to applications"
+            onClick={() => {
+              window.location.href = "/admin/pb-applications";
+            }}
+          />
+        </Group>
+        <Box>
+          <ApplicationDetails
+            applicationStatus={applicationStatus}
+            application={petBusinessApplication}
+            actionButtonGroup={actionButtonGroup}
+            disabled={!canWrite}
+          />
+          <form
+            onSubmit={form.onSubmit((values: any) => handleSubmit(values))}
+          />
+        </Box>
+        <Modal
+          opened={opened}
+          onClose={close}
+          title="Confirm Action"
+          centered
+          padding="1.5rem"
+          size="md"
+        >
+          <Text>
+            {rejectButtonChosen
+              ? "Are you sure you want reject this application? You may specify an optional remark to help the pet business understand why their application was rejected and what they should update."
+              : "Are you sure you want to approve this application?"}
+          </Text>
+          <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+            <Grid mt="md" mb="md">
+              <Grid.Col span={12}>
+                {rejectButtonChosen && (
+                  <Textarea
+                    label="Remark"
+                    placeholder="Enter a remark here..."
+                    {...form.getInputProps("remark")}
+                  />
+                )}
+              </Grid.Col>
+            </Grid>
+            <Group mt="25px" position="right">
+              <Button type="reset" color="gray" onClick={close}>
+                Cancel
+              </Button>
+              {rejectButtonChosen ? (
+                <Button type="submit" onClick={close} color="red">
+                  Reject
+                </Button>
+              ) : (
+                <Button type="submit" onClick={close} color="green">
+                  Approve
+                </Button>
+              )}
+            </Group>
+          </form>
+        </Modal>
+      </Container>
+    </>
   );
 }
 
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context) {
   const session = await getSession(context);
-
   if (!session) return { props: {} };
 
-  const userId = (session.user as any)["userId"];
-
-  return { props: { userId } };
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { userId, permissions } };
 }

@@ -22,10 +22,12 @@ import UserDetails from "./UserDetails";
 
 interface InternalUserTableProps {
   sessionUserId: number;
+  disabled: boolean;
 }
 
 export default function InternalUserTable({
   sessionUserId,
+  disabled,
 }: InternalUserTableProps) {
   const {
     data: internalUsers = [],
@@ -67,9 +69,7 @@ export default function InternalUserTable({
     // Compute pagination slice indices based on the current page
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    if (internalUsers.length > 0 && hasNoFetchedRecords) {
-      sethasNoFetchedRecords(false);
-    }
+
     // Sort internalUsers based on the current sort status
     const sortedInternalUsers = sortBy(
       internalUsers,
@@ -240,13 +240,15 @@ export default function InternalUserTable({
     <>
       <Group mb="xl" position="apart">
         <PageTitle title="Internal Users" />
-        <Button
-          size="md"
-          leftIcon={<IconUserPlus />}
-          onClick={() => handleCreateInternalUserOpenModal()}
-        >
-          Create Internal User
-        </Button>
+        {disabled ? null : (
+          <Button
+            size="md"
+            leftIcon={<IconUserPlus />}
+            onClick={() => handleCreateInternalUserOpenModal()}
+          >
+            Create Internal User
+          </Button>
+        )}
       </Group>
       {renderContent()}
       <Modal
@@ -262,7 +264,7 @@ export default function InternalUserTable({
             if (success) {
               handleViewDetailsCloseModal();
             }
-            refetch();
+            // refetch();
           }}
           onUserUpdated={(success) => {
             if (success) {
@@ -271,6 +273,7 @@ export default function InternalUserTable({
             refetch();
           }}
           sessionUserId={sessionUserId}
+          disabled={disabled}
         />
       </Modal>
       <Modal

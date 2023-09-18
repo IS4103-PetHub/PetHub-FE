@@ -11,9 +11,14 @@ import RemoveUserFromGroupButton from "./RemoveUserFromGroupButton";
 interface MembershipsTableProps {
   userGroup?: UserGroup;
   refetch(): void;
+  disabled?: boolean;
 }
 
-const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
+const MembershipsTable = ({
+  userGroup,
+  refetch,
+  disabled,
+}: MembershipsTableProps) => {
   const [userGroupMemberships, setUserGroupMemberships] = useState<
     UserGroupMembership[]
   >(userGroup?.userGroupMemberships ?? []);
@@ -88,6 +93,7 @@ const MembershipsTable = ({ userGroup, refetch }: MembershipsTableProps) => {
           accessor: "actions",
           title: "Actions",
           width: "10vw",
+          hidden: disabled,
           render: (userGroupMembership) => (
             <RemoveUserFromGroupButton
               userName={`${userGroupMembership?.user?.internalUser?.firstName} ${userGroupMembership?.user?.internalUser?.lastName}`}

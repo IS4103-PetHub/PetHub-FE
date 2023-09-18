@@ -138,7 +138,7 @@ const SideNavBar = () => {
           >
             PetHub Admin
           </Text>
-          {/* <LightDarkModeToggle /> */}
+          <LightDarkModeToggle />
         </Group>
         {links}
       </Navbar.Section>

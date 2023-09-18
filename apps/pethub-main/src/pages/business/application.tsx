@@ -25,6 +25,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
@@ -245,113 +246,119 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   }
 
   return (
-    <Container mt="50px" mb="xl">
-      {petBusinessApplication &&
-        applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
-          <ApplicationStatusAlert
-            applicationStatus={applicationStatus}
-            forDashboard={false}
-            remarks={
-              petBusinessApplication && petBusinessApplication.adminRemarks
-            }
-          />
-        )}
-      <Group position="left">
-        <PageTitle title="Pet Business Application" />
-        {applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
-          <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
-            <>
-              Application ID:{" "}
-              {petBusinessApplication &&
-                petBusinessApplication.petBusinessApplicationId}
-            </>
-          </Badge>
-        )}
-      </Group>
-      <Text size="sm" color="dimmed">
-        Apply to be a Pet Business Partner with us today!
-      </Text>
-      {!loading && (
-        <form
-          onSubmit={applicationForm.onSubmit((values: any) =>
-            handleSubmit(values),
+    <>
+      <Head>
+        <title>Pet Business Application - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container mt="50px" mb="xl">
+        {petBusinessApplication &&
+          applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
+            <ApplicationStatusAlert
+              applicationStatus={applicationStatus}
+              forDashboard={false}
+              remarks={
+                petBusinessApplication && petBusinessApplication.adminRemarks
+              }
+            />
           )}
-        >
-          <Grid mt="sm" mb="sm" gutter="lg">
-            <Grid.Col span={12}>
-              <Select
-                disabled={isDisabled}
-                withAsterisk
-                data={businessTypeData}
-                label="Business type"
-                placeholder="Select a business type"
-                {...applicationForm.getInputProps("businessType")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <TextInput
-                disabled={isDisabled}
-                withAsterisk
-                label="Business email"
-                placeholder="example@email.com"
-                {...applicationForm.getInputProps("businessEmail")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <TextInput
-                disabled={isDisabled}
-                placeholder="https://www.pet-groomer.com"
-                label="Business website URL"
-                {...applicationForm.getInputProps("websiteURL")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <Textarea
-                disabled={isDisabled}
-                withAsterisk
-                placeholder="Description of services..."
-                label="Business description"
-                autosize
-                minRows={3}
-                maxRows={3}
-                {...applicationForm.getInputProps("businessDescription")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <Text fz="0.875rem" color="#212529" fw={500}>
-                Addresses
-              </Text>
-              <AddressSidewaysScrollThing
-                addressList={applicationForm.values.businessAddresses}
-                openModal={open}
-                onRemoveAddress={handleRemoveAddress}
-                isDisabled={isDisabled}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <Button
-                type="submit"
-                fullWidth
-                leftIcon={<IconSend size="1rem" />}
-                uppercase
-                disabled={isDisabled}
-              >
-                {applicationStatus === BusinessApplicationStatusEnum.Rejected
-                  ? "Update Application"
-                  : "Submit Application"}
-              </Button>
-            </Grid.Col>
-          </Grid>
-        </form>
-      )}
-      <AddAddressModal
-        opened={isAddAddressModalOpened}
-        open={open}
-        close={close}
-        addAddressForm={addressForm}
-        handleAddAddress={handleAddAddress}
-      />
-    </Container>
+        <Group position="left">
+          <PageTitle title="Pet Business Application" />
+          {applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
+            <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
+              <>
+                Application ID:{" "}
+                {petBusinessApplication &&
+                  petBusinessApplication.petBusinessApplicationId}
+              </>
+            </Badge>
+          )}
+        </Group>
+        <Text size="sm" color="dimmed">
+          Apply to be a Pet Business Partner with us today!
+        </Text>
+        {!loading && (
+          <form
+            onSubmit={applicationForm.onSubmit((values: any) =>
+              handleSubmit(values),
+            )}
+          >
+            <Grid mt="sm" mb="sm" gutter="lg">
+              <Grid.Col span={12}>
+                <Select
+                  disabled={isDisabled}
+                  withAsterisk
+                  data={businessTypeData}
+                  label="Business type"
+                  placeholder="Select a business type"
+                  {...applicationForm.getInputProps("businessType")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <TextInput
+                  disabled={isDisabled}
+                  withAsterisk
+                  label="Business email"
+                  placeholder="example@email.com"
+                  {...applicationForm.getInputProps("businessEmail")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <TextInput
+                  disabled={isDisabled}
+                  placeholder="https://www.pet-groomer.com"
+                  label="Business website URL"
+                  {...applicationForm.getInputProps("websiteURL")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <Textarea
+                  disabled={isDisabled}
+                  withAsterisk
+                  placeholder="Description of services..."
+                  label="Business description"
+                  autosize
+                  minRows={3}
+                  maxRows={3}
+                  {...applicationForm.getInputProps("businessDescription")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <Text fz="0.875rem" color="#212529" fw={500}>
+                  Addresses
+                </Text>
+                <AddressSidewaysScrollThing
+                  addressList={applicationForm.values.businessAddresses}
+                  openModal={open}
+                  onRemoveAddress={handleRemoveAddress}
+                  isDisabled={isDisabled}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  leftIcon={<IconSend size="1rem" />}
+                  uppercase
+                  disabled={isDisabled}
+                >
+                  {applicationStatus === BusinessApplicationStatusEnum.Rejected
+                    ? "Update Application"
+                    : "Submit Application"}
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </form>
+        )}
+        <AddAddressModal
+          opened={isAddAddressModalOpened}
+          open={open}
+          close={close}
+          addAddressForm={addressForm}
+          handleAddAddress={handleAddAddress}
+        />
+      </Container>
+    </>
   );
 }
 

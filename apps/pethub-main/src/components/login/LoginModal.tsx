@@ -99,11 +99,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       ) {
         router.push("/business/dashboard");
       }
-      notifications.show({
-        message: "Login Successful",
-        color: "green",
-        autoClose: 5000,
-      });
       close();
     }
     const timer = setTimeout(() => {
