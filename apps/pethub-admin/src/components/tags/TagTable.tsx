@@ -60,7 +60,9 @@ const TagTable = ({
             ellipsis: true,
             width: 100,
             render: ({ lastUpdated }) => {
-              return new Date(lastUpdated).toLocaleDateString();
+              return lastUpdated
+                ? new Date(lastUpdated).toLocaleDateString()
+                : "-";
             },
           },
           {
