@@ -64,6 +64,8 @@ const ServiceListingModal = ({
   const [imagePreview, setImagePreview] = useState([]);
   const [isUpdating, setUpdating] = useState(isUpdate);
   const [isViewing, setViewing] = useState(isView);
+  // used to force reload the fileinput after each touch
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   /*
    * Component Form
@@ -200,7 +202,10 @@ const ServiceListingModal = ({
   const categoryOptions = Object.values(ServiceCategoryEnum).map(
     (categoryValue) => ({
       value: categoryValue,
-      label: categoryValue.replace(/_/g, " "),
+      label: categoryValue
+        .replace(/_/g, " ")
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase()),
     }),
   );
 
@@ -281,6 +286,7 @@ const ServiceListingModal = ({
         files: [],
       });
     }
+    setFileInputKey((prevKey) => prevKey + 1);
   };
 
   const removeImage = (indexToRemove) => {
@@ -397,6 +403,8 @@ const ServiceListingModal = ({
               name="images" // Update the name to reflect multiple images
               multiple // Allow multiple file selection
               onChange={(files) => handleFileInputChange(files)}
+              capture={false}
+              key={fileInputKey}
             />
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
