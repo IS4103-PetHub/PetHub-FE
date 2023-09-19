@@ -6,11 +6,11 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
+import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
+import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { Address, PetBusiness } from "@/types/types";
 import { validateAddressName } from "@/util";
-import { AddAddressModal } from "../pbapplication/AddAddressModal";
-import { AddressSidewaysScrollThing } from "../pbapplication/AddressSidewaysScrollThing";
 
 interface AddressInfoFormProps {
   petBusiness: PetBusiness;
@@ -124,6 +124,7 @@ const AddressInfoForm = ({ petBusiness, refetch }: AddressInfoFormProps) => {
         <Grid>
           <Grid.Col>
             <AddressSidewaysScrollThing
+              hasAddCard={true}
               addressList={form.values.businessAddresses}
               openModal={open}
               onRemoveAddress={handleRemoveAddress}

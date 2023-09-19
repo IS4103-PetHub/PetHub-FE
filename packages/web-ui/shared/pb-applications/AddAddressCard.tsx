@@ -1,7 +1,7 @@
-import { Box, Card, Center } from "@mantine/core";
+import { Box, Card } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
-export const AddAddressCard = () => {
+const AddAddressCard = () => {
   return (
     <Card
       w={190}
@@ -36,3 +36,5 @@ export const AddAddressCard = () => {
     </Card>
   );
 };
+
+export default AddAddressCard;

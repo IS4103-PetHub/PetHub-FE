@@ -3,15 +3,13 @@ import {
   Modal,
   Box,
   TextInput,
-  Text,
-  Title,
   Button,
   Group,
 } from "@mantine/core";
 import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
-export const AddAddressModal = ({
+const AddAddressModal = ({
   opened,
   open,
   close,
@@ -97,3 +95,5 @@ export const AddAddressModal = ({
     </Modal>
   );
 };
+
+export default AddAddressModal;

@@ -31,6 +31,11 @@ export default function Dashboard({ userId, accountType }: DashboardProps) {
     }
   }, [petBusinessApplication]);
 
+  console.log(
+    "petBusinessApplication && petBusinessApplication.adminRemarks",
+    petBusinessApplication && petBusinessApplication.adminRemarks,
+  );
+
   return (
     <>
       <Head>

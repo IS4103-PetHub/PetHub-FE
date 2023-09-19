@@ -245,7 +245,7 @@ export default function PetBusinessApplicationDetails({
       <Container fluid>
         <Group position="apart" mb="xl">
           <Group>
-            <PageTitle title="Viewing Application Details" />
+            <PageTitle title="Application Details" />
             <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
               <>Application ID: {applicationId}</>
             </Badge>

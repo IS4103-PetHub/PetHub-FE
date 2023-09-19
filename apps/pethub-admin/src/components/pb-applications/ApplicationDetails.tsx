@@ -1,6 +1,7 @@
 import {
   Container,
   Group,
+  Center,
   Accordion,
   Textarea,
   rem,
@@ -14,9 +15,10 @@ import {
   IconAddressBook,
 } from "@tabler/icons-react";
 import React from "react";
+import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
+import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
 import { formatEnumToLetterCase } from "@/util";
-import { AddressSidewaysScrollThing } from "./AddressSidewaysScrollThing";
 import ApplicationStatusAlert from "./ApplicationStatusAlert";
 
 interface ApplicationDetailsProps {
@@ -97,6 +99,10 @@ export default function ApplicationDetails({
                 <Text>{application.businessEmail}</Text>
               </Group>
               <Group position="apart">
+                <Text fw={700}>Website URL</Text>
+                <Text>{application.websiteURL}</Text>
+              </Group>
+              <Group position="apart">
                 <Text fw={700}>Application created</Text>
                 <Text>
                   {new Date(application.dateCreated).toLocaleDateString()}
@@ -136,13 +142,22 @@ export default function ApplicationDetails({
             Addresses
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
-            <AddressSidewaysScrollThing
-              addressList={application.businessAddresses}
-            />
+            {application.businessAddresses.length === 0 ? (
+              <Center>
+                <Text variant="gradient">No addresses provided</Text>
+              </Center>
+            ) : (
+              <AddressSidewaysScrollThing
+                addressList={application.businessAddresses}
+                isDisabled={true}
+                hasAddCard={false}
+              />
+            )}
           </Accordion.Panel>
         </Accordion.Item>
 
-        {disabled ? null : (
+        {disabled ||
+        applicationStatus !== BusinessApplicationStatusEnum.Pending ? null : (
           <Accordion.Item value="action">
             <Accordion.Control
               icon={<IconAddressBook size={rem(20)} color="blue" />}
