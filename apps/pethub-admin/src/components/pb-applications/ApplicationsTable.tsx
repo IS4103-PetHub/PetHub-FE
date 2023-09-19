@@ -15,11 +15,7 @@ import {
   EMPTY_STATE_DELAY_MS,
 } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
-import {
-  formatEnumToLetterCase,
-  formatEnumValue,
-  searchPBApplications,
-} from "@/util";
+import { searchPBApplications } from "@/util";
 import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";

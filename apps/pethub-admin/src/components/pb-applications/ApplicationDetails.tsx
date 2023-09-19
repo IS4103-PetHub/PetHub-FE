@@ -16,7 +16,6 @@ import {
 import React from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import { PetBusinessApplication } from "@/types/types";
-import { formatEnumToLetterCase } from "@/util";
 import { AddressSidewaysScrollThing } from "./AddressSidewaysScrollThing";
 import ApplicationStatusAlert from "./ApplicationStatusAlert";
 
