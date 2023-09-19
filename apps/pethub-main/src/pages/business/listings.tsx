@@ -161,7 +161,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     return (
       <>
         <SearchBar
-          text="Search by Title, Category, Tags"
+          text="Search by title, category, tags"
           onSearch={handleSearch}
         />
         {isSearching && records.length === 0 ? (
@@ -187,7 +187,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
 
   return (
     <Container fluid>
-      <Group mt="xl" position="apart">
+      <Group position="apart">
         <PageTitle title="Service Listings Management" />
         <LargeCreateButton
           text="Create Service Listing"

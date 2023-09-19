@@ -4,13 +4,14 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
+import { getMinTableHeight } from "shared-utils";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { useAddMultipleUsersToUserGroup } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser, UserGroup } from "@/types/types";
-import { getMinTableHeight, searchInternalUsers } from "@/util";
+import { searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 
 interface AddUsersToUserGroupModalProps {
@@ -68,8 +69,7 @@ const AddUsersToUserGroupModal = ({
         message: `${selectedRecords.length} user(s) have been assigned to this group successfully!`,
       });
       refetch();
-      close();
-      setSelectedRecords([]);
+      handleCloseModal();
     } catch (error: any) {
       notifications.show({
         title: "Error Assigning User(s)",
@@ -120,7 +120,7 @@ const AddUsersToUserGroupModal = ({
           onSearch={handleSearch}
         />
         <DataTable
-          minHeight={getMinTableHeight(internalUsers)}
+          minHeight={getMinTableHeight(records)}
           columns={[
             {
               accessor: "userId",

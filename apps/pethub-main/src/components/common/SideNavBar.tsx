@@ -91,7 +91,7 @@ const data = [
   },
   {
     link: "/business/account",
-    label: "Account",
+    label: "My Account",
     icon: IconUser,
   },
   {

@@ -32,3 +32,25 @@ export function formatISODateString(dateString: string) {
   // e.g. 1 September 2023
   return dayjs(dateString).format("D MMMM YYYY");
 }
+
+// for tables inside pages that have variable length
+export function getMinTableHeight(records?: any[]) {
+  if (!records || records.length === 0) {
+    return 150;
+  }
+  // to account for pagination
+  if (records.length >= 10) {
+    return 560;
+  }
+  // 1 record to 9 records
+  if (records.length > 0) {
+    return 100;
+  }
+}
+
+export function formatStringToLetterCase(enumString: string) {
+  return enumString
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
