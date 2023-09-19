@@ -148,7 +148,9 @@ export default function ApplicationDetails({
           <Accordion.Panel mr="xl" ml="md">
             {application.businessAddresses.length === 0 ? (
               <Center>
-                <Text variant="gradient">No addresses provided</Text>
+                <Text color="dimmed" mb="md">
+                  No addresses provided
+                </Text>
               </Center>
             ) : (
               <AddressSidewaysScrollThing
