@@ -23,6 +23,7 @@ import {
   IconPlus,
   IconX,
 } from "@tabler/icons-react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/react";
 import React from "react";
@@ -125,11 +126,6 @@ export default function SignUp() {
         } else {
           router.push("/");
         }
-        notifications.show({
-          message: "Login Successful",
-          color: "green",
-          autoClose: 5000,
-        });
       }
     }
     setTimeout(() => {
@@ -294,61 +290,67 @@ export default function SignUp() {
     );
 
   return (
-    <BackgroundImage src="" className={classes.backgroundEffect}>
-      <Container className={classes.whiteBackground} p="50px">
-        <Group>
-          <IconDog size="2rem" />
-          <PageTitle title="Join the PetHub community" />
-        </Group>
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <Grid mt="md" mb="md">
-            <Grid.Col span={12}>
-              <SegmentedControl
-                color="dark"
-                fullWidth
-                size="md"
-                data={segmentedControlData}
-                {...form.getInputProps("accountType")}
-              />
-            </Grid.Col>
-            {conditionalFields}
-            <Grid.Col span={12}>
-              <TextInput
-                label="Contact number"
-                placeholder="Contact number"
-                {...form.getInputProps("contactNumber")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <TextInput
-                label="Email"
-                placeholder="email@email.com"
-                {...form.getInputProps("email")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <PasswordInput
-                placeholder="Password"
-                label="Password"
-                {...form.getInputProps("password")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <PasswordBar password={form.values.password} />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <PasswordInput
-                placeholder="Confirm password"
-                label="Confirm password"
-                {...form.getInputProps("confirmPassword")}
-              />
-            </Grid.Col>
-          </Grid>
-          <Button type="submit" fullWidth leftIcon={<IconPlus size="1rem" />}>
-            Create account
-          </Button>
-        </form>
-      </Container>
-    </BackgroundImage>
+    <>
+      <Head>
+        <title>Sign Up - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <BackgroundImage src="" className={classes.backgroundEffect}>
+        <Container className={classes.whiteBackground} p="50px">
+          <Group>
+            <IconDog size="2rem" />
+            <PageTitle title="Join the PetHub community" />
+          </Group>
+          <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+            <Grid mt="md" mb="md">
+              <Grid.Col span={12}>
+                <SegmentedControl
+                  color="dark"
+                  fullWidth
+                  size="md"
+                  data={segmentedControlData}
+                  {...form.getInputProps("accountType")}
+                />
+              </Grid.Col>
+              {conditionalFields}
+              <Grid.Col span={12}>
+                <TextInput
+                  label="Contact number"
+                  placeholder="Contact number"
+                  {...form.getInputProps("contactNumber")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <TextInput
+                  label="Email"
+                  placeholder="email@email.com"
+                  {...form.getInputProps("email")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <PasswordInput
+                  placeholder="Password"
+                  label="Password"
+                  {...form.getInputProps("password")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <PasswordBar password={form.values.password} />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <PasswordInput
+                  placeholder="Confirm password"
+                  label="Confirm password"
+                  {...form.getInputProps("confirmPassword")}
+                />
+              </Grid.Col>
+            </Grid>
+            <Button type="submit" fullWidth leftIcon={<IconPlus size="1rem" />}>
+              Create account
+            </Button>
+          </form>
+        </Container>
+      </BackgroundImage>
+    </>
   );
 }

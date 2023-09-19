@@ -1,4 +1,4 @@
-import { Center } from "@mantine/core";
+import { Center, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -9,9 +9,16 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-application";
-import { BusinessApplicationStatusEnum } from "@/types/constants";
+import {
+  BusinessApplicationStatusEnum,
+  EMPTY_STATE_DELAY_MS,
+} from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
-import { formatEnumToLetterCase, formatEnumValue } from "@/util";
+import {
+  formatEnumToLetterCase,
+  formatEnumValue,
+  searchPBApplications,
+} from "@/util";
 import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
@@ -53,6 +60,7 @@ export default function ApplicationsTable({
     petBusinessApplications,
   );
   const router = useRouter();
+  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
 
   useEffect(() => {
@@ -77,6 +85,16 @@ export default function ApplicationsTable({
     setRecords(newRecords);
   }, [page, sortStatus, petBusinessApplications, applicationStatus]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (petBusinessApplications.length === 0) {
+        sethasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (isError) {
     return errorAlert("Error fetching Pet Business Applications");
   }
@@ -91,31 +109,7 @@ export default function ApplicationsTable({
     }
 
     setIsSearching(true);
-    const results = records.filter(
-      (petBusinessApplication: PetBusinessApplication) => {
-        const formattedBusinessType = formatEnumValue(
-          petBusinessApplication.businessType,
-        );
-        return (
-          petBusinessApplication.petBusiness.companyName
-            .toLowerCase()
-            .includes(searchStr.toLowerCase()) ||
-          (petBusinessApplication.petBusiness.uen &&
-            searchStr.includes(
-              petBusinessApplication.petBusiness.uen.toString(),
-            ) &&
-            searchStr.length <=
-              petBusinessApplication.petBusiness.uen.toString().length) ||
-          formattedBusinessType.includes(searchStr.toLowerCase()) ||
-          (petBusinessApplication.petBusinessApplicationId &&
-            searchStr.includes(
-              petBusinessApplication.petBusinessApplicationId.toString(),
-            ) &&
-            searchStr.length <=
-              petBusinessApplication.petBusinessApplicationId.toString().length)
-        );
-      },
-    );
+    const results = searchPBApplications(records, searchStr);
     setRecords(results);
     setPage(1);
   };
@@ -123,10 +117,15 @@ export default function ApplicationsTable({
   return (
     <>
       {petBusinessApplications.length === 0 ? (
-        <SadDimmedMessage
-          title="No Pet Business Applications found"
-          subtitle=""
-        />
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <SadDimmedMessage title="No pet business applications found" />
+          )}
+        </Transition>
       ) : (
         <>
           <SearchBar

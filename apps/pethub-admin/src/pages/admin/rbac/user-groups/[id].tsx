@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Badge,
   Container,
   Group,
   Stack,
@@ -17,10 +18,14 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import Head from "next/head";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import AddUsersToUserGroupModal from "@/components/rbac/AddUsersToUserGroupModal";
 import MembershipsTable from "@/components/rbac/MembershipsTable";
 import UserGroupInfoForm from "@/components/rbac/UserGroupInfoForm";
@@ -30,15 +35,26 @@ import {
   useGetUserGroupById,
   useUpdateUserGroup,
 } from "@/hooks/rbac";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { Permission } from "@/types/types";
 
 interface UserGroupDetailsProps {
   groupId: number;
+  permissions: Permission[];
 }
 
-export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
+export default function UserGroupDetails({
+  groupId,
+  permissions,
+}: UserGroupDetailsProps) {
   const theme = useMantineTheme();
   const queryClient = useQueryClient();
   const router = useRouter();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteRbac);
+  const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadRbac);
 
   const [isEditingGroupInfo, setIsEditingGroupInfo] = useToggle();
   const [isEditingPermissions, setIsEditingPermissions] = useToggle();
@@ -153,7 +169,7 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
         title: "User Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `User group ${id} deleted successfully.`,
+        message: `User group ID: ${id} deleted successfully.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -169,93 +185,127 @@ export default function UserGroupDetails({ groupId }: UserGroupDetailsProps) {
     }
   };
 
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   return (
-    <Container fluid>
-      <Group position="apart">
-        <PageTitle title="User Group Details" />
-        <DeleteActionButtonModal
-          title={`Are you sure you want to delete ${userGroup?.name}?`}
-          subtitle="Any users currently assigned to this user group will be unassigned."
-          onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
-          large
-        />
-      </Group>
-
-      <Accordion
-        multiple
-        value={openedAccordions}
-        onChange={(values) => handleChangeAccordion(values)}
-        mb="xl"
-      >
-        <Accordion.Item value="groupInfo">
-          <Accordion.Control>
-            <Group>
-              <IconClipboardText color={theme.colors.indigo[5]} />
-              <Text weight={600} size="xl">
-                Information
-              </Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel mb="xs">
-            <UserGroupInfoForm
-              userGroup={userGroup}
-              form={groupInfoForm}
-              isEditing={isEditingGroupInfo}
-              onCancel={handleCancelEditGroupInfo}
-              onClickEdit={() => setIsEditingGroupInfo(true)}
-              onSubmit={handleUpdateUserGroup}
+    <>
+      <Head>
+        <title>User Group Details - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart">
+          <Group position="left">
+            <PageTitle title="User Group Details" />
+            <Badge size="lg">Group Id: {groupId}</Badge>
+          </Group>
+          {canWrite ? (
+            <DeleteActionButtonModal
+              title={`Are you sure you want to delete ${userGroup?.name}?`}
+              subtitle="Any users currently assigned to this user group will be unassigned."
+              onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
+              large
             />
-          </Accordion.Panel>
-        </Accordion.Item>
+          ) : null}
+        </Group>
 
-        <Accordion.Item value="groupPermissions">
-          <Accordion.Control>
-            <Group>
-              <IconLockOpen color={theme.colors.indigo[5]} />
-              <Text weight={600} size="xl">
-                Permissions (
-                {isEditingPermissions
-                  ? permissionsForm.values.permissionIds.length
-                  : getCurrentPermissionIds().length}
-                )
-              </Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel mb="xs">
-            <UserGroupPermissionsForm
-              userGroup={userGroup}
-              form={permissionsForm}
-              isEditing={isEditingPermissions}
-              onCancel={handleCancelEditPermissions}
-              onClickEdit={() => setIsEditingPermissions(true)}
-              onSubmit={handleUpdateUserGroup}
-            />
-          </Accordion.Panel>
-        </Accordion.Item>
+        <Accordion
+          multiple
+          value={openedAccordions}
+          onChange={(values) => handleChangeAccordion(values)}
+          mb="xl"
+        >
+          <Accordion.Item value="groupInfo">
+            <Accordion.Control>
+              <Group>
+                <IconClipboardText color={theme.colors.indigo[5]} />
+                <Text weight={600} size="xl">
+                  Information
+                </Text>
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel mb="xs">
+              <UserGroupInfoForm
+                userGroup={userGroup}
+                form={groupInfoForm}
+                isEditing={isEditingGroupInfo}
+                onCancel={handleCancelEditGroupInfo}
+                onClickEdit={() => setIsEditingGroupInfo(true)}
+                onSubmit={handleUpdateUserGroup}
+                disabled={!canWrite}
+              />
+            </Accordion.Panel>
+          </Accordion.Item>
 
-        <Accordion.Item value="groupMemberships">
-          <Accordion.Control>
-            <Group>
-              <IconUsersGroup color={theme.colors.indigo[5]} />
-              <Text weight={600} size="xl">
-                Members ({userGroup?.userGroupMemberships?.length})
-              </Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel mb="xs">
-            <AddUsersToUserGroupModal userGroup={userGroup} refetch={refetch} />
-            {userGroup?.userGroupMemberships &&
-            userGroup.userGroupMemberships.length > 0 ? (
-              <MembershipsTable userGroup={userGroup} refetch={refetch} />
-            ) : null}
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion>
-    </Container>
+          <Accordion.Item value="groupPermissions">
+            <Accordion.Control>
+              <Group>
+                <IconLockOpen color={theme.colors.indigo[5]} />
+                <Text weight={600} size="xl">
+                  Permissions (
+                  {isEditingPermissions
+                    ? permissionsForm.values.permissionIds.length
+                    : getCurrentPermissionIds().length}
+                  )
+                </Text>
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel mb="xs">
+              <UserGroupPermissionsForm
+                userGroup={userGroup}
+                form={permissionsForm}
+                isEditing={isEditingPermissions}
+                onCancel={handleCancelEditPermissions}
+                onClickEdit={() => setIsEditingPermissions(true)}
+                onSubmit={handleUpdateUserGroup}
+                disabled={!canWrite}
+              />
+            </Accordion.Panel>
+          </Accordion.Item>
+
+          <Accordion.Item value="groupMemberships">
+            <Accordion.Control>
+              <Group>
+                <IconUsersGroup color={theme.colors.indigo[5]} />
+                <Text weight={600} size="xl">
+                  Members ({userGroup?.userGroupMemberships?.length})
+                </Text>
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel mb="xs">
+              {canWrite ? (
+                <AddUsersToUserGroupModal
+                  userGroup={userGroup}
+                  refetch={refetch}
+                />
+              ) : null}
+              {userGroup?.userGroupMemberships &&
+              userGroup.userGroupMemberships.length > 0 ? (
+                <MembershipsTable
+                  userGroup={userGroup}
+                  refetch={refetch}
+                  disabled={!canWrite}
+                />
+              ) : null}
+            </Accordion.Panel>
+          </Accordion.Item>
+        </Accordion>
+      </Container>
+    </>
   );
 }
-
-export async function getServerSideProps(context: any) {
+export async function getServerSideProps(context) {
   const groupId = context.params.id;
-  return { props: { groupId } };
+  const session = await getSession(context);
+  if (!session) return { props: { groupId } };
+
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { groupId, permissions } };
 }

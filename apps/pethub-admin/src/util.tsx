@@ -1,6 +1,11 @@
 import { Alert, Group, Loader } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
-import { InternalUser, PetBusiness, PetOwner } from "./types/types";
+import {
+  InternalUser,
+  PetBusiness,
+  PetBusinessApplication,
+  PetOwner,
+} from "./types/types";
 
 /*
   Validate a password string to be at least 8 characters long, contain at least 1 letter and 1 digit, and not contain spaces
@@ -69,7 +74,7 @@ export const loader = () => {
 };
 
 /*
-  Search helpers for INTERNAL USER, PET BUSINESS, PET OWNER
+  Search helpers for INTERNAL USER, PET BUSINESS, PET OWNER, PB APPLICATION
 */
 
 export function searchInternalUsers(
@@ -114,6 +119,28 @@ export function searchPetOwners(petOwners: PetOwner[], searchStr: string) {
         searchStr.includes(petOwner.userId.toString()) &&
         searchStr.length <= petOwner.userId.toString().length),
   );
+}
+
+export function searchPBApplications(
+  applications: PetBusinessApplication[],
+  searchStr: string,
+) {
+  return applications.filter((application: PetBusinessApplication) => {
+    const formattedBusinessType = formatEnumValue(application.businessType);
+    return (
+      application.petBusiness.companyName
+        .toLowerCase()
+        .includes(searchStr.toLowerCase()) ||
+      (application.petBusiness.uen &&
+        searchStr.includes(application.petBusiness.uen.toString()) &&
+        searchStr.length <= application.petBusiness.uen.toString().length) ||
+      formattedBusinessType.includes(searchStr.toLowerCase()) ||
+      (application.petBusinessApplicationId &&
+        searchStr.includes(application.petBusinessApplicationId.toString()) &&
+        searchStr.length <=
+          application.petBusinessApplicationId.toString().length)
+    );
+  });
 }
 
 // for tables inside pages that have variable length

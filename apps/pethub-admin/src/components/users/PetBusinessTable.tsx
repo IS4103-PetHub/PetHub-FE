@@ -53,9 +53,7 @@ export default function PetBusinessTable() {
     // Compute pagination slice indices based on the current page
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    if (petBusinesses.length > 0 && hasNoFetchedRecords) {
-      sethasNoFetchedRecords(false);
-    }
+
     // Sort petBusinesses based on the current sort status
     const sortedPetBusinesses = sortBy(
       petBusinesses,
@@ -114,7 +112,6 @@ export default function PetBusinessTable() {
             <div style={styles}>
               <SadDimmedMessage
                 title="No pet businesses found"
-                subtitle=""
                 disabled={!hasNoFetchedRecords}
               />
             </div>

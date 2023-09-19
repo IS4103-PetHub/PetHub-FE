@@ -3,7 +3,7 @@ import { IconMoodSad } from "@tabler/icons-react";
 
 interface SadDimmedMessageProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   disabled?: boolean;
 }
 
@@ -40,9 +40,11 @@ const SadDimmedMessage = ({
           {title}
         </Text>
 
-        <Text size="md" color="dimmed" align="center">
-          {subtitle}
-        </Text>
+        {subtitle ? (
+          <Text size="md" color="dimmed" align="center">
+            {subtitle}
+          </Text>
+        ) : null}
       </Box>
     </Container>
   );

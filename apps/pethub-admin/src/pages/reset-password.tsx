@@ -9,6 +9,7 @@ import {
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
 import { ResetPasswordPayload, validatePassword } from "shared-utils";
@@ -71,50 +72,56 @@ export default function ResetPassword() {
   };
 
   return (
-    <Container fluid>
-      <Container size={420} mt={100}>
-        <Title align="center">Reset your password</Title>
-        <Text color="dark" size="sm" align="center" mt={5}>
-          You have requested to reset your password. Please enter your new
-          password below.
-        </Text>
-        <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
-          {isResetSuccessful ? (
-            <Stack>
-              <Text c="dimmed" fz="md" ta="center">
-                Password reset successful.
-              </Text>
-              <RegularButton
-                text="Proceed to login page"
-                onClick={handleGoToLogin}
-              />
-            </Stack>
-          ) : (
-            <form onSubmit={form.onSubmit(handleResetPassword)}>
-              <PasswordInput
-                label="New password"
-                required
-                mt="xs"
-                mb="xs"
-                {...form.getInputProps("password")}
-              />
-              <PasswordBar password={form.values.password} />
-              <PasswordInput
-                label="Confirm new password"
-                required
-                mt="xs"
-                {...form.getInputProps("confirmPassword")}
-              />
-              <RegularButton
-                text="reset password"
-                mt="lg"
-                type="submit"
-                fullWidth
-              />
-            </form>
-          )}
-        </Paper>
+    <>
+      <Head>
+        <title>Reset Password - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Container size={420} mt={100}>
+          <Title align="center">Reset your password</Title>
+          <Text color="dark" size="sm" align="center" mt={5}>
+            You have requested to reset your password. Please enter your new
+            password below.
+          </Text>
+          <Paper withBorder shadow="sm" p={30} mt={30} radius="sm" c="blue">
+            {isResetSuccessful ? (
+              <Stack>
+                <Text c="dimmed" fz="md" ta="center">
+                  Password reset successful.
+                </Text>
+                <RegularButton
+                  text="Proceed to login page"
+                  onClick={handleGoToLogin}
+                />
+              </Stack>
+            ) : (
+              <form onSubmit={form.onSubmit(handleResetPassword)}>
+                <PasswordInput
+                  label="New password"
+                  required
+                  mt="xs"
+                  mb="xs"
+                  {...form.getInputProps("password")}
+                />
+                <PasswordBar password={form.values.password} />
+                <PasswordInput
+                  label="Confirm new password"
+                  required
+                  mt="xs"
+                  {...form.getInputProps("confirmPassword")}
+                />
+                <RegularButton
+                  text="reset password"
+                  mt="lg"
+                  type="submit"
+                  fullWidth
+                />
+              </form>
+            )}
+          </Paper>
+        </Container>
       </Container>
-    </Container>
+    </>
   );
 }

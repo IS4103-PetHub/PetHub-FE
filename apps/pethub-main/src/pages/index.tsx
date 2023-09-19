@@ -6,10 +6,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>PetHub - Main</title>
+        <title>PetHub</title>
         <meta name="description" content="PetHub Main Website" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <Banner />

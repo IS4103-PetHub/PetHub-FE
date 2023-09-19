@@ -108,18 +108,6 @@ export const useUpdateInternalUser = (queryClient: QueryClient) => {
         dateCreated: data.user.dateCreated,
         lastUpdated: data.user.lastUpdated,
       };
-      queryClient.setQueryData<InternalUser[]>(
-        ["internal-users"],
-        (old = []) => {
-          const oldDataIndex = old.findIndex(
-            (oldUser) => oldUser.userId === data.userId,
-          );
-          if (oldDataIndex === -1) return old;
-
-          old[oldDataIndex] = { ...internalUser }; // replaces old cached info with newly updated info
-          return old;
-        },
-      );
       queryClient.setQueryData(["internal-users", data.userId], internalUser);
     },
   });

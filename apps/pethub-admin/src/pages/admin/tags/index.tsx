@@ -3,15 +3,19 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import Head from "next/head";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import CreateTagButtonModal from "@/components/tags/CreateTagButtonModal";
 import TagTable from "@/components/tags/TagTable";
 import {
@@ -20,12 +24,30 @@ import {
   useGetAllTags,
   useUpdateTag,
 } from "@/hooks/tag";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
-import { CreateTagPayload, Tag, UpdateTagPayload } from "@/types/types";
+import {
+  EMPTY_STATE_DELAY_MS,
+  PermissionsCodeEnum,
+  TABLE_PAGE_SIZE,
+} from "@/types/constants";
+import {
+  CreateTagPayload,
+  Permission,
+  Tag,
+  UpdateTagPayload,
+} from "@/types/types";
 
-export default function Tags() {
+interface TagsProps {
+  permissions: Permission[];
+}
+
+export default function Tags({ permissions }: TagsProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteTags);
+  const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadTags);
 
   const { data: tags = [], isLoading, refetch } = useGetAllTags();
 
@@ -91,7 +113,7 @@ export default function Tags() {
         title: "Tag Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `Tag ${id} deleted successfully.`,
+        message: `Tag ID: ${id} deleted successfully.`,
       });
       // refetch();
     } catch (error: any) {
@@ -157,6 +179,10 @@ export default function Tags() {
     }
   };
 
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   const renderContent = () => {
     if (tags.length === 0) {
       if (isLoading) {
@@ -197,6 +223,7 @@ export default function Tags() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
+            disabled={!canWrite}
           />
         )}
       </>
@@ -204,13 +231,34 @@ export default function Tags() {
   };
 
   return (
-    <Container fluid>
-      <Group position="apart" mb="xl">
-        <PageTitle title="Tags Management" />
-        <CreateTagButtonModal onCreate={handleCreateTag} />
-      </Group>
+    <>
+      <Head>
+        <title>Tags - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart" mb="xl">
+          <PageTitle title="Tags Management" />
+          {canWrite ? (
+            <CreateTagButtonModal onCreate={handleCreateTag} />
+          ) : null}
+        </Group>
 
-      {renderContent()}
-    </Container>
+        {renderContent()}
+      </Container>
+    </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+
+  const userId = session.user["userId"];
+  const permissions = await (
+    await axios.get(
+      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
+    )
+  ).data;
+  return { props: { permissions } };
 }

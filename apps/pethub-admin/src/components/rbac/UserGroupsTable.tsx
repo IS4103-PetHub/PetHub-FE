@@ -15,6 +15,7 @@ interface UserGroupsTableProps {
   onDelete(id: number): void;
   onSortStatusChange: any;
   onPageChange(p: number): void;
+  disabled?: boolean;
 }
 
 const UserGroupsTable = ({
@@ -26,6 +27,7 @@ const UserGroupsTable = ({
   onDelete,
   onSortStatusChange,
   onPageChange,
+  disabled,
 }: UserGroupsTableProps) => {
   const router = useRouter();
 
@@ -46,7 +48,7 @@ const UserGroupsTable = ({
           width: "35vw",
           ellipsis: true,
           sortable: true,
-          render: (group) => (group.description ? group.description : "-"),
+          render: ({ description }) => (description ? description : "-"),
         },
         {
           // actions
@@ -61,11 +63,13 @@ const UserGroupsTable = ({
                   router.push(`${router.asPath}/user-groups/${group.groupId}`)
                 }
               />
-              <DeleteActionButtonModal
-                title={`Are you sure you want to delete ${group.name}?`}
-                subtitle="Any users currently assigned to this user group will be unassigned."
-                onDelete={() => onDelete(group.groupId)}
-              />
+              {disabled ? null : (
+                <DeleteActionButtonModal
+                  title={`Are you sure you want to delete ${group.name}?`}
+                  subtitle="Any users currently assigned to this user group will be unassigned."
+                  onDelete={() => onDelete(group.groupId)}
+                />
+              )}
             </Group>
           ),
         },
