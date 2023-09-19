@@ -82,7 +82,13 @@ const TagTable = ({
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete the tag: ${record.name}?`}
                   subtitle="Any service listing currently assigned to this tag will be unassigned."
-                  onDelete={() => onDelete(record.tagId)}
+                  onDelete={() => {
+                    onDelete(record.tagId);
+                    // Check if this is the 11th, 21st, 31st, etc. record and we're not on the first page.
+                    if (totalNumTags % TABLE_PAGE_SIZE === 1 && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
                 />
               </Group>
             ),

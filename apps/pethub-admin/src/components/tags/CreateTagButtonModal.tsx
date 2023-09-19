@@ -32,6 +32,7 @@ const CreateTagButtonModal = ({ onCreate }: CreateTagButtonModalProps) => {
       ...values,
     };
     onCreate(payload);
+    form.reset();
     close();
   }
 
