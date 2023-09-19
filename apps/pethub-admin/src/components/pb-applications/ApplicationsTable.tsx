@@ -31,13 +31,6 @@ const statusPriority = {
   [BusinessApplicationStatusEnum.Rejected]: 2,
   [BusinessApplicationStatusEnum.Approved]: 3,
 };
-
-/*
-  Todo if have time (after PR is made):
-    * When filtered for ALL, applications should be sorted according to PENDING, REJECTED, APPROVED
-    * When filtered for PENDING, REJECTED, or APPROVED, applications should be sorted according to date last updated
-*/
-
 interface ApplicationsTableProps {
   applicationStatus: BusinessApplicationStatusEnum;
 }
@@ -63,24 +56,42 @@ export default function ApplicationsTable({
   const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
 
-  useEffect(() => {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE;
-    let filteredApplications = petBusinessApplications;
-
-    // Filter the applications by the applicationStatus, unless it's 'All'
+  // Filter the applications by the applicationStatus, unless it's 'All'
+  const filterApplications = (applications: PetBusinessApplication[]) => {
     if (applicationStatus !== BusinessApplicationStatusEnum.All) {
-      filteredApplications = petBusinessApplications.filter(
+      return applications.filter(
         (app) => app.applicationStatus === applicationStatus,
       );
     }
-    const sortedPetBusinessApplications = sortBy(
-      filteredApplications,
-      sortStatus.columnAccessor,
-    );
-    if (sortStatus.direction === "desc") {
-      sortedPetBusinessApplications.reverse();
+    return applications;
+  };
+
+  /*
+   * When filtered for ALL, applications should be sorted according to PENDING, REJECTED, APPROVED
+   * When filtered for PENDING, REJECTED, or APPROVED, applications should be sorted according to date last updated
+   */
+  const sortApplications = (applications: PetBusinessApplication[]) => {
+    let sortedApplications: PetBusinessApplication[];
+    if (applicationStatus === BusinessApplicationStatusEnum.All) {
+      sortedApplications = sortBy(
+        applications,
+        (app) => statusPriority[app.applicationStatus],
+      );
+    } else {
+      sortedApplications = sortBy(applications, "lastUpdated");
     }
+    if (sortStatus.direction === "desc") {
+      sortedApplications.reverse();
+    }
+    return sortedApplications;
+  };
+
+  useEffect(() => {
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE;
+    const filteredApplications = filterApplications(petBusinessApplications);
+    const sortedPetBusinessApplications =
+      sortApplications(filteredApplications);
     const newRecords = sortedPetBusinessApplications.slice(from, to);
     setRecords(newRecords);
   }, [page, sortStatus, petBusinessApplications, applicationStatus]);

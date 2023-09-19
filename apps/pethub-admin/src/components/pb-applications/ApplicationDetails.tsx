@@ -100,7 +100,9 @@ export default function ApplicationDetails({
               </Group>
               <Group position="apart">
                 <Text fw={700}>Website URL</Text>
-                <Text>{application.websiteURL}</Text>
+                <Text>
+                  {application.websiteURL ? application.websiteURL : "-"}
+                </Text>
               </Group>
               <Group position="apart">
                 <Text fw={700}>Application created</Text>
