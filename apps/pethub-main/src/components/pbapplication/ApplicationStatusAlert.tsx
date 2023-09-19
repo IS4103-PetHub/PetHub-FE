@@ -24,6 +24,12 @@ const ApplicationStatusAlert = ({
     ["NOTFOUND", "red"],
   ]);
 
+  const extractLastRemark = () => {
+    return remarks && remarks.length > 0
+      ? "Please see the latest remark: " + remarks[remarks.length - 1]
+      : "[No remark available]";
+  };
+
   const ApplyButton = (
     <Button
       mt="md"
@@ -44,7 +50,8 @@ const ApplicationStatusAlert = ({
     ? new Map([
         [
           "REJECTED",
-          "Your application has been rejected. Please update your application",
+          "After careful review, we've determined that further information or updates are required. Please review and update your application accordingly. " +
+            extractLastRemark(),
         ],
         [
           "NOTFOUND",
@@ -58,10 +65,7 @@ const ApplicationStatusAlert = ({
     : new Map([
         [
           "REJECTED",
-          "Your application has been rejected. " +
-            (remarks.length > 0
-              ? "Please see the latest remark: " + remarks[remarks.length - 1]
-              : "[No remark available]"),
+          "Your application has been rejected. " + extractLastRemark(),
         ],
         ["APPROVED", "Your application has been approved!"],
         [
