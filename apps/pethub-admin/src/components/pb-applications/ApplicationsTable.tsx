@@ -4,6 +4,7 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { getMinTableHeight } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
@@ -14,11 +15,7 @@ import {
   EMPTY_STATE_DELAY_MS,
 } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
-import {
-  formatEnumToLetterCase,
-  formatEnumValue,
-  searchPBApplications,
-} from "@/util";
+import { formatEnumToLetterCase, searchPBApplications } from "@/util";
 import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
@@ -129,7 +126,7 @@ export default function ApplicationsTable({
       ) : (
         <>
           <SearchBar
-            text="Search by pet business application ID, UEN and business type"
+            text="Search by pet business application ID, UEN, business type"
             onSearch={handleSearch}
           />
           {isSearching && records.length === 0 ? (
@@ -149,7 +146,7 @@ export default function ApplicationsTable({
               striped
               highlightOnHover
               verticalAlignment="center"
-              minHeight={records.length === 0 ? 200 : 100}
+              minHeight={getMinTableHeight(records)}
               records={records}
               columns={[
                 {

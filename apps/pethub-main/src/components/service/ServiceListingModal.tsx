@@ -106,7 +106,7 @@ const ServiceListingModal = ({
               : "Error Creating Service Listing",
             color: "red",
             icon: <IconX />,
-            message: "There is a maximum of 6 images",
+            message: "A maximum of 6 images can be uploaded.",
           });
           return (
             <div style={{ color: "red" }}>Maximum of 6 images allowed.</div>
@@ -210,7 +210,7 @@ const ServiceListingModal = ({
       const buffer = await response.arrayBuffer();
       return new File([buffer], fileName);
     } catch (error) {
-      console.log("Error!!!!!!!!!!!!!:", error);
+      console.log("Error:", error);
     }
   };
 
@@ -472,7 +472,7 @@ const ServiceListingModal = ({
 
             {isViewing && (
               <>
-                <Group position="right" mt="md">
+                <Group position="right" mt="md" mb="md">
                   <Button
                     type="button"
                     onClick={() => {

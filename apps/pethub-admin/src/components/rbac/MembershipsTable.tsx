@@ -2,10 +2,10 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useState, useEffect } from "react";
+import { getMinTableHeight } from "shared-utils";
 import { useRemoveUserFromUserGroup } from "@/hooks/rbac";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup, UserGroupMembership } from "@/types/types";
-import { getMinTableHeight } from "@/util";
 import RemoveUserFromGroupButton from "./RemoveUserFromGroupButton";
 
 interface MembershipsTableProps {
