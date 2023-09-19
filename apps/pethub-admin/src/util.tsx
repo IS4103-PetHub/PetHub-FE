@@ -135,18 +135,3 @@ export function searchPBApplications(
     );
   });
 }
-
-// for tables inside pages that have variable length
-export function getMinTableHeight(records?: any[]) {
-  if (!records || records.length === 0) {
-    return 150;
-  }
-  // to account for pagination
-  if (records.length >= 10) {
-    return 560;
-  }
-  // 1 record to 9 records
-  if (records.length > 0) {
-    return 100;
-  }
-}

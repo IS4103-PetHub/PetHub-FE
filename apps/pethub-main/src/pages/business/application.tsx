@@ -251,7 +251,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
         <title>Pet Business Application - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="50px" mb="xl">
+      <Container mt="xl" mb="xl">
         {petBusinessApplication &&
           applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
             <ApplicationStatusAlert
