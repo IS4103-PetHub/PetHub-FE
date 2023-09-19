@@ -21,6 +21,7 @@ import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import React, { useEffect, useState } from "react";
+import { formatStringToLetterCase } from "shared-utils";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
@@ -202,10 +203,7 @@ const ServiceListingModal = ({
   const categoryOptions = Object.values(ServiceCategoryEnum).map(
     (categoryValue) => ({
       value: categoryValue,
-      label: categoryValue
-        .replace(/_/g, " ")
-        .toLowerCase()
-        .replace(/\b\w/g, (char) => char.toUpperCase()),
+      label: formatStringToLetterCase(categoryValue),
     }),
   );
 

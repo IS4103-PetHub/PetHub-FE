@@ -32,3 +32,10 @@ export function formatISODateString(dateString: string) {
   // e.g. 1 September 2023
   return dayjs(dateString).format("D MMMM YYYY");
 }
+
+export function formatStringToLetterCase(enumString: string) {
+  return enumString
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}

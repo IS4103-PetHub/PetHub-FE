@@ -4,6 +4,7 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { formatStringToLetterCase } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
@@ -177,7 +178,7 @@ export default function ApplicationsTable({
                   sortable: true,
                   ellipsis: true,
                   render: ({ businessType }) => {
-                    return formatEnumToLetterCase(businessType);
+                    return formatStringToLetterCase(businessType);
                   },
                 },
                 {
