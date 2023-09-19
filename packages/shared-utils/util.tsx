@@ -47,3 +47,10 @@ export function getMinTableHeight(records?: any[]) {
     return 100;
   }
 }
+
+export function formatStringToLetterCase(enumString: string) {
+  return enumString
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}

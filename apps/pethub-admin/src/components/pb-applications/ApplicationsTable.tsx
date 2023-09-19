@@ -5,6 +5,7 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { getMinTableHeight } from "shared-utils";
+import { formatStringToLetterCase } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
@@ -15,7 +16,7 @@ import {
   EMPTY_STATE_DELAY_MS,
 } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
-import { formatEnumToLetterCase, searchPBApplications } from "@/util";
+import { searchPBApplications } from "@/util";
 import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
@@ -174,7 +175,7 @@ export default function ApplicationsTable({
                   sortable: true,
                   ellipsis: true,
                   render: ({ businessType }) => {
-                    return formatEnumToLetterCase(businessType);
+                    return formatStringToLetterCase(businessType);
                   },
                 },
                 {

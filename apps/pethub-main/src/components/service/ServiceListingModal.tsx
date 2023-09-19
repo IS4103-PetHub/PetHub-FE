@@ -21,6 +21,7 @@ import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import React, { useEffect, useState } from "react";
+import { formatStringToLetterCase } from "shared-utils";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
@@ -64,6 +65,8 @@ const ServiceListingModal = ({
   const [imagePreview, setImagePreview] = useState([]);
   const [isUpdating, setUpdating] = useState(isUpdate);
   const [isViewing, setViewing] = useState(isView);
+  // used to force reload the fileinput after each touch
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   /*
    * Component Form
@@ -93,7 +96,8 @@ const ServiceListingModal = ({
       description: isNotEmpty("Description is mandatory."), // min max length
       category: isNotEmpty("Category is mandatory."),
       basePrice: (value) => {
-        if (!value) return "Price is mandatory.";
+        if (value.toString() == "") return "Price must be a valid number.";
+        if (value === null || value === undefined) return "Price is mandatory.";
         else if (value < 0)
           return "Price must be a positive number with two decimal places.";
       },
@@ -177,6 +181,8 @@ const ServiceListingModal = ({
       refetch();
       serviceListingForm.reset();
       setImagePreview([]);
+      setUpdating(isUpdate);
+      setViewing(isView);
       onClose();
     } catch (error) {
       notifications.show({
@@ -200,7 +206,7 @@ const ServiceListingModal = ({
   const categoryOptions = Object.values(ServiceCategoryEnum).map(
     (categoryValue) => ({
       value: categoryValue,
-      label: categoryValue.replace(/_/g, " "),
+      label: formatStringToLetterCase(categoryValue),
     }),
   );
 
@@ -281,6 +287,7 @@ const ServiceListingModal = ({
         files: [],
       });
     }
+    setFileInputKey((prevKey) => prevKey + 1);
   };
 
   const removeImage = (indexToRemove) => {
@@ -364,12 +371,6 @@ const ServiceListingModal = ({
               {...serviceListingForm.getInputProps("basePrice")}
             />
 
-            {/*
-                        TODO: this is for addresss
-                        - once the BE has address, get the list of address from the pet business
-                        - let user select the address from the list of addresss
-                    */}
-
             <MultiSelect
               disabled={isViewing}
               label="Address"
@@ -394,9 +395,11 @@ const ServiceListingModal = ({
                   : "Upload new images"
               }
               accept="image/*"
-              name="images" // Update the name to reflect multiple images
-              multiple // Allow multiple file selection
+              name="images"
+              multiple
               onChange={(files) => handleFileInputChange(files)}
+              capture={false}
+              key={fileInputKey}
             />
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
@@ -476,7 +479,6 @@ const ServiceListingModal = ({
                   <Button
                     type="button"
                     onClick={() => {
-                      // TODO: toggle between edit and view
                       setUpdating(true);
                       setViewing(false);
                     }}

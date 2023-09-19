@@ -11,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
 import { getMinTableHeight } from "shared-utils";
+import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
@@ -103,11 +104,7 @@ const ServiceListTable = ({
             textAlignment: "left",
             width: "10vw",
             sortable: true,
-            render: (record) =>
-              record.category
-                .replace(/_/g, " ")
-                .toLowerCase()
-                .replace(/\b\w/g, (char) => char.toUpperCase()),
+            render: (record) => formatStringToLetterCase(record.category),
           },
           {
             accessor: "tags",

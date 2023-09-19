@@ -17,6 +17,7 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
+import { formatStringToLetterCase } from "shared-utils";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
   useDeleteInternalUser,
@@ -31,7 +32,6 @@ import {
   PetOwner,
   User,
 } from "@/types/types";
-import { formatEnumToLetterCase } from "@/util";
 type UserDetailsProps = {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
@@ -79,7 +79,7 @@ const UserDetail = ({ user, userName }: { user: User; userName: string }) => (
           <Text>Account Type:</Text>
         </Grid.Col>
         <Grid.Col span={6}>
-          <Text>{formatEnumToLetterCase(user.accountType)}</Text>
+          <Text>{formatStringToLetterCase(user.accountType)}</Text>
         </Grid.Col>
 
         <Grid.Col span={6}>
