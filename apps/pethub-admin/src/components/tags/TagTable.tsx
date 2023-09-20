@@ -84,8 +84,8 @@ const TagTable = ({
                   subtitle="Any service listing currently assigned to this tag will be unassigned."
                   onDelete={() => {
                     onDelete(record.tagId);
-                    // Check if this is the 11th, 21st, 31st, etc. record and we're not on the first page.
-                    if (totalNumTags % TABLE_PAGE_SIZE === 1 && page > 1) {
+                    // Check if there is only 1 record on this page and we're not on the first page.
+                    if (tags.length === 1 && page > 1) {
                       onPageChange(page - 1);
                     }
                   }}
