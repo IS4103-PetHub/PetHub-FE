@@ -60,7 +60,9 @@ const TagTable = ({
             ellipsis: true,
             width: 100,
             render: ({ lastUpdated }) => {
-              return new Date(lastUpdated).toLocaleDateString();
+              return lastUpdated
+                ? new Date(lastUpdated).toLocaleDateString()
+                : "-";
             },
           },
           {
@@ -80,7 +82,13 @@ const TagTable = ({
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete the tag: ${record.name}?`}
                   subtitle="Any service listing currently assigned to this tag will be unassigned."
-                  onDelete={() => onDelete(record.tagId)}
+                  onDelete={() => {
+                    onDelete(record.tagId);
+                    // Check if there is only 1 record on this page and we're not on the first page.
+                    if (tags.length === 1 && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
                 />
               </Group>
             ),

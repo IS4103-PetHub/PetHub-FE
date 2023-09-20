@@ -236,6 +236,16 @@ export default function InternalUserTable({
     );
   };
 
+  const handlePaginationAfterDeletion = () => {
+    // Calculate the total pages after deletion
+    const totalPages = Math.ceil((internalUsers.length - 1) / TABLE_PAGE_SIZE);
+
+    // If the current page is greater than total pages, go back to the previous page
+    if (page > totalPages) {
+      setPage(page - 1);
+    }
+  };
+
   return (
     <>
       <Group mb="xl" position="apart">
@@ -263,8 +273,9 @@ export default function InternalUserTable({
           onUserDeleted={(success) => {
             if (success) {
               handleViewDetailsCloseModal();
+              handlePaginationAfterDeletion();
             }
-            // refetch();
+            refetch();
           }}
           onUserUpdated={(success) => {
             if (success) {

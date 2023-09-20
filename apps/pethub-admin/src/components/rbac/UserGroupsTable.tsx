@@ -68,7 +68,13 @@ const UserGroupsTable = ({
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${group.name}?`}
                   subtitle="Any users currently assigned to this user group will be unassigned."
-                  onDelete={() => onDelete(group.groupId)}
+                  onDelete={() => {
+                    onDelete(group.groupId);
+                    // Check if there is only 1 record on this page and we're not on the first page.
+                    if (records.length === 1 && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
                 />
               )}
             </Group>
