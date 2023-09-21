@@ -1,18 +1,20 @@
 import { Box } from "@mantine/core";
-import { Address } from "@/types/types";
-import { AddAddressCard } from "./AddAddressCard";
-import { AddressCard } from "./AddressCard";
+import { Address } from "../../../../apps/pethub-main/src/types/types";
+import AddAddressCard from "./AddAddressCard";
+import AddressCard from "./AddressCard";
 
 type AddressSidewaysScrollThingProps = {
   addressList: Address[];
   isDisabled: boolean;
-  openModal: () => void;
-  onRemoveAddress: (address: Address) => void;
+  hasAddCard: boolean;
+  openModal?: () => void;
+  onRemoveAddress?: (address: Address) => void;
 };
 
-export const AddressSidewaysScrollThing = ({
+const AddressSidewaysScrollThing = ({
   addressList,
   isDisabled,
+  hasAddCard,
   openModal,
   onRemoveAddress,
 }: AddressSidewaysScrollThingProps) => {
@@ -39,6 +41,7 @@ export const AddressSidewaysScrollThing = ({
       <AddressCard
         address={address}
         onRemoveAddress={checkEditable(ActionType.RemoveAddress)}
+        disabled={isDisabled}
       />
     </Box>
   ));
@@ -63,7 +66,7 @@ export const AddressSidewaysScrollThing = ({
           width: "100%",
         }}
       >
-        {!isDisabled && (
+        {!isDisabled && hasAddCard && (
           <Box
             style={{
               display: "inline-block",
@@ -79,3 +82,5 @@ export const AddressSidewaysScrollThing = ({
     </Box>
   );
 };
+
+export default AddressSidewaysScrollThing;

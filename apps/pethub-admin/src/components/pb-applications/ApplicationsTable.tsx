@@ -4,6 +4,8 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { getMinTableHeight } from "shared-utils";
+import { formatStringToLetterCase } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
@@ -14,11 +16,7 @@ import {
   EMPTY_STATE_DELAY_MS,
 } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
-import {
-  formatEnumToLetterCase,
-  formatEnumValue,
-  searchPBApplications,
-} from "@/util";
+import { searchPBApplications } from "@/util";
 import { errorAlert } from "@/util";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import ApplicationStatusBadge from "./ApplicationStatusBadge";
@@ -31,13 +29,6 @@ const statusPriority = {
   [BusinessApplicationStatusEnum.Rejected]: 2,
   [BusinessApplicationStatusEnum.Approved]: 3,
 };
-
-/*
-  Todo if have time (after PR is made):
-    * When filtered for ALL, applications should be sorted according to PENDING, REJECTED, APPROVED
-    * When filtered for PENDING, REJECTED, or APPROVED, applications should be sorted according to date last updated
-*/
-
 interface ApplicationsTableProps {
   applicationStatus: BusinessApplicationStatusEnum;
 }
@@ -63,24 +54,42 @@ export default function ApplicationsTable({
   const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
 
-  useEffect(() => {
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE;
-    let filteredApplications = petBusinessApplications;
-
-    // Filter the applications by the applicationStatus, unless it's 'All'
+  // Filter the applications by the applicationStatus, unless it's 'All'
+  const filterApplications = (applications: PetBusinessApplication[]) => {
     if (applicationStatus !== BusinessApplicationStatusEnum.All) {
-      filteredApplications = petBusinessApplications.filter(
+      return applications.filter(
         (app) => app.applicationStatus === applicationStatus,
       );
     }
-    const sortedPetBusinessApplications = sortBy(
-      filteredApplications,
-      sortStatus.columnAccessor,
-    );
-    if (sortStatus.direction === "desc") {
-      sortedPetBusinessApplications.reverse();
+    return applications;
+  };
+
+  /*
+   * When filtered for ALL, applications should be sorted according to PENDING, REJECTED, APPROVED
+   * When filtered for PENDING, REJECTED, or APPROVED, applications should be sorted according to date last updated
+   */
+  const sortApplications = (applications: PetBusinessApplication[]) => {
+    let sortedApplications: PetBusinessApplication[];
+    if (applicationStatus === BusinessApplicationStatusEnum.All) {
+      sortedApplications = sortBy(
+        applications,
+        (app) => statusPriority[app.applicationStatus],
+      );
+    } else {
+      sortedApplications = sortBy(applications, "lastUpdated");
     }
+    if (sortStatus.direction === "desc") {
+      sortedApplications.reverse();
+    }
+    return sortedApplications;
+  };
+
+  useEffect(() => {
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE;
+    const filteredApplications = filterApplications(petBusinessApplications);
+    const sortedPetBusinessApplications =
+      sortApplications(filteredApplications);
     const newRecords = sortedPetBusinessApplications.slice(from, to);
     setRecords(newRecords);
   }, [page, sortStatus, petBusinessApplications, applicationStatus]);
@@ -129,7 +138,7 @@ export default function ApplicationsTable({
       ) : (
         <>
           <SearchBar
-            text="Search by pet business application ID, UEN and business type"
+            text="Search by pet business application ID, UEN, business type"
             onSearch={handleSearch}
           />
           {isSearching && records.length === 0 ? (
@@ -149,7 +158,7 @@ export default function ApplicationsTable({
               striped
               highlightOnHover
               verticalAlignment="center"
-              minHeight={records.length === 0 ? 200 : 100}
+              minHeight={getMinTableHeight(records)}
               records={records}
               columns={[
                 {
@@ -177,7 +186,7 @@ export default function ApplicationsTable({
                   sortable: true,
                   ellipsis: true,
                   render: ({ businessType }) => {
-                    return formatEnumToLetterCase(businessType);
+                    return formatStringToLetterCase(businessType);
                   },
                 },
                 {

@@ -4,6 +4,7 @@ import { IconUserPlus } from "@tabler/icons-react";
 import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
+import { getMinTableHeight } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -13,8 +14,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser } from "@/types/types";
-import { errorAlert } from "@/util";
-import { getMinTableHeight, searchInternalUsers } from "@/util";
+import { searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
 import { ViewButtonWithEvent } from "../common/ViewButtonWithEvent";
 import { CreateInternalUserForm } from "./CreateInternalUserForm";
@@ -236,6 +236,16 @@ export default function InternalUserTable({
     );
   };
 
+  const handlePaginationAfterDeletion = () => {
+    // Calculate the total pages after deletion
+    const totalPages = Math.ceil((internalUsers.length - 1) / TABLE_PAGE_SIZE);
+
+    // If the current page is greater than total pages, go back to the previous page
+    if (page > totalPages) {
+      setPage(page - 1);
+    }
+  };
+
   return (
     <>
       <Group mb="xl" position="apart">
@@ -263,8 +273,9 @@ export default function InternalUserTable({
           onUserDeleted={(success) => {
             if (success) {
               handleViewDetailsCloseModal();
+              handlePaginationAfterDeletion();
             }
-            // refetch();
+            refetch();
           }}
           onUserUpdated={(success) => {
             if (success) {

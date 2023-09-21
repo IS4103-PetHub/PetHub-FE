@@ -2,6 +2,7 @@ import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React from "react";
+import { getMinTableHeight } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
@@ -33,7 +34,7 @@ const UserGroupsTable = ({
 
   return (
     <DataTable
-      minHeight={150}
+      minHeight={getMinTableHeight(records)}
       columns={[
         {
           accessor: "groupId",
@@ -67,7 +68,13 @@ const UserGroupsTable = ({
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${group.name}?`}
                   subtitle="Any users currently assigned to this user group will be unassigned."
-                  onDelete={() => onDelete(group.groupId)}
+                  onDelete={() => {
+                    onDelete(group.groupId);
+                    // Check if there is only 1 record on this page and we're not on the first page.
+                    if (records.length === 1 && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
                 />
               )}
             </Group>

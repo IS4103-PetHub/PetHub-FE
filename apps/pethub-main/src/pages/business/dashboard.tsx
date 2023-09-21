@@ -37,7 +37,7 @@ export default function Dashboard({ userId, accountType }: DashboardProps) {
         <title>Business Dashboard - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="50px" mb="xl">
+      <Container fluid>
         {applicationStatus !== BusinessApplicationStatusEnum.Approved && (
           <ApplicationStatusAlert
             forDashboard={true}

@@ -15,22 +15,16 @@ import {
 } from "@mantine/core";
 // import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconSend,
-  IconUpload,
-  IconAlertCircle,
-  IconCheck,
-  IconX,
-} from "@tabler/icons-react";
+import { IconSend, IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
-import { AddAddressModal } from "@/components/pbapplication/AddAddressModal";
-import { AddressSidewaysScrollThing } from "@/components/pbapplication/AddressSidewaysScrollThing";
+import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
+import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
 import ApplicationStatusAlert from "@/components/pbapplication/ApplicationStatusAlert";
 import {
   useCreatePetBusinessApplication,
@@ -251,7 +245,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
         <title>Pet Business Application - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="50px" mb="xl">
+      <Container mt="xl" mb="xl">
         {petBusinessApplication &&
           applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
             <ApplicationStatusAlert
@@ -263,7 +257,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
             />
           )}
         <Group position="left">
-          <PageTitle title="Pet Business Application" />
+          <PageTitle title="Business Partner Application" />
           {applicationStatus !== BusinessApplicationStatusEnum.Notfound && (
             <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
               <>
@@ -332,6 +326,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
                   openModal={open}
                   onRemoveAddress={handleRemoveAddress}
                   isDisabled={isDisabled}
+                  hasAddCard={true}
                 />
               </Grid.Col>
               <Grid.Col span={12}>

@@ -20,8 +20,8 @@ export function validateAddressName(addressName: string) {
   if (!addressName) {
     return "Address name is required.";
   }
-  if (addressName.length > 14) {
-    return "Address name must be 14 characters or below.";
+  if (addressName.length > 12) {
+    return "Address name must be 12 characters or below.";
   }
   if (addressName.startsWith(" ") || addressName.endsWith(" ")) {
     return "Address name should not have leading or trailing spaces.";

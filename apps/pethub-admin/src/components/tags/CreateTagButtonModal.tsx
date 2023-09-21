@@ -32,8 +32,14 @@ const CreateTagButtonModal = ({ onCreate }: CreateTagButtonModalProps) => {
       ...values,
     };
     onCreate(payload);
+    form.reset();
     close();
   }
+
+  const closeAndReset = () => {
+    form.reset();
+    close();
+  };
 
   return (
     <>
@@ -48,7 +54,7 @@ const CreateTagButtonModal = ({ onCreate }: CreateTagButtonModalProps) => {
         size="md"
       >
         <Title order={2}>Create Tag</Title>
-        <TagForm form={form} onCreate={handleSubmit} onClose={close} />
+        <TagForm form={form} onCreate={handleSubmit} onClose={closeAndReset} />
       </Modal>
       <LargeCreateButton text="Create Tag" onClick={open} />
     </>

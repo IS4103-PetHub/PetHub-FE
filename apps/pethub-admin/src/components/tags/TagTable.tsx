@@ -1,9 +1,9 @@
 import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { getMinTableHeight } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Tag, UpdateTagPayload } from "@/types/types";
-import { getMinTableHeight } from "@/util";
 import EditTagButtonModal from "./EditTagButtonModal";
 interface TagTableProps {
   tags: Tag[];
@@ -42,13 +42,13 @@ const TagTable = ({
             width: 80,
             sortable: true,
           },
-          { accessor: "name", width: "45vw", ellipsis: true, sortable: true },
+          { accessor: "name", width: "25vw", ellipsis: true, sortable: true },
           {
             accessor: "dateCreated",
             title: "Date Created",
             sortable: true,
             ellipsis: true,
-            width: "10vw",
+            width: 100,
             render: ({ dateCreated }) => {
               return new Date(dateCreated).toLocaleDateString();
             },
@@ -58,9 +58,11 @@ const TagTable = ({
             title: "Last Updated",
             sortable: true,
             ellipsis: true,
-            width: "10vw",
+            width: 100,
             render: ({ lastUpdated }) => {
-              return new Date(lastUpdated).toLocaleDateString();
+              return lastUpdated
+                ? new Date(lastUpdated).toLocaleDateString()
+                : "-";
             },
           },
           {
@@ -80,7 +82,13 @@ const TagTable = ({
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete the tag: ${record.name}?`}
                   subtitle="Any service listing currently assigned to this tag will be unassigned."
-                  onDelete={() => onDelete(record.tagId)}
+                  onDelete={() => {
+                    onDelete(record.tagId);
+                    // Check if there is only 1 record on this page and we're not on the first page.
+                    if (tags.length === 1 && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
                 />
               </Group>
             ),
