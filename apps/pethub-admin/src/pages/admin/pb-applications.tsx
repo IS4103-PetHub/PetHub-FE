@@ -16,7 +16,7 @@ import {
   BusinessApplicationStatusEnum,
   PermissionsCodeEnum,
 } from "@/types/constants";
-import { Permission, PetBusinessApplication } from "@/types/types";
+import { Permission } from "@/types/types";
 
 interface ApplicationStatusBarProps {
   setActiveTab: (value: BusinessApplicationStatusEnum) => void;

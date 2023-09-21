@@ -3,7 +3,6 @@ import {
   Badge,
   Container,
   Group,
-  Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";

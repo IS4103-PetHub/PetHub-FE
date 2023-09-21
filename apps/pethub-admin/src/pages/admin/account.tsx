@@ -19,7 +19,6 @@ import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
 import PermissionsCheckboxCard from "@/components/rbac/PermissionsCheckboxCard";
 import { useGetInternalUserById } from "@/hooks/internal-user";
-import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
 import { Permission } from "@/types/types";
 
 interface MyAccountProps {
