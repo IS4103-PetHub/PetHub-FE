@@ -1,4 +1,4 @@
-import { Badge, Container, Group, Text } from "@mantine/core";
+import { Container, Group } from "@mantine/core";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -34,7 +34,7 @@ export default function Dashboard({ userId, accountType }: DashboardProps) {
   return (
     <>
       <Head>
-        <title>Business Dashboard - PetHub</title>
+        <title>Dashboard - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>

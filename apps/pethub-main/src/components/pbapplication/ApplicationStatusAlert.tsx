@@ -1,4 +1,4 @@
-import { Alert, BadgeProps, Button, Stack } from "@mantine/core";
+import { Alert, Button } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React from "react";
