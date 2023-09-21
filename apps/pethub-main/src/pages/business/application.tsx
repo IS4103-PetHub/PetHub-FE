@@ -242,7 +242,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   return (
     <>
       <Head>
-        <title>Pet Business Application - PetHub</title>
+        <title>Pet Business Application - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">

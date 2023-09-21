@@ -2,6 +2,7 @@ import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
@@ -18,13 +19,9 @@ import { useGetAllTags } from "@/hooks/tags";
 import {
   AccountTypeEnum,
   EMPTY_STATE_DELAY_MS,
-  ServiceCategoryEnum,
   TABLE_PAGE_SIZE,
 } from "@/types/constants";
-import { PetBusiness, ServiceListing } from "@/types/types";
-
-// https://zumvet.com/blog/wp-content/uploads/2023/06/Pet-Angel-Blog-2022-14-1080x648-1.png
-
+import { ServiceListing } from "@/types/types";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
@@ -186,30 +183,36 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   };
 
   return (
-    <Container fluid>
-      <Group position="apart">
-        <PageTitle title="Service Listings Management" />
-        <LargeCreateButton
-          text="Create Service Listing"
-          onClick={openCreateServiceModal}
-        />
-      </Group>
+    <>
+      <Head>
+        <title>Service Listings - PetHub Business</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <Group position="apart">
+          <PageTitle title="Service Listings Management" />
+          <LargeCreateButton
+            text="Create Service Listing"
+            onClick={openCreateServiceModal}
+          />
+        </Group>
 
-      <Group mt="xs">
-        <ServiceListingModal
-          opened={isCreateServiceModalOpen}
-          onClose={closeCreateServiceModal}
-          isView={false}
-          isUpdate={false}
-          serviceListing={null}
-          userId={userId}
-          refetch={refetchServiceListings}
-          tags={tags}
-          addresses={petBusiness ? petBusiness.businessAddresses : []}
-        />
-      </Group>
-      {renderContent()}
-    </Container>
+        <Group mt="xs">
+          <ServiceListingModal
+            opened={isCreateServiceModalOpen}
+            onClose={closeCreateServiceModal}
+            isView={false}
+            isUpdate={false}
+            serviceListing={null}
+            userId={userId}
+            refetch={refetchServiceListings}
+            tags={tags}
+            addresses={petBusiness ? petBusiness.businessAddresses : []}
+          />
+        </Group>
+        {renderContent()}
+      </Container>
+    </>
   );
 }
 

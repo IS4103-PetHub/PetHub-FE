@@ -1,4 +1,4 @@
-import { Container, Text } from "@mantine/core";
+import { Container } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";

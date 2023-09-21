@@ -1,6 +1,5 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { AccountTypeEnum } from "@/types/constants";
 import {
   CreateServiceListingPayload,
   ServiceListing,
