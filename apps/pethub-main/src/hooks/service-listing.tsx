@@ -54,22 +54,33 @@ export const useCreateServiceListing = () => {
   });
 };
 
+// GET All Service Listings
+export const useGetAllServiceListings = () => {
+  return useQuery({
+    queryKey: ["service-listings"],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}`,
+      );
+      return response.data as ServiceListing[];
+    },
+  });
+};
+
 // GET Service Listing by Business Id
-export const useGetServiceListingByPetBusinessIdAndAccountType = (
-  userId: number,
-) => {
+export const useGetServiceListingByPetBusinessId = (userId: number) => {
   return useQuery({
     queryKey: ["service-listings"],
     queryFn: async () => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/pet-businesses/${userId}`,
       );
-      return response.data;
+      return response.data as ServiceListing[];
     },
   });
 };
 
-// PATCH Service Listing by Serivce Id
+// PATCH Service Listing by Service Id
 export const useUpdateServiceListing = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: UpdateServiceListingPayload) => {

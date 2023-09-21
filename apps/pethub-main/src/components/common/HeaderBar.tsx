@@ -67,27 +67,27 @@ const links: {
   links: { link: string; label: string }[] | undefined;
 }[] = [
   {
-    link: "/services",
+    link: "/service-listings",
     label: "Explore services",
     links: [
       {
-        link: "/services/boarding",
+        link: "/service-listings/boarding",
         label: "Pet boarding",
       },
       {
-        link: "/services/grooming",
+        link: "/service-listings/grooming",
         label: "Pet grooming",
       },
       {
-        link: "/services/vet",
+        link: "/service-listings/vet",
         label: "Veterinary",
       },
       {
-        link: "/services/dining",
+        link: "/service-listings/dining",
         label: "Dining",
       },
       {
-        link: "/services/retail",
+        link: "/service-listings/retail",
         label: "Pet retail",
       },
     ],
