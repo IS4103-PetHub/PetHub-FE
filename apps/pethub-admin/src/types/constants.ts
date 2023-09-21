@@ -47,3 +47,11 @@ export const enum PermissionsCodeEnum {
   WritePBApplications = "WRITE_PET_BUSINESS_APPLICATIONS",
   ReadPBApplications = "READ_PET_BUSINESS_APPLICATIONS",
 }
+
+export enum ServiceCategoryEnum {
+  PetGrooming = "PET_GROOMING",
+  Dining = "DINING",
+  Veterinary = "VETERINARY",
+  PetRetail = "PET_RETAIL",
+  PetBoarding = "PET_BOARDING",
+}

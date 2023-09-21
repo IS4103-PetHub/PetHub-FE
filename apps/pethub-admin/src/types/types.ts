@@ -4,6 +4,7 @@ import {
   BusinessApplicationStatusEnum,
   InternalUserRoleEnum,
   PetBusinessTypeEnum,
+  ServiceCategoryEnum,
 } from "./constants";
 
 export abstract class User {
@@ -157,4 +158,19 @@ export interface ApprovePetBusinessApplicationPayload {
 export interface RejectPetBusinessApplicationPayload {
   petBusinessApplicationId: Number;
   remark: String;
+}
+
+export interface ServiceListing {
+  serviceListingId: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  // address
+  dateCreated: string;
+  lastUpdated?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  addresses: Address[];
 }
