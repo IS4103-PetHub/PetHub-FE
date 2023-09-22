@@ -9,7 +9,8 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Address, ServiceListing, Tag } from "@/types/types";
-import ServiceListingModal from "./ServiceListingModal";
+import ServiceListingModal from "./ViewServiceListingModal";
+import ViewServiceListingModal from "./ViewServiceListingModal";
 
 interface ServiceListingTableProps {
   records: ServiceListing[];
@@ -32,9 +33,6 @@ const ServiceListingTable = ({
   onSortStatusChange,
   onPageChange,
 }: ServiceListingTableProps) => {
-  const [isViewModalOpen, { close: closeView, open: openView }] =
-    useDisclosure(false);
-
   return (
     <>
       <DataTable
@@ -82,18 +80,6 @@ const ServiceListingTable = ({
               return new Date(dateCreated).toLocaleDateString();
             },
           },
-          // {
-          //   accessor: "lastUpdated",
-          //   title: "Last Updated",
-          //   sortable: true,
-          //   ellipsis: true,
-          //   width: 100,
-          //   render: ({ lastUpdated }) => {
-          //     return lastUpdated
-          //       ? new Date(lastUpdated).toLocaleDateString()
-          //       : "-";
-          //   },
-          // },
           {
             accessor: "basePrice",
             title: "Price ($)",
@@ -110,18 +96,14 @@ const ServiceListingTable = ({
             title: "Actions",
             width: 100,
             textAlignment: "right",
-            render: (service) => (
+            render: (record) => (
               <Group position="right">
-                <ViewActionButton
-                  onClick={function (): void {
-                    console.log("view not implemented");
-                  }}
-                />
+                <ViewServiceListingModal serviceListing={record} />
                 <DeleteActionButtonModal
-                  title={`Are you sure you want to delete ${service.title}?`}
-                  subtitle="The customer would no longer be able to view this service listing."
+                  title={`Are you sure you want to delete ${record.title}?`}
+                  subtitle="Pet Owners would no longer be able to view this service listing."
                   onDelete={() => {
-                    onDelete(service.serviceListingId);
+                    onDelete(record.serviceListingId);
                     // Check if there is only 1 record on this page and we're not on the first page.
                     if (records.length === 1 && page > 1) {
                       onPageChange(page - 1);
@@ -147,15 +129,6 @@ const ServiceListingTable = ({
         page={page}
         onPageChange={(p) => onPageChange(p)}
       />
-
-      {/* <ServiceListingModal
-        opened={isServiceModalOpen}
-        onClose={closeView}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-      /> */}
     </>
   );
 };
