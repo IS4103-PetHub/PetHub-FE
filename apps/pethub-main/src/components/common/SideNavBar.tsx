@@ -11,7 +11,6 @@ import {
 import { notifications } from "@mantine/notifications";
 import {
   IconBoxMultiple,
-  IconLayoutDashboard,
   IconUser,
   IconArticle,
   IconHome2,
