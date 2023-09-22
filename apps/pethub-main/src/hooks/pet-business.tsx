@@ -36,7 +36,7 @@ export const useGetPetBusinessByIdAndAccountType = (
   return useQuery({
     queryKey: ["pet-businesses", accountType, userId],
     queryFn: async () => {
-      const data = await (await api.get(`/${PET_BUSINESS_API}/${userId}`)).data;
+      const data = await (await api.get(`${PET_BUSINESS_API}/${userId}`)).data;
       const petBusiness: PetBusiness = {
         userId,
         companyName: data.companyName,

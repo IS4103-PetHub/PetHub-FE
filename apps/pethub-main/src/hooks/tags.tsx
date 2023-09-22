@@ -8,7 +8,7 @@ export const useGetAllTags = () => {
   return useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
-      const data = await api.get(`/${TAG_API}`);
+      const data = await api.get(`${TAG_API}`);
       return data.data as Tag[];
     },
   });
