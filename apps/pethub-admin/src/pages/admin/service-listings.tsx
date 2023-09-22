@@ -34,8 +34,6 @@ export default function ServiceListings() {
   } = useGetAllServiceListings();
 
   //for table
-  const [isCreateServiceModalOpen, setIsCreateServiceModalOpen] =
-    useState(false);
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
   const [isSearching, setIsSearching] = useToggle();

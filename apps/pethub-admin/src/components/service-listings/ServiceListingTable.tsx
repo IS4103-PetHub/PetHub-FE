@@ -32,7 +32,7 @@ const ServiceListingTable = ({
   onSortStatusChange,
   onPageChange,
 }: ServiceListingTableProps) => {
-  const [isServiceModalOpen, { close: closeView, open: openView }] =
+  const [isViewModalOpen, { close: closeView, open: openView }] =
     useDisclosure(false);
 
   return (
@@ -56,22 +56,22 @@ const ServiceListingTable = ({
             sortable: true,
             render: (record) => formatStringToLetterCase(record.category),
           },
-          // {
-          //   accessor: "tags",
-          //   title: "Tags",
-          //   textAlignment: "left",
-          //   width: "10vw",
-          //   render: (record) =>
-          //     record.tags
-          //       ? record.tags.map((tag, index) => (
-          //           <React.Fragment key={tag.tagId}>
-          //             <Badge color="blue">{tag.name}</Badge>
-          //             {index < record.tags.length - 1 && "\u00A0"}{" "}
-          //             {/* Add space if not the last tag */}
-          //           </React.Fragment>
-          //         ))
-          //       : "-",
-          // },
+          {
+            accessor: "tags",
+            title: "Tags",
+            textAlignment: "left",
+            width: "10vw",
+            render: (record) =>
+              record.tags
+                ? record.tags.map((tag, index) => (
+                    <React.Fragment key={tag.tagId}>
+                      <Badge color="blue">{tag.name}</Badge>
+                      {index < record.tags.length - 1 && "\u00A0"}{" "}
+                      {/* Add space if not the last tag */}
+                    </React.Fragment>
+                  ))
+                : "-",
+          },
           {
             accessor: "dateCreated",
             title: "Date Created",
@@ -82,18 +82,18 @@ const ServiceListingTable = ({
               return new Date(dateCreated).toLocaleDateString();
             },
           },
-          {
-            accessor: "lastUpdated",
-            title: "Last Updated",
-            sortable: true,
-            ellipsis: true,
-            width: 100,
-            render: ({ lastUpdated }) => {
-              return lastUpdated
-                ? new Date(lastUpdated).toLocaleDateString()
-                : "-";
-            },
-          },
+          // {
+          //   accessor: "lastUpdated",
+          //   title: "Last Updated",
+          //   sortable: true,
+          //   ellipsis: true,
+          //   width: 100,
+          //   render: ({ lastUpdated }) => {
+          //     return lastUpdated
+          //       ? new Date(lastUpdated).toLocaleDateString()
+          //       : "-";
+          //   },
+          // },
           {
             accessor: "basePrice",
             title: "Price ($)",
@@ -108,7 +108,7 @@ const ServiceListingTable = ({
             // actions
             accessor: "actions",
             title: "Actions",
-            width: 150,
+            width: 100,
             textAlignment: "right",
             render: (service) => (
               <Group position="right">
