@@ -2,7 +2,9 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
+  GenderEnum,
   PetBusinessTypeEnum,
+  PetTypeEnum,
   ServiceCategoryEnum,
 } from "./constants";
 
@@ -155,4 +157,17 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+}
+
+export interface Pet {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight: number;
+  dateOfBirth: string;
+  microchipNumber: string;
+  healthAttachment: File[];
+  dateCreated: string;
+  dateUpdated: string;
 }
