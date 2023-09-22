@@ -1,19 +1,14 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/api/axiosConfig";
 import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
 
-const PET_BUSINESS_API = "api/users/pet-businesses";
+const PET_BUSINESS_API = "users/pet-businesses";
 
 export const useCreatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: CreatePetBusinessPayload) => {
-      return (
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}`,
-          payload,
-        )
-      ).data;
+      return (await api.post(`/${PET_BUSINESS_API}`, payload)).data;
     },
   });
 };
@@ -25,8 +20,8 @@ export const useUpdatePetBusiness = (queryClient: QueryClient) => {
         Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
       );
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}/${payload.userId}`,
+        await api.patch(
+          `/${PET_BUSINESS_API}/${payload.userId}`,
           payloadWithoutId,
         )
       ).data;
@@ -41,11 +36,7 @@ export const useGetPetBusinessByIdAndAccountType = (
   return useQuery({
     queryKey: ["pet-businesses", accountType, userId],
     queryFn: async () => {
-      const data = await (
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}/${userId}`,
-        )
-      ).data;
+      const data = await (await api.get(`/${PET_BUSINESS_API}/${userId}`)).data;
       const petBusiness: PetBusiness = {
         userId,
         companyName: data.companyName,

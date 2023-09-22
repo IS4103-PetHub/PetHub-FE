@@ -1,16 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/api/axiosConfig";
 import { Tag } from "@/types/types";
 
-const TAG_API = "api/tags";
+const TAG_API = "tags";
 
 export const useGetAllTags = () => {
   return useQuery({
     queryKey: ["tags"],
     queryFn: async () => {
-      const data = await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${TAG_API}`,
-      );
+      const data = await api.get(`/${TAG_API}`);
       return data.data as Tag[];
     },
   });

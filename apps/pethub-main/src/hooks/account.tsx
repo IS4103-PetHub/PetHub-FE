@@ -1,7 +1,7 @@
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/api/axiosConfig";
 
-const USERS_API = "api/users";
+const USERS_API = "users";
 
 export const useDeactivateAccount = (queryClient: QueryClient) => {
   return useMutation({
@@ -10,8 +10,8 @@ export const useDeactivateAccount = (queryClient: QueryClient) => {
         Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
       );
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${USERS_API}/${payload.userId}/deactivate-user`,
+        await api.patch(
+          `/${USERS_API}/${payload.userId}/deactivate-user`,
           payloadWithoutId,
         )
       ).data;
@@ -26,8 +26,8 @@ export const useActivateAccount = (queryClient: QueryClient) => {
         Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
       );
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${USERS_API}/${payload.userId}/activate-user`,
+        await api.patch(
+          `/${USERS_API}/${payload.userId}/activate-user`,
           payloadWithoutId,
         )
       ).data;
