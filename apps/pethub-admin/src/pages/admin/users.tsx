@@ -159,9 +159,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await api.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { userId, permissions } };
 }

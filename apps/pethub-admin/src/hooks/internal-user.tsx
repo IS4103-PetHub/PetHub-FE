@@ -49,7 +49,7 @@ export const useGetInternalUserById = (userId: number) => {
 export const useCreateInternalUser = () => {
   return useMutation({
     mutationFn: async (payload: CreateInternalUserPayload) => {
-      return (await api.post(`/${INTERNAL_USER_API}`, payload)).data;
+      return (await api.post(`${INTERNAL_USER_API}`, payload)).data;
     },
   });
 };
