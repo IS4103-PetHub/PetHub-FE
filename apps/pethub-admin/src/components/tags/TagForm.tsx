@@ -1,14 +1,4 @@
-import {
-  Stack,
-  TextInput,
-  Textarea,
-  Text,
-  Button,
-  Grid,
-  Divider,
-  Checkbox,
-  Group,
-} from "@mantine/core";
+import { TextInput, Button, Grid, Group } from "@mantine/core";
 import React from "react";
 
 interface TagFormProps {

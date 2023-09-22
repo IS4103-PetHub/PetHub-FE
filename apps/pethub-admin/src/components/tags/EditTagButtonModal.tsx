@@ -10,7 +10,6 @@ interface EditTagButtonModalProps {
   currentName: string;
   onUpdate(payload: UpdateTagPayload): void;
 }
-
 const EditTagButtonModal = ({
   tagId,
   currentName,
@@ -41,6 +40,16 @@ const EditTagButtonModal = ({
     close();
   }
 
+  const openAndSetInitialValue = () => {
+    form.setFieldValue("name", currentName);
+    open();
+  };
+
+  const closeAndReset = () => {
+    form.reset();
+    close();
+  };
+
   return (
     <>
       <Modal
@@ -65,14 +74,14 @@ const EditTagButtonModal = ({
             </Grid.Col>
           </Grid>
           <Group mt="25px" position="right">
-            <Button type="reset" color="gray" onClick={close}>
+            <Button type="reset" color="gray" onClick={closeAndReset}>
               Cancel
             </Button>
             <Button type="submit">Save</Button>
           </Group>
         </form>
       </Modal>
-      <EditActionButton onClick={open} />
+      <EditActionButton onClick={openAndSetInitialValue} />
     </>
   );
 };
