@@ -3,12 +3,12 @@ import api from "@/api/axiosConfig";
 import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
 
-const PET_BUSINESS_API = "users/pet-businesses";
+const PET_BUSINESS_API = "/users/pet-businesses";
 
 export const useCreatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: CreatePetBusinessPayload) => {
-      return (await api.post(`/${PET_BUSINESS_API}`, payload)).data;
+      return (await api.post(`${PET_BUSINESS_API}`, payload)).data;
     },
   });
 };
@@ -21,7 +21,7 @@ export const useUpdatePetBusiness = (queryClient: QueryClient) => {
       );
       return (
         await api.patch(
-          `/${PET_BUSINESS_API}/${payload.userId}`,
+          `${PET_BUSINESS_API}/${payload.userId}`,
           payloadWithoutId,
         )
       ).data;

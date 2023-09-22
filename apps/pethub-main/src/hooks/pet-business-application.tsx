@@ -4,12 +4,12 @@ import {
   PetBusinessApplication,
   CreatePetBusinessApplicationPayload,
 } from "@/types/types";
-const PET_BUSINESS_APPLICATION_API = "pb-applications";
+const PET_BUSINESS_APPLICATION_API = "/pb-applications";
 
 export const useCreatePetBusinessApplication = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CreatePetBusinessApplicationPayload) => {
-      return (await api.post(`/${PET_BUSINESS_APPLICATION_API}`, payload)).data;
+      return (await api.post(`${PET_BUSINESS_APPLICATION_API}`, payload)).data;
     },
   });
 };
@@ -24,7 +24,7 @@ export const useUpdatePetBusinessApplication = (queryClient: QueryClient) => {
       );
       return (
         await api.put(
-          `/${PET_BUSINESS_APPLICATION_API}/${payload.petBusinessApplicationId}`,
+          `${PET_BUSINESS_APPLICATION_API}/${payload.petBusinessApplicationId}`,
           payloadWithoutId,
         )
       ).data;
@@ -40,7 +40,7 @@ export const useGetPetBusinessApplicationByPBId = (
     queryFn: async () => {
       const data = await (
         await api.get(
-          `/${PET_BUSINESS_APPLICATION_API}/pet-business/${petBusinessApplicationId}`,
+          `${PET_BUSINESS_APPLICATION_API}/pet-business/${petBusinessApplicationId}`,
         )
       ).data;
       const petBusinessApplication: PetBusinessApplication = {

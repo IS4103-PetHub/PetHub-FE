@@ -6,7 +6,7 @@ import {
   UpdateServiceListingPayload,
 } from "@/types/types";
 
-const SERVICE_LISTING_API = "service-listings";
+const SERVICE_LISTING_API = "/service-listings";
 
 // POST Service Listing
 export const useCreateServiceListing = () => {
@@ -31,7 +31,7 @@ export const useCreateServiceListing = () => {
         formData.append("addressIds[]", address.toString());
       });
 
-      const response = await api.post(`/${SERVICE_LISTING_API}/`, formData, {
+      const response = await api.post(`${SERVICE_LISTING_API}/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -57,7 +57,7 @@ export const useGetServiceListingByPetBusinessIdAndAccountType = (
     queryKey: ["service-listings"],
     queryFn: async () => {
       const response = await api.get(
-        `/${SERVICE_LISTING_API}/pet-businesses/${userId}`,
+        `${SERVICE_LISTING_API}/pet-businesses/${userId}`,
       );
       return response.data;
     },
@@ -97,7 +97,7 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
       // Send the PATCH request with formData
       return (
         await api.patch(
-          `/${SERVICE_LISTING_API}/${serviceListingId}`,
+          `${SERVICE_LISTING_API}/${serviceListingId}`,
           formData,
           {
             headers: {
@@ -114,7 +114,7 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
 export const useDeleteServiceListingById = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (serviceListingId: number) => {
-      return (await api.delete(`/${SERVICE_LISTING_API}/${serviceListingId}`))
+      return (await api.delete(`${SERVICE_LISTING_API}/${serviceListingId}`))
         .data;
     },
     onSuccess: (data, serviceListingId) => {

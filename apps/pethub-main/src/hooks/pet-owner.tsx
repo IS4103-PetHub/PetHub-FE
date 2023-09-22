@@ -3,12 +3,12 @@ import api from "@/api/axiosConfig";
 import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetOwnerPayload, PetOwner } from "@/types/types";
 
-const PET_OWNER_API = "users/pet-owners";
+const PET_OWNER_API = "/users/pet-owners";
 
 export const useCreatePetOwner = () => {
   return useMutation({
     mutationFn: async (payload: CreatePetOwnerPayload) => {
-      return (await api.post(`/${PET_OWNER_API}`, payload)).data;
+      return (await api.post(`${PET_OWNER_API}`, payload)).data;
     },
   });
 };
@@ -20,7 +20,7 @@ export const useUpdatePetOwner = (queryClient: QueryClient) => {
         Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
       );
       return (
-        await api.patch(`/${PET_OWNER_API}/${payload.userId}`, payloadWithoutId)
+        await api.patch(`${PET_OWNER_API}/${payload.userId}`, payloadWithoutId)
       ).data;
     },
   });
@@ -33,7 +33,7 @@ export const useGetPetOwnerByIdAndAccountType = (
   return useQuery({
     queryKey: ["pet-owners", accountType, userId],
     queryFn: async () => {
-      const data = await (await api.get(`/${PET_OWNER_API}/${userId}`)).data;
+      const data = await (await api.get(`${PET_OWNER_API}/${userId}`)).data;
       const petOwner: PetOwner = {
         userId,
         firstName: data.firstName,
