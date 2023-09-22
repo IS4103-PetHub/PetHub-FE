@@ -15,13 +15,13 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
+import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import ApplicationDetails from "@/components/pb-applications/ApplicationDetails";
 import {
@@ -320,7 +320,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await axios.get(
+    await api.get(
       `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
     )
   ).data;

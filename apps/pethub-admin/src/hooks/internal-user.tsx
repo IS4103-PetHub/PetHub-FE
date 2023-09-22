@@ -1,16 +1,14 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/api/axiosConfig";
 import { CreateInternalUserPayload, InternalUser } from "@/types/types";
 
-const INTERNAL_USER_API = "api/users/internal-users";
+const INTERNAL_USER_API = "/users/internal-users";
 
 export const useGetAllInternalUsers = () => {
   return useQuery({
     queryKey: ["internal-users"],
     queryFn: async () => {
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}`,
-      );
+      const { data } = await api.get(`${INTERNAL_USER_API}`);
       const internalUsers: InternalUser[] = data.map((data: any) => ({
         userId: data.user.userId,
         firstName: data.firstName,
@@ -31,11 +29,7 @@ export const useGetInternalUserById = (userId: number) => {
   return useQuery({
     queryKey: ["internal-users", userId],
     queryFn: async () => {
-      const data = await (
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${userId}`,
-        )
-      ).data;
+      const data = await (await api.get(`${INTERNAL_USER_API}/${userId}`)).data;
       const internalUser: InternalUser = {
         userId: data.user.userId,
         firstName: data.firstName,
@@ -55,12 +49,7 @@ export const useGetInternalUserById = (userId: number) => {
 export const useCreateInternalUser = () => {
   return useMutation({
     mutationFn: async (payload: CreateInternalUserPayload) => {
-      return (
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}`,
-          payload,
-        )
-      ).data;
+      return (await api.post(`/${INTERNAL_USER_API}`, payload)).data;
     },
   });
 };
@@ -68,11 +57,7 @@ export const useCreateInternalUser = () => {
 export const useDeleteInternalUser = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (userId: number) => {
-      return (
-        await axios.delete(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${userId}`,
-        )
-      ).data;
+      return (await api.delete(`${INTERNAL_USER_API}/${userId}`)).data;
     },
     onSuccess: (data, userId) => {
       queryClient.setQueryData<InternalUser[]>(
@@ -90,10 +75,7 @@ export const useUpdateInternalUser = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${INTERNAL_USER_API}/${payload.userId}`,
-          payload,
-        )
+        await api.patch(`${INTERNAL_USER_API}/${payload.userId}`, payload)
       ).data;
     },
     onSuccess: (data) => {
