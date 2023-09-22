@@ -1,5 +1,7 @@
 import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
@@ -11,7 +13,10 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import ServiceListingTable from "@/components/service-listings/ServiceListingTable";
-import { useGetAllServiceListings } from "@/hooks/service-listing";
+import {
+  useDeleteServiceListingById,
+  useGetAllServiceListings,
+} from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tag";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { ServiceListing } from "@/types/types";
@@ -102,30 +107,30 @@ export default function ServiceListings() {
   /*
    * Delete
    */
-  //   const deleteServiceListingMutation = useDeleteServiceListing(queryClient);
-  //   const handleDeleteServiceListing = async (id: number) => {
-  //     try {
-  //       await deleteServiceListingMutation.mutateAsync(id);
-  //       notifications.show({
-  //         title: "ServiceListing Deleted",
-  //         color: "green",
-  //         icon: <IconCheck />,
-  //         message: `ServiceListing ID: ${id} deleted successfully.`,
-  //       });
-  //       // refetch();
-  //     } catch (error: any) {
-  //       notifications.show({
-  //         title: "Error Deleting ServiceListing",
-  //         color: "red",
-  //         icon: <IconX />,
-  //         message:
-  //           (error.response &&
-  //             error.response.data &&
-  //             error.response.data.message) ||
-  //           error.message,
-  //       });
-  //     }
-  //   };
+  const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
+  const handleDeleteServiceListing = async (id: number) => {
+    try {
+      await deleteServiceListingMutation.mutateAsync(id);
+      notifications.show({
+        title: "ServiceListing Deleted",
+        color: "green",
+        icon: <IconCheck />,
+        message: `ServiceListing ID: ${id} deleted successfully.`,
+      });
+      // refetch();
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Deleting ServiceListing",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
 
   const renderContent = () => {
     if (serviceListings.length === 0) {
@@ -158,7 +163,7 @@ export default function ServiceListings() {
           <ServiceListingTable
             records={records}
             totalNumServiceListing={serviceListings.length}
-            //onDelete={handleDeleteServiceListing}
+            onDelete={handleDeleteServiceListing}
             isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
