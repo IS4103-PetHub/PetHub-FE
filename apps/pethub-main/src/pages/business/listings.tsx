@@ -19,11 +19,9 @@ import { useGetAllTags } from "@/hooks/tags";
 import {
   AccountTypeEnum,
   EMPTY_STATE_DELAY_MS,
-  ServiceCategoryEnum,
   TABLE_PAGE_SIZE,
 } from "@/types/constants";
-import { PetBusiness, ServiceListing } from "@/types/types";
-
+import { ServiceListing } from "@/types/types";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
