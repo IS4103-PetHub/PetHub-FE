@@ -50,7 +50,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const { data: tags } = useGetAllTags();
   const [petBusiness, setPetBusiness] = useState(null);
   const { data: petBusinessData } = useGetPetBusinessByIdAndAccountType(
@@ -96,7 +96,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

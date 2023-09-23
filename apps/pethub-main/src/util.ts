@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { formatStringToLetterCase } from "shared-utils";
 import { ServiceListing } from "./types/types";
 
 // Convert param to string

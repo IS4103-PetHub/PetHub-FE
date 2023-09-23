@@ -8,7 +8,6 @@ import {
   Button,
   Burger,
   rem,
-  Text,
   Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
