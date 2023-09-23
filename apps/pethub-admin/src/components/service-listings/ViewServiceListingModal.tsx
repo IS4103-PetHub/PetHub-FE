@@ -1,3 +1,4 @@
+import { Carousel } from "@mantine/carousel";
 import {
   Container,
   Paper,
@@ -11,7 +12,7 @@ import {
   Divider,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { ServiceListing } from "@/types/types";
@@ -23,11 +24,50 @@ interface ViewServiceListingModalProps {
 const ViewServiceListingModal = ({
   serviceListing,
 }: ViewServiceListingModalProps) => {
-  /*
-   * Component State
-   */
   const [opened, { open, close }] = useDisclosure(false);
   const [imagePreview, setImagePreview] = useState([]);
+
+  useEffect(() => {
+    const fetchAndSetServiceListingFields = async () => {
+      if (serviceListing) {
+        await getFilesFromServiceListing(); // Wait for setServiceListingFields to complete
+      }
+    };
+
+    fetchAndSetServiceListingFields(); // Immediately invoke the async function
+  }, [serviceListing]);
+
+  const downloadFile = async (url: string, fileName: string) => {
+    try {
+      const response = await fetch(url);
+      const buffer = await response.arrayBuffer();
+      return new File([buffer], fileName);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
+  const extractFileName = (attachmentKeys: string) => {
+    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
+  };
+
+  const getFilesFromServiceListing = async () => {
+    const fileNames = serviceListing.attachmentKeys.map((keys) =>
+      extractFileName(keys),
+    );
+
+    const downloadPromises = fileNames.map((filename, index) => {
+      const url = serviceListing.attachmentURLs[index];
+      return downloadFile(url, filename).catch((error) => {
+        console.error(`Error downloading file ${filename}:`, error);
+        return null; // Return null for failed downloads
+      });
+    });
+
+    const downloadedFiles: File[] = await Promise.all(downloadPromises);
+    const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
+    setImagePreview(imageUrls);
+  };
 
   return (
     <>
@@ -38,11 +78,10 @@ const ViewServiceListingModal = ({
         closeOnEscape={false}
         withCloseButton={true}
         centered
-        padding="1.5rem"
-        size="md"
+        size="80%"
       >
         <Container fluid>
-          <Paper p="md" pt={0} style={{ width: "100%", margin: "0 auto" }}>
+          <Paper style={{ width: "100%", margin: "0 auto" }}>
             <Text
               align="center"
               size="xl"
@@ -136,22 +175,26 @@ const ViewServiceListingModal = ({
 
             <Stack spacing="md">
               {imagePreview && imagePreview.length > 0 ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                <Carousel slideSize="33.333333%" loop slidesToScroll={3}>
                   {imagePreview.map((imageUrl, index) => (
                     <div
                       key={index}
                       style={{ flex: "0 0 calc(33.33% - 10px)" }}
                     >
-                      <Card style={{ maxWidth: "100%" }}>
+                      <Card style={{ width: "100%" }}>
                         <Image
                           src={imageUrl}
                           alt={`Image Preview ${index}`}
-                          style={{ maxWidth: "100%", display: "block" }}
+                          style={{
+                            maxWidth: "100%",
+                            //maxHeight: "800px",
+                            display: "block",
+                          }}
                         />
                       </Card>
                     </div>
                   ))}
-                </div>
+                </Carousel>
               ) : (
                 <Text>No images available for this listing.</Text>
               )}
