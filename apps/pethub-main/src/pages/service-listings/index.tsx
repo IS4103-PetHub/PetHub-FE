@@ -1,98 +1,35 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Paper,
-  useMantineTheme,
-  Text,
-  Divider,
-  createStyles,
-  rem,
-  getStylesRef,
-  UnstyledButton,
-} from "@mantine/core";
-import {
-  IconBuildingCommunity,
-  IconCut,
-  IconList,
-  IconShoppingBag,
-  IconStethoscope,
-  IconToolsKitchen2,
-} from "@tabler/icons-react";
+import { Box, Container, Grid, useMantineTheme } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+
 import Head from "next/head";
-import Link from "next/link";
-import link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/router";
+
+import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
-
-const useStyles = createStyles((theme) => ({
-  link: {
-    ...theme.fn.focusStyles(),
-    display: "flex",
-    alignItems: "center",
-    textDecoration: "none",
-    fontSize: theme.fontSizes.sm,
-    color: theme.colors.dark[1],
-    padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
-    borderRadius: theme.radius.sm,
-    fontWeight: 500,
-
-    "&:hover": {
-      backgroundColor: theme.colors.indigo[5],
-      color: "white",
-      [`& .${getStylesRef("icon")}`]: {
-        color: "white",
-      },
-    },
-  },
-
-  linkIcon: {
-    ref: getStylesRef("icon"),
-    color: theme.colors.dark[2],
-    marginRight: theme.spacing.sm,
-  },
-
-  linkActive: {
-    "&, &:hover": {
-      backgroundColor: theme.colors.dark[6],
-      color: theme.colors.gray[0],
-
-      [`& .${getStylesRef("icon")}`]: {
-        color: theme.colors.gray[0],
-      },
-    },
-  },
-}));
-
-const categories = [
-  { icon: IconList, label: "All" },
-  { icon: IconBuildingCommunity, label: "Pet boarding" },
-  { icon: IconCut, label: "Pet grooming" },
-  { icon: IconStethoscope, label: "Veterinary" },
-  { icon: IconToolsKitchen2, label: "Dining" },
-  { icon: IconShoppingBag, label: "Pet retail" },
-];
+import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
+import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
+import { useGetAllServiceListings } from "@/hooks/service-listing";
 
 export default function ServiceListings() {
-  const { classes, cx } = useStyles();
-  const theme = useMantineTheme();
-  const [activeCategory, setActiveCategory] = useState("All");
+  const isMobile = useMediaQuery("(max-width: 64em)");
+  const isTablet = useMediaQuery("(max-width: 100em)");
+  const [activeCategory, setActiveCategory] = useState("ALL");
 
-  const categoriesList = categories.map((category) => (
-    <Link
-      className={cx(classes.link, {
-        [classes.linkActive]: activeCategory === category.label,
-      })}
-      href="#"
-      onClick={(event) => {
-        event.preventDefault();
-        setActiveCategory(category.label);
-      }}
-      key={category.label}
+  const { data: serviceListings = [] } = useGetAllServiceListings();
+  const router = useRouter();
+
+  useEffect(() => console.log(serviceListings), [serviceListings]);
+
+  const listingCards = serviceListings.map((serviceListing) => (
+    <Grid.Col
+      key={serviceListing.serviceListingId}
+      span={isMobile ? 12 : isTablet ? 4 : 3}
+      onClick={() =>
+        router.push(`${router.asPath}/${serviceListing.serviceListingId}`)
+      }
     >
-      <category.icon className={classes.linkIcon} stroke={1.5} />
-      {category.label}
-    </Link>
+      <ServiceListingCard serviceListing={serviceListing} />
+    </Grid.Col>
   ));
 
   return (
@@ -103,25 +40,20 @@ export default function ServiceListings() {
       </Head>
       <main>
         <Container fluid>
-          <Grid m="50px">
-            <Grid.Col span={2}>
-              <Paper radius="md" h="80vh" bg={theme.colors.gray[0]} p="lg">
-                <Text size="lg" weight={600}>
-                  Category
-                </Text>
-                <Divider mt={5} />
-                {categoriesList}
-                <Box h={300} />
-                <Text size="lg" weight={600}>
-                  Filters
-                </Text>
-                <Divider mt={5} />
-              </Paper>
+          <Grid m={isMobile ? 20 : 50}>
+            <Grid.Col span={2} hidden={isMobile}>
+              <ServiceListingsSideBar
+                activeCategory={activeCategory}
+                setActiveCategory={setActiveCategory}
+              />
             </Grid.Col>
-            <Grid.Col span={10}>
+            <Grid.Col span={isMobile ? 12 : 10}>
               <Box ml="xl">
                 <PageTitle title="All service listings" />
               </Box>
+              <Grid gutter="lg" m="sm">
+                {listingCards}
+              </Grid>
             </Grid.Col>
           </Grid>
         </Container>
