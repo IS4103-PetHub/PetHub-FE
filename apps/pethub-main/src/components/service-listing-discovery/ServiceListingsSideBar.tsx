@@ -117,7 +117,14 @@ const ServiceListingsSideBar = ({
   ));
 
   return (
-    <Paper radius="md" h="80vh" bg={theme.colors.gray[0]} p="lg">
+    <Paper
+      radius="md"
+      h="80vh"
+      bg={theme.colors.gray[0]}
+      p="lg"
+      w="14vw"
+      pos="fixed"
+    >
       <Text size="lg" weight={600}>
         Categories
       </Text>

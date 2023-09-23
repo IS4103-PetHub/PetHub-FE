@@ -24,24 +24,6 @@ const useStyles = createStyles((theme) => ({
       cursor: "pointer",
     },
   },
-
-  carouselControls: {
-    transition: "opacity 150ms ease",
-    opacity: 0,
-    "&:hover": {
-      opacity: 0.8,
-    },
-  },
-
-  carouselIndicator: {
-    width: rem(4),
-    height: rem(4),
-    transition: "width 250ms ease",
-
-    "&[data-active]": {
-      width: rem(16),
-    },
-  },
 }));
 
 interface ServiceListingCardProps {
@@ -51,15 +33,18 @@ interface ServiceListingCardProps {
 const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
   const { classes, cx } = useStyles();
 
-  const images = [
-    "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80",
-  ];
+  const placeholderImage = "pethub-placeholder.png";
 
-  const slides = images.map((image) => (
-    <Carousel.Slide key={image}>
-      <Image src={image} height={180} alt="Service Listing Photo" />
-    </Carousel.Slide>
-  ));
+  const coverImage =
+    serviceListing.attachmentURLs.length > 0 ? (
+      <Image
+        src={serviceListing.attachmentURLs[0]}
+        height={180}
+        alt="Service Listing Photo"
+      />
+    ) : (
+      <Image src={placeholderImage} height={180} alt="Service Listing Photo" />
+    );
 
   const tags = serviceListing.tags?.map((tag) => (
     <Badge color="gray" size="sm" key={tag.tagId}>
@@ -69,20 +54,7 @@ const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
 
   return (
     <Card radius="md" withBorder padding="lg" className={classes.listingCard}>
-      <Card.Section>
-        <Carousel
-          controlSize={20}
-          withControls={images.length > 1}
-          withIndicators={images.length > 1}
-          loop
-          classNames={{
-            controls: classes.carouselControls,
-            indicator: classes.carouselIndicator,
-          }}
-        >
-          {slides}
-        </Carousel>
-      </Card.Section>
+      <Card.Section>{coverImage}</Card.Section>
 
       <Box mt="md" mb="xs">
         <ServiceCategoryBadge category={serviceListing.category} mb="xs" />

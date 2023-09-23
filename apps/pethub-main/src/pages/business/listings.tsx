@@ -22,6 +22,7 @@ import {
   TABLE_PAGE_SIZE,
 } from "@/types/constants";
 import { ServiceListing } from "@/types/types";
+import { searchServiceListingsForPB } from "@/util";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
@@ -111,24 +112,10 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       setPage(1);
       return;
     }
-    // search by id or name
-    const formatEnumValue = (value: string) => {
-      return value.replace(/_/g, " ").toLowerCase();
-    };
 
-    // Search by title or category
+    // Search by title, category, tag
     setIsSearching(true);
-    const results = serviceListings.filter((serviceListing: ServiceListing) => {
-      const formattedCategory = formatEnumValue(serviceListing.category);
-      const formattedTags = serviceListing.tags.map((tag) =>
-        tag.name.toLowerCase(),
-      );
-      return (
-        serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-        formattedCategory.includes(searchStr.toLowerCase()) ||
-        formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
-      );
-    });
+    const results = searchServiceListingsForPB(serviceListings, searchStr);
     setRecords(results);
     setPage(1);
   };

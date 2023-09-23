@@ -9,6 +9,7 @@ import {
   Burger,
   rem,
   Text,
+  Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -168,14 +169,12 @@ const HeaderBar = () => {
             size="sm"
             color="white"
           />
-          <Text
-            size="xl"
-            weight={600}
-            color="white"
+          <Image
+            src="pethub-logo-white.png"
+            height={30}
+            mt={-5}
             onClick={() => router.push("/")}
-          >
-            PetHub
-          </Text>
+          />
         </Group>
         <Group spacing={5} className={classes.links}>
           {items}

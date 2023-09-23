@@ -124,6 +124,11 @@ export interface ServiceListing {
   attachmentKeys: string[];
   attachmentURLs: string[];
   addresses: Address[];
+  //pet business
+  petBusinessId: number;
+  petBusiness?: {
+    companyName: string;
+  };
 }
 
 export interface Tag {
