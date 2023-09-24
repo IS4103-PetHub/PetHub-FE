@@ -71,23 +71,23 @@ const links: {
     label: "Explore services",
     links: [
       {
-        link: "/service-listings/boarding",
+        link: "/service-listings?category=PET_BOARDING",
         label: "Pet boarding",
       },
       {
-        link: "/service-listings/grooming",
+        link: "/service-listings?category=PET_GROOMING",
         label: "Pet grooming",
       },
       {
-        link: "/service-listings/vet",
+        link: "/service-listings?category=VETERINARY",
         label: "Veterinary",
       },
       {
-        link: "/service-listings/dining",
+        link: "/service-listings?category=DINING",
         label: "Dining",
       },
       {
-        link: "/service-listings/retail",
+        link: "/service-listings?category=PET_RETAIL",
         label: "Pet retail",
       },
     ],
@@ -126,7 +126,9 @@ const HeaderBar = () => {
     }
 
     const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
+      <Menu.Item key={item.link}>
+        <Link href={item.link}>{item.label}</Link>
+      </Menu.Item>
     ));
 
     if (menuItems) {

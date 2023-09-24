@@ -10,7 +10,6 @@ import {
   Box,
 } from "@mantine/core";
 import React from "react";
-import { formatStringToLetterCase } from "shared-utils";
 import { ServiceListing } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
@@ -63,22 +62,11 @@ const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
         </Text>
       </Box>
 
-      <Group spacing={5}>
-        {/* {tags} */}
-        <Badge color="gray" size="sm">
-          Tag 1
-        </Badge>
-        <Badge color="gray" size="sm">
-          Tag 2
-        </Badge>
-        <Badge color="gray" size="sm">
-          Tag 3
-        </Badge>
-      </Group>
+      <Group spacing={5}>{tags}</Group>
 
       <Group position="apart" align="center" mt="md">
         <Text size="sm" color="dimmed" lineClamp={1} maw={180}>
-          Placeholder Text
+          {serviceListing.petBusiness?.companyName}
         </Text>
         <Text size="md" weight={500}>
           ${formatPriceForDisplay(serviceListing.basePrice)}

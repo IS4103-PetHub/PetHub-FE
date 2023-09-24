@@ -1,4 +1,12 @@
-import { Box, Container, Grid, Group, Select, Transition } from "@mantine/core";
+import {
+  Box,
+  Container,
+  Grid,
+  Group,
+  MultiSelect,
+  Select,
+  Transition,
+} from "@mantine/core";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { sortBy } from "lodash";
 import Head from "next/head";
@@ -11,48 +19,64 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
-import { useGetAllServiceListings } from "@/hooks/service-listing";
-import { EMPTY_STATE_DELAY_MS } from "@/types/constants";
+import { useGetAllServiceListingsWithQueryParams } from "@/hooks/service-listing";
+import { useGetAllTags } from "@/hooks/tags";
+import { EMPTY_STATE_DELAY_MS, ServiceCategoryEnum } from "@/types/constants";
 import { ServiceListing } from "@/types/types";
 import { searchServiceListingsForCustomer } from "@/util";
 
 const sortByOptions = [
-  { value: "recent", label: "Recently added" },
-  { value: "oldest", label: "Oldest" },
-  { value: "priceLowToHigh", label: "Price (low to high)" },
-  { value: "priceHighToLow", label: "Price (high to low)" },
+  {
+    value: "recent",
+    label: "Recently added",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+  {
+    value: "priceLowToHigh",
+    label: "Price (low to high)",
+    attribute: "basePrice",
+    direction: "asc",
+  },
+  {
+    value: "priceHighToLow",
+    label: "Price (high to low)",
+    attribute: "basePrice",
+    direction: "desc",
+  },
 ];
 
 export default function ServiceListings() {
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 64em)");
   const isTablet = useMediaQuery("(max-width: 100em)");
-  const [activeCategory, setActiveCategory] = useState("ALL");
   const [isSearching, setIsSearching] = useToggle();
-  const [sortStatus, setSortStatus] = useState<string>("");
+  const [sortStatus, setSortStatus] = useState<string>("recent");
+  const [activeCategory, setActiveCategory] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
-  const { data: serviceListings = [], isLoading } = useGetAllServiceListings();
+  const { data: serviceListings = [], isLoading } =
+    useGetAllServiceListingsWithQueryParams(activeCategory, selectedTags);
+  const { data: tags = [] } = useGetAllTags();
 
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
 
   function sortServiceListings(sortStatus: string) {
-    let sorted: ServiceListing[];
-    switch (sortStatus) {
-      case "recent":
-        sorted = sortBy(serviceListings, "dateCreated");
-        break;
-      case "oldest":
-        sorted = sortBy(serviceListings, "dateCreated").reverse();
-        break;
-      case "priceLowToHigh":
-        sorted = sortBy(serviceListings, "basePrice");
-        break;
-      case "priceHighToLow":
-        sorted = sortBy(serviceListings, "basePrice").reverse();
-        break;
-      default:
-        sorted = serviceListings;
+    let sorted: ServiceListing[] = serviceListings;
+    if (sortStatus && sortStatus.length > 0) {
+      const sortOption = sortByOptions.find((x) => sortStatus === x.value);
+      sorted = sortBy(serviceListings, sortOption.attribute);
+      if (sortOption.direction == "desc") {
+        sorted.reverse();
+      }
     }
     return sorted;
   }
@@ -60,6 +84,10 @@ export default function ServiceListings() {
   /*
    * Effect Hooks
    */
+  useEffect(() => {
+    setActiveCategory(router.query?.category as string);
+  }, [router.query]);
+
   useEffect(() => {
     if (sortStatus) {
       setRecords(sortServiceListings(sortStatus));
@@ -86,8 +114,17 @@ export default function ServiceListings() {
     }
 
     setIsSearching(true);
-    const results = searchServiceListingsForCustomer(records, searchStr);
+    const results = searchServiceListingsForCustomer(
+      serviceListings,
+      searchStr,
+    );
     setRecords(results);
+  };
+
+  const handleChangeCategory = (newCategory: ServiceCategoryEnum) => {
+    router.push({
+      query: { category: newCategory },
+    });
   };
 
   const listingCards = records?.map((serviceListing) => (
@@ -132,7 +169,7 @@ export default function ServiceListings() {
         {isSearching && records.length === 0 ? (
           <NoSearchResultsMessage />
         ) : (
-          <Grid gutter="lg" m="sm">
+          <Grid gutter="lg" m="sm" mt={5}>
             {listingCards}
           </Grid>
         )}
@@ -144,14 +181,30 @@ export default function ServiceListings() {
     <Group position="apart" align="center">
       <SearchBar
         size="md"
-        w="70%"
-        text="Search by service listing title, pet business name, category, tag"
+        w="45%"
+        text="Search by service listing title, business name"
         onSearch={handleSearch}
       />
-      <Select
-        w="25%"
+      <MultiSelect
+        w="32%"
         size="md"
-        placeholder="Sort by"
+        mt={-25}
+        label="Filter by tags"
+        placeholder="Select tags"
+        maxSelectedValues={3}
+        dropdownPosition="bottom"
+        clearable
+        data={tags.map((tag) => tag.name)}
+        value={selectedTags}
+        onChange={setSelectedTags}
+      />
+      <Select
+        dropdownPosition="bottom"
+        w="20%"
+        mt={-25}
+        label="Sort by"
+        size="md"
+        placeholder="Select sort"
         clearable
         data={sortByOptions}
         value={sortStatus}
@@ -172,7 +225,7 @@ export default function ServiceListings() {
             <Grid.Col span={2} hidden={isMobile}>
               <ServiceListingsSideBar
                 activeCategory={activeCategory}
-                setActiveCategory={setActiveCategory}
+                onChangeCategory={handleChangeCategory}
               />
             </Grid.Col>
             <Grid.Col span={isMobile ? 12 : 10}>

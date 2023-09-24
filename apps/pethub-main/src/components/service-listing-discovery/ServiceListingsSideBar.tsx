@@ -59,7 +59,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const categories = [
-  { icon: IconList, value: "ALL", label: "All" },
+  { icon: IconList, value: "", label: "All" },
   {
     icon: IconBuildingCommunity,
     value: ServiceCategoryEnum.PetBoarding,
@@ -89,12 +89,12 @@ const categories = [
 
 interface ServiceListingsSideBarProps {
   activeCategory: string;
-  setActiveCategory(category: string): void;
+  onChangeCategory(category: string): void;
 }
 
 const ServiceListingsSideBar = ({
   activeCategory,
-  setActiveCategory,
+  onChangeCategory,
 }: ServiceListingsSideBarProps) => {
   const { classes, cx } = useStyles();
   const theme = useMantineTheme();
@@ -107,7 +107,7 @@ const ServiceListingsSideBar = ({
       href="#"
       onClick={(event) => {
         event.preventDefault();
-        setActiveCategory(category.value);
+        onChangeCategory(category.value);
       }}
       key={category.value}
     >

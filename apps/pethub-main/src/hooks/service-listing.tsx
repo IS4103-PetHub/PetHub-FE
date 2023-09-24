@@ -53,15 +53,32 @@ export const useCreateServiceListing = () => {
   });
 };
 
-// GET All Service Listings
-export const useGetAllServiceListings = () => {
+// GET All Service Listings with Query Params
+export const useGetAllServiceListingsWithQueryParams = (
+  categoryValue?: string,
+  tagNames?: string[],
+) => {
+  const params = { category: categoryValue, tag: { ...tagNames } };
   return useQuery({
-    queryKey: ["service-listings"],
+    queryKey: ["service-listings", categoryValue, tagNames],
     queryFn: async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}`,
-      );
-      return response.data as ServiceListing[];
+      if (
+        (categoryValue && categoryValue.length > 0) ||
+        (tagNames && tagNames.length > 0)
+      ) {
+        return (await (
+          await axios.get(
+            `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/filter`,
+            { params },
+          )
+        ).data) as ServiceListing[];
+      } else {
+        return (await (
+          await axios.get(
+            `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}`,
+          )
+        ).data) as ServiceListing[];
+      }
     },
   });
 };
