@@ -1,18 +1,9 @@
-import { Carousel } from "@mantine/carousel";
-import {
-  Card,
-  Group,
-  rem,
-  Image,
-  Text,
-  createStyles,
-  Badge,
-  Box,
-} from "@mantine/core";
+import { Card, Group, Image, Text, createStyles, Box } from "@mantine/core";
 import React from "react";
 import { ServiceListing } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
+import ServiceListingTags from "./ServiceListingTags";
 
 const useStyles = createStyles((theme) => ({
   listingCard: {
@@ -29,28 +20,22 @@ interface ServiceListingCardProps {
   serviceListing: ServiceListing;
 }
 
+const IMAGE_HEIGHT = 180;
+
 const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
   const { classes, cx } = useStyles();
 
-  const placeholderImage = "pethub-placeholder.png";
-
-  const coverImage =
-    serviceListing.attachmentURLs.length > 0 ? (
-      <Image
-        src={serviceListing.attachmentURLs[0]}
-        height={180}
-        alt="Service Listing Photo"
-      />
-    ) : (
-      <Image src={placeholderImage} height={180} alt="Service Listing Photo" />
-    );
-
-  const tags = serviceListing.tags?.map((tag) => (
-    <Badge color="gray" size="sm" key={tag.tagId}>
-      {tag.name}
-    </Badge>
-  ));
-
+  const coverImage = (
+    <Image
+      src={
+        serviceListing.attachmentURLs.length > 0
+          ? serviceListing.attachmentURLs[0]
+          : "pethub-placeholder.png"
+      }
+      height={IMAGE_HEIGHT}
+      alt="Service Listing Photo"
+    />
+  );
   return (
     <Card radius="md" withBorder padding="lg" className={classes.listingCard}>
       <Card.Section>{coverImage}</Card.Section>
@@ -62,7 +47,7 @@ const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
         </Text>
       </Box>
 
-      <Group spacing={5}>{tags}</Group>
+      <ServiceListingTags tags={serviceListing.tags} />
 
       <Group position="apart" align="center" mt="md">
         <Text size="sm" color="dimmed" lineClamp={1} maw={180}>

@@ -171,7 +171,7 @@ const HeaderBar = () => {
             color="white"
           />
           <Image
-            src="pethub-logo-white.png"
+            src="/pethub-logo-white.png"
             height={30}
             mt={-5}
             onClick={() => router.push("/")}

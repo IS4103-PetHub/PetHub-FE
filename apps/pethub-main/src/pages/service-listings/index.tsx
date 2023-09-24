@@ -12,6 +12,7 @@ import { sortBy } from "lodash";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { formatStringToLetterCase } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -104,7 +105,7 @@ export default function ServiceListings() {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [serviceListings]);
 
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
@@ -132,7 +133,7 @@ export default function ServiceListings() {
       key={serviceListing.serviceListingId}
       span={isMobile ? 12 : isTablet ? 4 : 3}
       onClick={() =>
-        router.push(`${router.asPath}/${serviceListing.serviceListingId}`)
+        router.push(`/service-listings/${serviceListing.serviceListingId}`)
       }
     >
       <ServiceListingCard serviceListing={serviceListing} />
@@ -230,7 +231,13 @@ export default function ServiceListings() {
             </Grid.Col>
             <Grid.Col span={isMobile ? 12 : 10}>
               <Box ml="xl" mr="xl">
-                <PageTitle title="All service listings" />
+                <PageTitle
+                  title={
+                    !activeCategory || activeCategory === ""
+                      ? `All service listings`
+                      : formatStringToLetterCase(activeCategory)
+                  }
+                />
                 {serviceListings.length > 0 ? searchAndSortGroup : null}
               </Box>
               {renderContent()}
