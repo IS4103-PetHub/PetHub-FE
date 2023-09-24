@@ -187,7 +187,7 @@ export default function ServiceListings() {
         onSearch={handleSearch}
       />
       <MultiSelect
-        w="32%"
+        w={isTablet ? "30%" : "32%"}
         size="md"
         mt={-25}
         label="Filter by tags"
