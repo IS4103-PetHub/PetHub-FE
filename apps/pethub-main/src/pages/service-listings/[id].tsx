@@ -2,7 +2,6 @@ import { Carousel } from "@mantine/carousel";
 import {
   Container,
   Text,
-  Box,
   Image,
   Button,
   Group,
@@ -32,7 +31,6 @@ export default function ServiceListingDetails({
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const [value, setValue] = useState<string | null>(null);
 
   const hasMultipleImages = serviceListing.attachmentURLs.length > 1;
 
@@ -63,7 +61,9 @@ export default function ServiceListingDetails({
     </Carousel>
   );
 
-  // const businessAccordion = (
+  // TO-DO: Add section for business details
+
+  // const businessSection = (
   //   <Accordion.Item value="business" p="sm">
   //     <Accordion.Control>
   //       <Text size="xl" weight={600}>
@@ -76,7 +76,7 @@ export default function ServiceListingDetails({
   //   </Accordion.Item>
   // );
 
-  const descriptionAccordion = (
+  const descriptionSection = (
     <Accordion.Item value="description" p="sm">
       <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
         <Text size="xl" weight={600}>
@@ -138,8 +138,8 @@ export default function ServiceListingDetails({
             chevronSize={0}
             onChange={() => {}}
           >
-            {/* {businessAccordion} */}
-            {descriptionAccordion}
+            {/* {businessSection} */}
+            {descriptionSection}
           </Accordion>
         </Grid.Col>
         <Grid.Col span={3}>
