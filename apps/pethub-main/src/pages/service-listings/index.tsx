@@ -206,7 +206,6 @@ export default function ServiceListings() {
         label="Sort by"
         size="md"
         placeholder="Select sort"
-        clearable
         data={sortByOptions}
         value={sortStatus}
         onChange={setSortStatus}
