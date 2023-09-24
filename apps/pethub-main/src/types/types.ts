@@ -2,7 +2,9 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
+  DayOfWeekEnum,
   PetBusinessTypeEnum,
+  RecurrencePatternEnum,
   ServiceCategoryEnum,
 } from "./constants";
 
@@ -155,4 +157,43 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+}
+
+export interface CalendarGroup {
+  calendarGroupId: number;
+  name: string;
+  description: string;
+  timeslots: Timeslot[];
+  petBusinessId: number;
+  scheduleSettings: ScheduleSettings[];
+}
+
+export interface Timeslot {
+  timeslotId?: number;
+  startTime?: string;
+  endTime?: string;
+  isVacant?: boolean;
+  bookingId?: number;
+  calenderGroupId?: number;
+}
+
+export interface ScheduleSettings {
+  scheduleSettingsId: number;
+  days: DayOfWeekEnum[];
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+  pattern: RecurrencePatternEnum;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Booking {
+  bookingId: number;
+  petOwnerId: number;
+  invoiceId?: number;
+  transactionId?: number;
+  dateCreated: string;
+  lastUpdated?: string;
+  timeSlotIds: number[];
 }

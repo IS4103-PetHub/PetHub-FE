@@ -98,6 +98,11 @@ const data = [
     label: "Service Listings",
     icon: IconBoxMultiple,
   },
+  {
+    link: "/business/calendargroup",
+    label: "Calendar Group",
+    icon: IconBoxMultiple,
+  },
 ];
 
 const SideNavBar = () => {
@@ -142,7 +147,7 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>
