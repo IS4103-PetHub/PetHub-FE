@@ -69,7 +69,7 @@ export function searchServiceListingsForCustomer(
   return serviceListings.filter((serviceListing: ServiceListing) => {
     return (
       serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      serviceListing.petBusiness.companyName
+      serviceListing.petBusiness?.companyName
         .toLowerCase()
         .includes(searchStr.toLowerCase())
     );

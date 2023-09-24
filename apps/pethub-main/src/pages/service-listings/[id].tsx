@@ -107,7 +107,7 @@ export default function ServiceListingDetails({
   );
 
   return (
-    <Container mt={50} size="70vw">
+    <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
       <Grid gutter="xl">
         <Grid.Col span={9}>
           <ServiceListingBreadcrumbs
