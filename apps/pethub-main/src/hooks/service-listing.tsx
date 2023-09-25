@@ -58,22 +58,14 @@ export const useGetAllServiceListingsWithQueryParams = (
   return useQuery({
     queryKey: ["service-listings", categoryValue, tagNames],
     queryFn: async () => {
-      if (
-        (categoryValue && categoryValue.length > 0) ||
-        (tagNames && tagNames.length > 0)
-      ) {
-        return (await (
-          await axios.get(
-            `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/filter`,
-            { params },
-          )
-        ).data) as ServiceListing[];
+      if (categoryValue || (tagNames && tagNames.length > 0)) {
+        const response = await api.get(`${SERVICE_LISTING_API}/filter`, {
+          params,
+        });
+        return response.data as ServiceListing[];
       } else {
-        return (await (
-          await axios.get(
-            `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}`,
-          )
-        ).data) as ServiceListing[];
+        const response = await api.get(`${SERVICE_LISTING_API}`);
+        return response.data as ServiceListing[];
       }
     },
   });

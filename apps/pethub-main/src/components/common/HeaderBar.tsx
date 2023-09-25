@@ -67,7 +67,7 @@ const links: {
   links: { link: string; label: string }[] | undefined;
 }[] = [
   {
-    link: "/service-listings",
+    link: "/service-listings?category=",
     label: "Explore services",
     links: [
       {
