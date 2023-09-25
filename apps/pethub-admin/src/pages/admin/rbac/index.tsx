@@ -51,7 +51,7 @@ export default function Rbac({ permissions }: RbacProps) {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<UserGroup[]>(userGroups);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "groupId",
     direction: "asc",
@@ -75,7 +75,7 @@ export default function Rbac({ permissions }: RbacProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (userGroups.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

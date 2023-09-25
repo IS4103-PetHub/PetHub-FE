@@ -4,7 +4,6 @@ import {
   Button,
   Modal,
   MultiSelect,
-  Checkbox,
   Group,
   Select,
   NumberInput,
@@ -19,14 +18,12 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-
 import React, { useEffect, useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
-import { useGetAllTags } from "@/hooks/tags";
 import { ServiceCategoryEnum } from "@/types/constants";
 import {
   Address,
@@ -316,136 +313,134 @@ const ServiceListingModal = ({
       }
       centered
       size="80%"
+      padding="xl"
     >
-      <Container fluid>
-        <form
-          onSubmit={serviceListingForm.onSubmit((values) =>
-            handleAction(values),
-          )}
-        >
-          <Stack>
-            <TextInput
-              withAsterisk
-              disabled={isViewing}
-              label="Title"
-              placeholder=""
-              {...serviceListingForm.getInputProps("title")}
-            />
+      <form
+        onSubmit={serviceListingForm.onSubmit((values) => handleAction(values))}
+      >
+        <Stack>
+          <TextInput
+            withAsterisk
+            disabled={isViewing}
+            label="Title"
+            placeholder=""
+            {...serviceListingForm.getInputProps("title")}
+          />
 
-            <Textarea
-              withAsterisk
-              disabled={isViewing}
-              label="Description"
-              placeholder=""
-              autosize
-              {...serviceListingForm.getInputProps("description")}
-            />
+          <Textarea
+            withAsterisk
+            disabled={isViewing}
+            label="Description"
+            placeholder=""
+            autosize
+            {...serviceListingForm.getInputProps("description")}
+          />
 
-            <Select
-              withAsterisk
-              disabled={isViewing}
-              label="Category"
-              placeholder="Pick one"
-              // need change to this to use enums
-              data={categoryOptions}
-              {...serviceListingForm.getInputProps("category")}
-            />
+          <Select
+            withAsterisk
+            disabled={isViewing}
+            label="Category"
+            placeholder="Pick one"
+            // need change to this to use enums
+            data={categoryOptions}
+            {...serviceListingForm.getInputProps("category")}
+          />
 
-            <NumberInput
-              withAsterisk
-              disabled={isViewing}
-              label="Price"
-              defaultValue={0.0}
-              min={0}
-              precision={2}
-              parser={(value) => {
-                const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
-                return isNaN(floatValue) ? "" : floatValue.toString();
-              }}
-              formatter={(value) => {
-                const formattedValue = parseFloat(
-                  value.replace(/\$\s?/, ""),
-                ).toFixed(2);
-                return `$ ${formattedValue}`;
-              }}
-              {...serviceListingForm.getInputProps("basePrice")}
-            />
+          <NumberInput
+            withAsterisk
+            disabled={isViewing}
+            label="Price"
+            defaultValue={0.0}
+            min={0}
+            precision={2}
+            parser={(value) => {
+              const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
+              return isNaN(floatValue) ? "" : floatValue.toString();
+            }}
+            formatter={(value) => {
+              const formattedValue = parseFloat(
+                value.replace(/\$\s?/, ""),
+              ).toFixed(2);
+              return `$ ${formattedValue}`;
+            }}
+            {...serviceListingForm.getInputProps("basePrice")}
+          />
 
-            <MultiSelect
-              disabled={isViewing}
-              label="Address"
-              placeholder="Select your address"
-              data={
-                addresses
-                  ? addresses.map((address) => ({
-                      value: address.addressId.toString(),
-                      label: address.addressName,
-                    }))
-                  : []
-              }
-              {...serviceListingForm.getInputProps("addresses")}
-            />
+          <MultiSelect
+            disabled={isViewing}
+            label="Address"
+            placeholder="Select your address"
+            data={
+              addresses
+                ? addresses.map((address) => ({
+                    value: address.addressId.toString(),
+                    label: address.addressName,
+                  }))
+                : []
+            }
+            {...serviceListingForm.getInputProps("addresses")}
+          />
 
-            <FileInput
-              disabled={isViewing}
-              label="Upload Display Images"
-              placeholder={
-                imagePreview.length == 0
-                  ? "No file selected"
-                  : "Upload new images"
-              }
-              accept="image/*"
-              name="images"
-              multiple
-              onChange={(files) => handleFileInputChange(files)}
-              capture={false}
-              key={fileInputKey}
-            />
+          <FileInput
+            disabled={isViewing}
+            label="Upload Display Images"
+            placeholder={
+              imagePreview.length == 0
+                ? "No file selected"
+                : "Upload new images"
+            }
+            accept="image/*"
+            name="images"
+            multiple
+            onChange={(files) => handleFileInputChange(files)}
+            capture={false}
+            key={fileInputKey}
+          />
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-              {imagePreview &&
-                imagePreview.length > 0 &&
-                imagePreview.map((imageUrl, index) => (
-                  <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
-                    <Card style={{ maxWidth: "100%" }}>
-                      {!isViewing && (
-                        <Group position="right">
-                          <CloseButton
-                            size="md"
-                            color="red"
-                            onClick={() => removeImage(index)}
-                          />
-                        </Group>
-                      )}
-                      <Image
-                        src={imageUrl}
-                        alt={`Image Preview ${index}`}
-                        style={{ maxWidth: "100%", display: "block" }}
-                      />
-                    </Card>
-                  </div>
-                ))}
-            </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {imagePreview &&
+              imagePreview.length > 0 &&
+              imagePreview.map((imageUrl, index) => (
+                <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
+                  <Card style={{ maxWidth: "100%" }}>
+                    {!isViewing && (
+                      <Group position="right">
+                        <CloseButton
+                          size="md"
+                          color="red"
+                          onClick={() => removeImage(index)}
+                        />
+                      </Group>
+                    )}
+                    <Image
+                      src={imageUrl}
+                      alt={`Image Preview ${index}`}
+                      style={{ maxWidth: "100%", display: "block" }}
+                    />
+                  </Card>
+                </div>
+              ))}
+          </div>
 
-            <MultiSelect
-              disabled={isViewing}
-              label="Tags"
-              placeholder="Select your Tags"
-              data={
-                tags
-                  ? tags.map((tag) => ({
-                      value: tag.tagId.toString(),
-                      label: tag.name,
-                    }))
-                  : []
-              }
-              {...serviceListingForm.getInputProps("tags")}
-            />
+          <MultiSelect
+            disabled={isViewing}
+            label="Tags"
+            placeholder="Select your Tags"
+            data={
+              tags
+                ? tags.map((tag) => ({
+                    value: tag.tagId.toString(),
+                    label: tag.name,
+                  }))
+                : []
+            }
+            {...serviceListingForm.getInputProps("tags")}
+          />
 
-            {!isViewing && (
-              <>
-                {/* TODO: link to page with terms and conditions  */}
-                {/* {!isUpdating && (
+          {!isViewing && (
+            <>
+              {/* TODO: link to page with terms and conditions  */}
+              {/* {!isUpdating && (
                   <Checkbox
                     mt="md"
                     label={"I agree to all the terms and conditions."}
@@ -454,43 +449,40 @@ const ServiceListingModal = ({
                     })}
                   />
                 )} */}
-                <Group position="right" mt="sm" mb="sm">
-                  {!isViewing && (
-                    <Button
-                      type="reset"
-                      color="gray"
-                      onClick={() => {
-                        closeAndResetForm();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                  <Button type="submit">
-                    {isUpdating ? "Save" : "Create"}
-                  </Button>
-                </Group>
-              </>
-            )}
-
-            {isViewing && (
-              <>
-                <Group position="right" mt="md" mb="md">
+              <Group position="right" mt="sm">
+                {!isViewing && (
                   <Button
-                    type="button"
+                    type="reset"
+                    color="gray"
                     onClick={() => {
-                      setUpdating(true);
-                      setViewing(false);
+                      closeAndResetForm();
                     }}
                   >
-                    Edit
+                    Cancel
                   </Button>
-                </Group>
-              </>
-            )}
-          </Stack>
-        </form>
-      </Container>
+                )}
+                <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
+              </Group>
+            </>
+          )}
+
+          {isViewing && (
+            <>
+              <Group position="right" mt="md">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setUpdating(true);
+                    setViewing(false);
+                  }}
+                >
+                  Edit
+                </Button>
+              </Group>
+            </>
+          )}
+        </Stack>
+      </form>
     </Modal>
   );
 };

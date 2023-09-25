@@ -32,7 +32,7 @@ export default function PetBusinessTable() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetBusiness[]>(petBusinesses);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetBusiness | null>(
     null,
@@ -71,7 +71,7 @@ export default function PetBusinessTable() {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petBusinesses.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

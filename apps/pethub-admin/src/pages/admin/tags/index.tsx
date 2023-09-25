@@ -55,7 +55,7 @@ export default function Tags({ permissions }: TagsProps) {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<Tag[]>(tags);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "tagId",
     direction: "asc",
@@ -79,7 +79,7 @@ export default function Tags({ permissions }: TagsProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (tags.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
