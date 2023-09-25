@@ -24,6 +24,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
@@ -33,10 +34,10 @@ import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
   form: any;
-  onClose(): void;
 }
 
-const CalendarGroupForm = ({ form, onClose }: CalendarGroupFormProps) => {
+const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const addNewScheduleSettings = () => {
@@ -64,13 +65,11 @@ const CalendarGroupForm = ({ form, onClose }: CalendarGroupFormProps) => {
   };
 
   const removeScheduleSetting = (id: number) => {
-    const newSetting = form.values.scheduleSettings.filter(
+    if (form.values.scheduleSettings.length === 1) return;
+    const newSettings = form.values.scheduleSettings.filter(
       (setting) => setting.scheduleSettingsId !== id,
     );
-    form.setFieldValue("scheduleSettings", [
-      ...form.values.scheduleSettings,
-      newSetting,
-    ]);
+    form.setFieldValue("scheduleSettings", newSettings);
   };
 
   const handleScheduleSettingChange = (index, changes) => {
@@ -112,7 +111,7 @@ const CalendarGroupForm = ({ form, onClose }: CalendarGroupFormProps) => {
 
   return (
     <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
-      <Grid mt="xs" mb="md">
+      <Grid mt="sm" mb="sm" gutter="lg">
         <Grid.Col span={12}>
           <TextInput
             label="Name"
@@ -132,7 +131,7 @@ const CalendarGroupForm = ({ form, onClose }: CalendarGroupFormProps) => {
             {...form.getInputProps("description")}
           />
         </Grid.Col>
-        {form.values.scheduleSettings.map(
+        {form.values.scheduleSettings?.map(
           (setting: ScheduleSettings, index: number) => (
             <SettingsForm
               key={setting.scheduleSettingsId}
@@ -147,17 +146,22 @@ const CalendarGroupForm = ({ form, onClose }: CalendarGroupFormProps) => {
         )}
         <Grid.Col span={12}>
           <CreateButton
-            text="Add a new scheduled setting"
+            text="Add another schedule"
             onClick={addNewScheduleSettings}
             fullWidth
             variant="light"
-            radius="md"
+            radius="lg"
+            h={100}
           />
         </Grid.Col>
       </Grid>
       <Group mt="25px" position="right">
-        <Button type="reset" color="gray" onClick={onClose}>
-          Cancel
+        <Button
+          type="reset"
+          color="gray"
+          onClick={() => router.push("/business/calendargroup")}
+        >
+          Back
         </Button>
         <Button type="submit">Create</Button>
       </Group>

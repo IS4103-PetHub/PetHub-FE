@@ -23,7 +23,6 @@ import TimeslotForm from "./TimeslotForm";
 
 interface SettingsFormProps {
   setting: ScheduleSettings;
-  key: number;
   onRemove: () => void;
   onChange: any;
   timeslots: Timeslot[];
@@ -31,10 +30,9 @@ interface SettingsFormProps {
 
 const SettingsForm = ({
   setting,
-  key,
   onRemove,
   onChange,
-  timeslots,
+  timeslots = [],
 }: SettingsFormProps) => {
   const segmentedControlData = [
     {
@@ -65,6 +63,7 @@ const SettingsForm = ({
   };
 
   const removeTimeslot = (id: number) => {
+    if (timeslots.length === 1) return;
     const newTimeslot = timeslots.filter(
       (timeslot) => timeslot.timeslotId !== id,
     );
@@ -78,122 +77,110 @@ const SettingsForm = ({
   };
 
   return (
-    <>
-      <Grid.Col span={12}>
-        <Card withBorder shadow="md" radius="md" sx={{ overflow: "visible" }}>
-          <Card.Section withBorder inheritPadding py="xs" mb="md">
-            <Group position="apart">
-              <Text>Schedule settings</Text>
-              <IconX
-                size="1rem"
-                onClick={onRemove}
-                style={{ cursor: "pointer" }}
-              />
-            </Group>
-          </Card.Section>
-          <Card.Section inheritPadding mb="md">
-            <Group position="apart">
-              <DateInput
-                label="Start date"
-                placeholder="Enter start date"
-                valueFormat="DD/MM/YYYY"
-                icon={<IconCalendar size="1rem" />}
-                sx={{ width: "48%" }}
-                onChange={(value) => onChange({ startDate: value })}
-              />
-              <DateInput
-                label="End date"
-                placeholder="Enter end date"
-                valueFormat="DD/MM/YYYY"
-                icon={<IconCalendar size="1rem" />}
-                sx={{ width: "48%" }}
-                onChange={(value) => onChange({ endDate: value })}
-              />
-            </Group>
-          </Card.Section>
-          <Card.Section inheritPadding mb="md">
-            <NumberInput
-              label="Vancancies"
-              placeholder=""
-              defaultValue={0}
-              hideControls
-              min={0}
-              onChange={(value) => onChange({ vacancies: value })}
+    <Grid.Col span={12}>
+      <Card withBorder shadow="md" radius="lg" sx={{ overflow: "visible" }}>
+        <Card.Section withBorder inheritPadding py="xs" mb="md">
+          <Group position="apart">
+            <Text>Schedule settings</Text>
+            <IconX
+              size="1rem"
+              onClick={onRemove}
+              style={{ cursor: "pointer" }}
             />
-          </Card.Section>
-          <Card.Section inheritPadding mb="md">
-            <Text fz="0.875rem" fw={500} color="#212529">
-              Recurrence
-            </Text>
-            <SegmentedControl
-              fullWidth
-              size="xs"
-              data={segmentedControlData}
-              onChange={(value) => onChange({ pattern: value })}
+          </Group>
+        </Card.Section>
+        <Card.Section inheritPadding mb="lg">
+          <Group position="apart">
+            <DateInput
+              label="Start date"
+              placeholder="Enter start date"
+              valueFormat="DD/MM/YYYY"
+              icon={<IconCalendar size="1rem" />}
+              sx={{ width: "48%" }}
+              onChange={(value) => onChange({ startDate: value })}
             />
-          </Card.Section>
-          {setting.pattern === RecurrencePatternEnum.Weekly && (
-            <Card.Section inheritPadding mb="md">
-              <Checkbox.Group
-                defaultValue={setting.days}
-                label="Select the recurring days of the week"
-                mt="md"
-                onChange={(value) => onChange({ days: value })}
-              >
-                <Group mt="xs">
-                  <Checkbox value={DayOfWeekEnum.Monday} label="Mon" />
-                  <Checkbox value={DayOfWeekEnum.Tuesday} label="Tue" />
-                  <Checkbox value={DayOfWeekEnum.Wednesday} label="Wed" />
-                  <Checkbox value={DayOfWeekEnum.Thursday} label="Thu" />
-                  <Checkbox value={DayOfWeekEnum.Friday} label="Fri" />
-                  <Checkbox value={DayOfWeekEnum.Saturday} label="Sat" />
-                  <Checkbox value={DayOfWeekEnum.Sunday} label="Sun" />
-                </Group>
-              </Checkbox.Group>
-            </Card.Section>
-          )}
-          <Card.Section inheritPadding mb="md">
-            {timeslots.length > 0 && (
-              <Group position="apart">
-                <Text
-                  fz="0.875rem"
-                  fw={500}
-                  color="#212529"
-                  sx={{ width: "40%" }}
-                >
-                  Start time
-                </Text>
-                <Text
-                  fz="0.875rem"
-                  fw={500}
-                  color="#212529"
-                  sx={{ width: "54%" }}
-                >
-                  End time
-                </Text>
+            <DateInput
+              label="End date"
+              placeholder="Enter end date"
+              valueFormat="DD/MM/YYYY"
+              icon={<IconCalendar size="1rem" />}
+              sx={{ width: "48%" }}
+              onChange={(value) => onChange({ endDate: value })}
+            />
+          </Group>
+        </Card.Section>
+        <Card.Section inheritPadding mb="lg">
+          <NumberInput
+            label="Vacancies"
+            placeholder=""
+            defaultValue={1}
+            hideControls
+            min={1}
+            onChange={(value) => onChange({ vacancies: value })}
+          />
+        </Card.Section>
+        <Card.Section inheritPadding mb="lg">
+          <Text fz="0.875rem" fw={500} color="#212529">
+            Recurrence
+          </Text>
+          <SegmentedControl
+            fullWidth
+            size="xs"
+            data={segmentedControlData}
+            onChange={(value) => onChange({ pattern: value })}
+          />
+        </Card.Section>
+        {setting.pattern === RecurrencePatternEnum.Weekly && (
+          <Card.Section inheritPadding mb="lg">
+            <Checkbox.Group
+              defaultValue={setting.days}
+              label="Select the recurring days of the week"
+              onChange={(value) => onChange({ days: value })}
+            >
+              <Group mt="xs">
+                <Checkbox value={DayOfWeekEnum.Monday} label="Mon" />
+                <Checkbox value={DayOfWeekEnum.Tuesday} label="Tues" />
+                <Checkbox value={DayOfWeekEnum.Wednesday} label="Wed" />
+                <Checkbox value={DayOfWeekEnum.Thursday} label="Thurs" />
+                <Checkbox value={DayOfWeekEnum.Friday} label="Fri" />
+                <Checkbox value={DayOfWeekEnum.Saturday} label="Sat" />
+                <Checkbox value={DayOfWeekEnum.Sunday} label="Sun" />
               </Group>
-            )}
-            {timeslots.map((timeslot: Timeslot, index: number) => (
-              <TimeslotForm
-                key={timeslot.timeslotId}
-                timeslot={timeslot}
-                onRemove={() => removeTimeslot(timeslot.timeslotId)}
-                onChange={(changes) => handleTimeslotChange(index, changes)}
-              />
-            ))}
+            </Checkbox.Group>
           </Card.Section>
-          <Card.Section inheritPadding mb="md">
-            <CreateButton
-              text="Add another time period"
-              fullWidth
-              variant=""
-              mt="sm"
-              onClick={addTimeslot}
+        )}
+        <Card.Section inheritPadding mb="lg">
+          {timeslots.length > 0 && (
+            <Group>
+              <Text fz="0.875rem" fw={500} color="#212529" ml={85}>
+                Start time
+              </Text>
+              <Text fz="0.875rem" fw={500} color="#212529" ml={310}>
+                End time
+              </Text>
+            </Group>
+          )}
+          {timeslots.map((timeslot: Timeslot, index: number) => (
+            <TimeslotForm
+              key={timeslot.timeslotId}
+              index={index}
+              timeslot={timeslot}
+              onRemove={() => removeTimeslot(timeslot.timeslotId)}
+              onChange={(changes) => handleTimeslotChange(index, changes)}
             />
-          </Card.Section>
-        </Card>
-      </Grid.Col>
-    </>
+          ))}
+        </Card.Section>
+        <Card.Section inheritPadding mb="lg">
+          <CreateButton
+            text="Add another timeslot"
+            fullWidth
+            variant=""
+            mt="sm"
+            onClick={addTimeslot}
+          />
+        </Card.Section>
+      </Card>
+    </Grid.Col>
   );
 };
 
