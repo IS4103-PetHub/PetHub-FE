@@ -59,10 +59,12 @@ export default function ServiceListings() {
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [isSearching, setIsSearching] = useToggle();
   const [sortStatus, setSortStatus] = useState<string>("recent");
-  const [activeCategory, setActiveCategory] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+
+  // get selected category from router query
+  const activeCategory = router.query?.category as string;
 
   const { data: serviceListings = [], isLoading } =
     useGetAllServiceListingsWithQueryParams(activeCategory, selectedTags);
@@ -72,12 +74,12 @@ export default function ServiceListings() {
 
   function sortServiceListings(sortStatus: string) {
     let sorted: ServiceListing[] = serviceListings;
-    if (sortStatus && sortStatus.length > 0) {
-      const sortOption = sortByOptions.find((x) => sortStatus === x.value);
-      sorted = sortBy(serviceListings, sortOption.attribute);
-      if (sortOption.direction == "desc") {
-        sorted.reverse();
-      }
+    if (!sortStatus) return sorted;
+
+    const sortOption = sortByOptions.find((x) => sortStatus === x.value);
+    sorted = sortBy(serviceListings, sortOption.attribute);
+    if (sortOption.direction == "desc") {
+      sorted.reverse();
     }
     return sorted;
   }
@@ -85,9 +87,6 @@ export default function ServiceListings() {
   /*
    * Effect Hooks
    */
-  useEffect(() => {
-    setActiveCategory(router.query?.category as string);
-  }, [router.query]);
 
   useEffect(() => {
     if (sortStatus) {
@@ -232,7 +231,7 @@ export default function ServiceListings() {
               <Box ml="xl" mr="xl">
                 <PageTitle
                   title={
-                    !activeCategory || activeCategory === ""
+                    !activeCategory
                       ? `All service listings`
                       : formatStringToLetterCase(activeCategory)
                   }
