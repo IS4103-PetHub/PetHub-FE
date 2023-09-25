@@ -8,7 +8,6 @@ import {
 } from "@mantine/core";
 import { IconUser, IconKey, IconLockOpen } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
@@ -16,6 +15,7 @@ import { formatISODateString } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
+import api from "@/api/axiosConfig";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
 import PermissionsCheckboxCard from "@/components/rbac/PermissionsCheckboxCard";
 import { useGetInternalUserById } from "@/hooks/internal-user";
@@ -125,9 +125,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { userId, permissions } };
 }

@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/api/axiosConfig";
 import { PetOwner } from "@/types/types";
 
 export const useGetAllPetOwners = () => {
   return useQuery({
     queryKey: ["pet-owners"],
     queryFn: async () => {
-      const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/users/pet-owners`,
-      );
+      const { data } = await api.get(`/users/pet-owners`);
       const petOwners: PetOwner[] = data.map((data: any) => ({
         userId: data.user.userId,
         firstName: data.firstName,
