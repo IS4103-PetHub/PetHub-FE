@@ -22,22 +22,20 @@ import { ScheduleSettings, Timeslot } from "@/types/types";
 import TimeslotForm from "./TimeslotForm";
 
 interface SettingsFormProps {
-  initialValues: ScheduleSettings;
+  setting: ScheduleSettings;
   key: number;
   onRemove: () => void;
+  onChange: any;
   timeslots: Timeslot[];
-  setTimeslots: (timeslots: Timeslot[]) => void;
 }
 
 const SettingsForm = ({
-  initialValues,
+  setting,
   key,
   onRemove,
+  onChange,
   timeslots,
-  setTimeslots,
 }: SettingsFormProps) => {
-  const ref = useRef<HTMLInputElement>(null);
-
   const segmentedControlData = [
     {
       value: RecurrencePatternEnum.Daily,
@@ -63,37 +61,21 @@ const SettingsForm = ({
       startTime: "",
       endTime: "",
     };
-    setTimeslots([...timeslots, newTimeslot]);
+    onChange({ timeslots: [...timeslots, newTimeslot] });
   };
 
   const removeTimeslot = (id: number) => {
-    console.log("timeslotId", id);
     const newTimeslot = timeslots.filter(
       (timeslot) => timeslot.timeslotId !== id,
     );
-    setTimeslots(newTimeslot);
+    onChange({ timeslots: newTimeslot });
   };
 
-  const form = useForm({
-    initialValues: initialValues,
-    validate: {
-      scheduleSettingsId: (value) =>
-        !value ? "Schedule ID is required." : null,
-      days: (value) =>
-        value.length === 0 ? "At least one day should be selected." : null,
-      startTime: (value) => null,
-      endTime: (value) => null,
-      vacancies: (value) =>
-        value <= 0 ? "Vacancies should be a positive integer." : null,
-      pattern: (value) =>
-        value !== RecurrencePatternEnum.Daily &&
-        value !== RecurrencePatternEnum.Weekly
-          ? "Invalid pattern selected."
-          : null,
-      startDate: (value) => null,
-      endDate: (value) => null,
-    },
-  });
+  const handleTimeslotChange = (index: number, changes: Timeslot) => {
+    const updatedTimeslots = [...timeslots];
+    updatedTimeslots[index] = { ...updatedTimeslots[index], ...changes };
+    onChange({ timeslots: updatedTimeslots });
+  };
 
   return (
     <>
@@ -117,7 +99,7 @@ const SettingsForm = ({
                 valueFormat="DD/MM/YYYY"
                 icon={<IconCalendar size="1rem" />}
                 sx={{ width: "48%" }}
-                {...form.getInputProps(`startDate`)}
+                onChange={(value) => onChange({ startDate: value })}
               />
               <DateInput
                 label="End date"
@@ -125,7 +107,7 @@ const SettingsForm = ({
                 valueFormat="DD/MM/YYYY"
                 icon={<IconCalendar size="1rem" />}
                 sx={{ width: "48%" }}
-                {...form.getInputProps(`endDate`)}
+                onChange={(value) => onChange({ endDate: value })}
               />
             </Group>
           </Card.Section>
@@ -136,7 +118,7 @@ const SettingsForm = ({
               defaultValue={0}
               hideControls
               min={0}
-              {...form.getInputProps(`vacancies`)}
+              onChange={(value) => onChange({ vacancies: value })}
             />
           </Card.Section>
           <Card.Section inheritPadding mb="md">
@@ -147,15 +129,16 @@ const SettingsForm = ({
               fullWidth
               size="xs"
               data={segmentedControlData}
-              {...form.getInputProps(`pattern`)}
+              onChange={(value) => onChange({ pattern: value })}
             />
           </Card.Section>
-          {form.values.pattern === RecurrencePatternEnum.Weekly && (
+          {setting.pattern === RecurrencePatternEnum.Weekly && (
             <Card.Section inheritPadding mb="md">
               <Checkbox.Group
-                defaultValue={["react"]}
+                defaultValue={setting.days}
                 label="Select the recurring days of the week"
                 mt="md"
+                onChange={(value) => onChange({ days: value })}
               >
                 <Group mt="xs">
                   <Checkbox value={DayOfWeekEnum.Monday} label="Mon" />
@@ -166,7 +149,6 @@ const SettingsForm = ({
                   <Checkbox value={DayOfWeekEnum.Saturday} label="Sat" />
                   <Checkbox value={DayOfWeekEnum.Sunday} label="Sun" />
                 </Group>
-                {/* {...form.getInputProps(`days`)} */}
               </Checkbox.Group>
             </Card.Section>
           )}
@@ -194,8 +176,9 @@ const SettingsForm = ({
             {timeslots.map((timeslot: Timeslot, index: number) => (
               <TimeslotForm
                 key={timeslot.timeslotId}
-                initialValues={timeslot}
+                timeslot={timeslot}
                 onRemove={() => removeTimeslot(timeslot.timeslotId)}
+                onChange={(changes) => handleTimeslotChange(index, changes)}
               />
             ))}
           </Card.Section>

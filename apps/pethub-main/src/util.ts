@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ScheduleSetting, Timeslot } from "./types/types";
+import { ScheduleSettings, Timeslot } from "./types/types";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -36,9 +36,8 @@ export function validateWebsiteURL(url: string) {
 }
 
 // The below function is used in the CalenderGroupForm component
-export function validateCalendarTimeslotsAndSettings(
-  timeslots: Timeslot[],
-  scheduleSettings: ScheduleSetting[],
+export function validateCalendarGroupSettings(
+  scheduleSettings: ScheduleSettings[],
 ) {
   return null;
 }

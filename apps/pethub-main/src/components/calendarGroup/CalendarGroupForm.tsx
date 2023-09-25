@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import {
   IconBuildingStore,
   IconCalendar,
@@ -22,27 +23,21 @@ import {
   IconPawFilled,
   IconX,
 } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
+import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { ScheduleSettings, Timeslot } from "@/types/types";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
   form: any;
-  onCreate(values: any): void;
   onClose(): void;
 }
 
-const CalendarGroupForm = ({
-  form,
-  onCreate,
-  onClose,
-}: CalendarGroupFormProps) => {
-  const [scheduleSettings, setScheduleSettings] = useState<ScheduleSettings[]>(
-    form.values.scheduleSettings,
-  );
-  const [timeslots, setTimeslots] = useState<Timeslot[]>(form.values.timeslots);
+const CalendarGroupForm = ({ form, onClose }: CalendarGroupFormProps) => {
+  const queryClient = useQueryClient();
 
   const addNewScheduleSettings = () => {
     const newSetting: ScheduleSettings = {
@@ -54,20 +49,69 @@ const CalendarGroupForm = ({
       pattern: RecurrencePatternEnum.Daily,
       startDate: "",
       endDate: "",
+      timeslots: [
+        {
+          timeslotId: Date.now(), // default timeslot
+          startTime: "",
+          endTime: "",
+        },
+      ],
     };
-    setScheduleSettings([...scheduleSettings, newSetting]);
+    form.setFieldValue("scheduleSettings", [
+      ...form.values.scheduleSettings,
+      newSetting,
+    ]);
   };
 
   const removeScheduleSetting = (id: number) => {
-    console.log("SETTINGSID", id);
-    const newSettings = scheduleSettings.filter(
+    const newSetting = form.values.scheduleSettings.filter(
       (setting) => setting.scheduleSettingsId !== id,
     );
-    setScheduleSettings(newSettings);
+    form.setFieldValue("scheduleSettings", [
+      ...form.values.scheduleSettings,
+      newSetting,
+    ]);
   };
 
+  const handleScheduleSettingChange = (index, changes) => {
+    const newScheduleSettings = [...form.values.scheduleSettings];
+    newScheduleSettings[index] = { ...newScheduleSettings[index], ...changes };
+    form.setFieldValue("scheduleSettings", newScheduleSettings);
+  };
+
+  const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
+  const createCalendarGroup = async (payload: any) => {
+    try {
+      await createCalendarGroupMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Calendar group created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Calendar group created successfully!`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error creating calendar group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  type formValues = typeof form.values;
+  function handleSubmit(values: formValues) {
+    const payload = {};
+    console.log("SUBMIT FORM VALUES", values);
+    // createCalendarGroup(payload);
+  }
+
   return (
-    <form onSubmit={form.onSubmit((values: any) => onCreate(values))}>
+    <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
       <Grid mt="xs" mb="md">
         <Grid.Col span={12}>
           <TextInput
@@ -88,15 +132,19 @@ const CalendarGroupForm = ({
             {...form.getInputProps("description")}
           />
         </Grid.Col>
-        {scheduleSettings.map((setting: ScheduleSettings, index: number) => (
-          <SettingsForm
-            key={setting.scheduleSettingsId}
-            initialValues={setting}
-            onRemove={() => removeScheduleSetting(setting.scheduleSettingsId)}
-            timeslots={timeslots}
-            setTimeslots={setTimeslots}
-          />
-        ))}
+        {form.values.scheduleSettings.map(
+          (setting: ScheduleSettings, index: number) => (
+            <SettingsForm
+              key={setting.scheduleSettingsId}
+              setting={setting}
+              onRemove={() => removeScheduleSetting(setting.scheduleSettingsId)}
+              onChange={(changes) =>
+                handleScheduleSettingChange(index, changes)
+              }
+              timeslots={setting.timeslots}
+            />
+          ),
+        )}
         <Grid.Col span={12}>
           <CreateButton
             text="Add a new scheduled setting"

@@ -161,15 +161,15 @@ export interface UpdateServiceListingPayload {
 
 export interface CalendarGroup {
   calendarGroupId: number;
-  name: string;
-  description: string;
-  timeslots: Timeslot[];
-  petBusinessId: number;
-  scheduleSettings: ScheduleSettings[];
+  name?: string;
+  description?: string;
+  timeslots?: Timeslot[];
+  petBusinessId?: number;
+  scheduleSettings?: ScheduleSettings[];
 }
 
 export interface Timeslot {
-  timeslotId?: number;
+  timeslotId: number;
   startTime?: string;
   endTime?: string;
   isVacant?: boolean;
@@ -179,13 +179,14 @@ export interface Timeslot {
 
 export interface ScheduleSettings {
   scheduleSettingsId: number;
-  days: DayOfWeekEnum[];
-  startTime: string;
-  endTime: string;
-  vacancies: number;
-  pattern: RecurrencePatternEnum;
-  startDate: string;
-  endDate: string;
+  days?: string[];
+  startTime?: string;
+  endTime?: string;
+  vacancies?: number;
+  pattern?: RecurrencePatternEnum;
+  startDate?: string;
+  endDate?: string;
+  timeslots?: Timeslot[];
 }
 
 export interface Booking {

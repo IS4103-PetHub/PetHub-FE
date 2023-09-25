@@ -13,7 +13,7 @@ import {
   Switch,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { validateCalendarTimeslotsAndSettings } from "@/util";
+import { validateCalendarGroupSettings } from "@/util";
 import CalendarGroupForm from "./CalendarGroupForm";
 
 interface CalendarGroupModalProps {
@@ -31,29 +31,17 @@ const CalendarGroupModal = ({
     initialValues: {
       name: "",
       description: "",
-      timeslots: [],
       scheduleSettings: [],
     },
     validate: {
       name: (value) =>
-        !value || value.length < 16
-          ? "Name is required and should be at least 16 characters long."
+        !value || value.length >= 32
+          ? "Name is required and should be at most 32 characters long."
           : null,
       description: (value) => (!value ? "Description is required." : null),
-      timeslots: (value, values) =>
-        validateCalendarTimeslotsAndSettings(
-          values.timeslots,
-          values.scheduleSettings,
-        ),
-      scheduleSettings: (value, values) =>
-        validateCalendarTimeslotsAndSettings(
-          values.timeslots,
-          values.scheduleSettings,
-        ),
+      scheduleSettings: (value) => validateCalendarGroupSettings(value),
     },
   });
-
-  function handleSubmit() {}
 
   function closeAndReset() {
     form.reset();
@@ -71,11 +59,7 @@ const CalendarGroupModal = ({
       closeOnEscape={false}
       withCloseButton={false}
     >
-      <CalendarGroupForm
-        form={form}
-        onCreate={handleSubmit}
-        onClose={closeAndReset}
-      />
+      <CalendarGroupForm form={form} onClose={closeAndReset} />
     </Modal>
   );
 };
