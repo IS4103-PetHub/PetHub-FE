@@ -87,13 +87,14 @@ const ViewServiceListingModal = ({
               size="xl"
               weight={500}
               style={{ marginBottom: "20px" }}
+              fw={700}
             >
               Service Details
             </Text>
             <Divider />
             <Grid gutter="md" style={{ marginTop: "20px" }}>
               <Grid.Col span={6}>
-                <Text>Title:</Text>
+                <Text fw={700}>Title:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>{serviceListing.title}</Text>
@@ -101,28 +102,28 @@ const ViewServiceListingModal = ({
 
               {/* This writeup may be very long. Any suggestions on other ways i can present the info? */}
               <Grid.Col span={6}>
-                <Text>Description:</Text>
+                <Text fw={700}>Description:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>{serviceListing.description}</Text>
               </Grid.Col>
 
               <Grid.Col span={6}>
-                <Text>Category:</Text>
+                <Text fw={700}>Category:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>{formatStringToLetterCase(serviceListing.category)}</Text>
               </Grid.Col>
 
               <Grid.Col span={6}>
-                <Text>Price:</Text>
+                <Text fw={700}>Price:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>${serviceListing.basePrice.toFixed(2)}</Text>
               </Grid.Col>
 
-              <Grid.Col span={6}>
-                <Text>Addresses:</Text>
+              {/* <Grid.Col span={6}>
+                <Text fw={700}>Addresses:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>
@@ -130,10 +131,10 @@ const ViewServiceListingModal = ({
                     .map((addr) => addr.addressName)
                     .join(", ")}
                 </Text>
-              </Grid.Col>
+              </Grid.Col> */}
 
               <Grid.Col span={6}>
-                <Text>Tags:</Text>
+                <Text fw={700}>Tags:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>
@@ -151,7 +152,7 @@ const ViewServiceListingModal = ({
                 </Text>
               </Grid.Col>
               <Grid.Col span={6}>
-                <Text>Date Created:</Text>
+                <Text fw={700}>Date Created:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>
@@ -160,12 +161,23 @@ const ViewServiceListingModal = ({
               </Grid.Col>
 
               <Grid.Col span={6}>
-                <Text>Last Updated:</Text>
+                <Text fw={700}>Last Updated:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text>
                   {serviceListing.lastUpdated
                     ? new Date(serviceListing.lastUpdated).toLocaleDateString()
+                    : "-"}
+                </Text>
+              </Grid.Col>
+
+              <Grid.Col span={6}>
+                <Text fw={700}>Pet Business Company Name:</Text>
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Text>
+                  {serviceListing.petBusiness
+                    ? serviceListing.petBusiness.companyName
                     : "-"}
                 </Text>
               </Grid.Col>
@@ -196,7 +208,9 @@ const ViewServiceListingModal = ({
                   ))}
                 </Carousel>
               ) : (
-                <Text>No images available for this listing.</Text>
+                <Text mt="sm" mb="sm" ta="center" c="dimmed">
+                  No images available for this listing.
+                </Text>
               )}
             </Stack>
           </Paper>

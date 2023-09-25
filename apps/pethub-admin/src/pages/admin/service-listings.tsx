@@ -1,11 +1,10 @@
-import { Container, Group, Transition } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
+import { Container, Group, Transition, MultiSelect } from "@mantine/core";
+import { useToggle, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
-import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -13,11 +12,11 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import ServiceListingTable from "@/components/service-listings/ServiceListingTable";
+import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import {
   useDeleteServiceListingById,
   useGetAllServiceListings,
 } from "@/hooks/service-listing";
-import { useGetAllTags } from "@/hooks/tag";
 import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { ServiceListing } from "@/types/types";
 
@@ -25,19 +24,18 @@ import { ServiceListing } from "@/types/types";
 
 export default function ServiceListings() {
   const queryClient = useQueryClient();
+  const isTablet = useMediaQuery("(max-width: 100em)");
 
   //fetch data
-  const {
-    data: serviceListings = [],
-    isLoading,
-    refetch,
-  } = useGetAllServiceListings();
+  const { data: serviceListings = [], isLoading } = useGetAllServiceListings();
+  const { data: petBusinesses = [] } = useGetAllPetBusinesses();
 
   //for table
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
   const [isSearching, setIsSearching] = useToggle();
   const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [selectedPB, setSelectedPB] = useState<string[]>([]);
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "serviceListingId",
     direction: "asc",
@@ -49,8 +47,20 @@ export default function ServiceListings() {
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
+
+    let filteredServiceListings = serviceListings;
+
+    // Filter by selected pet businesses
+    if (selectedPB.length > 0) {
+      filteredServiceListings = filteredServiceListings.filter(
+        (serviceListing) =>
+          serviceListing.petBusiness &&
+          selectedPB.includes(serviceListing.petBusiness.companyName),
+      );
+    }
+
     const sortedServiceListing = sortBy(
-      serviceListings,
+      filteredServiceListings,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
@@ -58,7 +68,7 @@ export default function ServiceListings() {
     }
     const newRecords = sortedServiceListing.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, serviceListings]);
+  }, [page, sortStatus, serviceListings, selectedPB]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -101,6 +111,30 @@ export default function ServiceListings() {
     setRecords(results);
     setPage(1);
   };
+
+  const searchAndSortGroup = (
+    <Group position="apart" align="center">
+      <SearchBar
+        size="md"
+        w="66.5%"
+        text="Search by title, category, tags"
+        onSearch={handleSearch}
+      />
+      <MultiSelect
+        w={isTablet ? "30%" : "32%"}
+        size="md"
+        mt={-25}
+        label="Filter by Pet Businesses"
+        placeholder="Select Pet Businesses"
+        maxSelectedValues={3}
+        dropdownPosition="bottom"
+        clearable
+        data={petBusinesses.map((petBusinesses) => petBusinesses.companyName)}
+        value={selectedPB}
+        onChange={setSelectedPB}
+      />
+    </Group>
+  );
 
   /*
    * Delete
@@ -151,10 +185,7 @@ export default function ServiceListings() {
     }
     return (
       <>
-        <SearchBar
-          text="Search by title, category, tags"
-          onSearch={handleSearch}
-        />
+        {serviceListings.length > 0 ? searchAndSortGroup : null}
         {isSearching && records.length === 0 ? (
           <NoSearchResultsMessage />
         ) : (
