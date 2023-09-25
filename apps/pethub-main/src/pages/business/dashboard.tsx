@@ -3,7 +3,7 @@ import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
-import ApplicationStatusAlert from "@/components/pbapplication/ApplicationStatusAlert";
+import ApplicationStatusAlert from "@/components/pb-application/ApplicationStatusAlert";
 import { useGetPetBusinessApplicationByPBId } from "@/hooks/pet-business-application";
 import {
   AccountTypeEnum,

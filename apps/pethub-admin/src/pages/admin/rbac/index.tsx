@@ -3,7 +3,6 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
@@ -16,6 +15,7 @@ import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import api from "@/api/axiosConfig";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
@@ -51,7 +51,7 @@ export default function Rbac({ permissions }: RbacProps) {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<UserGroup[]>(userGroups);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "groupId",
     direction: "asc",
@@ -75,7 +75,7 @@ export default function Rbac({ permissions }: RbacProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (userGroups.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
@@ -211,9 +211,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { permissions } };
 }

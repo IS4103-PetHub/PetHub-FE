@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ScheduleSettings, Timeslot } from "./types/types";
+import { ScheduleSettings, ServiceListing, Timeslot } from "./types/types";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -33,6 +33,47 @@ export function validateAddressName(addressName: string) {
 
 export function validateWebsiteURL(url: string) {
   return !/^https?:\/\/.+\..+$/.test(url);
+}
+
+export function formatPriceForDisplay(num: number) {
+  return (Math.round(num * 100) / 100).toFixed(2);
+}
+
+export const formatEnumValueToLowerCase = (value: string) => {
+  return value.replace(/_/g, " ").toLowerCase();
+};
+
+export function searchServiceListingsForPB(
+  serviceListings: ServiceListing[],
+  searchStr: string,
+) {
+  return serviceListings.filter((serviceListing: ServiceListing) => {
+    const formattedCategory = formatEnumValueToLowerCase(
+      serviceListing.category,
+    );
+    const formattedTags = serviceListing.tags.map((tag) =>
+      tag.name.toLowerCase(),
+    );
+    return (
+      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
+      formattedCategory.includes(searchStr.toLowerCase()) ||
+      formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
+    );
+  });
+}
+
+export function searchServiceListingsForCustomer(
+  serviceListings: ServiceListing[],
+  searchStr: string,
+) {
+  return serviceListings.filter((serviceListing: ServiceListing) => {
+    return (
+      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
+      serviceListing.petBusiness?.companyName
+        .toLowerCase()
+        .includes(searchStr.toLowerCase())
+    );
+  });
 }
 
 // The below function is used in the CalenderGroupForm component
