@@ -42,7 +42,7 @@ export default function InternalUserTable({
   });
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<InternalUser[]>(internalUsers);
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
   const [isViewDetailsModalOpen, setViewDetailsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<InternalUser | null>(
@@ -87,7 +87,7 @@ export default function InternalUserTable({
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (internalUsers.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

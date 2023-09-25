@@ -22,7 +22,7 @@ const useStyles = createStyles((theme) => ({
 const Banner = () => {
   const { classes } = useStyles();
   return (
-    <BackgroundImage src="pet-banner.jpg">
+    <BackgroundImage src="/pet-banner.jpg">
       <Container className={classes.inner} fluid>
         <Box p="10vw">
           <Text size="3rem" weight="600" color="white">

@@ -51,7 +51,7 @@ export default function ApplicationsTable({
     petBusinessApplications,
   );
   const router = useRouter();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
 
   // Filter the applications by the applicationStatus, unless it's 'All'
@@ -98,7 +98,7 @@ export default function ApplicationsTable({
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petBusinessApplications.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

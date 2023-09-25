@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
 import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
-import ApplicationStatusAlert from "@/components/pbapplication/ApplicationStatusAlert";
+import ApplicationStatusAlert from "@/components/pb-application/ApplicationStatusAlert";
 import {
   useCreatePetBusinessApplication,
   useGetPetBusinessApplicationByPBId,
