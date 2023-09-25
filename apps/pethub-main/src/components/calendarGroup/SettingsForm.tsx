@@ -18,21 +18,21 @@ import { IconCalendar, IconClock, IconX } from "@tabler/icons-react";
 import React, { useState, useRef } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
-import { ScheduleSettings, Timeslot } from "@/types/types";
-import TimeslotForm from "./TimeslotForm";
+import { ScheduleSettings, TimePeriod } from "@/types/types";
+import TimePeriodForm from "./TimePeriodForm";
 
 interface SettingsFormProps {
   setting: ScheduleSettings;
   onRemove: () => void;
   onChange: any;
-  timeslots: Timeslot[];
+  timePeriods: TimePeriod[];
 }
 
 const SettingsForm = ({
   setting,
   onRemove,
   onChange,
-  timeslots = [],
+  timePeriods = [],
 }: SettingsFormProps) => {
   const segmentedControlData = [
     {
@@ -53,27 +53,36 @@ const SettingsForm = ({
     },
   ];
 
-  const addTimeslot = () => {
-    const newTimeslot: Timeslot = {
-      timeslotId: Date.now(), // Using current timestamp as a temporary ID for uniqueness.
+  const addTimePeriod = () => {
+    const newTimePeriod: TimePeriod = {
+      timePeriodId: Date.now(), // Using current timestamp as a temporary ID for uniqueness
       startTime: "",
       endTime: "",
     };
-    onChange({ timeslots: [...timeslots, newTimeslot] });
+    onChange({
+      recurrence: {
+        ...setting.recurrence,
+        timePeriods: [...timePeriods, newTimePeriod],
+      },
+    });
   };
 
-  const removeTimeslot = (id: number) => {
-    if (timeslots.length === 1) return;
-    const newTimeslot = timeslots.filter(
-      (timeslot) => timeslot.timeslotId !== id,
+  const removeTimePeriod = (id: number) => {
+    if (timePeriods.length === 1) return;
+    const newTimePeriod = timePeriods.filter(
+      (timePeriod) => timePeriod.timePeriodId !== id,
     );
-    onChange({ timeslots: newTimeslot });
+    onChange({
+      recurrence: { ...setting.recurrence, timePeriods: newTimePeriod },
+    });
   };
 
-  const handleTimeslotChange = (index: number, changes: Timeslot) => {
-    const updatedTimeslots = [...timeslots];
-    updatedTimeslots[index] = { ...updatedTimeslots[index], ...changes };
-    onChange({ timeslots: updatedTimeslots });
+  const handleTimePeriodChange = (index: number, changes: TimePeriod) => {
+    const updatedTimePeriods = [...timePeriods];
+    updatedTimePeriods[index] = { ...updatedTimePeriods[index], ...changes };
+    onChange({
+      recurrence: { ...setting.recurrence, timePeriods: updatedTimePeriods },
+    });
   };
 
   return (
@@ -97,7 +106,11 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
-              onChange={(value) => onChange({ startDate: value })}
+              onChange={(value) =>
+                onChange({
+                  recurrence: { ...setting.recurrence, startDate: value },
+                })
+              }
             />
             <DateInput
               label="End date"
@@ -105,7 +118,11 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
-              onChange={(value) => onChange({ endDate: value })}
+              onChange={(value) =>
+                onChange({
+                  recurrence: { ...setting.recurrence, endDate: value },
+                })
+              }
             />
           </Group>
         </Card.Section>
@@ -121,16 +138,20 @@ const SettingsForm = ({
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
           <Text fz="0.875rem" fw={500} color="#212529">
-            Recurrence
+            Recurrence pattern
           </Text>
           <SegmentedControl
             fullWidth
             size="xs"
             data={segmentedControlData}
-            onChange={(value) => onChange({ pattern: value })}
+            onChange={(value) =>
+              onChange({
+                recurrence: { ...setting.recurrence, pattern: value },
+              })
+            }
           />
         </Card.Section>
-        {setting.pattern === RecurrencePatternEnum.Weekly && (
+        {setting.recurrence.pattern === RecurrencePatternEnum.Weekly && (
           <Card.Section inheritPadding mb="lg">
             <Checkbox.Group
               defaultValue={setting.days}
@@ -150,9 +171,9 @@ const SettingsForm = ({
           </Card.Section>
         )}
         <Card.Section inheritPadding mb="lg">
-          {timeslots.length > 0 && (
+          {timePeriods.length > 0 && (
             <Group>
-              <Text fz="0.875rem" fw={500} color="#212529" ml={85}>
+              <Text fz="0.875rem" fw={500} color="#212529" ml={73}>
                 Start time
               </Text>
               <Text fz="0.875rem" fw={500} color="#212529" ml={310}>
@@ -160,23 +181,23 @@ const SettingsForm = ({
               </Text>
             </Group>
           )}
-          {timeslots.map((timeslot: Timeslot, index: number) => (
-            <TimeslotForm
-              key={timeslot.timeslotId}
+          {timePeriods.map((timePeriod: TimePeriod, index: number) => (
+            <TimePeriodForm
+              key={timePeriod.timePeriodId}
               index={index}
-              timeslot={timeslot}
-              onRemove={() => removeTimeslot(timeslot.timeslotId)}
-              onChange={(changes) => handleTimeslotChange(index, changes)}
+              timePeriod={timePeriod}
+              onRemove={() => removeTimePeriod(timePeriod.timePeriodId)}
+              onChange={(changes) => handleTimePeriodChange(index, changes)}
             />
           ))}
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
           <CreateButton
-            text="Add another timeslot"
+            text="Add another time period"
             fullWidth
             variant=""
             mt="sm"
-            onClick={addTimeslot}
+            onClick={addTimePeriod}
           />
         </Card.Section>
       </Card>

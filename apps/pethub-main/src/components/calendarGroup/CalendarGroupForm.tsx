@@ -29,7 +29,7 @@ import React, { useState } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
-import { ScheduleSettings, Timeslot } from "@/types/types";
+import { ScheduleSettings, TimePeriod } from "@/types/types";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
@@ -44,19 +44,19 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
     const newSetting: ScheduleSettings = {
       scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness.
       days: [],
-      startTime: "",
-      endTime: "",
-      vacancies: 0,
-      pattern: RecurrencePatternEnum.Daily,
-      startDate: "",
-      endDate: "",
-      timeslots: [
-        {
-          timeslotId: Date.now(), // default timeslot
-          startTime: "",
-          endTime: "",
-        },
-      ],
+      vacancies: 1,
+      recurrence: {
+        pattern: RecurrencePatternEnum.Daily,
+        startDate: "",
+        endDate: "",
+        timePeriods: [
+          {
+            timePeriodId: Date.now(), // default timeslot
+            startTime: "",
+            endTime: "",
+          },
+        ],
+      },
     };
     form.setFieldValue("scheduleSettings", [
       ...form.values.scheduleSettings,
@@ -140,7 +140,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
               onChange={(changes) =>
                 handleScheduleSettingChange(index, changes)
               }
-              timeslots={setting.timeslots}
+              timePeriods={setting.recurrence.timePeriods}
             />
           ),
         )}

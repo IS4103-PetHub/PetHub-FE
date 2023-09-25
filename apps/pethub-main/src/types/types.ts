@@ -168,13 +168,12 @@ export interface CalendarGroup {
   calendarGroupId: number;
   name?: string;
   description?: string;
-  timeslots?: Timeslot[];
   petBusinessId?: number;
   scheduleSettings?: ScheduleSettings[];
 }
 
-export interface Timeslot {
-  timeslotId: number;
+export interface TimePeriod {
+  timePeriodId: number;
   startTime?: string;
   endTime?: string;
   isVacant?: boolean;
@@ -185,13 +184,15 @@ export interface Timeslot {
 export interface ScheduleSettings {
   scheduleSettingsId: number;
   days?: string[];
-  startTime?: string;
-  endTime?: string;
   vacancies?: number;
+  recurrence?: Recurrence;
+}
+
+export interface Recurrence {
   pattern?: RecurrencePatternEnum;
   startDate?: string;
   endDate?: string;
-  timeslots?: Timeslot[];
+  timePeriods?: TimePeriod[];
 }
 
 export interface Booking {
