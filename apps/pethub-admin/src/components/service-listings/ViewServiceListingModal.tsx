@@ -10,8 +10,11 @@ import {
   Card,
   Badge,
   Divider,
+  Accordion,
+  Group,
+  Button,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
@@ -26,6 +29,7 @@ const ViewServiceListingModal = ({
 }: ViewServiceListingModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [imagePreview, setImagePreview] = useState([]);
+  const [showFullDescription, setShowFullDescription] = useToggle();
 
   useEffect(() => {
     const fetchAndSetServiceListingFields = async () => {
@@ -69,6 +73,28 @@ const ViewServiceListingModal = ({
     setImagePreview(imageUrls);
   };
 
+  const descriptionSection = (
+    <>
+      <Text
+        align="justify"
+        sx={{ whiteSpace: "pre-line" }}
+        lineClamp={showFullDescription ? 0 : 4}
+      >
+        {serviceListing.description}
+      </Text>
+      <Group position="right" mt="md">
+        <Button
+          variant="outline"
+          sx={{ border: "1.5px solid" }}
+          onClick={() => setShowFullDescription()}
+          display={serviceListing.description?.length < 200 ? "none" : "block"}
+        >
+          {showFullDescription ? "View less" : "View more"}
+        </Button>
+      </Group>
+    </>
+  );
+
   return (
     <>
       <Modal
@@ -104,9 +130,7 @@ const ViewServiceListingModal = ({
               <Grid.Col span={6}>
                 <Text fw={700}>Description:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
-                <Text>{serviceListing.description}</Text>
-              </Grid.Col>
+              <Grid.Col span={6}>{descriptionSection}</Grid.Col>
 
               <Grid.Col span={6}>
                 <Text fw={700}>Category:</Text>
@@ -122,7 +146,7 @@ const ViewServiceListingModal = ({
                 <Text>${serviceListing.basePrice.toFixed(2)}</Text>
               </Grid.Col>
 
-              {/* <Grid.Col span={6}>
+              <Grid.Col span={6}>
                 <Text fw={700}>Addresses:</Text>
               </Grid.Col>
               <Grid.Col span={6}>
@@ -131,7 +155,7 @@ const ViewServiceListingModal = ({
                     .map((addr) => addr.addressName)
                     .join(", ")}
                 </Text>
-              </Grid.Col> */}
+              </Grid.Col>
 
               <Grid.Col span={6}>
                 <Text fw={700}>Tags:</Text>

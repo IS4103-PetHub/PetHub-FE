@@ -1,14 +1,10 @@
 import { Group, Badge } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React, { useState } from "react";
+import React from "react";
 import { TABLE_PAGE_SIZE, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { Address, ServiceListing, Tag } from "@/types/types";
-import ServiceListingModal from "./ViewServiceListingModal";
+import { ServiceListing } from "@/types/types";
 import ViewServiceListingModal from "./ViewServiceListingModal";
 
 interface ServiceListingTableProps {
