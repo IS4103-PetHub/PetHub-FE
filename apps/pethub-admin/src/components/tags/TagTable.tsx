@@ -1,8 +1,8 @@
 import { Group } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { getMinTableHeight } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Tag, UpdateTagPayload } from "@/types/types";
 import EditTagButtonModal from "./EditTagButtonModal";
 interface TagTableProps {

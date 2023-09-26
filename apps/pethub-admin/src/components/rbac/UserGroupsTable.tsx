@@ -3,9 +3,9 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React from "react";
 import { getMinTableHeight } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup } from "@/types/types";
 interface UserGroupsTableProps {
   records: UserGroup[];

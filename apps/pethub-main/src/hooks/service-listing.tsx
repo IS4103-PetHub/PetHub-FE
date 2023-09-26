@@ -1,12 +1,12 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "@/api/axiosConfig";
 import {
   CreateServiceListingPayload,
   ServiceListing,
   UpdateServiceListingPayload,
 } from "@/types/types";
 
-const SERVICE_LISTING_API = "api/service-listings";
+const SERVICE_LISTING_API = "/service-listings";
 
 // POST Service Listing
 export const useCreateServiceListing = () => {
@@ -31,15 +31,11 @@ export const useCreateServiceListing = () => {
         formData.append("addressIds[]", address.toString());
       });
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await api.post(`${SERVICE_LISTING_API}/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
 
       return response.data;
     },
@@ -53,22 +49,42 @@ export const useCreateServiceListing = () => {
   });
 };
 
-// GET Service Listing by Business Id
-export const useGetServiceListingByPetBusinessIdAndAccountType = (
-  userId: number,
+// GET All Service Listings with Query Params
+export const useGetAllServiceListingsWithQueryParams = (
+  categoryValue?: string,
+  tagNames?: string[],
 ) => {
+  const params = { category: categoryValue, tag: { ...tagNames } };
   return useQuery({
-    queryKey: ["service-listings"],
+    queryKey: ["service-listings", categoryValue, tagNames],
     queryFn: async () => {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/pet-businesses/${userId}`,
-      );
-      return response.data;
+      if (categoryValue || (tagNames && tagNames.length > 0)) {
+        const response = await api.get(`${SERVICE_LISTING_API}/filter`, {
+          params,
+        });
+        return response.data as ServiceListing[];
+      } else {
+        const response = await api.get(`${SERVICE_LISTING_API}`);
+        return response.data as ServiceListing[];
+      }
     },
   });
 };
 
-// PATCH Service Listing by Serivce Id
+// GET Service Listing by Business Id
+export const useGetServiceListingByPetBusinessId = (userId: number) => {
+  return useQuery({
+    queryKey: ["service-listings"],
+    queryFn: async () => {
+      const response = await api.get(
+        `${SERVICE_LISTING_API}/pet-businesses/${userId}`,
+      );
+      return response.data as ServiceListing[];
+    },
+  });
+};
+
+// PATCH Service Listing by Service Id
 export const useUpdateServiceListing = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: UpdateServiceListingPayload) => {
@@ -100,8 +116,8 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
 
       // Send the PATCH request with formData
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${serviceListingId}`,
+        await api.patch(
+          `${SERVICE_LISTING_API}/${serviceListingId}`,
           formData,
           {
             headers: {
@@ -118,11 +134,8 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
 export const useDeleteServiceListingById = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (serviceListingId: number) => {
-      return (
-        await axios.delete(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${serviceListingId}`,
-        )
-      ).data;
+      return (await api.delete(`${SERVICE_LISTING_API}/${serviceListingId}`))
+        .data;
     },
     onSuccess: (data, serviceListingId) => {
       queryClient.setQueryData<ServiceListing[]>(

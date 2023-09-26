@@ -4,17 +4,14 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-application";
-import {
-  BusinessApplicationStatusEnum,
-  EMPTY_STATE_DELAY_MS,
-} from "@/types/constants";
+import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
 import { searchPBApplications } from "@/util";
 import { errorAlert } from "@/util";
@@ -51,7 +48,7 @@ export default function ApplicationsTable({
     petBusinessApplications,
   );
   const router = useRouter();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
 
   // Filter the applications by the applicationStatus, unless it's 'All'
@@ -98,7 +95,7 @@ export default function ApplicationsTable({
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petBusinessApplications.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

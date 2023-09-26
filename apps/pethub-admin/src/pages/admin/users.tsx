@@ -1,14 +1,15 @@
 import { Container, Tabs } from "@mantine/core";
 import { IconPaw, IconBuildingStore, IconUserCog } from "@tabler/icons-react";
-import axios from "axios";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
+import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import InternalUserTable from "@/components/users/InternalUserTable";
 import PetBusinessTable from "@/components/users/PetBusinessTable";
 import PetOwnerTable from "@/components/users/PetOwnerTable";
-import { AccountTypeEnum, PermissionsCodeEnum } from "@/types/constants";
+import { PermissionsCodeEnum } from "@/types/constants";
 import { Permission } from "@/types/types";
 
 interface AccountTabsProps {
@@ -159,9 +160,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { userId, permissions } };
 }

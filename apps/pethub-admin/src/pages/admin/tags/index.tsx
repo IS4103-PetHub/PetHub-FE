@@ -3,18 +3,19 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import CreateTagButtonModal from "@/components/tags/CreateTagButtonModal";
 import TagTable from "@/components/tags/TagTable";
@@ -24,11 +25,7 @@ import {
   useGetAllTags,
   useUpdateTag,
 } from "@/hooks/tag";
-import {
-  EMPTY_STATE_DELAY_MS,
-  PermissionsCodeEnum,
-  TABLE_PAGE_SIZE,
-} from "@/types/constants";
+import { PermissionsCodeEnum } from "@/types/constants";
 import {
   CreateTagPayload,
   Permission,
@@ -41,7 +38,6 @@ interface TagsProps {
 }
 
 export default function Tags({ permissions }: TagsProps) {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   //permissions
@@ -55,7 +51,7 @@ export default function Tags({ permissions }: TagsProps) {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<Tag[]>(tags);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "tagId",
     direction: "asc",
@@ -79,7 +75,7 @@ export default function Tags({ permissions }: TagsProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (tags.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
@@ -238,7 +234,7 @@ export default function Tags({ permissions }: TagsProps) {
       </Head>
       <Container fluid>
         <Group position="apart" mb="xl">
-          <PageTitle title="Tags Management" />
+          <PageTitle title="Tag Management" />
           {canWrite ? (
             <CreateTagButtonModal onCreate={handleCreateTag} />
           ) : null}
@@ -256,9 +252,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { permissions } };
 }

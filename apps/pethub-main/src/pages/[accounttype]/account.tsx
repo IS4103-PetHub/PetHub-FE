@@ -21,6 +21,7 @@ import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
 import { formatISODateString } from "shared-utils";
+import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
@@ -30,12 +31,7 @@ import DeactivateReactivateAccountModal from "@/components/account/DeactivateRea
 import PetGrid from "@/components/account/PetGrid";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
-import {
-  AccountStatusEnum,
-  AccountTypeEnum,
-  GenderEnum,
-  PetTypeEnum,
-} from "@/types/constants";
+import { GenderEnum, PetTypeEnum } from "@/types/constants";
 import { Pet } from "@/types/types";
 
 interface MyAccountProps {

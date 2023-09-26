@@ -1,9 +1,11 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  PetBusinessTypeEnum,
+} from "shared-utils";
+import {
   BusinessApplicationStatusEnum,
   GenderEnum,
-  PetBusinessTypeEnum,
   PetTypeEnum,
   ServiceCategoryEnum,
 } from "./constants";
@@ -126,6 +128,11 @@ export interface ServiceListing {
   attachmentKeys: string[];
   attachmentURLs: string[];
   addresses: Address[];
+  //pet business
+  petBusinessId: number;
+  petBusiness?: {
+    companyName: string;
+  };
 }
 
 export interface Tag {
