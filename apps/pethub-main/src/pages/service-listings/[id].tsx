@@ -1,21 +1,34 @@
-import { Carousel } from "@mantine/carousel";
 import {
   Container,
   Text,
-  Image,
   Button,
   Group,
   Grid,
   Accordion,
   Paper,
   useMantineTheme,
+  Box,
+  Divider,
+  Stack,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import axios from "axios";
-import { useState } from "react";
+import { notifications } from "@mantine/notifications";
+import {
+  IconBlockquote,
+  IconMail,
+  IconMapPin,
+  IconPhone,
+} from "@tabler/icons-react";
+import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
+import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
+import AddressCard from "web-ui/shared/pb-applications/AddressCard";
+import api from "@/api/axiosConfig";
+import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
+import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
 import { ServiceListing } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
@@ -24,84 +37,84 @@ interface ServiceListingDetailsProps {
   serviceListing: ServiceListing;
 }
 
-const IMAGE_HEIGHT = 500;
-
 export default function ServiceListingDetails({
   serviceListing,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
+  const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
+  const ACCORDION_VALUES = ["description", "business"];
 
-  const hasMultipleImages = serviceListing.attachmentURLs.length > 1;
+  const handleClickAddToCart = async () => {
+    const session = await getSession();
+    if (!session) {
+      notifications.show({
+        title: "Login Required",
+        message: "Please log in to add to cart!",
+        color: "red",
+      });
+    }
+  };
 
-  const slides =
-    serviceListing.attachmentURLs.length > 0 ? (
-      serviceListing.attachmentURLs.map((url) => (
-        <Carousel.Slide key={url}>
-          <Image src={url} height={IMAGE_HEIGHT} alt="Service Listing Photo" />
-        </Carousel.Slide>
-      ))
-    ) : (
-      <Carousel.Slide key="placeholder">
-        <Image
-          src="/pethub-placeholder.png"
-          height={500}
-          alt="Service Listing Photo"
-        />
-      </Carousel.Slide>
-    );
-
-  const listingCarousel = (
-    <Carousel
-      withControls={hasMultipleImages}
-      withIndicators={hasMultipleImages}
-      loop
-    >
-      {slides}
-    </Carousel>
-  );
-
-  // TO-DO: Add section for business details
-
-  // const businessSection = (
-  //   <Accordion.Item value="business" p="sm">
-  //     <Accordion.Control>
-  //       <Text size="xl" weight={600}>
-  //         Where to use
-  //       </Text>
-  //     </Accordion.Control>
-  //     <Accordion.Panel ml={5} mr={5}>
-  //       <Text>Placeholder Name</Text>
-  //     </Accordion.Panel>
-  //   </Accordion.Item>
-  // );
-
-  const descriptionSection = (
-    <Accordion.Item value="description" p="sm">
-      <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
+  const businessSection = (
+    <Accordion.Item value="business" p="sm" mb="xl">
+      <Accordion.Control
+        icon={<IconMapPin color={theme.colors.indigo[5]} />}
+        sx={{ "&:hover": { cursor: "default" } }}
+      >
         <Text size="xl" weight={600}>
-          Description
+          Where to use
         </Text>
       </Accordion.Control>
       <Accordion.Panel ml={5} mr={5}>
-        <Text
-          sx={{ whiteSpace: "pre-line" }}
-          lineClamp={showFullDescription ? 0 : 4}
-        >
-          {serviceListing.description}
-        </Text>
-        <Group position="right" mt="md">
-          <Button
-            variant="outline"
-            sx={{ border: "1.5px solid" }}
-            onClick={() => setShowFullDescription()}
-            display={
-              serviceListing.description?.length < 200 ? "none" : "block"
+        <Group>
+          <Box>
+            <Text weight={500}>{serviceListing.petBusiness.companyName}</Text>
+            <Text color="dimmed" size="sm">
+              UEN: {serviceListing.petBusiness.uen}
+            </Text>
+          </Box>
+          <SimpleOutlineButton
+            text="View business"
+            ml={5}
+            onClick={() =>
+              router.push(`/pet-businesses/${serviceListing.petBusinessId}`)
             }
-          >
-            {showFullDescription ? "View less" : "View more"}
-          </Button>
+          />
         </Group>
+
+        <Stack mt="lg" spacing={5}>
+          <Group spacing="xs">
+            <IconPhone color="gray" size="1.2rem" />
+            <Text size="sm">{serviceListing.petBusiness.contactNumber}</Text>
+          </Group>
+          <Group spacing="xs">
+            <IconMail color="gray" size="1.2rem" />
+            <Text size="sm">{serviceListing.petBusiness.businessEmail}</Text>
+          </Group>
+        </Stack>
+
+        {/*if there are addresses*/}
+        {serviceListing.addresses.length > 0 ? (
+          <>
+            <Divider mt="lg" />
+            <Text weight={600} mt="md">
+              Locations ({serviceListing.addresses.length})
+            </Text>
+            <Group spacing={0}>
+              {serviceListing.addresses.map((address) => (
+                <AddressCard
+                  key={address.addressId}
+                  address={address}
+                  disabled
+                  ml={0}
+                  mt="md"
+                  mr="md"
+                />
+              ))}
+            </Group>
+          </>
+        ) : null}
       </Accordion.Panel>
     </Accordion.Item>
   );
@@ -127,19 +140,26 @@ export default function ServiceListingDetails({
             weight={700}
           />
           <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
-          {listingCarousel}
-
+          <ServiceListingCarousel
+            attachmentURLs={serviceListing.attachmentURLs}
+          />
           <Accordion
             radius="md"
             variant="filled"
-            value="description"
             mt="xl"
-            mb="xl"
+            mb={80}
+            multiple
+            value={ACCORDION_VALUES}
             chevronSize={0}
             onChange={() => {}}
           >
-            {/* {businessSection} */}
-            {descriptionSection}
+            {businessSection}
+            <DescriptionAccordionItem
+              title="Description"
+              description={serviceListing.description}
+              showFullDescription={showFullDescription}
+              setShowFullDescription={setShowFullDescription}
+            />
           </Accordion>
         </Grid.Col>
         <Grid.Col span={3}>
@@ -155,7 +175,7 @@ export default function ServiceListingDetails({
                 ${formatPriceForDisplay(serviceListing.basePrice)}
               </Text>
             </Group>
-            <Button size="md" fullWidth mt="xs">
+            <Button size="md" fullWidth mt="xs" onClick={handleClickAddToCart}>
               Add to cart
             </Button>
           </Paper>
@@ -167,10 +187,6 @@ export default function ServiceListingDetails({
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
-  const serviceListing = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/service-listings/${id}`,
-    )
-  ).data;
+  const serviceListing = await (await api.get(`/service-listings/${id}`)).data;
   return { props: { serviceListing } };
 }

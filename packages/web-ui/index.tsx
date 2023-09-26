@@ -16,3 +16,4 @@ export * from "./shared/SearchBar";
 export * from "./shared/NoSearchResultsMessage";
 export * from "./shared/EditCancelSaveButtons";
 export * from "./shared/ChangePasswordForm";
+export * from "./shared/SimpleOutlineButton";
