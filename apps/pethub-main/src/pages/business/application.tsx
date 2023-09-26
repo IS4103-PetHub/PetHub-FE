@@ -22,6 +22,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+import { AccountTypeEnum, PetBusinessTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
 import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
@@ -31,11 +32,7 @@ import {
   useGetPetBusinessApplicationByPBId,
   useUpdatePetBusinessApplication,
 } from "@/hooks/pet-business-application";
-import {
-  AccountTypeEnum,
-  BusinessApplicationStatusEnum,
-  PetBusinessTypeEnum,
-} from "@/types/constants";
+import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { Address, CreatePetBusinessApplicationPayload } from "@/types/types";
 import { validateAddressName } from "@/util";
 

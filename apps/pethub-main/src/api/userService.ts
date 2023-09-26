@@ -1,5 +1,5 @@
 import { ForgotPasswordPayload, ResetPasswordPayload } from "shared-utils";
-import { AccountTypeEnum } from "@/types/constants";
+import { AccountTypeEnum } from "shared-utils";
 import { LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
 

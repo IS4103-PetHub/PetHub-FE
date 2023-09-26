@@ -9,6 +9,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
@@ -20,11 +21,7 @@ import { ErrorAlert } from "@/components/common/ErrorAlert";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
 import { useDeleteUserGroup, useGetAllUserGroups } from "@/hooks/rbac";
-import {
-  EMPTY_STATE_DELAY_MS,
-  PermissionsCodeEnum,
-  TABLE_PAGE_SIZE,
-} from "@/types/constants";
+import { PermissionsCodeEnum } from "@/types/constants";
 import { Permission, UserGroup } from "@/types/types";
 
 interface RbacProps {
