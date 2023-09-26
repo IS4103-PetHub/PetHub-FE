@@ -167,6 +167,20 @@ export interface Pet {
   petWeight: number;
   dateOfBirth: string;
   microchipNumber: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+export interface PetPayload {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight: number;
+  dateOfBirth: string;
+  microchipNumber: string;
   healthAttachment: File[];
   dateCreated: string;
   dateUpdated: string;

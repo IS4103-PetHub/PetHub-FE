@@ -1,8 +1,10 @@
 import {
   Button,
+  Card,
   Container,
   FileInput,
   Group,
+  List,
   Modal,
   NumberInput,
   Select,
@@ -16,7 +18,7 @@ import { IconCalendar, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import { GenderEnum, PetTypeEnum } from "@/types/constants";
-import { Pet } from "@/types/types";
+import { Pet, PetPayload } from "@/types/types";
 
 interface PetInfoModalProps {
   opened: boolean;
@@ -37,10 +39,41 @@ const PetInfoModal = ({
 }: PetInfoModalProps) => {
   const [isUpdating, setUpdating] = useState(isUpdate);
   const [isViewing, setViewing] = useState(isView);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   useEffect(() => {
-    form.setValues(formDefaultValues);
+    const fetchAndSetPetFields = async () => {
+      if (pet) {
+        await setPetFields();
+      }
+    };
+    fetchAndSetPetFields();
   }, [pet]);
+
+  const handleFileInputChange = (files) => {
+    if (files && files.length > 0) {
+      const updatedFiles = [...uploadedFiles, ...files];
+      setUploadedFiles(updatedFiles);
+      form.setValues({
+        ...form.values,
+        healthAttachment: updatedFiles,
+      });
+    } else {
+      setUploadedFiles([]);
+      form.setValues({
+        ...form.values,
+        healthAttachment: [],
+      });
+    }
+    setFileInputKey((prevKey) => prevKey + 1);
+  };
+
+  const removeFile = (indexToRemove) => {
+    const updatedFiles = [...uploadedFiles];
+    updatedFiles.splice(indexToRemove, 1);
+    setUploadedFiles(updatedFiles);
+  };
 
   const formDefaultValues = {
     petName: pet ? pet.petName : "",
@@ -49,23 +82,70 @@ const PetInfoModal = ({
     petWeight: pet ? pet.petWeight : 0,
     dateOfBirth: pet ? new Date(pet.dateOfBirth) : "",
     microchipNumber: pet ? pet.microchipNumber : "",
-    healthAttachment: pet ? pet.healthAttachment : [],
+    healthAttachment: [],
   };
 
   const form = useForm({
     initialValues: formDefaultValues,
     validate: {
-      // TODO: validation
+      petName: (value) => {
+        if (!value) return "Pet name is required.";
+        return null;
+      },
+      petType: (value) => {
+        if (!value) return "Pet type is required.";
+        return null;
+      },
+      gender: (value) => {
+        if (!value) return "Gender is required.";
+        return null;
+      },
+      petWeight: (value) => {
+        if (value <= 0) return "Pet weight must be greater than 0.";
+        return null;
+      },
+      dateOfBirth: (value) => {
+        if (!value) return "Date of birth is required.";
+        return null;
+      },
     },
   });
 
+  const extractFileName = (attachmentKeys: string) => {
+    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
+  };
+
+  const downloadFile = async (url: string, fileName: string) => {
+    try {
+      const response = await fetch(url);
+      const buffer = await response.arrayBuffer();
+      return new File([buffer], fileName);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+
   const setPetFields = async () => {
-    // TODO: for file attachements need to convert from url to file
-    // const files = pet.healthAttachment
+    const fileNames = pet.attachmentKeys.map((keys) => extractFileName(keys));
+
+    const downloadPromises = fileNames.map((filename, index) => {
+      const url = pet.attachmentURLs[index];
+      return downloadFile(url, filename).catch((error) => {
+        console.error(`Error downloading file ${filename}:`, error);
+        return null; // Return null for failed downloads
+      });
+    });
+
+    const downloadedFiles: File[] = await Promise.all(downloadPromises);
+
     form.setValues({
       ...pet,
+      healthAttachment: downloadedFiles,
       dateOfBirth: new Date(pet.dateOfBirth),
     });
+
+    const pdfUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
+    setUploadedFiles(pdfUrls);
   };
 
   const closeAndResetForm = async () => {
@@ -73,6 +153,7 @@ const PetInfoModal = ({
       await setPetFields();
     } else {
       form.reset();
+      setUploadedFiles([]);
     }
     setUpdating(isUpdate);
     setViewing(isView);
@@ -81,9 +162,12 @@ const PetInfoModal = ({
 
   const handleAction = async (values) => {
     try {
+      const payload: PetPayload = {
+        ...values,
+      };
       if (isUpdating) {
         // update pet
-        console.log("UPDATING", values);
+        console.log("UPDATING", payload);
         notifications.show({
           message: "Pet Successfully Updated",
           color: "green",
@@ -91,7 +175,7 @@ const PetInfoModal = ({
         });
       } else {
         // create pet
-        console.log("CREATING", values);
+        console.log("CREATING", payload);
         notifications.show({
           message: "Pet Successfully Created",
           color: "green",
@@ -102,6 +186,7 @@ const PetInfoModal = ({
       form.reset();
       setUpdating(isUpdate);
       setViewing(isView);
+      setUploadedFiles([]);
       onClose();
     } catch (error) {
       notifications.show({
@@ -187,12 +272,59 @@ const PetInfoModal = ({
                 placeholder="Pet Microchip number"
                 {...form.getInputProps("microchipNumber")}
               />
-              {/* TODO: find out what kind of images */}
-              {/* <FileInput
-                                disabled={isViewing}
-                                label="Upload healht documents"
-                                multiple
-                            /> */}
+              <FileInput
+                disabled={isViewing}
+                label="Upload Files"
+                placeholder={
+                  uploadedFiles.length === 0
+                    ? "No file selected"
+                    : "Upload new files"
+                }
+                accept="*/*"
+                multiple
+                onChange={(files) => handleFileInputChange(files)}
+                key={fileInputKey}
+              />
+              {uploadedFiles.length > 0 && (
+                <div>
+                  <h4>Uploaded Health Attachments:</h4>
+                  {uploadedFiles.map((file, index) => (
+                    <Card
+                      key={index}
+                      shadow="xs"
+                      style={{ marginBottom: "8px" }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <a
+                          href={URL.createObjectURL(file)}
+                          download={file.name}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ flex: "1", textDecoration: "none" }}
+                        >
+                          {file.name}
+                        </a>{" "}
+                        {!isViewing && (
+                          <Button
+                            size="xs"
+                            variant="light"
+                            color="red"
+                            onClick={() => removeFile(index)}
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
               {!isViewing && (
                 <Group position="right" mt="sm" mb="sm">
                   {!isViewing && (

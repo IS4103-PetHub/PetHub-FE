@@ -80,9 +80,6 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
       </Group>
 
       {/* TODO: if no records render sadface */}
-      {/* {pets.length === 0 ? (
-
-)} */}
 
       <Grid
         style={{

@@ -228,7 +228,8 @@ const dummyPets: Pet[] = [
     dateOfBirth: "2019-05-15",
     petWeight: 25.5,
     microchipNumber: "123456789",
-    healthAttachment: [], // Empty array for now
+    attachmentKeys: [], // Empty array for now
+    attachmentURLs: [],
     dateCreated: "2023-09-20T10:30:00.000Z", // ISO format
     dateUpdated: "",
   },
@@ -240,7 +241,8 @@ const dummyPets: Pet[] = [
     dateOfBirth: "2020-02-10",
     petWeight: 8.2,
     microchipNumber: "987654321",
-    healthAttachment: [], // Empty array for now
+    attachmentKeys: [], // Empty array for now
+    attachmentURLs: [],
     dateCreated: "2023-09-20T11:45:00.000Z", // ISO format
     dateUpdated: "",
   },
@@ -252,7 +254,8 @@ const dummyPets: Pet[] = [
     dateOfBirth: "2021-07-03",
     petWeight: 0.15,
     microchipNumber: null, // No microchip for this pet
-    healthAttachment: [], // Empty array for now
+    attachmentKeys: [], // Empty array for now
+    attachmentURLs: [],
     dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
     dateUpdated: "",
   },
@@ -264,7 +267,8 @@ const dummyPets: Pet[] = [
     dateOfBirth: "2021-07-03",
     petWeight: 100.15,
     microchipNumber: null, // No microchip for this pet
-    healthAttachment: [], // Empty array for now
+    attachmentKeys: [], // Empty array for now
+    attachmentURLs: [],
     dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
     dateUpdated: "",
   },
