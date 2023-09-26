@@ -42,14 +42,7 @@ export function App({ Component, pageProps }: AppProps) {
   );
 
   return (
-    <>
-      <Head>
-        <style jsx global>{`
-          html {
-            font-family: ${inter.style.fontFamily};
-          }
-        `}</style>
-      </Head>
+    <main className={inter.className}>
       <ColorSchemeProvider
         colorScheme={colorScheme}
         toggleColorScheme={toggleColorScheme}
@@ -91,7 +84,7 @@ export function App({ Component, pageProps }: AppProps) {
           </QueryClientProvider>
         </MantineProvider>
       </ColorSchemeProvider>
-    </>
+    </main>
   );
 }
 
