@@ -195,11 +195,34 @@ const doesTimeOverlap = (
   return startTimeA < endTimeB && startTimeB < endTimeA;
 };
 
-// Check if there are any overlaps between all the time periods generated
+/* 
+  Check if there are any overlaps between all the time periods generated
+  All mandatory fields should be filled in already, since this function should be called after form validation passes (create button)
+*/
 export function checkCGForOverlappingTimePeriods(
   scheduleSettings: ScheduleSettings[],
 ) {
-  // All mandatory fields should be filled in already, since this function should be called after form validation passes (create button)
+  // Returns an array of days between two dates inclusive
+  function getDaysBetweenDates(startDate: string, endDate: string): string[] {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const days = [];
+    while (start <= end) {
+      days.push(DayOfWeekEnum[start.getDay()]);
+      start.setDate(start.getDate() + 1);
+    }
+    return days;
+  }
+
+  // Finds the effective days of recurrence. If 'DAILY', it takes all days but also considers the start and end dates. If 'WEEKLY' it just takes the days array
+  function getDaysInQuestion(recurrence: Recurrence, days: string[]) {
+    if (recurrence.pattern === "DAILY") {
+      return getDaysBetweenDates(recurrence.startDate!, recurrence.endDate!);
+    } else {
+      return days;
+    }
+  }
+
   for (let i = 0; i < scheduleSettings.length; i++) {
     const settingA = scheduleSettings[i];
     for (let j = i + 1; j < scheduleSettings.length; j++) {
@@ -215,10 +238,21 @@ export function checkCGForOverlappingTimePeriods(
             settingB.recurrence.endDate,
           )
         ) {
-          // If have overlapping dates, check for overlapping days
-          const overlappingDays = settingA.days!.filter((day) =>
-            settingB.days!.includes(day),
+          // Get effective days based on the pattern to check for overlap
+          const effectiveDaysA = getDaysInQuestion(
+            settingA.recurrence,
+            settingA.days,
           );
+          const effectiveDaysB = getDaysInQuestion(
+            settingB.recurrence,
+            settingB.days,
+          );
+
+          // If have overlapping dates, check for overlapping days
+          const overlappingDays = effectiveDaysA.filter((day) =>
+            effectiveDaysB.includes(day),
+          );
+
           if (overlappingDays.length > 0) {
             // If have overlapping days, check for overlapping time periods
             for (
@@ -241,7 +275,6 @@ export function checkCGForOverlappingTimePeriods(
                     timePeriodB.endTime,
                   )
                 ) {
-                  // If caught a overlapping time period, return the index of the 2 ScheduleSettings and the 2 TimePeriods of each ScheduleSettings
                   return {
                     settingAIndex: i,
                     settingBIndex: j,
@@ -256,5 +289,5 @@ export function checkCGForOverlappingTimePeriods(
       }
     }
   }
-  return null;
+  return null; // no overlaps found
 }
