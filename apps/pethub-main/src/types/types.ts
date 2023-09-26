@@ -120,17 +120,14 @@ export interface ServiceListing {
   basePrice: number;
   category: ServiceCategoryEnum;
   tags: Tag[];
-  // address
+  addresses: Address[];
   dateCreated: string;
   lastUpdated?: string;
   attachmentKeys: string[];
   attachmentURLs: string[];
-  addresses: Address[];
   //pet business
   petBusinessId: number;
-  petBusiness?: {
-    companyName: string;
-  };
+  petBusiness?: any;
 }
 
 export interface Tag {

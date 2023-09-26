@@ -131,9 +131,6 @@ export default function ServiceListings() {
     <Grid.Col
       key={serviceListing.serviceListingId}
       span={isMobile ? 12 : isTablet ? 4 : 3}
-      onClick={() =>
-        router.push(`/service-listings/${serviceListing.serviceListingId}`)
-      }
     >
       <ServiceListingCard serviceListing={serviceListing} />
     </Grid.Col>

@@ -6,20 +6,22 @@ import {
   Group,
   Menu,
   ActionIcon,
+  CardSectionProps,
 } from "@mantine/core";
 import { IconTrash, IconDots } from "@tabler/icons-react";
 import { Address } from "../../../../apps/pethub-main/src/types/types";
 
-type AddressCardProps = {
+interface AddressCardProps extends CardSectionProps {
   address: Address;
-  disabled: boolean;
-  onRemoveAddress: (address: Address) => void;
-};
+  disabled?: boolean;
+  onRemoveAddress?: (address: Address) => void;
+}
 
 const AddressCard = ({
   address,
   onRemoveAddress,
   disabled,
+  ...props
 }: AddressCardProps) => {
   return (
     <Card
@@ -31,6 +33,7 @@ const AddressCard = ({
       radius="md"
       ml="xs"
       mr="xs"
+      {...props}
     >
       <Card.Section>
         <Group position="apart">

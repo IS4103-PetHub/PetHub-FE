@@ -3,13 +3,13 @@ import { Address } from "../../../../apps/pethub-main/src/types/types";
 import AddAddressCard from "./AddAddressCard";
 import AddressCard from "./AddressCard";
 
-type AddressSidewaysScrollThingProps = {
+interface AddressSidewaysScrollThingProps {
   addressList: Address[];
   isDisabled: boolean;
   hasAddCard: boolean;
   openModal?: () => void;
   onRemoveAddress?: (address: Address) => void;
-};
+}
 
 const AddressSidewaysScrollThing = ({
   addressList,
