@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "./types/constants";
 import {
+  CalendarGroup,
   Recurrence,
   ScheduleSettings,
   ServiceListing,
@@ -174,4 +175,86 @@ export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
   });
 
   return Object.keys(errors).length === 0 ? null : { errors };
+}
+
+const doesDateOverlap = (
+  dateStartA: string,
+  dateEndA: string,
+  dateStartB: string,
+  dateEndB: string,
+): boolean => {
+  return dateStartA <= dateEndB && dateStartB <= dateEndA;
+};
+
+const doesTimeOverlap = (
+  startTimeA: string,
+  endTimeA: string,
+  startTimeB: string,
+  endTimeB: string,
+): boolean => {
+  return startTimeA < endTimeB && startTimeB < endTimeA;
+};
+
+// Check if there are any overlaps between all the time periods generated
+export function checkCGForOverlappingTimePeriods(
+  scheduleSettings: ScheduleSettings[],
+) {
+  // All mandatory fields should be filled in already, since this function should be called after form validation passes (create button)
+  for (let i = 0; i < scheduleSettings.length; i++) {
+    const settingA = scheduleSettings[i];
+    for (let j = i + 1; j < scheduleSettings.length; j++) {
+      const settingB = scheduleSettings[j];
+
+      if (settingA.recurrence && settingB.recurrence) {
+        // Check for overlapping dates
+        if (
+          doesDateOverlap(
+            settingA.recurrence.startDate,
+            settingA.recurrence.endDate,
+            settingB.recurrence.startDate,
+            settingB.recurrence.endDate,
+          )
+        ) {
+          // If have overlapping dates, check for overlapping days
+          const overlappingDays = settingA.days!.filter((day) =>
+            settingB.days!.includes(day),
+          );
+          if (overlappingDays.length > 0) {
+            // If have overlapping days, check for overlapping time periods
+            for (
+              let aIndex = 0;
+              aIndex < settingA.recurrence.timePeriods!.length;
+              aIndex++
+            ) {
+              const timePeriodA = settingA.recurrence.timePeriods![aIndex];
+              for (
+                let bIndex = 0;
+                bIndex < settingB.recurrence.timePeriods!.length;
+                bIndex++
+              ) {
+                const timePeriodB = settingB.recurrence.timePeriods![bIndex];
+                if (
+                  doesTimeOverlap(
+                    timePeriodA.startTime,
+                    timePeriodA.endTime,
+                    timePeriodB.startTime,
+                    timePeriodB.endTime,
+                  )
+                ) {
+                  // If caught a overlapping time period, return the index of the 2 ScheduleSettings and the 2 TimePeriods of each ScheduleSettings
+                  return {
+                    settingAIndex: i,
+                    settingBIndex: j,
+                    timePeriodAIndex: aIndex,
+                    timePeriodBIndex: bIndex,
+                  };
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
 }

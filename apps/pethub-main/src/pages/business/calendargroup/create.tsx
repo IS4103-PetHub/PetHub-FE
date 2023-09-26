@@ -22,15 +22,14 @@ import { RecurrencePatternEnum } from "@/types/constants";
 import { validateCGSettings } from "@/util";
 
 export default function CreateCalendarGroup() {
-  const [opened, { open, close }] = useDisclosure(false);
-
   const form = useForm({
     initialValues: {
       name: "",
       description: "",
+      // a default scheduleSettings
       scheduleSettings: [
         {
-          scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness.
+          scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness, same with timePeriod
           days: [],
           vacancies: 1,
           recurrence: {
