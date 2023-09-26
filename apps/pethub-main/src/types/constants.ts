@@ -32,6 +32,21 @@ export enum ServiceCategoryEnum {
   PetBoarding = "PET_BOARDING",
 }
 
+export enum DayOfWeekEnum {
+  Monday = "MONDAY",
+  Tuesday = "TUESDAY",
+  Wednesday = "WEDNESDAY",
+  Thursday = "THURSDAY",
+  Friday = "FRIDAY",
+  Saturday = "SATURDAY",
+  Sunday = "SUNDAY",
+}
+
+export enum RecurrencePatternEnum {
+  Daily = "DAILY",
+  Weekly = "WEEKLY",
+}
+
 export const TABLE_PAGE_SIZE = 15;
 
 export const EMPTY_STATE_DELAY_MS = 500;

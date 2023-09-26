@@ -3,6 +3,7 @@ import {
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
   PetBusinessTypeEnum,
+  RecurrencePatternEnum,
   ServiceCategoryEnum,
 } from "./constants";
 
@@ -155,4 +156,86 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+}
+
+/*
+ * TUI Calendar
+ */
+
+export interface tuiEvent {
+  id: string;
+  title: string;
+  calendarId: string;
+  start: string; // ISO FORMAT
+  end: string; // ISO FORMAT
+}
+
+export interface tuiCalendar {
+  id: string;
+  name: string;
+  backgroundColor: string;
+  borderColor: string;
+}
+
+/*
+ * Booking
+ */
+
+export interface BookingResponse {
+  id: number;
+  invoiceId: number | null;
+  transactionId: number | null;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated: string | null;
+  startTime: string;
+  endTime: string;
+  serviceListing: ServiceListingBooking;
+  timeSlot: Timeslot | null;
+}
+
+export interface ServiceListingBooking {
+  id: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  lastUpdated: string | null;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  addresses: Address[];
+  petBusinessId: number;
+  calendarGroupId: number | null;
+}
+
+export interface CalendarGroup {
+  calendarGroupId: number;
+  name?: string;
+  description?: string;
+  timeslots?: Timeslot[];
+  petBusinessId?: number;
+  scheduleSettings?: ScheduleSettings[];
+}
+
+export interface ScheduleSettings {
+  scheduleSettingsId: number;
+  days?: string[];
+  startTime?: string;
+  endTime?: string;
+  vacancies?: number;
+  pattern?: RecurrencePatternEnum;
+  startDate?: string;
+  endDate?: string;
+  timeslots?: Timeslot[];
+}
+
+export interface Timeslot {
+  timeslotId: number;
+  startTime?: string;
+  endTime?: string;
+  isVacant?: boolean;
+  bookingId?: number;
+  calenderGroupId?: number;
 }
