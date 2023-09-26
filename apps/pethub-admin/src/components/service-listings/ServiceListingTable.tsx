@@ -3,11 +3,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { TABLE_PAGE_SIZE, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { Address, ServiceListing, Tag } from "@/types/types";
 import ServiceListingModal from "./ViewServiceListingModal";
 import ViewServiceListingModal from "./ViewServiceListingModal";
@@ -16,8 +15,9 @@ interface ServiceListingTableProps {
   records: ServiceListing[];
   totalNumServiceListing: number;
   onDelete(id: number): void;
-  page: number;
+  canWrite: boolean;
   isSearching: boolean;
+  page: number;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
@@ -27,6 +27,7 @@ const ServiceListingTable = ({
   records,
   totalNumServiceListing,
   onDelete,
+  canWrite,
   isSearching,
   page,
   sortStatus,
@@ -99,17 +100,19 @@ const ServiceListingTable = ({
             render: (record) => (
               <Group position="right">
                 <ViewServiceListingModal serviceListing={record} />
-                <DeleteActionButtonModal
-                  title={`Are you sure you want to delete ${record.title}?`}
-                  subtitle="Pet Owners would no longer be able to view this service listing."
-                  onDelete={() => {
-                    onDelete(record.serviceListingId);
-                    // Check if there is only 1 record on this page and we're not on the first page.
-                    if (records.length === 1 && page > 1) {
-                      onPageChange(page - 1);
-                    }
-                  }}
-                />
+                {canWrite ? (
+                  <DeleteActionButtonModal
+                    title={`Are you sure you want to delete ${record.title}?`}
+                    subtitle="Pet Owners would no longer be able to view this service listing."
+                    onDelete={() => {
+                      onDelete(record.serviceListingId);
+                      // Check if there is only 1 record on this page and we're not on the first page.
+                      if (records.length === 1 && page > 1) {
+                        onPageChange(page - 1);
+                      }
+                    }}
+                  />
+                ) : null}
               </Group>
             ),
           },

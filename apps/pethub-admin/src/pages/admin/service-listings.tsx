@@ -5,29 +5,49 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import api from "@/api/axiosConfig";
+import { ErrorAlert } from "@/components/common/ErrorAlert";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import ServiceListingTable from "@/components/service-listings/ServiceListingTable";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import {
   useDeleteServiceListingById,
   useGetAllServiceListings,
 } from "@/hooks/service-listing";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
-import { ServiceListing } from "@/types/types";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { Permission, ServiceListing } from "@/types/types";
 
-// https://zumvet.com/blog/wp-content/uploads/2023/06/Pet-Angel-Blog-2022-14-1080x648-1.png
+interface ServiceListingsProps {
+  permissions: Permission[];
+}
 
-export default function ServiceListings() {
+export default function ServiceListings({ permissions }: ServiceListingsProps) {
   const queryClient = useQueryClient();
   const isTablet = useMediaQuery("(max-width: 100em)");
 
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WriteServiceListings,
+  );
+  const canRead = permissionCodes.includes(
+    PermissionsCodeEnum.ReadServiceListings,
+  );
+
   //fetch data
-  const { data: serviceListings = [], isLoading } = useGetAllServiceListings();
+  const {
+    data: serviceListings = [],
+    isLoading,
+    isError,
+  } = useGetAllServiceListings();
   const { data: petBusinesses = [] } = useGetAllPetBusinesses();
 
   //for table
@@ -164,6 +184,14 @@ export default function ServiceListings() {
     }
   };
 
+  if (isError) {
+    return ErrorAlert("Service Listings");
+  }
+
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
@@ -193,6 +221,7 @@ export default function ServiceListings() {
             records={records}
             totalNumServiceListing={serviceListings.length}
             onDelete={handleDeleteServiceListing}
+            canWrite={canWrite}
             isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
@@ -212,13 +241,13 @@ export default function ServiceListings() {
   );
 }
 
-// export async function getServerSideProps(context) {
-//   const session = await getSession(context);
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
 
-//   if (!session) return null;
-
-//   const userId = session.user["userId"];
-//   const accountType = session.user["accountType"];
-
-//   return { props: { userId, accountType } };
-// }
+  const userId = session.user["userId"];
+  const permissions = await (
+    await api.get(`/rbac/users/${userId}/permissions`)
+  ).data;
+  return { props: { permissions } };
+}

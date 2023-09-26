@@ -24,6 +24,8 @@ export const enum PermissionsCodeEnum {
   ReadTags = "READ_TAGS",
   WritePBApplications = "WRITE_PET_BUSINESS_APPLICATIONS",
   ReadPBApplications = "READ_PET_BUSINESS_APPLICATIONS",
+  WriteServiceListings = "WRITE_SERVICE_LISTINGS",
+  ReadServiceListings = "READ_SERVICE_LISTINGS",
 }
 
 export enum ServiceCategoryEnum {
