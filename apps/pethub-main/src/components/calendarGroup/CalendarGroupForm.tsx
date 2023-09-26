@@ -44,8 +44,9 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   const queryClient = useQueryClient();
 
   const rulesToDisplay = [
-    "End dates must be after start dates and must not be more than 3 months from the current date",
+    "End dates must not be more than 3 months from the current date",
     "Ensure that you have no overlapping time periods between schedule settings",
+    "[...Add more rules/warnings here]",
   ];
 
   const addNewScheduleSettings = () => {
@@ -113,7 +114,8 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
     const payload = {};
-    console.log("SUBMIT FORM VALUES", JSON.stringify(values));
+    console.log("SUBMIT FORM VALUES OBJ", values);
+    console.log("SUBMIT FORM VALUES STRINGFY", JSON.stringify(values));
     const check = checkCGForOverlappingTimePeriods(values.scheduleSettings);
     console.log("CHECK OVERLAP", check);
     if (check) {
@@ -127,7 +129,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
           check.settingBIndex + 1
         }, period ${
           check.timePeriodBIndex + 1
-        }]. Please check the settings for clashing recurring dates or days.`,
+        }]. Please check the settings for clashing dates or recurring days.`,
       });
     }
     // createCalendarGroup(payload);
