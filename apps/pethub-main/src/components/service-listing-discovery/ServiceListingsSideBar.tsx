@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
-import { ServiceCategoryEnum } from "@/types/constants";
+import { ServiceCategoryEnum } from "shared-utils";
 
 const useStyles = createStyles((theme) => ({
   link: {

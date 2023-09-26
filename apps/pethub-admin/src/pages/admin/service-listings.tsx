@@ -7,7 +7,12 @@ import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  ServiceListing,
+  TABLE_PAGE_SIZE,
+  searchServiceListingsForPB,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -23,7 +28,7 @@ import {
   useGetAllServiceListings,
 } from "@/hooks/service-listing";
 import { PermissionsCodeEnum } from "@/types/constants";
-import { Permission, ServiceListing } from "@/types/types";
+import { Permission } from "@/types/types";
 
 interface ServiceListingsProps {
   permissions: Permission[];
@@ -117,17 +122,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
 
     // Search by title or category
     setIsSearching(true);
-    const results = serviceListings.filter((serviceListing: ServiceListing) => {
-      const formattedCategory = formatEnumValue(serviceListing.category);
-      const formattedTags = serviceListing.tags.map((tag) =>
-        tag.name.toLowerCase(),
-      );
-      return (
-        serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-        formattedCategory.includes(searchStr.toLowerCase()) ||
-        formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
-      );
-    });
+    const results = searchServiceListingsForPB(serviceListings, searchStr);
     setRecords(results);
     setPage(1);
   };

@@ -1,13 +1,13 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  Address,
   PetBusinessTypeEnum,
 } from "shared-utils";
 
 import {
   BusinessApplicationStatusEnum,
   InternalUserRoleEnum,
-  ServiceCategoryEnum,
 } from "./constants";
 
 export abstract class User {
@@ -80,13 +80,6 @@ export interface Permission {
   description: string;
 }
 
-export interface Tag {
-  tagId: number;
-  name: string;
-  dateCreated: string;
-  lastUpdated: string;
-}
-
 export interface CreateTagPayload {
   name: string;
 }
@@ -116,16 +109,6 @@ export interface UserGroupMembership {
       lastName: string;
     };
   };
-}
-
-export interface Address {
-  addressId?: string;
-  addressName: string;
-  line1: string;
-  line2: string;
-  postalCode: string;
-  petBusinessId?: Number;
-  petBusinessApplicationId?: Number;
 }
 
 export interface BusinessApplicationApprover {
@@ -161,24 +144,4 @@ export interface ApprovePetBusinessApplicationPayload {
 export interface RejectPetBusinessApplicationPayload {
   petBusinessApplicationId: Number;
   remark: String;
-}
-
-export interface ServiceListing {
-  serviceListingId: number;
-  title: string;
-  description: string;
-  basePrice: number;
-  category: ServiceCategoryEnum;
-  tags: Tag[];
-  // address
-  dateCreated: string;
-  lastUpdated?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  addresses: Address[];
-  //pet business
-  petBusinessId: number;
-  petBusiness?: {
-    companyName: string;
-  };
 }

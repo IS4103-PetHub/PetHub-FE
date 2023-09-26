@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { Tag } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { Tag } from "@/types/types";
 
 const TAG_API = "tags";
 

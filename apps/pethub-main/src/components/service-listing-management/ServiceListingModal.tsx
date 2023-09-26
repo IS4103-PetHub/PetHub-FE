@@ -19,17 +19,19 @@ import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import {
+  Address,
+  ServiceCategoryEnum,
+  ServiceListing,
+  Tag,
+  formatStringToLetterCase,
+} from "shared-utils";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
-import { ServiceCategoryEnum } from "@/types/constants";
 import {
-  Address,
   CreateServiceListingPayload,
-  ServiceListing,
-  Tag,
   UpdateServiceListingPayload,
 } from "@/types/types";
 

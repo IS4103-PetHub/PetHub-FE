@@ -6,10 +6,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE, Tag } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -26,12 +25,7 @@ import {
   useUpdateTag,
 } from "@/hooks/tag";
 import { PermissionsCodeEnum } from "@/types/constants";
-import {
-  CreateTagPayload,
-  Permission,
-  Tag,
-  UpdateTagPayload,
-} from "@/types/types";
+import { CreateTagPayload, Permission, UpdateTagPayload } from "@/types/types";
 
 interface TagsProps {
   permissions: Permission[];

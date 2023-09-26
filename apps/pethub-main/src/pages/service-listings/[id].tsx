@@ -13,11 +13,11 @@ import {
 import { useToggle } from "@mantine/hooks";
 import axios from "axios";
 import { useState } from "react";
+import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
-import { ServiceListing } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {

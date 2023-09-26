@@ -27,11 +27,3 @@ export const enum PermissionsCodeEnum {
   WriteServiceListings = "WRITE_SERVICE_LISTINGS",
   ReadServiceListings = "READ_SERVICE_LISTINGS",
 }
-
-export enum ServiceCategoryEnum {
-  PetGrooming = "PET_GROOMING",
-  Dining = "DINING",
-  Veterinary = "VETERINARY",
-  PetRetail = "PET_RETAIL",
-  PetBoarding = "PET_BOARDING",
-}
