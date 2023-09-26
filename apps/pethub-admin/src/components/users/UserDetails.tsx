@@ -17,14 +17,14 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import { AccountTypeEnum, formatStringToLetterCase } from "shared-utils";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
 } from "@/hooks/internal-user";
 import { useGetPermissionsByUserIdAndAccountType } from "@/hooks/rbac";
-import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
+import { InternalUserRoleEnum } from "@/types/constants";
 import {
   InternalUser,
   Permission,
@@ -490,9 +490,6 @@ const UserDetails = ({
     useDisclosure(false);
   const [updateModalOpened, { open: openUpdate, close: closeUpdate }] =
     useDisclosure(false);
-  // const propSessionUserId = sessionUserId || -1;
-  // const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
-  // const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
 
   const { data: internalUserPermissions = [] } =
     useGetPermissionsByUserIdAndAccountType(user?.userId, user?.accountType);
