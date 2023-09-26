@@ -1,9 +1,12 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  PetBusinessTypeEnum,
+} from "shared-utils";
+
+import {
   BusinessApplicationStatusEnum,
   InternalUserRoleEnum,
-  PetBusinessTypeEnum,
 } from "./constants";
 
 export abstract class User {
