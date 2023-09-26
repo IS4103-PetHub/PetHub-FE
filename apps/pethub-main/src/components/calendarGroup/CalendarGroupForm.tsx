@@ -12,6 +12,8 @@ import {
   SegmentedControl,
   Box,
   Checkbox,
+  Stack,
+  Divider,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -39,6 +41,11 @@ interface CalendarGroupFormProps {
 const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const rulesToDisplay = [
+    "End dates must be after start dates and must not be more than 3 months from the current date",
+    "[Add more rules here]...",
+  ];
 
   const addNewScheduleSettings = () => {
     const newSetting: ScheduleSettings = {
@@ -131,6 +138,23 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
             {...form.getInputProps("description")}
           />
         </Grid.Col>
+        <Grid.Col span={12}>
+          <Stack>
+            <Text size="xl" weight={600} mt="lg">
+              Calendar Schedules
+            </Text>
+            <Text color="dark" mt={-10}>
+              Create schedules with the relavant schedule settings and desired
+              time periods here
+            </Text>
+            {rulesToDisplay.map((rule, index) => (
+              <Text color="dimmed" mt={-10} fz="sm" key={index}>
+                {index + 1}. {rule}
+              </Text>
+            ))}
+            <Divider mb="md" />
+          </Stack>
+        </Grid.Col>
         {form.values.scheduleSettings?.map(
           (setting: ScheduleSettings, index: number) => (
             <SettingsForm
@@ -141,6 +165,8 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
                 handleScheduleSettingChange(index, changes)
               }
               timePeriods={setting.recurrence.timePeriods}
+              form={form}
+              index={index}
             />
           ),
         )}

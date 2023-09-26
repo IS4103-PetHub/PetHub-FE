@@ -1,5 +1,11 @@
 import dayjs from "dayjs";
-import { ScheduleSettings, ServiceListing, Timeslot } from "./types/types";
+import { DayOfWeekEnum, RecurrencePatternEnum } from "./types/constants";
+import {
+  Recurrence,
+  ScheduleSettings,
+  ServiceListing,
+  TimePeriod,
+} from "./types/types";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -76,9 +82,96 @@ export function searchServiceListingsForCustomer(
   });
 }
 
-// The below function is used in the CalenderGroupForm component
-export function validateCalendarGroupSettings(
-  scheduleSettings: ScheduleSettings[],
-) {
+// The below functions are used in the CalenderGroupForm component
+
+function validateCGDays(days: string[], pattern: string) {
+  console.log("DAYS", days);
+  console.log("PATTERN", pattern);
+  if (pattern === "WEEKLY" && (!days || days.length === 0)) {
+    return "At least one selection for a recurring day is compulsory if the recurrence pattern is set to 'Weekly'.";
+  }
+  if (
+    days &&
+    days.some(
+      (day) => !Object.values(DayOfWeekEnum).includes(day as DayOfWeekEnum),
+    )
+  ) {
+    return "days must be one of [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]."; // A just-in-case check
+  }
   return null;
+}
+
+function validateCGVacancies(vacancies: number) {
+  return vacancies < 1 ? "Vacancies must be at least 1." : null;
+}
+
+function validateCGTimePeriod(timePeriod: TimePeriod) {
+  return timePeriod.endTime <= timePeriod.startTime
+    ? "End time must be after start time."
+    : null;
+}
+
+function validateCGRecurrence(recurrence: Recurrence) {
+  const errors: any = {};
+
+  if (!recurrence.startDate || !recurrence.endDate) {
+    if (!recurrence.startDate) errors.startDate = "Start date is required.";
+    if (!recurrence.endDate) errors.endDate = "End date is required.";
+  } else {
+    const today = new Date();
+    const parsedStartDate = new Date(recurrence.startDate);
+    const parsedEndDate = new Date(recurrence.endDate);
+    const threeMonthsFromNow = new Date();
+    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+
+    if (parsedStartDate <= today) {
+      errors.startDate = "Start date must be after today.";
+    }
+    if (parsedEndDate < parsedStartDate) {
+      errors.endDate = "End date must be after start date.";
+    }
+    if (parsedEndDate > threeMonthsFromNow) {
+      errors.endDate =
+        "End date must not be more than 3 months from current date.";
+    }
+  }
+  // Validate time periods and push errors if they exist
+  const timePeriodErrors: { [key: number]: string } = {};
+
+  recurrence.timePeriods.forEach((timePeriod, index) => {
+    const timePeriodError = validateCGTimePeriod(timePeriod);
+    if (timePeriodError) {
+      timePeriodErrors[index] = timePeriodError;
+    }
+  });
+
+  if (Object.keys(timePeriodErrors).length > 0) {
+    errors.timePeriods = timePeriodErrors;
+  }
+
+  return Object.keys(errors).length === 0 ? null : errors;
+}
+
+export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
+  if (!scheduleSettings || scheduleSettings.length === 0) {
+    return { scheduleSettingsError: "At least one schedule is required" };
+  }
+
+  const errors: { [key: number]: any } = {}; // Use an object to store errors with index as key
+
+  scheduleSettings.forEach((setting, index) => {
+    const daysError = validateCGDays(setting.days, setting.recurrence.pattern);
+    const vacanciesError = validateCGVacancies(setting.vacancies);
+    const recurrenceErrors = validateCGRecurrence(setting.recurrence);
+
+    if (daysError || vacanciesError || recurrenceErrors) {
+      errors[index] = {
+        days: daysError,
+        vacancies: vacanciesError,
+        recurrence: recurrenceErrors,
+      };
+    }
+  });
+
+  return Object.keys(errors).length === 0 ? null : { errors };
 }

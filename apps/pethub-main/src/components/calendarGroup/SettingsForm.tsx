@@ -26,6 +26,8 @@ interface SettingsFormProps {
   onRemove: () => void;
   onChange: any;
   timePeriods: TimePeriod[];
+  form: any;
+  index: number;
 }
 
 const SettingsForm = ({
@@ -33,7 +35,11 @@ const SettingsForm = ({
   onRemove,
   onChange,
   timePeriods = [],
+  form,
+  index,
 }: SettingsFormProps) => {
+  const errors = form.errors?.scheduleSettings?.errors;
+
   const segmentedControlData = [
     {
       value: RecurrencePatternEnum.Daily,
@@ -111,6 +117,7 @@ const SettingsForm = ({
                   recurrence: { ...setting.recurrence, startDate: value },
                 })
               }
+              error={errors?.[index]?.recurrence?.startDate}
             />
             <DateInput
               label="End date"
@@ -123,6 +130,7 @@ const SettingsForm = ({
                   recurrence: { ...setting.recurrence, endDate: value },
                 })
               }
+              error={errors?.[index]?.recurrence?.endDate}
             />
           </Group>
         </Card.Section>
@@ -134,6 +142,7 @@ const SettingsForm = ({
             hideControls
             min={1}
             onChange={(value) => onChange({ vacancies: value })}
+            error={errors?.[index]?.vacancies}
           />
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
@@ -157,12 +166,13 @@ const SettingsForm = ({
               defaultValue={setting.days}
               label="Select the recurring days of the week"
               onChange={(value) => onChange({ days: value })}
+              error={errors?.[index]?.days}
             >
-              <Group mt="xs">
+              <Group mt="xs" mb="xs">
                 <Checkbox value={DayOfWeekEnum.Monday} label="Mon" />
-                <Checkbox value={DayOfWeekEnum.Tuesday} label="Tues" />
+                <Checkbox value={DayOfWeekEnum.Tuesday} label="Tue" />
                 <Checkbox value={DayOfWeekEnum.Wednesday} label="Wed" />
-                <Checkbox value={DayOfWeekEnum.Thursday} label="Thurs" />
+                <Checkbox value={DayOfWeekEnum.Thursday} label="Thu" />
                 <Checkbox value={DayOfWeekEnum.Friday} label="Fri" />
                 <Checkbox value={DayOfWeekEnum.Saturday} label="Sat" />
                 <Checkbox value={DayOfWeekEnum.Sunday} label="Sun" />
@@ -181,13 +191,14 @@ const SettingsForm = ({
               </Text>
             </Group>
           )}
-          {timePeriods.map((timePeriod: TimePeriod, index: number) => (
+          {timePeriods.map((timePeriod: TimePeriod, idx: number) => (
             <TimePeriodForm
               key={timePeriod.timePeriodId}
-              index={index}
+              index={idx}
               timePeriod={timePeriod}
               onRemove={() => removeTimePeriod(timePeriod.timePeriodId)}
-              onChange={(changes) => handleTimePeriodChange(index, changes)}
+              onChange={(changes) => handleTimePeriodChange(idx, changes)}
+              errors={errors?.[index]?.recurrence?.timePeriods}
             />
           ))}
         </Card.Section>

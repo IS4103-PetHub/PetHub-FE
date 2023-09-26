@@ -9,6 +9,7 @@ interface timePeriodFormProps {
   index: number;
   onRemove: () => void;
   onChange: any;
+  errors: any;
 }
 
 const TimePeriodForm = ({
@@ -16,6 +17,7 @@ const TimePeriodForm = ({
   index,
   onRemove,
   onChange,
+  errors,
 }: timePeriodFormProps) => {
   // Ensures sequential mounting of TimeSelects to avoid weird state synchronization issues with the onChange for both TimeSelects
   const [isEndTimeInitialized, setIsEndTimeInitialized] = useState(false);
@@ -32,7 +34,6 @@ const TimePeriodForm = ({
             interval={TIME_INTERVAL}
             sx={{ width: "45%" }}
             onChange={(startTime) => {
-              console.log("Selected StartTime:", startTime);
               onChange({ startTime: startTime });
               setIsEndTimeInitialized(true);
             }}
@@ -41,13 +42,17 @@ const TimePeriodForm = ({
             <TimeSelect
               interval={TIME_INTERVAL}
               onChange={(endTime) => {
-                console.log("Selected endTime:", endTime);
                 onChange({ endTime: endTime });
               }}
             />
           )}
         </Group>
         <DeleteActionIcon onClick={onRemove} />
+        {errors && (
+          <Text color="#fa5252" fz="0.75rem" mt={-10} ml={72}>
+            {errors[index]}
+          </Text>
+        )}
       </Group>
     </>
   );

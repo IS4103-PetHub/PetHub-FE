@@ -19,7 +19,7 @@ import React, { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { RecurrencePatternEnum } from "@/types/constants";
-import { validateCalendarGroupSettings } from "@/util";
+import { validateCGSettings } from "@/util";
 
 export default function CreateCalendarGroup() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -54,7 +54,7 @@ export default function CreateCalendarGroup() {
           ? "Name is required and should be at most 32 characters long."
           : null,
       description: (value) => (!value ? "Description is required." : null),
-      scheduleSettings: (value) => validateCalendarGroupSettings(value),
+      scheduleSettings: (value) => validateCGSettings(value) as any,
     },
   });
   return (
