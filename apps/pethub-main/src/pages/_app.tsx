@@ -18,9 +18,9 @@ import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { AccountTypeEnum } from "shared-utils";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
-import { AccountTypeEnum } from "@/types/constants";
 import type { AppProps } from "next/app";
 
 const inter = Inter({ subsets: ["latin"] });

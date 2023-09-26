@@ -1,8 +1,10 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
-  BusinessApplicationStatusEnum,
   PetBusinessTypeEnum,
+} from "shared-utils";
+import {
+  BusinessApplicationStatusEnum,
   ServiceCategoryEnum,
 } from "./constants";
 

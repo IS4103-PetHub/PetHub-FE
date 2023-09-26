@@ -4,17 +4,14 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinessApplications } from "@/hooks/pet-business-application";
-import {
-  BusinessApplicationStatusEnum,
-  EMPTY_STATE_DELAY_MS,
-} from "@/types/constants";
+import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { PetBusinessApplication } from "@/types/types";
 import { searchPBApplications } from "@/util";
 import { errorAlert } from "@/util";

@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { AccountTypeEnum } from "@/types/constants";
 import { CreateUserGroupPayload, Permission, UserGroup } from "@/types/types";
 
 const RBAC_USER_GROUPS_API = "/rbac/user-groups";
