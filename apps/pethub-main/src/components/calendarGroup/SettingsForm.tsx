@@ -96,7 +96,7 @@ const SettingsForm = ({
       <Card withBorder shadow="md" radius="lg" sx={{ overflow: "visible" }}>
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
-            <Text>Schedule settings</Text>
+            <Text>Schedule setting {index + 1}</Text>
             <IconX
               size="1rem"
               onClick={onRemove}

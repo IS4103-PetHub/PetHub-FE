@@ -32,6 +32,7 @@ import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { ScheduleSettings, TimePeriod } from "@/types/types";
+import { checkCGForOverlappingTimePeriods } from "@/util";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
@@ -44,7 +45,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
 
   const rulesToDisplay = [
     "End dates must be after start dates and must not be more than 3 months from the current date",
-    "[Add more rules here]...",
+    "Ensure that you have no overlapping time periods between schedule settings",
   ];
 
   const addNewScheduleSettings = () => {
@@ -112,7 +113,23 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
     const payload = {};
-    console.log("SUBMIT FORM VALUES", values);
+    console.log("SUBMIT FORM VALUES", JSON.stringify(values));
+    const check = checkCGForOverlappingTimePeriods(values.scheduleSettings);
+    console.log("CHECK OVERLAP", check);
+    if (check) {
+      notifications.show({
+        title: "Time period overlap",
+        color: "red",
+        icon: <IconX />,
+        message: `There is an overlapping time period between [schedule setting ${
+          check.settingAIndex + 1
+        }, period ${check.timePeriodAIndex + 1}] and [schedule setting ${
+          check.settingBIndex + 1
+        }, period ${
+          check.timePeriodBIndex + 1
+        }]. Please check the settings for clashing recurring dates or days.`,
+      });
+    }
     // createCalendarGroup(payload);
   }
 

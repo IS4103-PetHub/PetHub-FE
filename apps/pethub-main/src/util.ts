@@ -86,8 +86,6 @@ export function searchServiceListingsForCustomer(
 // The below functions are used in the CalenderGroupForm component
 
 function validateCGDays(days: string[], pattern: string) {
-  console.log("DAYS", days);
-  console.log("PATTERN", pattern);
   if (pattern === "WEEKLY" && (!days || days.length === 0)) {
     return "At least one selection for a recurring day is compulsory if the recurrence pattern is set to 'Weekly'.";
   }
@@ -177,23 +175,46 @@ export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
   return Object.keys(errors).length === 0 ? null : { errors };
 }
 
-const doesDateOverlap = (
+function doesDateOverlap(
   dateStartA: string,
   dateEndA: string,
   dateStartB: string,
   dateEndB: string,
-): boolean => {
+) {
   return dateStartA <= dateEndB && dateStartB <= dateEndA;
-};
+}
 
-const doesTimeOverlap = (
+function doesTimeOverlap(
   startTimeA: string,
   endTimeA: string,
   startTimeB: string,
   endTimeB: string,
-): boolean => {
+) {
   return startTimeA < endTimeB && startTimeB < endTimeA;
-};
+}
+
+// Returns an array of days between two dates inclusive
+function getDaysBetweenDates(startDate: string, endDate: string): string[] {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const days = [];
+
+  // to accommodate JS's Date.getDay() function which returns 0 for Sunday as so on
+  const dayOfWeekEnumMapping = [
+    DayOfWeekEnum.Sunday,
+    DayOfWeekEnum.Monday,
+    DayOfWeekEnum.Tuesday,
+    DayOfWeekEnum.Wednesday,
+    DayOfWeekEnum.Thursday,
+    DayOfWeekEnum.Friday,
+    DayOfWeekEnum.Saturday,
+  ];
+  while (start <= end) {
+    days.push(dayOfWeekEnumMapping[start.getDay()]);
+    start.setDate(start.getDate() + 1);
+  }
+  return days;
+}
 
 /* 
   Check if there are any overlaps between all the time periods generated
@@ -202,18 +223,6 @@ const doesTimeOverlap = (
 export function checkCGForOverlappingTimePeriods(
   scheduleSettings: ScheduleSettings[],
 ) {
-  // Returns an array of days between two dates inclusive
-  function getDaysBetweenDates(startDate: string, endDate: string): string[] {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const days = [];
-    while (start <= end) {
-      days.push(DayOfWeekEnum[start.getDay()]);
-      start.setDate(start.getDate() + 1);
-    }
-    return days;
-  }
-
   // Finds the effective days of recurrence. If 'DAILY', it takes all days but also considers the start and end dates. If 'WEEKLY' it just takes the days array
   function getDaysInQuestion(recurrence: Recurrence, days: string[]) {
     if (recurrence.pattern === "DAILY") {
@@ -291,3 +300,10 @@ export function checkCGForOverlappingTimePeriods(
   }
   return null; // no overlaps found
 }
+
+/* 
+  E.g. for CG with 2 ScheduleSettings with recurrence WEEKLY with the same start and end date, vacancies, days, but different time periods
+    we can combine them into 1 ScheduleSetting with the time periods merged
+    ...Others
+*/
+export function simplifyCreateCGPayload(calendarGroup: CalendarGroup) {}
