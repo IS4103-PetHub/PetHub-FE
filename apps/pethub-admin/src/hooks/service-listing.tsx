@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { ServiceListing } from "@/types/types";
+import { ServiceListing } from "shared-utils";
 
 const SERVICE_LISTING_API = "api/service-listings";
 

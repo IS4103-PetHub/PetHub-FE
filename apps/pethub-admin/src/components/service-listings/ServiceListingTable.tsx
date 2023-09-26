@@ -1,10 +1,13 @@
 import { Group, Badge } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React from "react";
-import { TABLE_PAGE_SIZE, getMinTableHeight } from "shared-utils";
+import {
+  ServiceListing,
+  TABLE_PAGE_SIZE,
+  getMinTableHeight,
+} from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import { ServiceListing } from "@/types/types";
 import ViewServiceListingModal from "./ViewServiceListingModal";
 
 interface ServiceListingTableProps {

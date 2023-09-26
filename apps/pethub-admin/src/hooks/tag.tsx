@@ -1,6 +1,7 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { Tag } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { CreateTagPayload, Tag, UpdateTagPayload } from "@/types/types";
+import { CreateTagPayload } from "@/types/types";
 
 const TAG_API = "/tags";
 

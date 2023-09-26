@@ -10,15 +10,13 @@ import {
   Card,
   Badge,
   Divider,
-  Accordion,
   Group,
   Button,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import { ServiceListing, formatStringToLetterCase } from "shared-utils";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { ServiceListing } from "@/types/types";
 
 interface ViewServiceListingModalProps {
   serviceListing: ServiceListing;
