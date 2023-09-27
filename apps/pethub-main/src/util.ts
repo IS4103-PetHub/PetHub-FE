@@ -341,3 +341,29 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
   if (result) return result;
   return checkOverlapBetweenSettings(dailySettings);
 }
+
+// Clean the dates, clear the IDs, and remove irrelavant fields before sending to backend
+export function sanitizeCreateCGPayload(
+  calendarGroup: CalendarGroup,
+): CalendarGroup {
+  const CGCopy = JSON.parse(JSON.stringify(calendarGroup)); // deep copy
+
+  for (const setting of CGCopy.scheduleSettings) {
+    // Remove the time gibberish behind the date
+    setting.recurrence.startDate = dayjs(setting.recurrence.startDate).format(
+      "YYYY-MM-DD",
+    );
+    setting.recurrence.endDate = dayjs(setting.recurrence.endDate).format(
+      "YYYY-MM-DD",
+    );
+    // Remove the IDs and pointless arrays
+    delete setting.scheduleSettingsId;
+    if (setting.recurrence.pattern === RecurrencePatternEnum.Daily) {
+      delete setting.days;
+    }
+    for (const timePeriod of setting.recurrence.timePeriods) {
+      delete timePeriod.timePeriodId;
+    }
+  }
+  return CGCopy;
+}

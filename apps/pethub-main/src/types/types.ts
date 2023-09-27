@@ -165,7 +165,7 @@ export interface UpdateServiceListingPayload {
 }
 
 export interface CalendarGroup {
-  calendarGroupId: number;
+  calendarGroupId?: number;
   name?: string;
   description?: string;
   petBusinessId?: number;
@@ -173,7 +173,7 @@ export interface CalendarGroup {
 }
 
 export interface TimePeriod {
-  timePeriodId: number;
+  timePeriodId?: number;
   startTime?: string;
   endTime?: string;
   vacancies?: number;
@@ -182,7 +182,7 @@ export interface TimePeriod {
 }
 
 export interface ScheduleSettings {
-  scheduleSettingsId: number;
+  scheduleSettingsId?: number;
   days?: string[];
   recurrence?: Recurrence;
 }

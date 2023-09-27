@@ -16,6 +16,7 @@ import {
 import { DateInput, TimeInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { IconCalendar, IconClock, IconX } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import React, { useState, useRef } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
@@ -118,6 +119,9 @@ const SettingsForm = ({
         <Card.Section inheritPadding mb="lg">
           <Group position="apart">
             <DateInput
+              clearable
+              minDate={new Date()}
+              maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="Start date"
               placeholder="Enter start date"
               valueFormat="DD/MM/YYYY"
@@ -131,6 +135,9 @@ const SettingsForm = ({
               error={errors?.[index]?.recurrence?.startDate}
             />
             <DateInput
+              clearable
+              minDate={new Date()}
+              maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="End date"
               placeholder="Enter end date"
               valueFormat="DD/MM/YYYY"

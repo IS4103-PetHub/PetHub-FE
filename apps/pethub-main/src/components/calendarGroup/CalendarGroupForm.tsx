@@ -32,7 +32,7 @@ import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { ScheduleSettings, TimePeriod } from "@/types/types";
-import { checkCGForConflicts } from "@/util";
+import { checkCGForConflicts, sanitizeCreateCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
@@ -117,7 +117,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   function handleSubmit(values: formValues) {
     setSettingsError([]);
     const payload = {};
-    console.log("SUBMIT FORM VALUES", values);
+    console.log("SUBMIT FORM VALUES", JSON.stringify(values));
     const check = checkCGForConflicts(values.scheduleSettings);
     console.log("CHECK CONFLICTS", check);
     if (check) {
@@ -128,11 +128,12 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
         icon: <IconX />,
         message: check.errorMessage,
       });
+    } else {
+      const newCG = sanitizeCreateCGPayload(values);
+      console.log("SANTIZED CG PAYLOAD", JSON.stringify(newCG));
+      // createCalendarGroup(payload);
     }
-    // createCalendarGroup(payload);
   }
-
-  console.log("settings error", settingsError);
 
   return (
     <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
