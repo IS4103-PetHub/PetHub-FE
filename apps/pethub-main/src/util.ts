@@ -346,7 +346,7 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
 export function sanitizeCreateCGPayload(
   calendarGroup: CalendarGroup,
 ): CalendarGroup {
-  const CGCopy = JSON.parse(JSON.stringify(calendarGroup)); // deep copy
+  const CGCopy: CalendarGroup = JSON.parse(JSON.stringify(calendarGroup)); // deep copy
 
   for (const setting of CGCopy.scheduleSettings) {
     // Remove the time gibberish behind the date

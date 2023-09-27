@@ -163,7 +163,6 @@ export interface UpdateServiceListingPayload {
   files: File[];
   addressIds: number[];
 }
-
 export interface CalendarGroup {
   calendarGroupId?: number;
   name?: string;

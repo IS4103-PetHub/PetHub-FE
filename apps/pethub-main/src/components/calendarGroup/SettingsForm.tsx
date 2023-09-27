@@ -120,7 +120,7 @@ const SettingsForm = ({
           <Group position="apart">
             <DateInput
               clearable
-              minDate={new Date()}
+              minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="Start date"
               placeholder="Enter start date"
