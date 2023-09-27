@@ -64,13 +64,7 @@ export default function PetBusinessDetails({
   const { data: serviceListings = [], isLoading } =
     useGetServiceListingByPetBusinessId(petBusiness.userId);
 
-  // const serviceListings: ServiceListing[] = [];
-  // const isLoading = false;
-
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
-
-  // console.log(petBusiness);
-  // console.log(serviceListings);
 
   useEffect(() => {
     let newRecords = serviceListings;
