@@ -80,15 +80,19 @@ const ViewServiceListingModal = ({
       >
         {serviceListing.description}
       </Text>
-      <Group position="right" mt="md">
-        <Button
-          variant="outline"
-          sx={{ border: "1.5px solid" }}
-          onClick={() => setShowFullDescription()}
-          display={serviceListing.description?.length < 200 ? "none" : "block"}
-        >
-          {showFullDescription ? "View less" : "View more"}
-        </Button>
+      <Group
+        mt="md"
+        display={serviceListing.description?.length < 200 ? "none" : "block"}
+      >
+        <Group position="right">
+          <Button
+            variant="outline"
+            sx={{ border: "1.5px solid" }}
+            onClick={() => setShowFullDescription()}
+          >
+            {showFullDescription ? "View less" : "View more"}
+          </Button>
+        </Group>
       </Group>
     </>
   );
@@ -117,37 +121,36 @@ const ViewServiceListingModal = ({
             </Text>
             <Divider />
             <Grid gutter="md" style={{ marginTop: "20px" }}>
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Title:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>{serviceListing.title}</Text>
               </Grid.Col>
 
-              {/* This writeup may be very long. Any suggestions on other ways i can present the info? */}
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Description:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>{descriptionSection}</Grid.Col>
+              <Grid.Col span={9}>{descriptionSection}</Grid.Col>
 
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Category:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>{formatStringToLetterCase(serviceListing.category)}</Text>
               </Grid.Col>
 
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Price:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>${serviceListing.basePrice.toFixed(2)}</Text>
               </Grid.Col>
 
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Addresses:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>
                   {serviceListing.addresses
                     .map((addr) => addr.addressName)
@@ -155,10 +158,10 @@ const ViewServiceListingModal = ({
                 </Text>
               </Grid.Col>
 
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Tags:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>
                   {serviceListing.tags && serviceListing.tags.length > 0 ? (
                     serviceListing.tags.map((tag, index) => (
@@ -173,19 +176,19 @@ const ViewServiceListingModal = ({
                   )}
                 </Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Date Created:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>
                   {new Date(serviceListing.dateCreated).toLocaleDateString()}
                 </Text>
               </Grid.Col>
 
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Last Updated:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>
                   {serviceListing.lastUpdated
                     ? new Date(serviceListing.lastUpdated).toLocaleDateString()
@@ -193,10 +196,10 @@ const ViewServiceListingModal = ({
                 </Text>
               </Grid.Col>
 
-              <Grid.Col span={6}>
+              <Grid.Col span={3}>
                 <Text fw={700}>Pet Business Company Name:</Text>
               </Grid.Col>
-              <Grid.Col span={6}>
+              <Grid.Col span={9}>
                 <Text>
                   {serviceListing.petBusiness
                     ? serviceListing.petBusiness.companyName
