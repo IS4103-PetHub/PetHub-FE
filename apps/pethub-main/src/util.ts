@@ -84,97 +84,6 @@ export function searchServiceListingsForCustomer(
 }
 
 // The below functions are used in the CalenderGroupForm component
-
-function validateCGDays(days: string[], pattern: string) {
-  if (pattern === "WEEKLY" && (!days || days.length === 0)) {
-    return "At least one selection for a recurring day is compulsory if the recurrence pattern is set to 'Weekly'.";
-  }
-  if (
-    days &&
-    days.some(
-      (day) => !Object.values(DayOfWeekEnum).includes(day as DayOfWeekEnum),
-    )
-  ) {
-    return "days must be one of [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]."; // A just-in-case check
-  }
-  return null;
-}
-
-function validateCGVacancies(vacancies: number) {
-  return vacancies < 1 ? "Vacancies must be at least 1." : null;
-}
-
-function validateCGTimePeriod(timePeriod: TimePeriod) {
-  return timePeriod.endTime <= timePeriod.startTime
-    ? "End time must be after start time."
-    : null;
-}
-
-function validateCGRecurrence(recurrence: Recurrence) {
-  const errors: any = {};
-
-  if (!recurrence.startDate || !recurrence.endDate) {
-    if (!recurrence.startDate) errors.startDate = "Start date is required.";
-    if (!recurrence.endDate) errors.endDate = "End date is required.";
-  } else {
-    const today = new Date();
-    const parsedStartDate = new Date(recurrence.startDate);
-    const parsedEndDate = new Date(recurrence.endDate);
-    const threeMonthsFromNow = new Date();
-    threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-
-    if (parsedStartDate <= today) {
-      errors.startDate = "Start date must be after today.";
-    }
-    if (parsedEndDate < parsedStartDate) {
-      errors.endDate = "End date must be after start date.";
-    }
-    if (parsedEndDate > threeMonthsFromNow) {
-      errors.endDate =
-        "End date must not be more than 3 months from current date.";
-    }
-  }
-  // Validate time periods and push errors if they exist
-  const timePeriodErrors: { [key: number]: string } = {};
-
-  recurrence.timePeriods.forEach((timePeriod, index) => {
-    const timePeriodError = validateCGTimePeriod(timePeriod);
-    if (timePeriodError) {
-      timePeriodErrors[index] = timePeriodError;
-    }
-  });
-
-  if (Object.keys(timePeriodErrors).length > 0) {
-    errors.timePeriods = timePeriodErrors;
-  }
-
-  return Object.keys(errors).length === 0 ? null : errors;
-}
-
-export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
-  if (!scheduleSettings || scheduleSettings.length === 0) {
-    return { scheduleSettingsError: "At least one schedule is required" };
-  }
-
-  const errors: { [key: number]: any } = {}; // Use an object to store errors with index as key
-
-  scheduleSettings.forEach((setting, index) => {
-    const daysError = validateCGDays(setting.days, setting.recurrence.pattern);
-    const vacanciesError = validateCGVacancies(setting.vacancies);
-    const recurrenceErrors = validateCGRecurrence(setting.recurrence);
-
-    if (daysError || vacanciesError || recurrenceErrors) {
-      errors[index] = {
-        days: daysError,
-        vacancies: vacanciesError,
-        recurrence: recurrenceErrors,
-      };
-    }
-  });
-
-  return Object.keys(errors).length === 0 ? null : { errors };
-}
-
 function doesDateOverlap(
   dateStartA: string,
   dateEndA: string,
@@ -191,6 +100,128 @@ function doesTimeOverlap(
   endTimeB: string,
 ) {
   return startTimeA < endTimeB && startTimeB < endTimeA;
+}
+
+function validateCGDays(days: string[], pattern: string) {
+  if (pattern === "WEEKLY" && (!days || days.length === 0)) {
+    return "At least one selection for a recurring day is compulsory if the recurrence pattern is set to 'Weekly'.";
+  }
+  if (
+    days &&
+    days.some(
+      (day) => !Object.values(DayOfWeekEnum).includes(day as DayOfWeekEnum),
+    )
+  ) {
+    return "days must be one of [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]."; // A just-in-case check
+  }
+  return null;
+}
+
+function validateCGTimePeriodEndOverStart(timePeriod: TimePeriod) {
+  return timePeriod.endTime <= timePeriod.startTime
+    ? "End time must be after start time."
+    : null;
+}
+
+function validateCGTimePeriodOverlap(timePeriods: TimePeriod[]) {
+  const timePeriodErrors: any = {};
+
+  for (let i = 0; i < timePeriods.length; i++) {
+    for (let j = i + 1; j < timePeriods.length; j++) {
+      if (
+        doesTimeOverlap(
+          timePeriods[i].startTime,
+          timePeriods[i].endTime,
+          timePeriods[j].startTime,
+          timePeriods[j].endTime,
+        )
+      ) {
+        timePeriodErrors[i] = `This time period overlaps with time period ${
+          j + 1
+        }.`;
+        timePeriodErrors[j] = `This time period overlaps with time period ${
+          i + 1
+        }.`;
+      }
+    }
+  }
+
+  return timePeriodErrors;
+}
+
+function validateCGDates(recurrence: Recurrence) {
+  const errors: any = {};
+
+  if (!recurrence.startDate) errors.startDate = "Start date is required.";
+  if (!recurrence.endDate) errors.endDate = "End date is required.";
+
+  if (Object.keys(errors).length > 0) return errors;
+
+  const today = new Date();
+  const parsedStartDate = new Date(recurrence.startDate);
+  const parsedEndDate = new Date(recurrence.endDate);
+  const threeMonthsFromNow = new Date();
+  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+
+  if (parsedStartDate <= today)
+    errors.startDate = "Start date must be after today.";
+  if (parsedEndDate < parsedStartDate)
+    errors.endDate = "End date must be after start date.";
+  if (parsedEndDate > threeMonthsFromNow)
+    errors.endDate =
+      "End date must not be more than 3 months from current date.";
+
+  return errors;
+}
+
+function validateCGRecurrence(recurrence: Recurrence) {
+  const errors: any = validateCGDates(recurrence) || {};
+
+  const timePeriodStartEndErrors: { [key: number]: string } = {};
+  let hasEndOverStartError = false;
+
+  // Validate end time over start time
+  recurrence.timePeriods.forEach((timePeriod, index) => {
+    const error = validateCGTimePeriodEndOverStart(timePeriod);
+    if (error) {
+      timePeriodStartEndErrors[index] = error;
+      hasEndOverStartError = true;
+    }
+  });
+  // Check for overlapping time periods only if there are no time periods with endtime > startTime
+  if (!hasEndOverStartError) {
+    const timePeriodOverlapErrors = validateCGTimePeriodOverlap(
+      recurrence.timePeriods,
+    );
+    if (Object.keys(timePeriodOverlapErrors).length > 0) {
+      errors.timePeriods = timePeriodOverlapErrors;
+    }
+  } else if (Object.keys(timePeriodStartEndErrors).length > 0) {
+    errors.timePeriods = timePeriodStartEndErrors;
+  }
+  return Object.keys(errors).length === 0 ? null : errors;
+}
+
+export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
+  if (!scheduleSettings || scheduleSettings.length === 0) {
+    return { scheduleSettingsError: "At least one schedule is required" };
+  }
+
+  const errors: { [key: number]: any } = {}; // Use an object to store errors with index as key
+
+  scheduleSettings.forEach((setting, index) => {
+    const daysError = validateCGDays(setting.days, setting.recurrence.pattern);
+    const recurrenceErrors = validateCGRecurrence(setting.recurrence);
+
+    if (daysError || recurrenceErrors) {
+      errors[index] = {
+        days: daysError,
+        recurrence: recurrenceErrors,
+      };
+    }
+  });
+
+  return Object.keys(errors).length === 0 ? null : { errors };
 }
 
 // Returns an array of days between two dates inclusive
@@ -223,22 +254,37 @@ function getDaysBetweenDates(startDate: string, endDate: string): string[] {
 export function checkCGForOverlappingTimePeriods(
   scheduleSettings: ScheduleSettings[],
 ) {
-  // Finds the effective days of recurrence. If 'DAILY', it takes all days but also considers the start and end dates. If 'WEEKLY' it just takes the days array
-  function getDaysInQuestion(recurrence: Recurrence, days: string[]) {
-    if (recurrence.pattern === "DAILY") {
-      return getDaysBetweenDates(recurrence.startDate!, recurrence.endDate!);
+  function getEffectiveDays(recurrence: Recurrence, days: string[]) {
+    if (recurrence.pattern === RecurrencePatternEnum.Daily) {
+      return getDaysBetweenDates(recurrence.startDate, recurrence.endDate);
     } else {
       return days;
     }
   }
 
-  for (let i = 0; i < scheduleSettings.length; i++) {
-    const settingA = scheduleSettings[i];
-    for (let j = i + 1; j < scheduleSettings.length; j++) {
-      const settingB = scheduleSettings[j];
+  function createErrorMessage(
+    settingAIndex: number,
+    settingBIndex: number,
+    pattern: RecurrencePatternEnum,
+  ) {
+    const headErrorMessage = `There are conflicts with the schedule settings for schedule: ${
+      settingAIndex + 1
+    } and schedule: ${settingBIndex + 1}. `;
+    const tailErrorMessage = "You may create new schedules to resolve this.";
+    return pattern === RecurrencePatternEnum.Weekly
+      ? headErrorMessage +
+          "There is a date overlap between the schedules, please ensure that there is no overlap in the recurring days selected. " +
+          tailErrorMessage
+      : headErrorMessage +
+          "Please ensure that there is no date overlap between the schedules of these settings with recurrence pattern: Daily. " +
+          tailErrorMessage;
+  }
 
-      if (settingA.recurrence && settingB.recurrence) {
-        // Check for overlapping dates
+  function checkOverlapBetweenSettings(settings: ScheduleSettings[]) {
+    for (let i = 0; i < settings.length; i++) {
+      const settingA = settings[i];
+      for (let j = i + 1; j < settings.length; j++) {
+        const settingB = settings[j];
         if (
           doesDateOverlap(
             settingA.recurrence.startDate,
@@ -247,58 +293,43 @@ export function checkCGForOverlappingTimePeriods(
             settingB.recurrence.endDate,
           )
         ) {
-          // Get effective days based on the pattern to check for overlap
-          const effectiveDaysA = getDaysInQuestion(
+          const effectiveDaysA = getEffectiveDays(
             settingA.recurrence,
             settingA.days,
           );
-          const effectiveDaysB = getDaysInQuestion(
+          const effectiveDaysB = getEffectiveDays(
             settingB.recurrence,
             settingB.days,
           );
-
-          // If have overlapping dates, check for overlapping days
           const overlappingDays = effectiveDaysA.filter((day) =>
             effectiveDaysB.includes(day),
           );
-
+          // If there are overlapping days, disallow creation
           if (overlappingDays.length > 0) {
-            // If have overlapping days, check for overlapping time periods
-            for (
-              let aIndex = 0;
-              aIndex < settingA.recurrence.timePeriods!.length;
-              aIndex++
-            ) {
-              const timePeriodA = settingA.recurrence.timePeriods![aIndex];
-              for (
-                let bIndex = 0;
-                bIndex < settingB.recurrence.timePeriods!.length;
-                bIndex++
-              ) {
-                const timePeriodB = settingB.recurrence.timePeriods![bIndex];
-                if (
-                  doesTimeOverlap(
-                    timePeriodA.startTime,
-                    timePeriodA.endTime,
-                    timePeriodB.startTime,
-                    timePeriodB.endTime,
-                  )
-                ) {
-                  return {
-                    settingAIndex: i,
-                    settingBIndex: j,
-                    timePeriodAIndex: aIndex,
-                    timePeriodBIndex: bIndex,
-                  };
-                }
-              }
-            }
+            return {
+              errorMessage: createErrorMessage(
+                i,
+                j,
+                settingA.recurrence.pattern,
+              ),
+            };
           }
         }
       }
     }
+    return null;
   }
-  return null; // no overlaps found
+  // Separate weekly and daily
+  const weeklySettings = scheduleSettings.filter(
+    (setting) => setting.recurrence.pattern === RecurrencePatternEnum.Weekly,
+  );
+  const dailySettings = scheduleSettings.filter(
+    (setting) => setting.recurrence.pattern === RecurrencePatternEnum.Daily,
+  );
+  // Check weekly first then check daily
+  let result = checkOverlapBetweenSettings(weeklySettings);
+  if (result) return result;
+  return checkOverlapBetweenSettings(dailySettings);
 }
 
 /* 

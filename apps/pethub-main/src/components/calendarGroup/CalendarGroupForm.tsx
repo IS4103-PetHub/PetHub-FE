@@ -53,7 +53,6 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
     const newSetting: ScheduleSettings = {
       scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness.
       days: [],
-      vacancies: 1,
       recurrence: {
         pattern: RecurrencePatternEnum.Daily,
         startDate: "",
@@ -63,6 +62,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
             timePeriodId: Date.now(), // default timeslot
             startTime: "",
             endTime: "",
+            vacancies: 1,
           },
         ],
       },
@@ -123,13 +123,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
         title: "Time period overlap",
         color: "red",
         icon: <IconX />,
-        message: `There is an overlapping time period between [schedule setting ${
-          check.settingAIndex + 1
-        }, period ${check.timePeriodAIndex + 1}] and [schedule setting ${
-          check.settingBIndex + 1
-        }, period ${
-          check.timePeriodBIndex + 1
-        }]. Please check the settings for clashing dates or recurring days.`,
+        message: check.errorMessage,
       });
     }
     // createCalendarGroup(payload);

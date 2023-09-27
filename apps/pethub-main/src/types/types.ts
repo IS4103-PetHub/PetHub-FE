@@ -176,7 +176,7 @@ export interface TimePeriod {
   timePeriodId: number;
   startTime?: string;
   endTime?: string;
-  isVacant?: boolean;
+  vacancies?: number;
   bookingId?: number;
   calenderGroupId?: number;
 }
@@ -184,7 +184,6 @@ export interface TimePeriod {
 export interface ScheduleSettings {
   scheduleSettingsId: number;
   days?: string[];
-  vacancies?: number;
   recurrence?: Recurrence;
 }
 

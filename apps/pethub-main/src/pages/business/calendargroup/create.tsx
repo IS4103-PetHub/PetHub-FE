@@ -31,7 +31,6 @@ export default function CreateCalendarGroup() {
         {
           scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness, same with timePeriod
           days: [],
-          vacancies: 1,
           recurrence: {
             pattern: RecurrencePatternEnum.Daily,
             startDate: "",
@@ -41,6 +40,7 @@ export default function CreateCalendarGroup() {
                 timePeriodId: Date.now(), // default timePeriod
                 startTime: "",
                 endTime: "",
+                vacancies: 1,
               },
             ],
           },

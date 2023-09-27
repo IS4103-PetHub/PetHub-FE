@@ -2,12 +2,19 @@ import { Group, Select } from "@mantine/core";
 import { useEffect, useState } from "react";
 
 interface TimeSelectProps {
+  label?: string;
   interval: number;
   onChange?: (time: string) => void;
   sx?: any;
 }
 
-const TimeSelect = ({ interval, onChange, sx, ...props }: TimeSelectProps) => {
+const TimeSelect = ({
+  label,
+  interval,
+  onChange,
+  sx,
+  ...props
+}: TimeSelectProps) => {
   const [hour, setHour] = useState("12");
   const [minute, setMinute] = useState("00");
   const [ampm, setAmpm] = useState("AM");
@@ -46,7 +53,8 @@ const TimeSelect = ({ interval, onChange, sx, ...props }: TimeSelectProps) => {
   return (
     <Group sx={sx} {...props}>
       <Select
-        w={110}
+        label={label || " "}
+        w={80}
         mr={-10}
         data={hours}
         value={hour}
@@ -57,7 +65,8 @@ const TimeSelect = ({ interval, onChange, sx, ...props }: TimeSelectProps) => {
         placeholder="Hour"
       />
       <Select
-        w={110}
+        label=" "
+        w={80}
         mr={-10}
         data={minutes}
         value={minute}
@@ -68,7 +77,8 @@ const TimeSelect = ({ interval, onChange, sx, ...props }: TimeSelectProps) => {
         placeholder="Minute"
       />
       <Select
-        w={110}
+        label=" "
+        w={80}
         data={["AM", "PM"]}
         value={ampm}
         onChange={(value) => {

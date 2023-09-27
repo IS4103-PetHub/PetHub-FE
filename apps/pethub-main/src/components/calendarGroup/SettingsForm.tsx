@@ -10,6 +10,7 @@ import {
   Checkbox,
   NumberInput,
   rem,
+  useMantineTheme,
 } from "@mantine/core";
 
 import { DateInput, TimeInput } from "@mantine/dates";
@@ -39,6 +40,7 @@ const SettingsForm = ({
   index,
 }: SettingsFormProps) => {
   const errors = form.errors?.scheduleSettings?.errors;
+  const theme = useMantineTheme();
 
   const segmentedControlData = [
     {
@@ -64,6 +66,7 @@ const SettingsForm = ({
       timePeriodId: Date.now(), // Using current timestamp as a temporary ID for uniqueness
       startTime: "",
       endTime: "",
+      vacancies: 1,
     };
     onChange({
       recurrence: {
@@ -135,18 +138,7 @@ const SettingsForm = ({
           </Group>
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
-          <NumberInput
-            label="Vacancies"
-            placeholder=""
-            defaultValue={1}
-            hideControls
-            min={1}
-            onChange={(value) => onChange({ vacancies: value })}
-            error={errors?.[index]?.vacancies}
-          />
-        </Card.Section>
-        <Card.Section inheritPadding mb="lg">
-          <Text fz="0.875rem" fw={500} color="#212529">
+          <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]}>
             Recurrence pattern
           </Text>
           <SegmentedControl
@@ -181,16 +173,16 @@ const SettingsForm = ({
           </Card.Section>
         )}
         <Card.Section inheritPadding mb="lg">
-          {timePeriods.length > 0 && (
+          {/* {timePeriods.length > 0 && (
             <Group>
-              <Text fz="0.875rem" fw={500} color="#212529" ml={73}>
+              <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]} ml={73}>
                 Start time
               </Text>
-              <Text fz="0.875rem" fw={500} color="#212529" ml={310}>
+              <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]} ml={310}>
                 End time
               </Text>
             </Group>
-          )}
+          )} */}
           {timePeriods.map((timePeriod: TimePeriod, idx: number) => (
             <TimePeriodForm
               key={timePeriod.timePeriodId}
