@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
+import { sortBy } from "lodash";
 import { ServiceListing } from "shared-utils";
+import { serviceListingSortOptions } from "./types/constants";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -43,12 +45,29 @@ export function searchServiceListingsForCustomer(
   serviceListings: ServiceListing[],
   searchStr: string,
 ) {
-  return serviceListings.filter((serviceListing: ServiceListing) => {
-    return (
+  return serviceListings.filter(
+    (serviceListing: ServiceListing) =>
       serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
       serviceListing.petBusiness?.companyName
         .toLowerCase()
-        .includes(searchStr.toLowerCase())
-    );
-  });
+        .includes(searchStr.toLowerCase()),
+  );
+}
+
+// sort service listings for customer view service listings
+export function sortServiceListings(
+  serviceListings: ServiceListing[],
+  sortStatus: string,
+) {
+  let sorted: ServiceListing[] = serviceListings;
+  if (!sortStatus) return sorted;
+
+  const sortOption = serviceListingSortOptions.find(
+    (x) => sortStatus === x.value,
+  );
+  sorted = sortBy(serviceListings, sortOption.attribute);
+  if (sortOption.direction == "desc") {
+    sorted.reverse();
+  }
+  return sorted;
 }

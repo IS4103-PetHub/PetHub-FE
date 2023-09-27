@@ -3,13 +3,13 @@ import { Address } from "shared-utils";
 import AddAddressCard from "./AddAddressCard";
 import AddressCard from "./AddressCard";
 
-type AddressSidewaysScrollThingProps = {
+interface AddressSidewaysScrollThingProps {
   addressList: Address[];
   isDisabled: boolean;
   hasAddCard: boolean;
   openModal?: () => void;
   onRemoveAddress?: (address: Address) => void;
-};
+}
 
 const AddressSidewaysScrollThing = ({
   addressList,

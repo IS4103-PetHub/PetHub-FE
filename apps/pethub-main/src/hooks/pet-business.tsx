@@ -46,7 +46,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         websiteURL: data.websiteURL,
         contactNumber: data.contactNumber,
         email: data.user.email,
-        accountType: data.useraccountType,
+        accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
         businessAddresses: data.businessAddresses,

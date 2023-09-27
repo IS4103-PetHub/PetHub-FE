@@ -47,7 +47,6 @@ export interface ServiceListing {
   addresses: Address[];
   //pet business
   petBusinessId: number;
-  petBusiness?: {
-    companyName: string;
-  };
+  // leave as any because the response varies from BE
+  petBusiness?: any;
 }
