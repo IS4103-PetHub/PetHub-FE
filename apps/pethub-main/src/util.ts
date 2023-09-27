@@ -248,12 +248,10 @@ function getDaysBetweenDates(startDate: string, endDate: string): string[] {
 }
 
 /* 
-  Check if there are any overlaps between all the time periods generated
+  Check if there are any conflicts or violations of the business rules for the schedule settings
   All mandatory fields should be filled in already, since this function should be called after form validation passes (create button)
 */
-export function checkCGForOverlappingTimePeriods(
-  scheduleSettings: ScheduleSettings[],
-) {
+export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
   function getEffectiveDays(recurrence: Recurrence, days: string[]) {
     if (recurrence.pattern === RecurrencePatternEnum.Daily) {
       return getDaysBetweenDates(recurrence.startDate, recurrence.endDate);
@@ -273,18 +271,20 @@ export function checkCGForOverlappingTimePeriods(
     const tailErrorMessage = "You may create new schedules to resolve this.";
     return pattern === RecurrencePatternEnum.Weekly
       ? headErrorMessage +
-          "There is a date overlap between the schedules, please ensure that there is no overlap in the recurring days selected. " +
+          "There is a date overlap between these schedules with recurrence pattern: 'Weekly', please ensure that there is no overlap in the recurring days selected. " +
           tailErrorMessage
       : headErrorMessage +
-          "Please ensure that there is no date overlap between the schedules of these settings with recurrence pattern: Daily. " +
+          "Please ensure that there is no date overlap between the schedules of these settings with recurrence pattern: 'Daily'. " +
           tailErrorMessage;
   }
 
-  function checkOverlapBetweenSettings(settings: ScheduleSettings[]) {
+  function checkOverlapBetweenSettings(settings: any) {
     for (let i = 0; i < settings.length; i++) {
-      const settingA = settings[i];
+      const settingA = settings[i].setting;
+      const indexA = settings[i].originalIndex;
       for (let j = i + 1; j < settings.length; j++) {
-        const settingB = settings[j];
+        const settingB = settings[j].setting;
+        const indexB = settings[j].originalIndex;
         if (
           doesDateOverlap(
             settingA.recurrence.startDate,
@@ -308,10 +308,12 @@ export function checkCGForOverlappingTimePeriods(
           if (overlappingDays.length > 0) {
             return {
               errorMessage: createErrorMessage(
-                i,
-                j,
+                indexA,
+                indexB,
                 settingA.recurrence.pattern,
               ),
+              indexA: indexA, // Used to highlight the settings card red
+              indexB: indexB,
             };
           }
         }
@@ -319,13 +321,21 @@ export function checkCGForOverlappingTimePeriods(
     }
     return null;
   }
-  // Separate weekly and daily
-  const weeklySettings = scheduleSettings.filter(
-    (setting) => setting.recurrence.pattern === RecurrencePatternEnum.Weekly,
-  );
-  const dailySettings = scheduleSettings.filter(
-    (setting) => setting.recurrence.pattern === RecurrencePatternEnum.Daily,
-  );
+
+  // Separate weekly and daily and store both the setting and its original index coz splitting it will mess up the index in the error msg otherwise
+  const weeklySettings = scheduleSettings
+    .map((setting, index) => ({ setting, originalIndex: index }))
+    .filter(
+      (item) =>
+        item.setting.recurrence.pattern === RecurrencePatternEnum.Weekly,
+    );
+
+  const dailySettings = scheduleSettings
+    .map((setting, index) => ({ setting, originalIndex: index }))
+    .filter(
+      (item) => item.setting.recurrence.pattern === RecurrencePatternEnum.Daily,
+    );
+
   // Check weekly first then check daily
   let result = checkOverlapBetweenSettings(weeklySettings);
   if (result) return result;

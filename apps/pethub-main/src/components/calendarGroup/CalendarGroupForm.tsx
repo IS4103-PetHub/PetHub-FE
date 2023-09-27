@@ -32,7 +32,7 @@ import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { ScheduleSettings, TimePeriod } from "@/types/types";
-import { checkCGForOverlappingTimePeriods } from "@/util";
+import { checkCGForConflicts } from "@/util";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
@@ -42,6 +42,7 @@ interface CalendarGroupFormProps {
 const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [settingsError, setSettingsError] = useState([]);
 
   const rulesToDisplay = [
     "End dates must not be more than 3 months from the current date",
@@ -113,14 +114,15 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
 
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
+    setSettingsError([]);
     const payload = {};
-    console.log("SUBMIT FORM VALUES OBJ", values);
-    console.log("SUBMIT FORM VALUES STRINGFY", JSON.stringify(values));
-    const check = checkCGForOverlappingTimePeriods(values.scheduleSettings);
-    console.log("CHECK OVERLAP", check);
+    console.log("SUBMIT FORM VALUES", values);
+    const check = checkCGForConflicts(values.scheduleSettings);
+    console.log("CHECK CONFLICTS", check);
     if (check) {
+      setSettingsError([check.indexA, check.indexB]);
       notifications.show({
-        title: "Time period overlap",
+        title: "Failed to create: schedule conflicts",
         color: "red",
         icon: <IconX />,
         message: check.errorMessage,
@@ -128,6 +130,8 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
     }
     // createCalendarGroup(payload);
   }
+
+  console.log("settings error", settingsError);
 
   return (
     <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
@@ -180,6 +184,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
               timePeriods={setting.recurrence.timePeriods}
               form={form}
               index={index}
+              highlight={settingsError.includes(index) ? true : false} // true if that setting's index matches the index returned by the validation during a create
             />
           ),
         )}

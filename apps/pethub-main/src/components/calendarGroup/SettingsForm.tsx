@@ -20,6 +20,7 @@ import React, { useState, useRef } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { ScheduleSettings, TimePeriod } from "@/types/types";
+import styles from "../../styles/Card.module.css";
 import TimePeriodForm from "./TimePeriodForm";
 
 interface SettingsFormProps {
@@ -29,6 +30,7 @@ interface SettingsFormProps {
   timePeriods: TimePeriod[];
   form: any;
   index: number;
+  highlight: boolean;
 }
 
 const SettingsForm = ({
@@ -38,6 +40,7 @@ const SettingsForm = ({
   timePeriods = [],
   form,
   index,
+  highlight,
 }: SettingsFormProps) => {
   const errors = form.errors?.scheduleSettings?.errors;
   const theme = useMantineTheme();
@@ -96,7 +99,12 @@ const SettingsForm = ({
 
   return (
     <Grid.Col span={12}>
-      <Card withBorder shadow="md" radius="lg" sx={{ overflow: "visible" }}>
+      <Card
+        withBorder
+        shadow="md"
+        radius="lg"
+        sx={{ overflow: "visible", backgroundColor: highlight && "#FFF5F5" }}
+      >
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
             <Text>Schedule setting {index + 1}</Text>
