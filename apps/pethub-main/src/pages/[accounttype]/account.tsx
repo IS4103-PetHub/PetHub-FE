@@ -268,4 +268,17 @@ const dummyPets: Pet[] = [
     dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
     dateUpdated: "",
   },
+  {
+    petId: 5,
+    petName: "Pig TWO",
+    petType: PetTypeEnum.Others,
+    gender: GenderEnum.Male,
+    dateOfBirth: "2021-07-03",
+    petWeight: null,
+    microchipNumber: null, // No microchip for this pet
+    attachmentKeys: [], // Empty array for now
+    attachmentURLs: [],
+    dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
+    dateUpdated: "",
+  },
 ];

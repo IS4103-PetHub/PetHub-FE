@@ -1,10 +1,12 @@
 import {
+  Badge,
   Box,
   Button,
   Card,
   Container,
   Grid,
   Group,
+  Image,
   Modal,
   Stack,
   Text,
@@ -20,6 +22,7 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
+import { PetTypeEnum } from "@/types/constants";
 import { Pet } from "@/types/types";
 import PetInfoModal from "./PetInfoModal";
 
@@ -63,11 +66,32 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
     }
   };
 
+  const petTypeIcons = {
+    [PetTypeEnum.Dog]: "/icons8-dog.png",
+    [PetTypeEnum.Cat]: "/icons8-cat.png",
+    [PetTypeEnum.Bird]: "icons8-bird.png",
+    [PetTypeEnum.Terrapin]: "/icons8-turtle.png",
+    [PetTypeEnum.Rabbit]: "/icons8-rabbit.png",
+    [PetTypeEnum.Rodent]: "/icons8-rat.png",
+    [PetTypeEnum.Others]: "/icons8-veterinarian.png",
+  };
+
+  const renderPetTypeIcon = (petType) => {
+    const iconPath = petTypeIcons[petType];
+    if (iconPath) {
+      return <img src={iconPath} alt={petType} />;
+    }
+    return null; // Return null if no icon is found for the pet type
+  };
+
   return (
     <>
-      <Group position="right">
+      <Group position="apart">
+        <Badge color="blue" radius="xl" size="xl">
+          No. of pets: {pets.length}
+        </Badge>
         <Button
-          size="md"
+          size="xs"
           leftIcon={<IconPlus size="1.25rem" />}
           onClick={() => {
             openCreate();
@@ -75,7 +99,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
             console.log("Creating Pet");
           }}
         >
-          Create New Pet
+          Add new Pet
         </Button>
       </Group>
 
@@ -100,6 +124,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
             >
               <Card.Section withBorder style={{ height: "15%" }}>
                 <Group mt="md" mb="xs" position="center">
+                  {renderPetTypeIcon(pet.petType)}
                   <Text size="lg" fw="700">
                     {pet.petName}
                   </Text>
@@ -107,14 +132,18 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
               </Card.Section>
               <Card.Section p="md" style={{ height: "70%" }}>
                 <Text>{formatStringToLetterCase(pet.petType)}</Text>
-                <Text>{`Gender: ${pet.gender}`}</Text>
-                <Text>{`Date of Birth: ${pet.dateOfBirth || "N/A"}`}</Text>
-                <Text>{`Weight: ${
-                  pet.petWeight ? pet.petWeight.toFixed(2) + " kg" : "N/A"
-                }`}</Text>
-                <Text>{`Microchip Number: ${
-                  pet.microchipNumber || "N/A"
-                }`}</Text>
+                <Text>{`Gender: ${formatStringToLetterCase(pet.gender)}`}</Text>
+                <Text>
+                  {pet.dateOfBirth ? `Date of Birth: ${pet.dateOfBirth}` : ""}
+                </Text>
+                <Text>
+                  {pet.petWeight ? `Weight: ${pet.petWeight.toFixed(2)}kg` : ""}
+                </Text>
+                <Text>
+                  {pet.microchipNumber
+                    ? `Microchip Number: ${pet.microchipNumber}`
+                    : ""}
+                </Text>
               </Card.Section>
               <Card.Section style={{ height: "15%" }}>
                 <Group position="center">
@@ -134,7 +163,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
                   />
                   <DeleteActionButtonModal
                     title={`Are you sure you want to delete ${pet.petName}?`}
-                    subtitle="The pet would be permanently deleted and cannot be recovered in the future"
+                    subtitle="This action cannot be undone. The pet would be permanently deleted."
                     onDelete={() => handleDeletePet(pet.petId)}
                   />
                 </Group>

@@ -12,7 +12,7 @@ import {
   TextInput,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
@@ -88,26 +88,10 @@ const PetInfoModal = ({
   const form = useForm({
     initialValues: formDefaultValues,
     validate: {
-      petName: (value) => {
-        if (!value) return "Pet name is required.";
-        return null;
-      },
-      petType: (value) => {
-        if (!value) return "Pet type is required.";
-        return null;
-      },
-      gender: (value) => {
-        if (!value) return "Gender is required.";
-        return null;
-      },
-      petWeight: (value) => {
-        if (value <= 0) return "Pet weight must be greater than 0.";
-        return null;
-      },
-      dateOfBirth: (value) => {
-        if (!value) return "Date of birth is required.";
-        return null;
-      },
+      petName: isNotEmpty("Name required."),
+      petType: isNotEmpty("Pet Type required."),
+      gender: isNotEmpty("Gender required."),
+      dateOfBirth: isNotEmpty("Date of Birth required."),
     },
   });
 
@@ -223,145 +207,138 @@ const PetInfoModal = ({
         title="Pet Profile"
         centered
         size="lg"
+        padding="xl"
       >
-        <Container fluid>
-          <form onSubmit={form.onSubmit((values) => handleAction(values))}>
-            <Stack>
-              <TextInput
-                withAsterisk
-                disabled={isViewing}
-                label="Name"
-                placeholder="Pet name"
-                {...form.getInputProps("petName")}
-              />
-              <Select
-                withAsterisk
-                disabled={isViewing}
-                label="Type"
-                placeholder="Pick one"
-                data={petTypeOptions}
-                {...form.getInputProps("petType")}
-              />
-              <Select
-                withAsterisk
-                disabled={isViewing}
-                label="Gender"
-                placeholder="Pick one"
-                data={genderOptions}
-                {...form.getInputProps("gender")}
-              />
-              <NumberInput
-                disabled={isViewing}
-                label="Weight (kg)"
-                min={0}
-                precision={2}
-                {...form.getInputProps("petWeight")}
-              />
-              <DateInput
-                disabled={isViewing}
-                label="Date of birth"
-                placeholder="Date of birth"
-                valueFormat="DD/MM/YYYY"
-                maxDate={new Date()}
-                icon={<IconCalendar size="1rem" />}
-                {...form.getInputProps("dateOfBirth")}
-              />
-              <TextInput
-                disabled={isViewing}
-                label="Microchip number"
-                placeholder="Pet Microchip number"
-                {...form.getInputProps("microchipNumber")}
-              />
-              <FileInput
-                disabled={isViewing}
-                label="Upload Files"
-                placeholder={
-                  uploadedFiles.length === 0
-                    ? "No file selected"
-                    : "Upload new files"
-                }
-                accept="*/*"
-                multiple
-                onChange={(files) => handleFileInputChange(files)}
-                key={fileInputKey}
-              />
-              {uploadedFiles.length > 0 && (
-                <div>
-                  <h4>Uploaded Health Attachments:</h4>
-                  {uploadedFiles.map((file, index) => (
-                    <Card
-                      key={index}
-                      shadow="xs"
-                      style={{ marginBottom: "8px" }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <a
-                          href={URL.createObjectURL(file)}
-                          download={file.name}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ flex: "1", textDecoration: "none" }}
-                        >
-                          {file.name}
-                        </a>{" "}
-                        {!isViewing && (
-                          <Button
-                            size="xs"
-                            variant="light"
-                            color="red"
-                            onClick={() => removeFile(index)}
-                          >
-                            Remove
-                          </Button>
-                        )}
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-              {!isViewing && (
-                <Group position="right" mt="sm" mb="sm">
-                  {!isViewing && (
-                    <Button
-                      type="reset"
-                      color="gray"
-                      onClick={() => {
-                        closeAndResetForm();
+        <form onSubmit={form.onSubmit((values) => handleAction(values))}>
+          <Stack>
+            <TextInput
+              withAsterisk
+              disabled={isViewing}
+              label="Name"
+              placeholder="Pet name"
+              {...form.getInputProps("petName")}
+            />
+            <Select
+              withAsterisk
+              disabled={isViewing}
+              label="Type"
+              placeholder="Pick one"
+              data={petTypeOptions}
+              {...form.getInputProps("petType")}
+            />
+            <Select
+              withAsterisk
+              disabled={isViewing}
+              label="Gender"
+              placeholder="Pick one"
+              data={genderOptions}
+              {...form.getInputProps("gender")}
+            />
+            <DateInput
+              disabled={isViewing}
+              label="Date of birth"
+              placeholder="Date of birth"
+              valueFormat="DD/MM/YYYY"
+              maxDate={new Date()}
+              icon={<IconCalendar size="1rem" />}
+              {...form.getInputProps("dateOfBirth")}
+            />
+            <NumberInput
+              disabled={isViewing}
+              label="Weight (kg)"
+              min={0}
+              precision={2}
+              {...form.getInputProps("petWeight")}
+            />
+            <TextInput
+              disabled={isViewing}
+              label="Microchip number"
+              placeholder="Pet Microchip number"
+              {...form.getInputProps("microchipNumber")}
+            />
+            <FileInput
+              disabled={isViewing}
+              label="Upload Files"
+              placeholder={
+                uploadedFiles.length === 0
+                  ? "No file selected"
+                  : "Upload new files"
+              }
+              accept="*/*"
+              multiple
+              onChange={(files) => handleFileInputChange(files)}
+              key={fileInputKey}
+            />
+            {uploadedFiles.length > 0 && (
+              <div>
+                <h4>Uploaded Health Attachments:</h4>
+                {uploadedFiles.map((file, index) => (
+                  <Card key={index} shadow="xs" style={{ marginBottom: "8px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                       }}
                     >
-                      Cancel
-                    </Button>
-                  )}
-                  <Button type="submit">
-                    {isUpdating ? "Save" : "Create"}
+                      <a
+                        href={URL.createObjectURL(file)}
+                        download={file.name}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ flex: "1", textDecoration: "none" }}
+                      >
+                        {file.name}
+                      </a>{" "}
+                      {!isViewing && (
+                        <Button
+                          size="xs"
+                          variant="light"
+                          color="red"
+                          onClick={() => removeFile(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+            {!isViewing && (
+              <Group position="right" mt="sm">
+                {!isViewing && (
+                  <Button
+                    type="reset"
+                    color="gray"
+                    onClick={() => {
+                      closeAndResetForm();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                )}
+                <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
+              </Group>
+            )}
+
+            {isViewing && (
+              <>
+                <Group position="right" mt="md">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setUpdating(true);
+                      setViewing(false);
+                    }}
+                  >
+                    Edit
                   </Button>
                 </Group>
-              )}
-
-              {isViewing && (
-                <>
-                  <Group position="right" mt="md" mb="md">
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setUpdating(true);
-                        setViewing(false);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </Group>
-                </>
-              )}
-            </Stack>
-          </form>
-        </Container>
+              </>
+            )}
+          </Stack>
+        </form>
       </Modal>
     </>
   );

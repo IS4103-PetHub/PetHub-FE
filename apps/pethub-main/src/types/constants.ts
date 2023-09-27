@@ -27,7 +27,3 @@ export enum GenderEnum {
   Male = "MALE",
   Female = "FEMALE",
 }
-
-export const TABLE_PAGE_SIZE = 15;
-
-export const EMPTY_STATE_DELAY_MS = 500;
