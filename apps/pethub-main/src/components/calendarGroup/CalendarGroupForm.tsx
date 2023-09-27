@@ -31,15 +31,16 @@ import React, { useState } from "react";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
-import { ScheduleSettings, TimePeriod } from "@/types/types";
+import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { checkCGForConflicts, sanitizeCreateCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
   form: any;
+  userId: number;
 }
 
-const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
+const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [settingsError, setSettingsError] = useState([]);
@@ -90,7 +91,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   };
 
   const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
-  const createCalendarGroup = async (payload: any) => {
+  const createCalendarGroup = async (payload: CalendarGroup) => {
     try {
       await createCalendarGroupMutation.mutateAsync(payload);
       notifications.show({
@@ -99,6 +100,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
         icon: <IconCheck />,
         message: `Calendar group created successfully!`,
       });
+      router.push("/business/calendargroup");
     } catch (error: any) {
       notifications.show({
         title: "Error creating calendar group",
@@ -116,10 +118,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
     setSettingsError([]);
-    const payload = {};
-    console.log("SUBMIT FORM VALUES", JSON.stringify(values));
     const check = checkCGForConflicts(values.scheduleSettings);
-    console.log("CHECK CONFLICTS", check);
     if (check) {
       setSettingsError([check.indexA, check.indexB]);
       notifications.show({
@@ -130,8 +129,12 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
       });
     } else {
       const newCG = sanitizeCreateCGPayload(values);
-      console.log("SANTIZED CG PAYLOAD", JSON.stringify(newCG));
-      // createCalendarGroup(payload);
+      newCG.petBusinessId = userId;
+      /* debug statements */
+      // console.log("SUBMIT FORM VALUES", JSON.stringify(values));
+      // console.log("CHECK CONFLICTS", check);
+      // console.log("SANTIZED CG PAYLOAD", JSON.stringify(newCG));
+      createCalendarGroup(newCG);
     }
   }
 

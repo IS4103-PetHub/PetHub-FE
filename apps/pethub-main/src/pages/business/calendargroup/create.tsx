@@ -15,13 +15,20 @@ import {
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
+import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { RecurrencePatternEnum } from "@/types/constants";
 import { validateCGSettings } from "@/util";
 
-export default function CreateCalendarGroup() {
+interface CreateCalendarGroupProps {
+  userId: number;
+}
+
+export default function CreateCalendarGroup({
+  userId,
+}: CreateCalendarGroupProps) {
   const form = useForm({
     initialValues: {
       name: "",
@@ -68,9 +75,19 @@ export default function CreateCalendarGroup() {
         </Group>
 
         <Group mt="xs">
-          <CalendarGroupForm form={form} />
+          <CalendarGroupForm form={form} userId={userId} />
         </Group>
       </Container>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) return null;
+
+  const userId = session.user["userId"];
+
+  return { props: { userId } };
 }
