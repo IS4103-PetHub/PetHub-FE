@@ -339,6 +339,22 @@ export default function PetBusinessDetails({
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
-  const petBusiness = await (await api.get(`/users/pet-businesses/${id}`)).data;
+  const { data } = await await api.get(`/users/pet-businesses/${id}`);
+  const petBusiness: PetBusiness = {
+    userId: data.user.userId,
+    companyName: data.companyName,
+    uen: data.uen,
+    businessType: data.businessType,
+    businessDescription: data.businessDescription,
+    websiteURL: data.websiteURL,
+    contactNumber: data.contactNumber,
+    email: data.user.email,
+    accountType: data.user.accountType,
+    accountStatus: data.user.accountStatus,
+    dateCreated: data.user.dateCreated,
+    businessAddresses: data.businessAddresses,
+    businessEmail: data.businessEmail,
+    petBusinessApplication: data.petBusinessApplication,
+  };
   return { props: { petBusiness } };
 }
