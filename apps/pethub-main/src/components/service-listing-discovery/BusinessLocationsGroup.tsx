@@ -1,7 +1,7 @@
 import { Divider, Group, Text } from "@mantine/core";
 import React from "react";
+import { Address } from "shared-utils";
 import AddressCard from "web-ui/shared/pb-applications/AddressCard";
-import { Address } from "@/types/types";
 
 interface BusinessLocationsGroupProps {
   addresses: Address[];
