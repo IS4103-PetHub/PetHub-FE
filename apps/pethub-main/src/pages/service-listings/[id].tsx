@@ -8,22 +8,16 @@ import {
   Paper,
   useMantineTheme,
   Box,
-  Divider,
   Stack,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconBlockquote,
-  IconMail,
-  IconMapPin,
-  IconPhone,
-} from "@tabler/icons-react";
+import { IconMail, IconMapPin, IconPhone } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
-import AddressCard from "web-ui/shared/pb-applications/AddressCard";
 import api from "@/api/axiosConfig";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
@@ -31,7 +25,6 @@ import ServiceCategoryBadge from "@/components/service-listing-discovery/Service
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
-import { ServiceListing } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {

@@ -11,7 +11,12 @@ import { useMediaQuery, useToggle } from "@mantine/hooks";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  ServiceCategoryEnum,
+  ServiceListing,
+  formatStringToLetterCase,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -22,11 +27,7 @@ import ServiceListingCard from "@/components/service-listing-discovery/ServiceLi
 import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
 import { useGetAllServiceListingsWithQueryParams } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import {
-  ServiceCategoryEnum,
-  serviceListingSortOptions,
-} from "@/types/constants";
-import { ServiceListing } from "@/types/types";
+import { serviceListingSortOptions } from "@/types/constants";
 import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
 
 export default function ServiceListings() {

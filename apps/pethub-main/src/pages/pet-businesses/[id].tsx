@@ -14,11 +14,9 @@ import {
   Grid,
   Chip,
   Transition,
-  Alert,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import {
-  IconAlertCircle,
   IconBuildingStore,
   IconChevronLeft,
   IconClick,
@@ -26,11 +24,11 @@ import {
   IconPhone,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   AccountStatusEnum,
   EMPTY_STATE_DELAY_MS,
+  ServiceListing,
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -45,7 +43,7 @@ import InactivePetBusinessMessage from "@/components/service-listing-discovery/I
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 import { useGetServiceListingByPetBusinessIdAndAccountStatus } from "@/hooks/service-listing";
 import { serviceListingSortOptions } from "@/types/constants";
-import { PetBusiness, ServiceListing } from "@/types/types";
+import { PetBusiness } from "@/types/types";
 import { sortServiceListings } from "@/util";
 
 const CAROUSEL_SIZE = 5;

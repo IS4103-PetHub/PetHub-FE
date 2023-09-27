@@ -8,7 +8,9 @@ import React, { useState, useEffect } from "react";
 import {
   AccountTypeEnum,
   EMPTY_STATE_DELAY_MS,
+  ServiceListing,
   TABLE_PAGE_SIZE,
+  searchServiceListingsForPB,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -21,8 +23,6 @@ import ServiceListTable from "@/components/service-listing-management/ServiceLis
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import { ServiceListing } from "@/types/types";
-import { searchServiceListingsForPB } from "@/util";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;

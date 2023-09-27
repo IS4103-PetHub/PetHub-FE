@@ -1,9 +1,9 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { AccountStatusEnum } from "shared-utils";
+import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
 import {
   CreateServiceListingPayload,
-  ServiceListing,
   UpdateServiceListingPayload,
 } from "@/types/types";
 

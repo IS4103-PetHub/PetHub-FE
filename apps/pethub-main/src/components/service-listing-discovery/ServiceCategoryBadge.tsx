@@ -1,7 +1,6 @@
 import { Badge, BadgeProps } from "@mantine/core";
 import React from "react";
-import { formatStringToLetterCase } from "shared-utils";
-import { ServiceCategoryEnum } from "@/types/constants";
+import { ServiceCategoryEnum, formatStringToLetterCase } from "shared-utils";
 
 interface ServiceCategoryBadgeProps extends BadgeProps {
   category: ServiceCategoryEnum;

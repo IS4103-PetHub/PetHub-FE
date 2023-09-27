@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { EMPTY_STATE_DELAY_MS, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
-import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
