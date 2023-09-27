@@ -341,10 +341,3 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
   if (result) return result;
   return checkOverlapBetweenSettings(dailySettings);
 }
-
-/* 
-  E.g. for CG with 2 ScheduleSettings with recurrence WEEKLY with the same start and end date, vacancies, days, but different time periods
-    we can combine them into 1 ScheduleSetting with the time periods merged
-    ...Others
-*/
-export function simplifyCreateCGPayload(calendarGroup: CalendarGroup) {}

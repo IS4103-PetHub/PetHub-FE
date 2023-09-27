@@ -46,8 +46,9 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
 
   const rulesToDisplay = [
     "End dates must not be more than 3 months from the current date",
-    "Ensure that you have no overlapping time periods between schedule settings",
-    "[...Add more rules/warnings here]",
+    "For schedules with conflicting start and end dates with the recurrence pattern of 'Weekly', ensure that the recurring days selected do not overlap.",
+    "Schedules with the recurrence pattern of 'Daily' cannot have overlapping start and end dates.",
+    "Schedules with the recurrence pattern of 'Daily' will override schedules with the recurrence pattern of 'Weekly' if they have conflicting start and end dates.",
   ];
 
   const addNewScheduleSettings = () => {
@@ -195,7 +196,7 @@ const CalendarGroupForm = ({ form }: CalendarGroupFormProps) => {
             fullWidth
             variant="light"
             radius="lg"
-            h={100}
+            h={320}
           />
         </Grid.Col>
       </Grid>
