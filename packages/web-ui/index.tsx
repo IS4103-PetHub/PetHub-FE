@@ -17,3 +17,4 @@ export * from "./shared/NoSearchResultsMessage";
 export * from "./shared/EditCancelSaveButtons";
 export * from "./shared/ChangePasswordForm";
 export * from "./shared/SimpleOutlineButton";
+export * from "./shared/SortBySelect";

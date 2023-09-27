@@ -1,4 +1,3 @@
-import { subtle } from "crypto";
 import { Carousel } from "@mantine/carousel";
 import {
   Accordion,
@@ -13,26 +12,37 @@ import {
   Button,
   Loader,
   Center,
+  Grid,
+  Chip,
+  Select,
+  Transition,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import {
-  IconBlockquote,
   IconBuildingStore,
+  IconChevronLeft,
   IconClick,
   IconMail,
   IconPhone,
-  IconWorldWww,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
 import { PageTitle } from "web-ui";
-import CenterLoader from "web-ui/shared/CenterLoader";
 
+import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
+import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
+import SearchBar from "web-ui/shared/SearchBar";
+import SortBySelect from "web-ui/shared/SortBySelect";
 import AddressCard from "web-ui/shared/pb-applications/AddressCard";
 import api from "@/api/axiosConfig";
+import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
-import { PetBusiness } from "@/types/types";
+import { serviceListingSortOptions } from "@/types/constants";
+import { PetBusiness, ServiceListing } from "@/types/types";
+import { sortServiceListings } from "@/util";
 
 interface PetBusinessDetailsProps {
   petBusiness: PetBusiness;
@@ -43,21 +53,85 @@ export default function PetBusinessDetails({
 }: PetBusinessDetailsProps) {
   const theme = useMantineTheme();
   const [showFullDescription, setShowFullDescription] = useToggle();
+  const [showAllListings, setShowAllListings] = useToggle();
   const ACCORDION_VALUES = ["business", "description"];
+  const [activeCategory, setActiveCategory] = useState("");
+  const [sortStatus, setSortStatus] = useState<string>("recent");
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+  const [isSearching, setIsSearching] = useToggle();
+  const [searchStr, setSearchStr] = useState("");
 
   const { data: serviceListings = [], isLoading } =
     useGetServiceListingByPetBusinessId(petBusiness.userId);
 
+  // const serviceListings: ServiceListing[] = [];
+  // const isLoading = false;
+
+  const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
+
   // console.log(petBusiness);
   // console.log(serviceListings);
 
-  const listingsSection = (
+  useEffect(() => {
+    let newRecords = serviceListings;
+    if (activeCategory) {
+      newRecords = serviceListings.filter(
+        (serviceListing) => serviceListing.category === activeCategory,
+      );
+    }
+
+    if (searchStr) {
+      newRecords = newRecords.filter((serviceListing) =>
+        serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()),
+      );
+    }
+
+    newRecords = sortServiceListings(newRecords, sortStatus);
+
+    console.log(newRecords);
+    setRecords(newRecords);
+  }, [serviceListings, sortStatus, activeCategory, searchStr]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (serviceListings.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSearch = (_searchStr: string) => {
+    if (!_searchStr) {
+      setSearchStr("");
+      setIsSearching(false);
+      return;
+    }
+    setSearchStr(_searchStr);
+    setIsSearching(true);
+  };
+
+  const serviceCategorySet = new Set(
+    serviceListings.map((serviceListing) => serviceListing.category),
+  );
+
+  const serviceListingHeader = (
+    <Text size="xl" weight={600}>
+      Service listings ({serviceListings.length})
+    </Text>
+  );
+
+  const listingsCarousel = (
     <Box mb="xl">
       <Group position="apart" mb="md">
-        <Text size="xl" weight={600}>
-          Service listings ({serviceListings?.length})
-        </Text>
-        <Button>View all</Button>
+        {serviceListingHeader}
+        <Button
+          onClick={() => setShowAllListings(true)}
+          display={serviceListings.length > 0 ? "block" : "none"}
+        >
+          View all
+        </Button>
       </Group>
 
       {isLoading ? (
@@ -65,6 +139,22 @@ export default function PetBusinessDetails({
         <Box h={400} sx={{ verticalAlign: "center" }}>
           <Center h="100%" w="100%">
             <Loader />
+          </Center>
+        </Box>
+      ) : serviceListings.length === 0 ? (
+        <Box h={400} sx={{ verticalAlign: "center" }}>
+          <Center h="100%" w="100%">
+            <Transition
+              mounted={hasNoFetchedRecords}
+              transition="fade"
+              duration={100}
+            >
+              {(styles) => (
+                <div style={styles}>
+                  <SadDimmedMessage title="No service listings" />
+                </div>
+              )}
+            </Transition>
           </Center>
         </Box>
       ) : (
@@ -85,6 +175,68 @@ export default function PetBusinessDetails({
             </Carousel.Slide>
           ))}
         </Carousel>
+      )}
+    </Box>
+  );
+
+  const allServiceListings = (
+    <Box mt="xl">
+      <Button
+        leftIcon={<IconChevronLeft size="1.25rem" />}
+        onClick={() => setShowAllListings(false)}
+        mb="xl"
+      >
+        Back to business profile
+      </Button>
+      {serviceListingHeader}
+
+      <Group position="apart">
+        <Chip.Group
+          multiple={false}
+          value={activeCategory}
+          onChange={setActiveCategory}
+        >
+          <Group position="left" mt="sm" w="75%">
+            <Chip value="" variant="filled">
+              All
+            </Chip>
+
+            {Array.from(serviceCategorySet).map((serviceCategory) => (
+              <Chip
+                variant="filled"
+                value={serviceCategory}
+                key={serviceCategory}
+              >
+                {formatStringToLetterCase(serviceCategory)}
+              </Chip>
+            ))}
+          </Group>
+        </Chip.Group>
+        <SortBySelect
+          data={serviceListingSortOptions}
+          value={sortStatus}
+          onChange={setSortStatus}
+        />
+      </Group>
+      <SearchBar
+        size="md"
+        text="Search by service listing title"
+        onSearch={handleSearch}
+      />
+      {isSearching && records.length === 0 ? (
+        <Box h="50vh" sx={{ verticalAlign: "center" }}>
+          <Center h="100%" w="100%">
+            <NoSearchResultsMessage />
+          </Center>
+        </Box>
+      ) : (
+        <Grid mt="md" mb={80}>
+          {records.map((serviceListing) => (
+            <Grid.Col span={4} key={serviceListing.serviceListingId}>
+              <ServiceListingCard serviceListing={serviceListing} />
+            </Grid.Col>
+          ))}
+        </Grid>
       )}
     </Box>
   );
@@ -132,24 +284,7 @@ export default function PetBusinessDetails({
 
         {/*if there are addresses*/}
         {petBusiness.businessAddresses.length > 0 ? (
-          <>
-            <Divider mt="lg" />
-            <Text weight={600} mt="md">
-              Locations ({petBusiness.businessAddresses.length})
-            </Text>
-            <Group spacing={0}>
-              {petBusiness.businessAddresses.map((address) => (
-                <AddressCard
-                  key={address.addressId}
-                  address={address}
-                  disabled
-                  ml={0}
-                  mt="md"
-                  mr="md"
-                />
-              ))}
-            </Group>
-          </>
+          <BusinessLocationsGroup addresses={petBusiness.businessAddresses} />
         ) : null}
       </Accordion.Panel>
     </Accordion.Item>
@@ -167,25 +302,29 @@ export default function PetBusinessDetails({
           {petBusiness.businessType}
         </Badge>
       </Group>
-      <Accordion
-        radius="md"
-        variant="filled"
-        mt="xl"
-        mb={80}
-        multiple
-        value={ACCORDION_VALUES}
-        chevronSize={0}
-        onChange={() => {}}
-      >
-        {listingsSection}
-        {businessSection}
-        <DescriptionAccordionItem
-          title="Business description"
-          description={petBusiness.businessDescription}
-          showFullDescription={showFullDescription}
-          setShowFullDescription={setShowFullDescription}
-        />
-      </Accordion>
+      {showAllListings ? (
+        <>{allServiceListings}</>
+      ) : (
+        <Accordion
+          radius="md"
+          variant="filled"
+          mt="xl"
+          mb={80}
+          multiple
+          value={ACCORDION_VALUES}
+          chevronSize={0}
+          onChange={() => {}}
+        >
+          {listingsCarousel}
+          {businessSection}
+          <DescriptionAccordionItem
+            title="Business description"
+            description={petBusiness.businessDescription}
+            showFullDescription={showFullDescription}
+            setShowFullDescription={setShowFullDescription}
+          />
+        </Accordion>
+      )}
     </Container>
   );
 }

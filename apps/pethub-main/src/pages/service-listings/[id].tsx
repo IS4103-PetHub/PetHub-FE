@@ -25,6 +25,7 @@ import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import AddressCard from "web-ui/shared/pb-applications/AddressCard";
 import api from "@/api/axiosConfig";
+import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
@@ -45,12 +46,12 @@ export default function ServiceListingDetails({
   const [showFullDescription, setShowFullDescription] = useToggle();
   const ACCORDION_VALUES = ["description", "business"];
 
-  const handleClickAddToCart = async () => {
+  const handleClickBuyNow = async () => {
     const session = await getSession();
     if (!session) {
       notifications.show({
         title: "Login Required",
-        message: "Please log in to add to cart!",
+        message: "Please log in to buy!",
         color: "red",
       });
     }
@@ -96,24 +97,7 @@ export default function ServiceListingDetails({
 
         {/*if there are addresses*/}
         {serviceListing.addresses.length > 0 ? (
-          <>
-            <Divider mt="lg" />
-            <Text weight={600} mt="md">
-              Locations ({serviceListing.addresses.length})
-            </Text>
-            <Group spacing={0}>
-              {serviceListing.addresses.map((address) => (
-                <AddressCard
-                  key={address.addressId}
-                  address={address}
-                  disabled
-                  ml={0}
-                  mt="md"
-                  mr="md"
-                />
-              ))}
-            </Group>
-          </>
+          <BusinessLocationsGroup addresses={serviceListing.addresses} />
         ) : null}
       </Accordion.Panel>
     </Accordion.Item>
@@ -175,8 +159,8 @@ export default function ServiceListingDetails({
                 ${formatPriceForDisplay(serviceListing.basePrice)}
               </Text>
             </Group>
-            <Button size="md" fullWidth mt="xs" onClick={handleClickAddToCart}>
-              Add to cart
+            <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
+              Buy now
             </Button>
           </Paper>
         </Grid.Col>

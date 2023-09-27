@@ -8,7 +8,6 @@ import {
   Transition,
 } from "@mantine/core";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
-import { sortBy } from "lodash";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -18,40 +17,17 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import SortBySelect from "web-ui/shared/SortBySelect";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
 import { useGetAllServiceListingsWithQueryParams } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import { ServiceCategoryEnum } from "@/types/constants";
+import {
+  ServiceCategoryEnum,
+  serviceListingSortOptions,
+} from "@/types/constants";
 import { ServiceListing } from "@/types/types";
-import { searchServiceListingsForCustomer } from "@/util";
-
-const sortByOptions = [
-  {
-    value: "recent",
-    label: "Recently added",
-    attribute: "dateCreated",
-    direction: "desc",
-  },
-  {
-    value: "oldest",
-    label: "Oldest",
-    attribute: "dateCreated",
-    direction: "asc",
-  },
-  {
-    value: "priceLowToHigh",
-    label: "Price (low to high)",
-    attribute: "basePrice",
-    direction: "asc",
-  },
-  {
-    value: "priceHighToLow",
-    label: "Price (high to low)",
-    attribute: "basePrice",
-    direction: "desc",
-  },
-];
+import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
 
 export default function ServiceListings() {
   const router = useRouter();
@@ -72,28 +48,12 @@ export default function ServiceListings() {
 
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
 
-  function sortServiceListings(sortStatus: string) {
-    let sorted: ServiceListing[] = serviceListings;
-    if (!sortStatus) return sorted;
-
-    const sortOption = sortByOptions.find((x) => sortStatus === x.value);
-    sorted = sortBy(serviceListings, sortOption.attribute);
-    if (sortOption.direction == "desc") {
-      sorted.reverse();
-    }
-    return sorted;
-  }
-
   /*
    * Effect Hooks
    */
 
   useEffect(() => {
-    if (sortStatus) {
-      setRecords(sortServiceListings(sortStatus));
-    } else {
-      setRecords(serviceListings);
-    }
+    setRecords(sortServiceListings(serviceListings, sortStatus));
   }, [serviceListings, sortStatus]);
 
   useEffect(() => {
@@ -195,14 +155,8 @@ export default function ServiceListings() {
         value={selectedTags}
         onChange={setSelectedTags}
       />
-      <Select
-        dropdownPosition="bottom"
-        w="20%"
-        mt={-25}
-        label="Sort by"
-        size="md"
-        placeholder="Select sort"
-        data={sortByOptions}
+      <SortBySelect
+        data={serviceListingSortOptions}
         value={sortStatus}
         onChange={setSortStatus}
       />
