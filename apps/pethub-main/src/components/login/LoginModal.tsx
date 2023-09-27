@@ -1,9 +1,4 @@
-import {
-  Container,
-  useMantineTheme,
-  Modal,
-  LoadingOverlay,
-} from "@mantine/core";
+import { Container, useMantineTheme, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { useDisclosure } from "@mantine/hooks";
@@ -14,6 +9,7 @@ import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { ForgotPasswordPayload } from "shared-utils";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
 import { AccountTypeEnum } from "@/types/constants";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
@@ -32,7 +28,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
   const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -84,7 +80,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
 
   const handleLogin = async (values: LoginFormValues) => {
-    setVisible(true);
     const res = await signIn("credentials", {
       callbackUrl: "/",
       redirect: false,
@@ -99,20 +94,19 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         color: "red",
         autoClose: 5000,
       });
-      setVisible(false);
     } else {
       const session = await getSession();
       if (
         session &&
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
+        showOverlay();
         router.push("/business/dashboard");
       }
       close();
     }
     const timer = setTimeout(() => {
       loginForm.reset();
-      setVisible(false);
     }, 800);
   };
 
@@ -151,11 +145,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       opened={opened}
       onClose={close}
     >
-      <LoadingOverlay
-        visible={visible}
-        zIndex={1000}
-        loaderProps={{ color: "pink", type: "bars" }}
-      />
+      {/* <LoadingOverlay visible={visible} zIndex={1000} loaderProps={{ color: "pink", type: "bars" }} /> */}
       <Container fluid>
         {type === "login" ? (
           <LoginBox
