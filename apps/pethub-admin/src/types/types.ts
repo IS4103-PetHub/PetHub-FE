@@ -1,6 +1,7 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  Address,
   PetBusinessTypeEnum,
 } from "shared-utils";
 
@@ -79,13 +80,6 @@ export interface Permission {
   description: string;
 }
 
-export interface Tag {
-  tagId: number;
-  name: string;
-  dateCreated: string;
-  lastUpdated: string;
-}
-
 export interface CreateTagPayload {
   name: string;
 }
@@ -115,16 +109,6 @@ export interface UserGroupMembership {
       lastName: string;
     };
   };
-}
-
-export interface Address {
-  addressId?: string;
-  addressName: string;
-  line1: string;
-  line2: string;
-  postalCode: string;
-  petBusinessId?: Number;
-  petBusinessApplicationId?: Number;
 }
 
 export interface BusinessApplicationApprover {

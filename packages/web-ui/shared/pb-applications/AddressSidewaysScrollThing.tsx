@@ -1,5 +1,5 @@
 import { Box } from "@mantine/core";
-import { Address } from "../../../../apps/pethub-main/src/types/types";
+import { Address } from "shared-utils";
 import AddAddressCard from "./AddAddressCard";
 import AddressCard from "./AddressCard";
 

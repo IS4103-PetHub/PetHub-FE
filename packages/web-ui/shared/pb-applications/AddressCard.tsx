@@ -8,7 +8,7 @@ import {
   ActionIcon,
 } from "@mantine/core";
 import { IconTrash, IconDots } from "@tabler/icons-react";
-import { Address } from "../../../../apps/pethub-main/src/types/types";
+import { Address } from "shared-utils";
 
 type AddressCardProps = {
   address: Address;

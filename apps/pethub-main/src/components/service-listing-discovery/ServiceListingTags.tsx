@@ -1,6 +1,6 @@
 import { Badge, BadgeProps, Group } from "@mantine/core";
 import React from "react";
-import { Tag } from "@/types/types";
+import { Tag } from "shared-utils";
 
 interface ServiceListingTagsProps extends BadgeProps {
   tags: Tag[];

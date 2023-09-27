@@ -1,12 +1,9 @@
 import {
   Button,
   TextInput,
-  Group,
   Container,
-  createStyles,
   Grid,
   PasswordInput,
-  Text,
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";

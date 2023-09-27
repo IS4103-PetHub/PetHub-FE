@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { ServiceListing } from "./types";
 
 export function validatePassword(password: string) {
   if (password.length < 8) {
@@ -53,4 +54,27 @@ export function formatStringToLetterCase(enumString: string) {
     .replace(/_/g, " ")
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export const formatEnumValueToLowerCase = (value: string) => {
+  return value.replace(/_/g, " ").toLowerCase();
+};
+
+export function searchServiceListingsForPB(
+  serviceListings: ServiceListing[],
+  searchStr: string,
+) {
+  return serviceListings.filter((serviceListing: ServiceListing) => {
+    const formattedCategory = formatEnumValueToLowerCase(
+      serviceListing.category,
+    );
+    const formattedTags = serviceListing.tags.map((tag) =>
+      tag.name.toLowerCase(),
+    );
+    return (
+      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
+      formattedCategory.includes(searchStr.toLowerCase()) ||
+      formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
+    );
+  });
 }

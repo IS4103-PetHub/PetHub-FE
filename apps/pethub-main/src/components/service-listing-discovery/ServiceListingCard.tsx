@@ -1,6 +1,6 @@
 import { Card, Group, Image, Text, createStyles, Box } from "@mantine/core";
 import React from "react";
-import { ServiceListing } from "@/types/types";
+import { ServiceListing } from "shared-utils";
 import { formatPriceForDisplay } from "@/util";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
 import ServiceListingTags from "./ServiceListingTags";
