@@ -1,4 +1,5 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { AccountStatusEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
 import {
   CreateServiceListingPayload,
@@ -74,13 +75,30 @@ export const useGetAllServiceListingsWithQueryParams = (
 // GET Service Listing by Business Id
 export const useGetServiceListingByPetBusinessId = (userId: number) => {
   return useQuery({
-    queryKey: ["service-listings"],
+    queryKey: ["service-listings", { petBusinessId: userId }],
     queryFn: async () => {
       const response = await api.get(
         `${SERVICE_LISTING_API}/pet-businesses/${userId}`,
       );
       return response.data as ServiceListing[];
     },
+  });
+};
+
+// GET Service Listing by Business Id and Account Status, ensure PB is ACTIVE
+export const useGetServiceListingByPetBusinessIdAndAccountStatus = (
+  userId: number,
+  accountStatus: AccountStatusEnum,
+) => {
+  return useQuery({
+    queryKey: ["service-listings", { petBusinessId: userId }, accountStatus],
+    queryFn: async () => {
+      const response = await api.get(
+        `${SERVICE_LISTING_API}/pet-businesses/${userId}`,
+      );
+      return response.data as ServiceListing[];
+    },
+    enabled: accountStatus === AccountStatusEnum.Active,
   });
 };
 

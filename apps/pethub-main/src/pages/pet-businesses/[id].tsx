@@ -3,7 +3,6 @@ import {
   Accordion,
   Badge,
   Container,
-  Divider,
   Group,
   Stack,
   Text,
@@ -14,11 +13,12 @@ import {
   Center,
   Grid,
   Chip,
-  Select,
   Transition,
+  Alert,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import {
+  IconAlertCircle,
   IconBuildingStore,
   IconChevronLeft,
   IconClick,
@@ -26,23 +26,29 @@ import {
   IconPhone,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
+import {
+  AccountStatusEnum,
+  EMPTY_STATE_DELAY_MS,
+  formatStringToLetterCase,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
-
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
-import AddressCard from "web-ui/shared/pb-applications/AddressCard";
 import api from "@/api/axiosConfig";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
+import InactivePetBusinessMessage from "@/components/service-listing-discovery/InactivePetBusinessMessage";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
-import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
+import { useGetServiceListingByPetBusinessIdAndAccountStatus } from "@/hooks/service-listing";
 import { serviceListingSortOptions } from "@/types/constants";
 import { PetBusiness, ServiceListing } from "@/types/types";
 import { sortServiceListings } from "@/util";
+
+const CAROUSEL_SIZE = 5;
 
 interface PetBusinessDetailsProps {
   petBusiness: PetBusiness;
@@ -62,27 +68,32 @@ export default function PetBusinessDetails({
   const [searchStr, setSearchStr] = useState("");
 
   const { data: serviceListings = [], isLoading } =
-    useGetServiceListingByPetBusinessId(petBusiness.userId);
+    useGetServiceListingByPetBusinessIdAndAccountStatus(
+      petBusiness.userId,
+      petBusiness.accountStatus,
+    );
 
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
 
   useEffect(() => {
     let newRecords = serviceListings;
+    if (newRecords.length === 0) {
+      return;
+    }
+    // handle filter by category
     if (activeCategory) {
       newRecords = serviceListings.filter(
         (serviceListing) => serviceListing.category === activeCategory,
       );
     }
-
     if (searchStr) {
+      // handle search
       newRecords = newRecords.filter((serviceListing) =>
         serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()),
       );
     }
-
+    // handle sort
     newRecords = sortServiceListings(newRecords, sortStatus);
-
-    console.log(newRecords);
     setRecords(newRecords);
   }, [serviceListings, sortStatus, activeCategory, searchStr]);
 
@@ -95,6 +106,11 @@ export default function PetBusinessDetails({
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
   }, []);
+
+  // prevent user from viewing pet business page if pet business is inactive
+  if (petBusiness.accountStatus !== AccountStatusEnum.Active) {
+    return <InactivePetBusinessMessage />;
+  }
 
   const handleSearch = (_searchStr: string) => {
     if (!_searchStr) {
@@ -162,8 +178,8 @@ export default function PetBusinessDetails({
           withControls={serviceListings.length > 3}
           controlSize={18}
         >
-          {/* display first 5 listings in carousel*/}
-          {serviceListings?.slice(0, 5).map((serviceListing) => (
+          {/* display first few listings in carousel*/}
+          {serviceListings?.slice(0, CAROUSEL_SIZE).map((serviceListing) => (
             <Carousel.Slide size="30%" key={serviceListing.serviceListingId}>
               <ServiceListingCard serviceListing={serviceListing} />
             </Carousel.Slide>
