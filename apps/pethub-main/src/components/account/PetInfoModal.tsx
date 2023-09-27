@@ -79,9 +79,9 @@ const PetInfoModal = ({
     petName: pet ? pet.petName : "",
     petType: pet ? pet.petType : "",
     gender: pet ? pet.gender : "",
-    petWeight: pet ? pet.petWeight : 0,
+    petWeight: pet && pet.petWeight ? pet.petWeight : 0,
     dateOfBirth: pet ? new Date(pet.dateOfBirth) : "",
-    microchipNumber: pet ? pet.microchipNumber : "",
+    microchipNumber: pet && pet.microchipNumber ? pet.microchipNumber : "",
     healthAttachment: [],
   };
 
@@ -123,9 +123,13 @@ const PetInfoModal = ({
     const downloadedFiles: File[] = await Promise.all(downloadPromises);
 
     form.setValues({
-      ...pet,
+      petName: pet ? pet.petName : "",
+      petType: pet ? pet.petType : "",
+      gender: pet ? pet.gender : "",
+      petWeight: pet && pet.petWeight ? pet.petWeight : 0,
+      dateOfBirth: pet ? new Date(pet.dateOfBirth) : "",
+      microchipNumber: pet && pet.microchipNumber ? pet.microchipNumber : "",
       healthAttachment: downloadedFiles,
-      dateOfBirth: new Date(pet.dateOfBirth),
     });
 
     const pdfUrls = downloadedFiles.map((file) => URL.createObjectURL(file));

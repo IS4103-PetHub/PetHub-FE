@@ -15,14 +15,19 @@ import {
 import { TransformedValues, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconPlus, IconX } from "@tabler/icons-react";
+import {
+  IconGenderFemale,
+  IconGenderMale,
+  IconPlus,
+  IconX,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { PetTypeEnum } from "@/types/constants";
+import { GenderEnum, PetTypeEnum } from "@/types/constants";
 import { Pet } from "@/types/types";
 import PetInfoModal from "./PetInfoModal";
 
@@ -84,11 +89,25 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
     return null; // Return null if no icon is found for the pet type
   };
 
+  const calculateAge = (dateOfBirth) => {
+    const currentDate = new Date();
+    const dob = new Date(dateOfBirth);
+    let age = currentDate.getFullYear() - dob.getFullYear();
+    if (
+      currentDate.getMonth() < dob.getMonth() ||
+      (currentDate.getMonth() === dob.getMonth() &&
+        currentDate.getDate() < dob.getDate())
+    ) {
+      age--;
+    }
+    return age;
+  };
+
   return (
     <>
       <Group position="apart">
-        <Badge color="blue" radius="xl" size="xl">
-          No. of pets: {pets.length}
+        <Badge color="indigo" radius="xl" size="xl">
+          {pets.length} pets added
         </Badge>
         <Button
           size="xs"
@@ -131,13 +150,28 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
                 </Group>
               </Card.Section>
               <Card.Section p="md" style={{ height: "70%" }}>
-                <Text>{formatStringToLetterCase(pet.petType)}</Text>
-                <Text>{`Gender: ${formatStringToLetterCase(pet.gender)}`}</Text>
+                <Badge fullWidth color="gray">
+                  {formatStringToLetterCase(pet.petType)}
+                </Badge>
+                <Group>
+                  <Text>{`Gender: ${formatStringToLetterCase(
+                    pet.gender,
+                  )}`}</Text>
+                  {pet.gender === GenderEnum.Male ? (
+                    <IconGenderMale />
+                  ) : (
+                    <IconGenderFemale />
+                  )}
+                </Group>
                 <Text>
-                  {pet.dateOfBirth ? `Date of Birth: ${pet.dateOfBirth}` : ""}
+                  {pet.dateOfBirth
+                    ? `Age: ${calculateAge(pet.dateOfBirth)}`
+                    : ""}
                 </Text>
                 <Text>
-                  {pet.petWeight ? `Weight: ${pet.petWeight.toFixed(2)}kg` : ""}
+                  {pet.petWeight !== null && pet.petWeight !== undefined
+                    ? `Weight: ${pet.petWeight.toFixed(2)} kg`
+                    : ""}
                 </Text>
                 <Text>
                   {pet.microchipNumber
