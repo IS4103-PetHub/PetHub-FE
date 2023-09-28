@@ -17,14 +17,14 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import { AccountTypeEnum, formatStringToLetterCase } from "shared-utils";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
 } from "@/hooks/internal-user";
 import { useGetPermissionsByUserIdAndAccountType } from "@/hooks/rbac";
-import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
+import { InternalUserRoleEnum } from "@/types/constants";
 import {
   InternalUser,
   Permission,
@@ -32,13 +32,13 @@ import {
   PetOwner,
   User,
 } from "@/types/types";
-type UserDetailsProps = {
+interface UserDetailsProps {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
   onUserUpdated?: (success: boolean) => void;
   sessionUserId?: number;
   disabled?: boolean;
-};
+}
 
 const getUserName = (user: any): string => {
   switch (user.accountType) {
@@ -287,14 +287,14 @@ const PetOwnerDetails = ({
 );
 
 //Delete Logic
-type DeleteAccountModalProps = {
+interface DeleteAccountModalProps {
   closeDeleteModal: () => void;
   opened: boolean;
   name: string;
   userId: number;
   onUserDeleted: (success: boolean) => void;
   sessionUserId: number;
-};
+}
 
 const DeleteAccountModal = ({
   closeDeleteModal,
@@ -383,12 +383,12 @@ const DeleteAccountModal = ({
 };
 
 //Update Logic
-type UpdateInternalUserModalProps = {
+interface UpdateInternalUserModalProps {
   closeUpdateModal: () => void;
   opened: boolean;
   user: InternalUser;
   onUserUpdated: (success: boolean) => void;
-};
+}
 
 const UpdateInternalUserModal = ({
   closeUpdateModal,
@@ -490,9 +490,6 @@ const UserDetails = ({
     useDisclosure(false);
   const [updateModalOpened, { open: openUpdate, close: closeUpdate }] =
     useDisclosure(false);
-  // const propSessionUserId = sessionUserId || -1;
-  // const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
-  // const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
 
   const { data: internalUserPermissions = [] } =
     useGetPermissionsByUserIdAndAccountType(user?.userId, user?.accountType);

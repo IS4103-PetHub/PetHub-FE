@@ -7,10 +7,10 @@ import { IconCalendar, IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { formatISODateString } from "shared-utils";
+import { AccountStatusEnum } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
-import { AccountStatusEnum } from "@/types/constants";
 import { PetBusiness, PetOwner } from "@/types/types";
 import { validateWebsiteURL } from "@/util";
 

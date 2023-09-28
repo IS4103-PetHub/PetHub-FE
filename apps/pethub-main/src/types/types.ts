@@ -1,11 +1,12 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
-  BusinessApplicationStatusEnum,
+  Address,
   PetBusinessTypeEnum,
   RecurrencePatternEnum,
   ServiceCategoryEnum,
-} from "./constants";
+} from "shared-utils";
+import { BusinessApplicationStatusEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -62,16 +63,6 @@ export interface PetOwner extends User {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-}
-
-export interface Address {
-  addressId?: string;
-  addressName: string;
-  line1: string;
-  line2: string;
-  postalCode: string;
-  petBusinessId?: Number;
-  petBusinessApplicationId?: Number;
 }
 
 export interface BusinessApplicationApprover {

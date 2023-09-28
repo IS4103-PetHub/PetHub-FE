@@ -10,14 +10,14 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { Address, ServiceListing, Tag, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { Address, CalendarGroup, ServiceListing, Tag } from "@/types/types";
+import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
@@ -32,7 +32,6 @@ interface ServiceListTableProps {
   onPageChange(p: number): void;
   tags: Tag[];
   addresses: Address[];
-  calendarGroup: CalendarGroup[];
 }
 
 const ServiceListTable = ({
@@ -47,7 +46,6 @@ const ServiceListTable = ({
   onPageChange,
   tags,
   addresses,
-  calendarGroup,
 }: ServiceListTableProps) => {
   /*
    * Component State
@@ -115,11 +113,14 @@ const ServiceListTable = ({
             width: "10vw",
             render: (record) =>
               record.tags.map((tag, index) => (
-                <React.Fragment key={tag.tagId}>
-                  <Badge color="blue">{tag.name}</Badge>
-                  {index < record.tags.length - 1 && "\u00A0"}{" "}
-                  {/* Add space if not the last tag */}
-                </React.Fragment>
+                <Badge
+                  key={tag.tagId}
+                  color="blue"
+                  mr={index < record.tags.length - 1 ? 5 : 0}
+                  /* Add margin right if not the last tag */
+                >
+                  {tag.name}
+                </Badge>
               )),
           },
           {
@@ -129,7 +130,7 @@ const ServiceListTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return `${record.basePrice.toFixed(2)}`;
+              return formatPriceForDisplay(record.basePrice);
             },
           },
           {
@@ -188,7 +189,6 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
-        calendarGroup={calendarGroup}
       />
 
       {/* Update */}
@@ -202,7 +202,6 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
-        calendarGroup={calendarGroup}
       />
     </>
   );

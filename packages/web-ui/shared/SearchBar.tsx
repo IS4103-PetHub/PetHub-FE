@@ -1,13 +1,13 @@
-import { ActionIcon, TextInput } from "@mantine/core";
+import { ActionIcon, TextInput, TextInputProps } from "@mantine/core";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
-interface SearchBarProps {
+interface SearchBarProps extends TextInputProps {
   text: string;
   onSearch(searchStr: string): void;
 }
 
-const SearchBar = ({ text, onSearch }: SearchBarProps) => {
+const SearchBar = ({ text, onSearch, ...props }: SearchBarProps) => {
   const [currentSearchStr, setCurrentSearchStr] = useState("");
 
   const handleSearch = (searchStr: string) => {
@@ -33,6 +33,7 @@ const SearchBar = ({ text, onSearch }: SearchBarProps) => {
           <IconX size={"1.25rem"} />
         </ActionIcon>
       }
+      {...props}
     />
   );
 };

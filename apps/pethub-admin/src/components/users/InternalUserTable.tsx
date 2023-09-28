@@ -5,6 +5,7 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import { getMinTableHeight } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -12,7 +13,6 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser } from "@/types/types";
 import { searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
@@ -42,7 +42,7 @@ export default function InternalUserTable({
   });
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<InternalUser[]>(internalUsers);
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
   const [isViewDetailsModalOpen, setViewDetailsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<InternalUser | null>(
@@ -87,7 +87,7 @@ export default function InternalUserTable({
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (internalUsers.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);

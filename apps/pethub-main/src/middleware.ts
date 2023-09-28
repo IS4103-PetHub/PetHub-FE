@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
-import { AccountTypeEnum } from "./types/constants";
+import { AccountTypeEnum } from "shared-utils";
 
 // Put all shared pages here
 const sharedPages = ["/account", "/shared1", "/shared2"];

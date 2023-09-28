@@ -3,11 +3,11 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
+import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import CreateUserGroupForm from "@/components/rbac/CreateUserGroupForm";
 import { useCreateUserGroup, useGetAllPermissions } from "@/hooks/rbac";
@@ -100,9 +100,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const userPermissions = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { userPermissions } };
 }

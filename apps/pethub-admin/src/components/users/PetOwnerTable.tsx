@@ -4,6 +4,7 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import { getMinTableHeight } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -11,7 +12,6 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetOwners } from "@/hooks/pet-owner";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetOwner } from "@/types/types";
 import { searchPetOwners } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
@@ -28,7 +28,7 @@ export default function PetOwnerTable() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetOwner[]>(petOwners);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetOwner | null>(null);
 
@@ -62,7 +62,7 @@ export default function PetOwnerTable() {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petOwners.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
