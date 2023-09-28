@@ -272,8 +272,8 @@ const ServiceListingModal = ({
       tags: tagIds,
       files: downloadedFiles,
       addresses: addressIds,
-      calendarGroupId: serviceListing.CalendarGroup
-        ? serviceListing.CalendarGroup.calendarGroupId.toString()
+      calendarGroupId: serviceListing.calendarGroupId
+        ? serviceListing.calendarGroupId.toString()
         : "",
     });
 

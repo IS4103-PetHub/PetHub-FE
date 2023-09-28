@@ -119,6 +119,7 @@ export interface ServiceListing {
   attachmentURLs: string[];
   addresses: Address[];
   CalendarGroup: CalendarGroup;
+  calendarGroupId: number;
   duration: number;
 }
 
