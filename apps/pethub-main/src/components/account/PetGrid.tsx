@@ -21,22 +21,23 @@ import {
   IconPlus,
   IconX,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
+import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { GenderEnum, PetTypeEnum } from "@/types/constants";
 import { Pet } from "@/types/types";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
-  pets: Pet[];
   userId: number;
 }
 
-const PetGrid = ({ pets, userId }: PetGridProps) => {
+const PetGrid = ({ userId }: PetGridProps) => {
   /*
    * Component State
    */
@@ -48,10 +49,14 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
   const [isUpdatePetModalOpen, { close: closeUpdate, open: openUpdate }] =
     useDisclosure(false);
 
+  const { data: pets, refetch: refetchPets } = useGetPetsByPetOwnerId(userId);
+
+  const queryClient = useQueryClient();
+  const deletePetMutation = useDeletePetById(queryClient);
   const handleDeletePet = async (petId: number) => {
     try {
       // DELETE PET
-
+      const result = await deletePetMutation.mutateAsync(petId);
       notifications.show({
         message: "Pet Successfully Deleted",
         color: "green",
@@ -74,7 +79,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
   const petTypeIcons = {
     [PetTypeEnum.Dog]: "/icons8-dog.png",
     [PetTypeEnum.Cat]: "/icons8-cat.png",
-    [PetTypeEnum.Bird]: "icons8-bird.png",
+    [PetTypeEnum.Bird]: "/icons8-bird.png",
     [PetTypeEnum.Terrapin]: "/icons8-turtle.png",
     [PetTypeEnum.Rabbit]: "/icons8-rabbit.png",
     [PetTypeEnum.Rodent]: "/icons8-rat.png",
@@ -107,7 +112,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
     <>
       <Group position="apart">
         <Badge color="indigo" radius="xl" size="xl">
-          {pets.length} pets added
+          {pets ? pets.length : ""} pets added
         </Badge>
         <Button
           size="xs"
@@ -130,81 +135,83 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
           gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
         }}
       >
-        {pets.map((pet) => (
-          <Box key={pet.petId} style={{ margin: "20px", height: "300px" }}>
-            {/* PET CARD */}
-            <Card
-              bg="lg"
-              withBorder
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              style={{ height: "100%" }}
-            >
-              <Card.Section withBorder style={{ height: "15%" }}>
-                <Group mt="md" mb="xs" position="center">
-                  {renderPetTypeIcon(pet.petType)}
-                  <Text size="lg" fw="700">
-                    {pet.petName}
-                  </Text>
-                </Group>
-              </Card.Section>
-              <Card.Section p="md" style={{ height: "70%" }}>
-                <Badge fullWidth color="gray">
-                  {formatStringToLetterCase(pet.petType)}
-                </Badge>
-                <Group>
-                  <Text>{`Gender: ${formatStringToLetterCase(
-                    pet.gender,
-                  )}`}</Text>
-                  {pet.gender === GenderEnum.Male ? (
-                    <IconGenderMale />
-                  ) : (
-                    <IconGenderFemale />
-                  )}
-                </Group>
-                <Text>
-                  {pet.dateOfBirth
-                    ? `Age: ${calculateAge(pet.dateOfBirth)}`
-                    : ""}
-                </Text>
-                <Text>
-                  {pet.petWeight !== null && pet.petWeight !== undefined
-                    ? `Weight: ${pet.petWeight.toFixed(2)} kg`
-                    : ""}
-                </Text>
-                <Text>
-                  {pet.microchipNumber
-                    ? `Microchip Number: ${pet.microchipNumber}`
-                    : ""}
-                </Text>
-              </Card.Section>
-              <Card.Section style={{ height: "15%" }}>
-                <Group position="center">
-                  <ViewActionButton
-                    onClick={() => {
-                      setSelectedPet(pet);
-                      openView();
-                      console.log("opening view", pet.petName);
-                    }}
-                  />
-                  <EditActionButton
-                    onClick={() => {
-                      setSelectedPet(pet);
-                      openUpdate();
-                      console.log("opening edit", pet.petName);
-                    }}
-                  />
-                  <DeleteActionButtonModal
-                    title={`Are you sure you want to delete ${pet.petName}?`}
-                    subtitle="This action cannot be undone. The pet would be permanently deleted."
-                    onDelete={() => handleDeletePet(pet.petId)}
-                  />
-                </Group>
-              </Card.Section>
-            </Card>
-          </Box>
-        ))}
+        {pets
+          ? pets.map((pet) => (
+              <Box key={pet.petId} style={{ margin: "20px", height: "300px" }}>
+                {/* PET CARD */}
+                <Card
+                  bg="lg"
+                  withBorder
+                  shadow="sm"
+                  padding="lg"
+                  radius="md"
+                  style={{ height: "100%" }}
+                >
+                  <Card.Section withBorder style={{ height: "15%" }}>
+                    <Group mt="md" mb="xs" position="center">
+                      {renderPetTypeIcon(pet.petType)}
+                      <Text size="lg" fw="700">
+                        {pet.petName}
+                      </Text>
+                    </Group>
+                  </Card.Section>
+                  <Card.Section p="md" style={{ height: "70%" }}>
+                    <Badge fullWidth color="gray" size="lg" mb={5}>
+                      {formatStringToLetterCase(pet.petType)}
+                    </Badge>
+                    <Group>
+                      <Text>{`Gender: ${formatStringToLetterCase(
+                        pet.gender,
+                      )}`}</Text>
+                      {pet.gender === GenderEnum.Male ? (
+                        <IconGenderMale />
+                      ) : (
+                        <IconGenderFemale />
+                      )}
+                    </Group>
+                    <Text>
+                      {pet.dateOfBirth
+                        ? `Age: ${calculateAge(pet.dateOfBirth)}`
+                        : ""}
+                    </Text>
+                    <Text>
+                      {pet.petWeight !== null && pet.petWeight !== undefined
+                        ? `Weight: ${pet.petWeight.toFixed(2)} kg`
+                        : ""}
+                    </Text>
+                    <Text>
+                      {pet.microchipNumber
+                        ? `Microchip Number: ${pet.microchipNumber}`
+                        : ""}
+                    </Text>
+                  </Card.Section>
+                  <Card.Section style={{ height: "15%" }}>
+                    <Group position="center">
+                      <ViewActionButton
+                        onClick={() => {
+                          setSelectedPet(pet);
+                          openView();
+                          console.log("opening view", pet.petName);
+                        }}
+                      />
+                      <EditActionButton
+                        onClick={() => {
+                          setSelectedPet(pet);
+                          openUpdate();
+                          console.log("opening edit", pet.petName);
+                        }}
+                      />
+                      <DeleteActionButtonModal
+                        title={`Are you sure you want to delete ${pet.petName}?`}
+                        subtitle="This action cannot be undone. The pet would be permanently deleted."
+                        onDelete={() => handleDeletePet(pet.petId)}
+                      />
+                    </Group>
+                  </Card.Section>
+                </Card>
+              </Box>
+            ))
+          : []}
       </Grid>
 
       {/* Create Pet */}
@@ -215,6 +222,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
         isUpdate={false}
         pet={null}
         userId={userId}
+        refetch={refetchPets}
       />
 
       {/* View Pet */}
@@ -225,6 +233,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
         isUpdate={false}
         pet={selectedPet}
         userId={userId}
+        refetch={refetchPets}
       />
 
       {/* View Pet */}
@@ -235,6 +244,7 @@ const PetGrid = ({ pets, userId }: PetGridProps) => {
         isUpdate={true}
         pet={selectedPet}
         userId={userId}
+        refetch={refetchPets}
       />
     </>
   );

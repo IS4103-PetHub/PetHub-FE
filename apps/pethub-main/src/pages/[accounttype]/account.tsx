@@ -31,6 +31,7 @@ import DeactivateReactivateAccountModal from "@/components/account/DeactivateRea
 import PetGrid from "@/components/account/PetGrid";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
+import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { GenderEnum, PetTypeEnum } from "@/types/constants";
 import { Pet } from "@/types/types";
 
@@ -151,7 +152,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                 </Group>
               </Accordion.Control>
               <Accordion.Panel p="md">
-                <PetGrid pets={dummyPets} userId={userId} />
+                <PetGrid userId={userId} />
               </Accordion.Panel>
             </Accordion.Item>
           )}
@@ -214,71 +215,3 @@ export async function getServerSideProps(context) {
 
   return { props: { userId, accountType } };
 }
-
-const dummyPets: Pet[] = [
-  {
-    petId: 1,
-    petName: "Buddy",
-    petType: PetTypeEnum.Dog,
-    gender: GenderEnum.Male,
-    dateOfBirth: "2019-05-15",
-    petWeight: 25.5,
-    microchipNumber: "123456789",
-    attachmentKeys: [], // Empty array for now
-    attachmentURLs: [],
-    dateCreated: "2023-09-20T10:30:00.000Z", // ISO format
-    dateUpdated: "",
-  },
-  {
-    petId: 2,
-    petName: "Whiskers",
-    petType: PetTypeEnum.Cat,
-    gender: GenderEnum.Female,
-    dateOfBirth: "2020-02-10",
-    petWeight: 8.2,
-    microchipNumber: "987654321",
-    attachmentKeys: [], // Empty array for now
-    attachmentURLs: [],
-    dateCreated: "2023-09-20T11:45:00.000Z", // ISO format
-    dateUpdated: "",
-  },
-  {
-    petId: 3,
-    petName: "Rocky",
-    petType: PetTypeEnum.Rodent,
-    gender: GenderEnum.Male,
-    dateOfBirth: "2021-07-03",
-    petWeight: 0.15,
-    microchipNumber: null, // No microchip for this pet
-    attachmentKeys: [], // Empty array for now
-    attachmentURLs: [],
-    dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
-    dateUpdated: "",
-  },
-  {
-    petId: 4,
-    petName: "Pig",
-    petType: PetTypeEnum.Others,
-    gender: GenderEnum.Male,
-    dateOfBirth: "2021-07-03",
-    petWeight: 100.15,
-    microchipNumber: null, // No microchip for this pet
-    attachmentKeys: [], // Empty array for now
-    attachmentURLs: [],
-    dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
-    dateUpdated: "",
-  },
-  {
-    petId: 5,
-    petName: "Pig TWO",
-    petType: PetTypeEnum.Others,
-    gender: GenderEnum.Male,
-    dateOfBirth: "2021-07-03",
-    petWeight: null,
-    microchipNumber: null, // No microchip for this pet
-    attachmentKeys: [], // Empty array for now
-    attachmentURLs: [],
-    dateCreated: "2023-09-20T09:15:00.000Z", // ISO format
-    dateUpdated: "",
-  },
-];

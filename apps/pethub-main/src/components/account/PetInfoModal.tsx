@@ -15,8 +15,10 @@ import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { formatStringToLetterCase } from "shared-utils";
+import { useCreatePet, useUpdatePet } from "@/hooks/pets";
 import { GenderEnum, PetTypeEnum } from "@/types/constants";
 import { Pet, PetPayload } from "@/types/types";
 
@@ -27,6 +29,7 @@ interface PetInfoModalProps {
   isUpdate: boolean;
   pet?: Pet;
   userId: number;
+  refetch(): void;
 }
 
 const PetInfoModal = ({
@@ -36,6 +39,7 @@ const PetInfoModal = ({
   isUpdate,
   pet,
   userId,
+  refetch,
 }: PetInfoModalProps) => {
   const [isUpdating, setUpdating] = useState(isUpdate);
   const [isViewing, setViewing] = useState(isView);
@@ -88,26 +92,20 @@ const PetInfoModal = ({
   const form = useForm({
     initialValues: formDefaultValues,
     validate: {
-      petName: isNotEmpty("Name required."),
+      petName: (value) => {
+        const maxLength = 16;
+        if (!value) {
+          return "Name is required.";
+        }
+        if (value.length > maxLength) {
+          return `Name must be ${maxLength} characters or less.`;
+        }
+      },
       petType: isNotEmpty("Pet Type required."),
       gender: isNotEmpty("Gender required."),
       dateOfBirth: isNotEmpty("Date of Birth required."),
     },
   });
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
-
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
 
   const setPetFields = async () => {
     const fileNames = pet.attachmentKeys.map((keys) => extractFileName(keys));
@@ -148,29 +146,44 @@ const PetInfoModal = ({
     onClose();
   };
 
+  /*
+   * Service Handlers
+   */
+
+  const queryClient = useQueryClient();
+  const createPetMutation = useCreatePet();
+  const updatePetMutation = useUpdatePet(queryClient);
   const handleAction = async (values) => {
     try {
-      const payload: PetPayload = {
-        ...values,
-      };
       if (isUpdating) {
+        const payload: PetPayload = {
+          ...values,
+          petOwnerId: userId.toString(),
+          petId: pet.petId.toString(),
+          weight: values.petWeight,
+        };
         // update pet
-        console.log("UPDATING", payload);
+        const result = await updatePetMutation.mutateAsync(payload);
         notifications.show({
           message: "Pet Successfully Updated",
           color: "green",
           autoClose: 5000,
         });
       } else {
+        const payload: PetPayload = {
+          ...values,
+          petOwnerId: userId.toString(),
+          weight: values.petWeight,
+        };
         // create pet
-        console.log("CREATING", payload);
+        const result = await createPetMutation.mutateAsync(payload);
         notifications.show({
           message: "Pet Successfully Created",
           color: "green",
           autoClose: 5000,
         });
       }
-      // TODO: need to refetch once updated/created
+      refetch();
       form.reset();
       setUpdating(isUpdate);
       setViewing(isView);
@@ -202,6 +215,20 @@ const PetInfoModal = ({
     value: value,
     label: formatStringToLetterCase(value),
   }));
+
+  const extractFileName = (attachmentKeys: string) => {
+    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
+  };
+
+  const downloadFile = async (url: string, fileName: string) => {
+    try {
+      const response = await fetch(url);
+      const buffer = await response.arrayBuffer();
+      return new File([buffer], fileName);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
   return (
     <>
@@ -268,7 +295,7 @@ const PetInfoModal = ({
                   ? "No file selected"
                   : "Upload new files"
               }
-              accept="*/*"
+              accept="application/pdf"
               multiple
               onChange={(files) => handleFileInputChange(files)}
               key={fileInputKey}

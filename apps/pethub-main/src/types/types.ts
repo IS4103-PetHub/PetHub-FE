@@ -171,9 +171,9 @@ export interface Pet {
   petName: string;
   petType: PetTypeEnum;
   gender: GenderEnum;
-  petWeight: number;
-  dateOfBirth: string;
-  microchipNumber: string;
+  petWeight?: number;
+  dateOfBirth?: string;
+  microchipNumber?: string;
   attachmentKeys: string[];
   attachmentURLs: string[];
   dateCreated: string;
@@ -182,6 +182,7 @@ export interface Pet {
 
 export interface PetPayload {
   petId: number;
+  petOwnerId: number;
   petName: string;
   petType: PetTypeEnum;
   gender: GenderEnum;
