@@ -20,6 +20,7 @@ export const useCreateServiceListing = () => {
       formData.append("category", payload.category);
       formData.append("basePrice", payload.basePrice.toString());
       formData.append("calendarGroupId", payload.calendarGroupId.toString());
+      formData.append("duration", payload.duration.toString());
       payload.tagIds.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());
       });
@@ -122,6 +123,7 @@ export const useUpdateServiceListing = (queryClient: QueryClient) => {
         "calendarGroupId",
         payloadWithoutId.calendarGroupId.toString(),
       );
+      formData.append("duration", payload.duration.toString());
       // Append tagIds as an array
       payloadWithoutId.tagIds.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());

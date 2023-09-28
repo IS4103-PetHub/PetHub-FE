@@ -3,10 +3,12 @@ import {
   AccountTypeEnum,
   Address,
   PetBusinessTypeEnum,
-  RecurrencePatternEnum,
   ServiceCategoryEnum,
 } from "shared-utils";
-import { BusinessApplicationStatusEnum } from "./constants";
+import {
+  BusinessApplicationStatusEnum,
+  RecurrencePatternEnum,
+} from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -117,6 +119,7 @@ export interface ServiceListing {
   attachmentURLs: string[];
   addresses: Address[];
   CalendarGroup: CalendarGroup;
+  duration: number;
 }
 
 export interface Tag {
@@ -137,6 +140,7 @@ export interface CreateServiceListingPayload {
   files: File[];
   addressIds: number[];
   calendarGroupId: number;
+  duration: number;
 }
 
 export interface UpdateServiceListingPayload {
@@ -150,6 +154,7 @@ export interface UpdateServiceListingPayload {
   files: File[];
   addressIds: number[];
   calendarGroupId: number;
+  duration: number;
 }
 
 /*

@@ -14,6 +14,9 @@ import {
   Textarea,
   Card,
   CloseButton,
+  Slider,
+  Text,
+  Autocomplete,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -21,15 +24,15 @@ import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import React, { useEffect, useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import { Address, formatStringToLetterCase } from "shared-utils";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
-import { useGetAllTags } from "@/hooks/tags";
+import calendarGroup from "@/pages/business/calendarGroup";
 import { ServiceCategoryEnum } from "@/types/constants";
 import {
-  Address,
+  CalendarGroup,
   CreateServiceListingPayload,
   ServiceListing,
   Tag,
@@ -46,6 +49,7 @@ interface ServiceListingModalProps {
   refetch(): void;
   tags: Tag[];
   addresses: Address[];
+  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListingModal = ({
@@ -58,6 +62,7 @@ const ServiceListingModal = ({
   refetch,
   tags,
   addresses,
+  calendarGroups,
 }: ServiceListingModalProps) => {
   /*
    * Component State
@@ -83,6 +88,8 @@ const ServiceListingModal = ({
       files: [],
       tags: [],
       confirmation: false,
+      calendarGroupId: "",
+      duration: 0,
     },
     validate: {
       title: (value) => {
@@ -103,7 +110,6 @@ const ServiceListingModal = ({
       },
       files: (value) => {
         if (value.length > 6) {
-          console.log(value.length);
           notifications.show({
             title: isUpdating
               ? "Error Updating Service Listing"
@@ -117,6 +123,19 @@ const ServiceListingModal = ({
           );
         }
         return null;
+      },
+      calendarGroupId: isNotEmpty("Calendar Group is mandatory."),
+      duration: (value) => {
+        if (value === null || value === undefined) {
+          return "Duration is mandatory.";
+        }
+        const minValue = 0;
+        const maxValue = 180;
+        if (isNaN(value) || value < minValue || value > maxValue) {
+          return `Duration must be a number between ${minValue} and ${maxValue}.`;
+        }
+
+        return null; // No validation error
       },
     },
   });
@@ -153,6 +172,8 @@ const ServiceListingModal = ({
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
           addressIds: values.addresses,
+          calendarGroupId: parseInt(values.calendarGroupId),
+          duration: values.duration,
         };
         const result = await updateServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -170,6 +191,8 @@ const ServiceListingModal = ({
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
           addressIds: values.addresses,
+          calendarGroupId: parseInt(values.calendarGroupId),
+          duration: values.duration,
         };
         const result = await createServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -246,11 +269,12 @@ const ServiceListingModal = ({
     serviceListingForm.setValues({
       ...serviceListing,
       title: serviceListing.title,
-      // TODO: add address in when the BE is ready
-      // address: serviceListing.address.addressId.toString(),
       tags: tagIds,
       files: downloadedFiles,
       addresses: addressIds,
+      calendarGroupId: serviceListing.CalendarGroup
+        ? serviceListing.CalendarGroup.calendarGroupId.toString()
+        : "",
     });
 
     const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
@@ -328,7 +352,7 @@ const ServiceListingModal = ({
               withAsterisk
               disabled={isViewing}
               label="Title"
-              placeholder=""
+              placeholder="Input Service Listing Title"
               {...serviceListingForm.getInputProps("title")}
             />
 
@@ -336,7 +360,7 @@ const ServiceListingModal = ({
               withAsterisk
               disabled={isViewing}
               label="Description"
-              placeholder=""
+              placeholder="Input Service Listing Description"
               autosize
               {...serviceListingForm.getInputProps("description")}
             />
@@ -371,6 +395,43 @@ const ServiceListingModal = ({
               {...serviceListingForm.getInputProps("basePrice")}
             />
 
+            <Autocomplete
+              withAsterisk
+              disabled={isViewing}
+              placeholder="Select Service duration"
+              label="Duration (minutes)"
+              data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
+              onChange={(selectedValue) => {
+                const selectedDuration = parseInt(selectedValue, 10);
+                if (!isNaN(selectedDuration)) {
+                  serviceListingForm.setValues({ duration: selectedDuration });
+                } else {
+                  serviceListingForm.setValues({ duration: 0 });
+                }
+              }}
+              value={
+                serviceListingForm.values.duration
+                  ? serviceListingForm.values.duration.toString()
+                  : ""
+              }
+            />
+
+            <Select
+              withAsterisk
+              disabled={isViewing}
+              label="Calendar Group"
+              placeholder="Pick one"
+              data={
+                calendarGroups
+                  ? calendarGroups.map((group) => ({
+                      value: group.calendarGroupId.toString(),
+                      label: group.name,
+                    }))
+                  : []
+              }
+              {...serviceListingForm.getInputProps("calendarGroupId")}
+            />
+
             <MultiSelect
               disabled={isViewing}
               label="Address"
@@ -384,6 +445,21 @@ const ServiceListingModal = ({
                   : []
               }
               {...serviceListingForm.getInputProps("addresses")}
+            />
+
+            <MultiSelect
+              disabled={isViewing}
+              label="Tags"
+              placeholder="Select your Tags"
+              data={
+                tags
+                  ? tags.map((tag) => ({
+                      value: tag.tagId.toString(),
+                      label: tag.name,
+                    }))
+                  : []
+              }
+              {...serviceListingForm.getInputProps("tags")}
             />
 
             <FileInput
@@ -427,21 +503,6 @@ const ServiceListingModal = ({
                 ))}
             </div>
 
-            <MultiSelect
-              disabled={isViewing}
-              label="Tags"
-              placeholder="Select your Tags"
-              data={
-                tags
-                  ? tags.map((tag) => ({
-                      value: tag.tagId.toString(),
-                      label: tag.name,
-                    }))
-                  : []
-              }
-              {...serviceListingForm.getInputProps("tags")}
-            />
-
             {!isViewing && (
               <>
                 {/* TODO: link to page with terms and conditions  */}
@@ -452,8 +513,8 @@ const ServiceListingModal = ({
                     {...serviceListingForm.getInputProps("confirmation", {
                       type: "checkbox",
                     })}
-                  />
-                )} */}
+                    />
+                  )} */}
                 <Group position="right" mt="sm" mb="sm">
                   {!isViewing && (
                     <Button

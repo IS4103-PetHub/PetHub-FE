@@ -17,6 +17,7 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
+import { CalendarGroup } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
@@ -32,6 +33,7 @@ interface ServiceListTableProps {
   onPageChange(p: number): void;
   tags: Tag[];
   addresses: Address[];
+  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
@@ -46,6 +48,7 @@ const ServiceListTable = ({
   onPageChange,
   tags,
   addresses,
+  calendarGroups,
 }: ServiceListTableProps) => {
   /*
    * Component State
@@ -189,6 +192,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
 
       {/* Update */}
@@ -202,6 +206,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
     </>
   );
