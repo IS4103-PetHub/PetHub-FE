@@ -30,6 +30,7 @@ import { useGetAllTags } from "@/hooks/tags";
 import { ServiceCategoryEnum } from "@/types/constants";
 import {
   Address,
+  CalendarGroup,
   CreateServiceListingPayload,
   ServiceListing,
   Tag,
@@ -46,6 +47,7 @@ interface ServiceListingModalProps {
   refetch(): void;
   tags: Tag[];
   addresses: Address[];
+  calendarGroup: CalendarGroup[];
 }
 
 const ServiceListingModal = ({
@@ -58,6 +60,7 @@ const ServiceListingModal = ({
   refetch,
   tags,
   addresses,
+  calendarGroup,
 }: ServiceListingModalProps) => {
   /*
    * Component State
@@ -83,6 +86,7 @@ const ServiceListingModal = ({
       files: [],
       tags: [],
       confirmation: false,
+      calendarGroupId: null,
     },
     validate: {
       title: (value) => {
@@ -118,6 +122,7 @@ const ServiceListingModal = ({
         }
         return null;
       },
+      calendarGroupId: isNotEmpty("Calendar Group is mandatory"),
     },
   });
 
@@ -153,6 +158,7 @@ const ServiceListingModal = ({
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
           addressIds: values.addresses,
+          calendarGroupId: parseInt(values.calendarGroupId),
         };
         const result = await updateServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -170,6 +176,7 @@ const ServiceListingModal = ({
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
           addressIds: values.addresses,
+          calendarGroupId: parseInt(values.calendarGroupId),
         };
         const result = await createServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -225,6 +232,9 @@ const ServiceListingModal = ({
   };
 
   const setServiceListingFields = async () => {
+    const calendarGroupId = serviceListing.CalendarGroup
+      ? serviceListing.CalendarGroup.calendarGroupId.toString()
+      : null;
     const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
     const addressIds = serviceListing.addresses.map((address) =>
       address.addressId.toString(),
@@ -251,6 +261,7 @@ const ServiceListingModal = ({
       tags: tagIds,
       files: downloadedFiles,
       addresses: addressIds,
+      calendarGroupId: calendarGroupId,
     });
 
     const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
@@ -440,6 +451,22 @@ const ServiceListingModal = ({
                   : []
               }
               {...serviceListingForm.getInputProps("tags")}
+            />
+
+            <Select
+              withAsterisk
+              disabled={isViewing}
+              label="Calendar Group"
+              placeholder="Pick one"
+              data={
+                calendarGroup
+                  ? calendarGroup.map((group) => ({
+                      value: group.calendarGroupId.toString(),
+                      label: group.name,
+                    }))
+                  : []
+              }
+              {...serviceListingForm.getInputProps("calendarGroupId")}
             />
 
             {!isViewing && (

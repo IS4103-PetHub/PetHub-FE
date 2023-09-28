@@ -125,6 +125,7 @@ export interface ServiceListing {
   attachmentKeys: string[];
   attachmentURLs: string[];
   addresses: Address[];
+  CalendarGroup: CalendarGroup;
 }
 
 export interface Tag {
@@ -144,6 +145,7 @@ export interface CreateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
 }
 
 export interface UpdateServiceListingPayload {
@@ -156,6 +158,7 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
 }
 
 /*

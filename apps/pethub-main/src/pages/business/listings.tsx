@@ -13,6 +13,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import ServiceListingModal from "@/components/service/ServiceListingModal";
 import ServiceListTable from "@/components/service/ServiceListingTable";
+import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
@@ -36,6 +37,16 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     isLoading,
     refetch: refetchServiceListings,
   } = useGetServiceListingByPetBusinessIdAndAccountType(userId);
+  const { data: tags } = useGetAllTags();
+  const { data: petBusinessData } = useGetPetBusinessByIdAndAccountType(
+    userId,
+    accountType,
+  );
+  const { data: calendarGroup } = useGetCalendarGroupByPBId(
+    userId,
+    false,
+    false,
+  );
 
   /*
    * Component State
@@ -50,12 +61,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     direction: "asc",
   });
   const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
-  const { data: tags } = useGetAllTags();
   const [petBusiness, setPetBusiness] = useState(null);
-  const { data: petBusinessData } = useGetPetBusinessByIdAndAccountType(
-    userId,
-    accountType,
-  );
 
   useEffect(() => {
     if (petBusinessData) {
@@ -176,6 +182,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
             onPageChange={setPage}
             tags={tags}
             addresses={petBusiness ? petBusiness.businessAddresses : []}
+            calendarGroup={calendarGroup ? calendarGroup : []}
           />
         )}
       </>
@@ -208,6 +215,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
             refetch={refetchServiceListings}
             tags={tags}
             addresses={petBusiness ? petBusiness.businessAddresses : []}
+            calendarGroup={calendarGroup}
           />
         </Group>
         {renderContent()}
