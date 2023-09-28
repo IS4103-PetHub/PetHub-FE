@@ -160,13 +160,13 @@ const PetGrid = ({ userId }: PetGridProps) => {
                       {formatStringToLetterCase(pet.petType)}
                     </Badge>
                     <Group>
-                      <Text>{`Gender: ${formatStringToLetterCase(
-                        pet.gender,
-                      )}`}</Text>
+                      <Text>
+                        {`Gender: ${formatStringToLetterCase(pet.gender)}`}
+                      </Text>
                       {pet.gender === GenderEnum.Male ? (
-                        <IconGenderMale />
+                        <IconGenderMale size="1rem" color="gray" />
                       ) : (
-                        <IconGenderFemale />
+                        <IconGenderFemale size="1rem" color="gray" />
                       )}
                     </Group>
                     <Text>
