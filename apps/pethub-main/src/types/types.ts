@@ -5,7 +5,11 @@ import {
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
 } from "shared-utils";
-import { BusinessApplicationStatusEnum } from "./constants";
+import {
+  BusinessApplicationStatusEnum,
+  GenderEnum,
+  PetTypeEnum,
+} from "./constants";
 
 /*
  * USER MANAGEMENT
