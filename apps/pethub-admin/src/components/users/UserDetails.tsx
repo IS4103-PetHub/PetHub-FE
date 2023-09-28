@@ -32,13 +32,13 @@ import {
   PetOwner,
   User,
 } from "@/types/types";
-type UserDetailsProps = {
+interface UserDetailsProps {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
   onUserUpdated?: (success: boolean) => void;
   sessionUserId?: number;
   disabled?: boolean;
-};
+}
 
 const getUserName = (user: any): string => {
   switch (user.accountType) {
@@ -287,14 +287,14 @@ const PetOwnerDetails = ({
 );
 
 //Delete Logic
-type DeleteAccountModalProps = {
+interface DeleteAccountModalProps {
   closeDeleteModal: () => void;
   opened: boolean;
   name: string;
   userId: number;
   onUserDeleted: (success: boolean) => void;
   sessionUserId: number;
-};
+}
 
 const DeleteAccountModal = ({
   closeDeleteModal,
@@ -383,12 +383,12 @@ const DeleteAccountModal = ({
 };
 
 //Update Logic
-type UpdateInternalUserModalProps = {
+interface UpdateInternalUserModalProps {
   closeUpdateModal: () => void;
   opened: boolean;
   user: InternalUser;
   onUserUpdated: (success: boolean) => void;
-};
+}
 
 const UpdateInternalUserModal = ({
   closeUpdateModal,

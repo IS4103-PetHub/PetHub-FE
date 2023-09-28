@@ -1,6 +1,7 @@
 import { Card, Group, Image, Text, createStyles, Box } from "@mantine/core";
+import { useRouter } from "next/router";
 import React from "react";
-import { ServiceListing } from "@/types/types";
+import { ServiceListing } from "shared-utils";
 import { formatPriceForDisplay } from "@/util";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
 import ServiceListingTags from "./ServiceListingTags";
@@ -23,21 +24,32 @@ interface ServiceListingCardProps {
 const IMAGE_HEIGHT = 180;
 
 const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
-  const { classes, cx } = useStyles();
+  const { classes } = useStyles();
+  const router = useRouter();
+
+  if (!serviceListing) return null;
 
   const coverImage = (
     <Image
       src={
         serviceListing.attachmentURLs.length > 0
           ? serviceListing.attachmentURLs[0]
-          : "pethub-placeholder.png"
+          : "/pethub-placeholder.png"
       }
       height={IMAGE_HEIGHT}
       alt="Service Listing Photo"
     />
   );
   return (
-    <Card radius="md" withBorder padding="lg" className={classes.listingCard}>
+    <Card
+      radius="md"
+      withBorder
+      padding="lg"
+      className={classes.listingCard}
+      onClick={() =>
+        router.push(`/service-listings/${serviceListing.serviceListingId}`)
+      }
+    >
       <Card.Section>{coverImage}</Card.Section>
 
       <Box mt="md" mb="xs">
