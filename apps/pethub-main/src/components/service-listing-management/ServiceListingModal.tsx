@@ -124,19 +124,6 @@ const ServiceListingModal = ({
         }
         return null;
       },
-      calendarGroupId: isNotEmpty("Calendar Group is mandatory."),
-      duration: (value) => {
-        if (value === null || value === undefined) {
-          return "Duration is mandatory.";
-        }
-        const minValue = 0;
-        const maxValue = 180;
-        if (isNaN(value) || value < minValue || value > maxValue) {
-          return `Duration must be a number between ${minValue} and ${maxValue}.`;
-        }
-
-        return null; // No validation error
-      },
     },
   });
 
@@ -396,7 +383,6 @@ const ServiceListingModal = ({
             />
 
             <Autocomplete
-              withAsterisk
               disabled={isViewing}
               placeholder="Select Service duration"
               label="Duration (minutes)"
@@ -417,16 +403,21 @@ const ServiceListingModal = ({
             />
 
             <Select
-              withAsterisk
               disabled={isViewing}
               label="Calendar Group"
               placeholder="Pick one"
               data={
                 calendarGroups
-                  ? calendarGroups.map((group) => ({
-                      value: group.calendarGroupId.toString(),
-                      label: group.name,
-                    }))
+                  ? [
+                      {
+                        value: null,
+                        label: "",
+                      },
+                      ...calendarGroups.map((group) => ({
+                        value: group.calendarGroupId.toString(),
+                        label: group.name,
+                      })),
+                    ]
                   : []
               }
               {...serviceListingForm.getInputProps("calendarGroupId")}
