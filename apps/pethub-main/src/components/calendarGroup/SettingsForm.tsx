@@ -101,10 +101,13 @@ const SettingsForm = ({
   return (
     <Grid.Col span={12}>
       <Card
-        withBorder
         shadow="md"
         radius="lg"
-        sx={{ overflow: "visible", backgroundColor: highlight && "#FFF5F5" }}
+        sx={{
+          overflow: "visible",
+          border: "1px solid black",
+          borderColor: highlight && theme.colors.red[6],
+        }}
       >
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
