@@ -25,6 +25,7 @@ interface CalendarGroupFormProps {
   userId: number;
   forView: boolean; // true if this form is for viewing an existing calendar group, false if it is for creating a new calendar group
   isEditingDisabled?: boolean;
+  submit: (payload: CalendarGroup) => void;
   toggleEdit?: () => void;
   cancelEdit?: () => void;
 }
@@ -36,9 +37,8 @@ const CalendarGroupForm = ({
   isEditingDisabled,
   toggleEdit,
   cancelEdit,
+  submit,
 }: CalendarGroupFormProps) => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
   const [settingsError, setSettingsError] = useState([]);
 
   const rulesToDisplay = [
@@ -86,31 +86,6 @@ const CalendarGroupForm = ({
     form.setFieldValue("scheduleSettings", newScheduleSettings);
   };
 
-  const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
-  const createCalendarGroup = async (payload: CalendarGroup) => {
-    try {
-      await createCalendarGroupMutation.mutateAsync(payload);
-      notifications.show({
-        title: "Calendar group created",
-        color: "green",
-        icon: <IconCheck />,
-        message: `Calendar group created successfully!`,
-      });
-      router.push("/business/calendargroup");
-    } catch (error: any) {
-      notifications.show({
-        title: "Error creating calendar group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
-      });
-    }
-  };
-
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
     setSettingsError([]);
@@ -124,9 +99,13 @@ const CalendarGroupForm = ({
         message: check.errorMessage,
       });
     } else {
-      const newCG = sanitizeCreateCGPayload(values);
-      newCG.petBusinessId = userId;
-      createCalendarGroup(newCG);
+      const sanitizedCG = sanitizeCreateCGPayload(values);
+      if (!forView) {
+        sanitizedCG.petBusinessId = userId; // For now create API needs userId
+      } else {
+        sanitizedCG.calendarGroupId = values.calendarGroupId;
+      }
+      submit(sanitizedCG);
     }
   }
 

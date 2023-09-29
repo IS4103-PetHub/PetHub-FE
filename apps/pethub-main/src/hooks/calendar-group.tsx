@@ -22,13 +22,10 @@ export const useCreateCalendarGroup = (queryClient: QueryClient) => {
 export const useUpdateCalendarGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CalendarGroup) => {
-      // Temporarily appending petBusinessId since BE does not have session identification merged into dev yet
-      const petBusinessId = payload.petBusinessId;
+      const calendarGroupId = payload.calendarGroupId;
+      delete payload.calendarGroupId;
       return (
-        await api.post(
-          `${CALENDER_GROUP_API}/?petBusinessId=${petBusinessId}`,
-          payload,
-        )
+        await api.put(`${CALENDER_GROUP_API}/${calendarGroupId}`, payload)
       ).data;
     },
   });

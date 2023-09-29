@@ -1,6 +1,9 @@
 import { Container, Group } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -9,6 +12,8 @@ import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import { useCreateCalendarGroup } from "@/hooks/calendar-group";
+import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { validateCGSettings } from "@/util";
 
 interface CreateCalendarGroupProps {
@@ -19,6 +24,7 @@ export default function CreateCalendarGroup({
   userId,
 }: CreateCalendarGroupProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useForm({
     initialValues: {
@@ -54,6 +60,32 @@ export default function CreateCalendarGroup({
       scheduleSettings: (value) => validateCGSettings(value) as any,
     },
   });
+
+  const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
+  const createCalendarGroup = async (payload: CalendarGroup) => {
+    try {
+      await createCalendarGroupMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Calendar group created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Calendar group created successfully!`,
+      });
+      router.push("/business/calendargroup");
+    } catch (error: any) {
+      notifications.show({
+        title: "Error creating calendar group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   return (
     <>
       <Head>
@@ -75,6 +107,7 @@ export default function CreateCalendarGroup({
             userId={userId}
             forView={false}
             isEditingDisabled={false}
+            submit={createCalendarGroup}
           />
         </Group>
       </Container>
