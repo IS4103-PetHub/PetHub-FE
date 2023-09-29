@@ -165,32 +165,32 @@ export interface UpdateServiceListingPayload {
 }
 export interface CalendarGroup {
   calendarGroupId?: number;
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   petBusinessId?: number;
-  scheduleSettings?: ScheduleSettings[];
+  scheduleSettings: ScheduleSettings[];
 }
 
 export interface TimePeriod {
   timePeriodId?: number;
-  startTime?: string;
-  endTime?: string;
-  vacancies?: number;
+  startTime: string;
+  endTime: string;
+  vacancies: number;
   bookingId?: number;
   calenderGroupId?: number;
 }
 
 export interface ScheduleSettings {
   scheduleSettingsId?: number;
-  days?: string[];
-  recurrence?: Recurrence;
+  days: string[];
+  recurrence: Recurrence;
 }
 
 export interface Recurrence {
-  pattern?: RecurrencePatternEnum;
-  startDate?: string;
-  endDate?: string;
-  timePeriods?: TimePeriod[];
+  pattern: RecurrencePatternEnum;
+  startDate: string;
+  endDate: string;
+  timePeriods: TimePeriod[];
 }
 
 export interface Booking {

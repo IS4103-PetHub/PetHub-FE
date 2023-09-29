@@ -136,7 +136,7 @@ const SettingsForm = ({
             />
             <DateInput
               clearable
-              minDate={new Date()}
+              minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="End date"
               placeholder="Enter end date"
@@ -188,16 +188,6 @@ const SettingsForm = ({
           </Card.Section>
         )}
         <Card.Section inheritPadding mb="lg">
-          {/* {timePeriods.length > 0 && (
-            <Group>
-              <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]} ml={73}>
-                Start time
-              </Text>
-              <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]} ml={310}>
-                End time
-              </Text>
-            </Group>
-          )} */}
           {timePeriods.map((timePeriod: TimePeriod, idx: number) => (
             <TimePeriodForm
               key={timePeriod.timePeriodId}

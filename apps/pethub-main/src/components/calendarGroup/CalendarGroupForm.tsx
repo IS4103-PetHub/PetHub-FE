@@ -130,10 +130,6 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
     } else {
       const newCG = sanitizeCreateCGPayload(values);
       newCG.petBusinessId = userId;
-      /* debug statements */
-      // console.log("SUBMIT FORM VALUES", JSON.stringify(values));
-      // console.log("CHECK CONFLICTS", check);
-      // console.log("SANTIZED CG PAYLOAD", JSON.stringify(newCG));
       createCalendarGroup(newCG);
     }
   }
