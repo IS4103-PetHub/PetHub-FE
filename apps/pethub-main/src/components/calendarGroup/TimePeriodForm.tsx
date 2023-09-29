@@ -45,6 +45,7 @@ const TimePeriodForm = ({
           </Box>
           <Box mr={50}>
             <TimeSelect
+              defaultTime={timePeriod.startTime || null}
               label={index === 0 && "Start time"}
               interval={TIME_INTERVAL}
               onChange={(value) => {
@@ -56,6 +57,7 @@ const TimePeriodForm = ({
           <Box mr={50}>
             {isEndTimeInitialized && (
               <TimeSelect
+                defaultTime={timePeriod.endTime || null}
                 label={index === 0 && "End time"}
                 interval={TIME_INTERVAL}
                 onChange={(value) => {
@@ -69,7 +71,7 @@ const TimePeriodForm = ({
               label={index === 0 ? "Vacancies" : " "}
               w={80}
               placeholder=""
-              defaultValue={1}
+              defaultValue={timePeriod.vacancies || 1}
               min={1}
               onChange={(value) => onChange({ vacancies: value })}
               error={errors?.[index]?.vacancies}

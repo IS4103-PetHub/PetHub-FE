@@ -63,8 +63,8 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
         timePeriods: [
           {
             timePeriodId: Date.now(), // default timeslot
-            startTime: "",
-            endTime: "",
+            startTime: "00:00",
+            endTime: "00:00",
             vacancies: 1,
           },
         ],
@@ -140,6 +140,7 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
         <Grid.Col span={12}>
           <TextInput
             label="Name"
+            defaultValue={form.values.name}
             placeholder="Enter a name for the calendar group"
             withAsterisk
             {...form.getInputProps("name")}
@@ -148,6 +149,7 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
         <Grid.Col span={12}>
           <Textarea
             withAsterisk
+            defaultValue={form.values.description}
             placeholder="Enter a description for the calendar group"
             label="Description"
             autosize

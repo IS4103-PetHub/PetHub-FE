@@ -68,8 +68,8 @@ const SettingsForm = ({
   const addTimePeriod = () => {
     const newTimePeriod: TimePeriod = {
       timePeriodId: Date.now(), // Using current timestamp as a temporary ID for uniqueness
-      startTime: "",
-      endTime: "",
+      startTime: "00:00",
+      endTime: "00:00",
       vacancies: 1,
     };
     onChange({
@@ -123,6 +123,11 @@ const SettingsForm = ({
           <Group position="apart">
             <DateInput
               clearable
+              defaultValue={
+                setting?.recurrence?.startDate
+                  ? new Date(setting.recurrence.startDate)
+                  : null
+              }
               minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="Start date"
@@ -139,6 +144,11 @@ const SettingsForm = ({
             />
             <DateInput
               clearable
+              defaultValue={
+                setting?.recurrence?.endDate
+                  ? new Date(setting.recurrence.endDate)
+                  : null
+              }
               minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="End date"
@@ -160,6 +170,7 @@ const SettingsForm = ({
             Recurrence pattern
           </Text>
           <SegmentedControl
+            defaultValue={setting?.recurrence?.pattern}
             fullWidth
             size="xs"
             data={segmentedControlData}
@@ -173,7 +184,7 @@ const SettingsForm = ({
         {setting.recurrence.pattern === RecurrencePatternEnum.Weekly && (
           <Card.Section inheritPadding mb="lg">
             <Checkbox.Group
-              defaultValue={setting.days}
+              defaultValue={setting?.days}
               label="Select the recurring days of the week"
               onChange={(value) => onChange({ days: value })}
               error={errors?.[index]?.days}

@@ -1,45 +1,46 @@
-import { Container, Group } from "@mantine/core";
+import {
+  Box,
+  Badge,
+  Modal,
+  Textarea,
+  Button,
+  Grid,
+  Text,
+  Center,
+  Title,
+  Switch,
+  Container,
+  Group,
+} from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import { useGetCalendarGroupById } from "@/hooks/calendar-group";
 import { validateCGSettings } from "@/util";
 
-interface CreateCalendarGroupProps {
+interface ViewCalendarGroupProps {
   userId: number;
 }
 
-export default function CreateCalendarGroup({
-  userId,
-}: CreateCalendarGroupProps) {
+export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
+  const router = useRouter();
+
+  const calendarGroupId = Number(router.query.id);
+
+  const { data: calendarGroup, refetch: refetchCalendarGroup } =
+    useGetCalendarGroupById(calendarGroupId);
+
   const form = useForm({
     initialValues: {
-      name: "",
-      description: "",
-      // a default scheduleSettings
-      scheduleSettings: [
-        {
-          scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness, same with timePeriod
-          days: [],
-          recurrence: {
-            pattern: RecurrencePatternEnum.Daily,
-            startDate: "",
-            endDate: "",
-            timePeriods: [
-              {
-                timePeriodId: Date.now(), // default timePeriod
-                startTime: "00:00",
-                endTime: "00:00",
-                vacancies: 1,
-              },
-            ],
-          },
-        },
-      ],
+      name: calendarGroup?.name,
+      description: calendarGroup?.description,
+      scheduleSettings: calendarGroup?.scheduleSettings,
     },
     validate: {
       name: (value) =>
@@ -50,15 +51,30 @@ export default function CreateCalendarGroup({
       scheduleSettings: (value) => validateCGSettings(value) as any,
     },
   });
+
+  useEffect(() => {
+    if (calendarGroup) {
+      form.setValues({
+        name: calendarGroup.name,
+        description: calendarGroup.description,
+        scheduleSettings: calendarGroup.scheduleSettings,
+      });
+    }
+  }, [calendarGroup]);
+
+  if (!calendarGroupId) {
+    return null;
+  }
+
   return (
     <>
       <Head>
-        <title>Create Calendar Group - PetHub Business</title>
+        <title>View Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">
         <Group position="apart">
-          <PageTitle title="Create Calendar Group" />
+          <PageTitle title="View Calendar Group" />
         </Group>
 
         <Group mt="xs">
