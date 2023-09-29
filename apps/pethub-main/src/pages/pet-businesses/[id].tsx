@@ -23,6 +23,7 @@ import {
   IconMail,
   IconPhone,
 } from "@tabler/icons-react";
+import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -299,41 +300,47 @@ export default function PetBusinessDetails({
   );
 
   return (
-    <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
-      <Group>
-        <PageTitle title={petBusiness.companyName} />
-        <Badge
-          size="lg"
-          variant="gradient"
-          gradient={{ from: "indigo", to: "cyan", deg: 90 }}
-        >
-          {petBusiness.businessType}
-        </Badge>
-      </Group>
-      {showAllListings ? (
-        <>{allServiceListings}</>
-      ) : (
-        <Accordion
-          radius="md"
-          variant="filled"
-          mt="xl"
-          mb={80}
-          multiple
-          value={ACCORDION_VALUES}
-          chevronSize={0}
-          onChange={() => {}}
-        >
-          {listingsCarousel}
-          {businessSection}
-          <DescriptionAccordionItem
-            title="Business description"
-            description={petBusiness.businessDescription}
-            showFullDescription={showFullDescription}
-            setShowFullDescription={setShowFullDescription}
-          />
-        </Accordion>
-      )}
-    </Container>
+    <>
+      <Head>
+        <title>{petBusiness.companyName} - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+        <Group>
+          <PageTitle title={petBusiness.companyName} />
+          <Badge
+            size="lg"
+            variant="gradient"
+            gradient={{ from: "indigo", to: "cyan", deg: 90 }}
+          >
+            {petBusiness.businessType}
+          </Badge>
+        </Group>
+        {showAllListings ? (
+          <>{allServiceListings}</>
+        ) : (
+          <Accordion
+            radius="md"
+            variant="filled"
+            mt="xl"
+            mb={80}
+            multiple
+            value={ACCORDION_VALUES}
+            chevronSize={0}
+            onChange={() => {}}
+          >
+            {listingsCarousel}
+            {businessSection}
+            <DescriptionAccordionItem
+              title="Business description"
+              description={petBusiness.businessDescription}
+              showFullDescription={showFullDescription}
+              setShowFullDescription={setShowFullDescription}
+            />
+          </Accordion>
+        )}
+      </Container>
+    </>
   );
 }
 

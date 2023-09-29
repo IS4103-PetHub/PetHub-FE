@@ -4,6 +4,7 @@ import {
   Address,
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
+  ServiceListing,
 } from "shared-utils";
 import { BusinessApplicationStatusEnum } from "./constants";
 
@@ -127,10 +128,28 @@ export interface UpdateServiceListingPayload {
   addressIds: number[];
 }
 
+/*
+ * APPOINTMENT MANAGEMENT
+ */
+
 export interface TimeSlot {
   calendarGroupId: number;
   timeSlotId: number;
   startTime: string;
   endTime: string;
   vacancies: number;
+}
+
+export interface Booking {
+  bookingId: number;
+  invoiceId?: number;
+  transactionId?: number;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated?: string;
+  startTime: string;
+  endTime: string;
+  timeSlotId: number;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
 }

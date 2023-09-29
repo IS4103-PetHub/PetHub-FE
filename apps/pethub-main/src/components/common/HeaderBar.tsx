@@ -105,7 +105,12 @@ const links: {
   {
     link: "/customer/account",
     label: "My account",
-    links: undefined,
+    links: [
+      {
+        link: "/customer/appointments",
+        label: "My appointments",
+      },
+    ],
   },
 ];
 
@@ -175,6 +180,7 @@ const HeaderBar = () => {
             height={30}
             mt={-5}
             onClick={() => router.push("/")}
+            alt="Logo"
           />
         </Group>
         <Group spacing={5} className={classes.links}>

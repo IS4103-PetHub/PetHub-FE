@@ -9,12 +9,14 @@ import {
 
 interface TimeslotCardProps {
   serviceListing: ServiceListing;
-  selectedTimeslot: string;
+  startTime: string;
+  endTime?: string;
 }
 
 const TimeslotCard = ({
   serviceListing,
-  selectedTimeslot,
+  startTime,
+  endTime,
 }: TimeslotCardProps) => {
   const theme = useMantineTheme();
   return (
@@ -30,15 +32,17 @@ const TimeslotCard = ({
       </Text>
       <Text>
         <strong>Start: </strong>
-        {formatISODayDateTime(selectedTimeslot)}
+        {formatISODayDateTime(startTime)}
       </Text>
       <Text>
         <strong>End: </strong>
-        {formatISODayDateTime(
-          dayjs(selectedTimeslot)
-            .add(serviceListing.duration, "minutes")
-            .toISOString(),
-        )}
+        {endTime
+          ? formatISODayDateTime(endTime)
+          : formatISODayDateTime(
+              dayjs(startTime)
+                .add(serviceListing.duration, "minutes")
+                .toISOString(),
+            )}
       </Text>
     </Card>
   );

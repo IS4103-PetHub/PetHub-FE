@@ -228,7 +228,7 @@ const SelectTimeslotModal = ({
       <Text mb="lg">Please check and confirm your selected timeslot.</Text>
       <TimeslotCard
         serviceListing={serviceListing}
-        selectedTimeslot={selectedTimeslot}
+        startTime={selectedTimeslot}
       />
     </>
   );
