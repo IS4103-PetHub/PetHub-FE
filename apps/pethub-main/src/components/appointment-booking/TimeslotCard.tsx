@@ -1,4 +1,13 @@
-import { useMantineTheme, Text, Divider, Card } from "@mantine/core";
+import {
+  useMantineTheme,
+  Text,
+  Divider,
+  Card,
+  Button,
+  Group,
+  Box,
+  Badge,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import React from "react";
 import {
@@ -11,6 +20,7 @@ interface TimeslotCardProps {
   serviceListing: ServiceListing;
   startTime: string;
   endTime?: string;
+  disabled?: boolean;
 }
 
 const TimeslotCard = ({
@@ -19,12 +29,31 @@ const TimeslotCard = ({
   endTime,
 }: TimeslotCardProps) => {
   const theme = useMantineTheme();
+
+  function getTimeDifferenceString() {
+    const now = new Date();
+    const diffDays = dayjs(startTime).diff(now, "days");
+    if (diffDays < 2) {
+      const diffHours = dayjs(startTime).diff(now, "hours");
+      return `in ${diffHours} hours`;
+    }
+    return `in ${diffDays} days`;
+  }
+
   return (
     <Card withBorder mb="lg" sx={{ backgroundColor: theme.colors.gray[0] }}>
-      <Text size="lg" weight={600}>
-        {serviceListing.title}
-      </Text>
-      <Text color="dimmed">{serviceListing.petBusiness.companyName}</Text>
+      <Group position="apart">
+        <Box>
+          <Badge mb={5} variant="dot">
+            {getTimeDifferenceString()}
+          </Badge>
+          <Text size="lg" weight={600}>
+            {serviceListing.title}
+          </Text>
+          <Text color="dimmed">{serviceListing.petBusiness.companyName}</Text>
+        </Box>
+        <Button>Reschedule</Button>
+      </Group>
       <Divider mt="xs" mb="xs" />
       <Text>
         <strong>Duration: </strong>

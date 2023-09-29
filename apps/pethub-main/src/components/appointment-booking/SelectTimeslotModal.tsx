@@ -159,7 +159,7 @@ const SelectTimeslotModal = ({
     />
   );
 
-  const timeslotCards = availTimeslots
+  const timeslotChips = availTimeslots
     .filter((data) => dayjs(data.startTime).isSame(selectedDate, "day"))
     .map((data) => (
       <Chip
@@ -205,7 +205,7 @@ const SelectTimeslotModal = ({
                 Available start times
               </Text>
               <Badge variant="dot" size="lg" radius="xl" ml={-5}>
-                {timeslotCards?.length}
+                {timeslotChips?.length}
               </Badge>
             </Group>
             <Group>
@@ -214,7 +214,7 @@ const SelectTimeslotModal = ({
                 value={selectedTimeslot}
                 onChange={setSelectedTimeslot}
               >
-                {timeslotCards}
+                {timeslotChips}
               </Chip.Group>
             </Group>
           </>
@@ -229,6 +229,7 @@ const SelectTimeslotModal = ({
       <TimeslotCard
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
+        disabled
       />
     </>
   );

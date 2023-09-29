@@ -31,3 +31,18 @@ export const serviceListingSortOptions = [
     direction: "desc",
   },
 ];
+
+export const bookingsSortOptions = [
+  {
+    value: "upcoming",
+    label: "Upcoming",
+    attribute: "startTime",
+    direction: "asc",
+  },
+  {
+    value: "furthest",
+    label: "Furthest",
+    attribute: "startTime",
+    direction: "desc",
+  },
+];

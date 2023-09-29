@@ -45,7 +45,7 @@ import ServiceListingCard from "@/components/service-listing-discovery/ServiceLi
 import { useGetServiceListingByPetBusinessIdAndAccountStatus } from "@/hooks/service-listing";
 import { serviceListingSortOptions } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
-import { sortServiceListings } from "@/util";
+import { sortRecords } from "@/util";
 
 const CAROUSEL_SIZE = 5;
 
@@ -92,7 +92,7 @@ export default function PetBusinessDetails({
       );
     }
     // handle sort
-    newRecords = sortServiceListings(newRecords, sortStatus);
+    newRecords = sortRecords(serviceListingSortOptions, newRecords, sortStatus);
     setRecords(newRecords);
   }, [serviceListings, sortStatus, activeCategory, searchStr]);
 

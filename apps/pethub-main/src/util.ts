@@ -49,18 +49,17 @@ export function searchServiceListingsForCustomer(
   );
 }
 
-// sort service listings for customer view service listings
-export function sortServiceListings(
-  serviceListings: ServiceListing[],
+// generic sort by function
+export function sortRecords(
+  sortOptions: any,
+  records: any[],
   sortStatus: string,
 ) {
-  let sorted: ServiceListing[] = serviceListings;
+  let sorted = records;
   if (!sortStatus) return sorted;
 
-  const sortOption = serviceListingSortOptions.find(
-    (x) => sortStatus === x.value,
-  );
-  sorted = sortBy(serviceListings, sortOption.attribute);
+  const sortOption = sortOptions.find((x) => sortStatus === x.value);
+  sorted = sortBy(records, sortOption.attribute);
   if (sortOption.direction == "desc") {
     sorted.reverse();
   }

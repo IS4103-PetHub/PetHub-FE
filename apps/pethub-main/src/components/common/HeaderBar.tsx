@@ -180,7 +180,7 @@ const HeaderBar = () => {
             height={30}
             mt={-5}
             onClick={() => router.push("/")}
-            alt="Logo"
+            alt="PetHub Logo"
           />
         </Group>
         <Group spacing={5} className={classes.links}>
