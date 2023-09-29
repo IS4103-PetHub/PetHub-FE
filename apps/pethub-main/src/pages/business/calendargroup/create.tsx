@@ -17,9 +17,9 @@ import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
-import { RecurrencePatternEnum } from "@/types/constants";
 import { validateCGSettings } from "@/util";
 
 interface CreateCalendarGroupProps {

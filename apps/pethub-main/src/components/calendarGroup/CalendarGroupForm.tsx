@@ -28,9 +28,9 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { DayOfWeekEnum, RecurrencePatternEnum } from "shared-utils";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
-import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { checkCGForConflicts, sanitizeCreateCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
