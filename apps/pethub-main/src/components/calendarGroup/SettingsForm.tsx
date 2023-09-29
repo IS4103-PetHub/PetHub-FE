@@ -48,6 +48,13 @@ const SettingsForm = ({
   const errors = form.errors?.scheduleSettings?.errors;
   const theme = useMantineTheme();
 
+  // These are for a CG update, to determine if editing the dates should be disabled or not (If the date is in the past you shouldn't be able to edit them)
+  const isPastDate = (date) => date && dayjs(date).isBefore(dayjs());
+  const isStartDateDisabled =
+    setting?.recurrence?.startDate && isPastDate(setting.recurrence.startDate);
+  const isSettingOver =
+    setting?.recurrence?.endDate && isPastDate(setting.recurrence.endDate);
+
   const segmentedControlData = [
     {
       value: RecurrencePatternEnum.Daily,
@@ -139,7 +146,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
-              disabled={isEditingDisabled}
+              disabled={isEditingDisabled || isStartDateDisabled}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, startDate: value },
@@ -161,7 +168,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
-              disabled={isEditingDisabled}
+              disabled={isEditingDisabled || isSettingOver}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, endDate: value },
@@ -180,7 +187,7 @@ const SettingsForm = ({
             fullWidth
             size="xs"
             data={segmentedControlData}
-            disabled={isEditingDisabled}
+            disabled={isEditingDisabled || isSettingOver}
             onChange={(value) =>
               onChange({
                 recurrence: { ...setting.recurrence, pattern: value },
@@ -200,37 +207,37 @@ const SettingsForm = ({
                 <Checkbox
                   value={DayOfWeekEnum.Monday}
                   label="Mon"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
                 <Checkbox
                   value={DayOfWeekEnum.Tuesday}
                   label="Tue"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
                 <Checkbox
                   value={DayOfWeekEnum.Wednesday}
                   label="Wed"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
                 <Checkbox
                   value={DayOfWeekEnum.Thursday}
                   label="Thu"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
                 <Checkbox
                   value={DayOfWeekEnum.Friday}
                   label="Fri"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
                 <Checkbox
                   value={DayOfWeekEnum.Saturday}
                   label="Sat"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
                 <Checkbox
                   value={DayOfWeekEnum.Sunday}
                   label="Sun"
-                  disabled={isEditingDisabled}
+                  disabled={isEditingDisabled || isSettingOver}
                 />
               </Group>
             </Checkbox.Group>
@@ -245,7 +252,7 @@ const SettingsForm = ({
               onRemove={() => removeTimePeriod(timePeriod.timePeriodId)}
               onChange={(changes) => handleTimePeriodChange(idx, changes)}
               errors={errors?.[index]?.recurrence?.timePeriods}
-              isEditingDisabled={isEditingDisabled}
+              isEditingDisabled={isEditingDisabled || isSettingOver}
             />
           ))}
         </Card.Section>

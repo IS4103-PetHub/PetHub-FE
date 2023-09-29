@@ -17,7 +17,7 @@ import { DayOfWeekEnum, RecurrencePatternEnum } from "shared-utils";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
-import { checkCGForConflicts, sanitizeCreateCGPayload } from "@/util";
+import { checkCGForConflicts, sanitizeCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
@@ -99,7 +99,7 @@ const CalendarGroupForm = ({
         message: check.errorMessage,
       });
     } else {
-      const sanitizedCG = sanitizeCreateCGPayload(values);
+      const sanitizedCG = sanitizeCGPayload(values);
       if (!forView) {
         sanitizedCG.petBusinessId = userId; // For now create API needs userId
       } else {

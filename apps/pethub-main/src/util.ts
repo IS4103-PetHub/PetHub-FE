@@ -162,8 +162,6 @@ function validateCGDates(recurrence: Recurrence) {
   const threeMonthsFromNow = new Date();
   threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
 
-  if (parsedStartDate <= today)
-    errors.startDate = "Start date must be after today.";
   if (parsedEndDate < parsedStartDate)
     errors.endDate = "End date must be after start date.";
   if (parsedEndDate > threeMonthsFromNow)
@@ -342,9 +340,7 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
 }
 
 // Clean the dates, clear the IDs, and remove irrelavant fields before sending to backend
-export function sanitizeCreateCGPayload(
-  calendarGroup: CalendarGroup,
-): CalendarGroup {
+export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
   const CGCopy: CalendarGroup = JSON.parse(JSON.stringify(calendarGroup)); // deep copy
 
   for (const setting of CGCopy.scheduleSettings) {
