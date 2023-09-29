@@ -69,6 +69,7 @@ const ServiceListTable = ({
     try {
       const result =
         await deleteServiceListingMutation.mutateAsync(serviceListingId);
+      refetch();
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",

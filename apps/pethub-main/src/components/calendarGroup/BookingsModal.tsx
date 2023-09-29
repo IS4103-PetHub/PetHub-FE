@@ -17,15 +17,25 @@ import { useForm } from "@mantine/form";
 import { IconClipboardList, IconFileInvoice } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
+import { AccountTypeEnum, Address, Tag } from "shared-utils";
+import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { BookingResponse } from "@/types/types";
 
 interface BookingModalProps {
   booking: BookingResponse;
   opened: boolean;
   onClose(): void;
+  addresses: Address[];
+  tags: Tag[];
 }
 
-const BookingsModal = ({ booking, opened, onClose }: BookingModalProps) => {
+const BookingsModal = ({
+  booking,
+  opened,
+  onClose,
+  addresses,
+  tags,
+}: BookingModalProps) => {
   const theme = useMantineTheme();
   const defaultValues = ["Booking Details"];
 
@@ -35,21 +45,26 @@ const BookingsModal = ({ booking, opened, onClose }: BookingModalProps) => {
     endTime: booking ? formatTime(booking.endTime) : "",
     description: booking ? booking.serviceListing.description : "",
     category: booking ? booking.serviceListing.category : "",
-    tags: booking ? booking.serviceListing.tags : [],
-    addresses: booking ? booking.serviceListing.addresses : [],
+    tags: booking
+      ? booking.serviceListing.tags.map((tag) => tag.tagId.toString())
+      : [],
+    addresses: booking
+      ? booking.serviceListing.addresses.map((address) =>
+          address.addressId.toString(),
+        )
+      : [],
     basePrice: booking ? booking.serviceListing.basePrice : 0,
 
     // user details
+    petOwnerName: booking
+      ? booking.petOwner.firstName?.concat(" ", booking.petOwner.lastName)
+      : "",
+    petOwnerContact: booking ? booking.petOwner.contactNumber : "",
+    petOwnerEmail: booking ? booking.petOwner.email : "",
   };
 
   const form = useForm({
     initialValues: formDefaultValues,
-
-    transformValues: (values) => ({
-      ...values,
-      startTime: booking ? formatTime(values.startTime) : "",
-      endTime: booking ? formatTime(values.endTime) : "",
-    }),
   });
 
   useEffect(() => {
@@ -143,7 +158,14 @@ const BookingsModal = ({ booking, opened, onClose }: BookingModalProps) => {
                     <Grid.Col span={12}>
                       {/* TODO: need check if this works */}
                       <MultiSelect
-                        data={[]}
+                        data={
+                          addresses
+                            ? addresses.map((address) => ({
+                                value: address.addressId.toString(),
+                                label: address.addressName,
+                              }))
+                            : []
+                        }
                         disabled
                         label="Addresses"
                         {...form.getInputProps("addresses")}
@@ -152,9 +174,16 @@ const BookingsModal = ({ booking, opened, onClose }: BookingModalProps) => {
                     <Grid.Col span={12}>
                       {/* TODO: need check if this works */}
                       <MultiSelect
-                        data={[]}
                         disabled
                         label="Tags"
+                        data={
+                          tags
+                            ? tags.map((tag) => ({
+                                value: tag.tagId.toString(),
+                                label: tag.name,
+                              }))
+                            : []
+                        }
                         {...form.getInputProps("tags")}
                       />
                     </Grid.Col>
@@ -173,11 +202,37 @@ const BookingsModal = ({ booking, opened, onClose }: BookingModalProps) => {
                   <Text size="lg">Customer Details</Text>
                 </Group>
               </Accordion.Control>
-              <Accordion.Panel>TODO: CUSTOMER DETIALS</Accordion.Panel>
+              <Accordion.Panel>
+                <Container fluid>
+                  <Grid>
+                    <Grid.Col span={12}>
+                      <TextInput
+                        label="Name"
+                        disabled
+                        {...form.getInputProps("petOwnerName")}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Contact"
+                        disabled
+                        {...form.getInputProps("petOwnerContact")}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <TextInput
+                        label="Emai"
+                        disabled
+                        {...form.getInputProps("petOwnerEmail")}
+                      />
+                    </Grid.Col>
+                  </Grid>
+                </Container>
+              </Accordion.Panel>
             </Accordion.Item>
 
             {/* Invoice and Transaction details */}
-            <Accordion.Item value="Invoice Details">
+            {/* <Accordion.Item value="Invoice Details">
               <Accordion.Control>
                 <Group>
                   <IconFileInvoice color={theme.colors.indigo[5]} />
@@ -185,7 +240,7 @@ const BookingsModal = ({ booking, opened, onClose }: BookingModalProps) => {
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>TODO: Invoice DETIALS</Accordion.Panel>
-            </Accordion.Item>
+            </Accordion.Item> */}
           </Accordion>
         </Modal>
       )}

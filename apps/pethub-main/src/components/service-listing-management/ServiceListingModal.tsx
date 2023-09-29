@@ -29,10 +29,10 @@ import {
   useCreateServiceListing,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
-import calendarGroup from "@/pages/business/calendarGroup";
+import CalendarGroup from "@/pages/business/calendarGroup";
 import { ServiceCategoryEnum } from "@/types/constants";
 import {
-  CalendarGroup,
+  CalendarGroup as CalendarGroupObject,
   CreateServiceListingPayload,
   ServiceListing,
   Tag,
@@ -49,7 +49,7 @@ interface ServiceListingModalProps {
   refetch(): void;
   tags: Tag[];
   addresses: Address[];
-  calendarGroups: CalendarGroup[];
+  calendarGroups: CalendarGroupObject[];
 }
 
 const ServiceListingModal = ({
@@ -410,7 +410,7 @@ const ServiceListingModal = ({
                 calendarGroups
                   ? [
                       {
-                        value: null,
+                        value: "",
                         label: "",
                       },
                       ...calendarGroups.map((group) => ({

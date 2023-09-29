@@ -192,6 +192,7 @@ export interface BookingResponse {
   endTime: string;
   serviceListing: ServiceListingBooking;
   timeSlot: Timeslot | null;
+  petOwner: PetOwner;
 }
 
 export interface ServiceListingBooking {

@@ -1,5 +1,5 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { AccountTypeEnum } from "shared-utils";
+import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
 import { CreatePetOwnerPayload, PetOwner } from "@/types/types";
 
@@ -33,6 +33,20 @@ export const useGetPetOwnerByIdAndAccountType = (
   return useQuery({
     queryKey: ["pet-owners", accountType, userId],
     queryFn: async () => {
+      if (userId == 0) {
+        const petOwner: PetOwner = {
+          firstName: "",
+          lastName: "",
+          dateOfBirth: "",
+          userId: 0,
+          contactNumber: "",
+          email: "",
+          accountType: AccountTypeEnum.PetOwner,
+          accountStatus: AccountStatusEnum.Active,
+          dateCreated: "",
+        };
+        return petOwner;
+      }
       const data = await (await api.get(`${PET_OWNER_API}/${userId}`)).data;
       const petOwner: PetOwner = {
         userId,

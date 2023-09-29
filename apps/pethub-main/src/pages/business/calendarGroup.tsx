@@ -1,9 +1,28 @@
 import { Button, Container, Group } from "@mantine/core";
 import Head from "next/head";
+import { getSession } from "next-auth/react";
+import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import MainCalendar from "@/components/calendarGroup/MainCalendar";
+import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
+import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
+import { useGetAllTags } from "@/hooks/tags";
 
-export default function calendarGroup() {
+interface MyAccountProps {
+  userId: number;
+  accountType: AccountTypeEnum;
+}
+export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
+  const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
+    useGetCalendarGroupByPBId(userId);
+
+  const { data: petBusinessData } = useGetPetBusinessByIdAndAccountType(
+    userId,
+    accountType,
+  );
+
+  const { data: tags } = useGetAllTags();
+
   return (
     <>
       <Head>
@@ -18,390 +37,23 @@ export default function calendarGroup() {
         </Group>
 
         <MainCalendar
-          calendarGroupings={calendarGroupsDummy}
-          bookings={dummyBookings}
+          calendarGroupings={calendarGroup}
+          userId={userId}
+          addresses={petBusinessData ? petBusinessData.businessAddresses : []}
+          tags={tags}
         />
       </Container>
     </>
   );
 }
 
-const calendarGroupsDummy = [
-  {
-    calendarGroupId: 0,
-    name: "Dining",
-  },
-  {
-    calendarGroupId: 1,
-    name: "Teaching",
-  },
-  {
-    calendarGroupId: 2,
-    name: "Grooming",
-  },
-];
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
 
-const dummyBookings = [
-  {
-    id: 1,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 101,
-    dateCreated: "2023-09-26T08:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-26T10:00:00",
-    endTime: "2023-09-26T11:00:00",
-    serviceListing: {
-      id: 1,
-      title: "Dog Grooming",
-      description: "Basic grooming for dogs",
-      basePrice: 30.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-25T15:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 201,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 101,
-      startTime: "2023-09-26T10:00:00",
-      endTime: "2023-09-26T11:00:00",
-      vacancies: 1,
-      calendarGroupId: 2,
-    },
-  },
-  {
-    id: 2,
-    invoiceId: 201,
-    transactionId: 301,
-    petOwnerId: 102,
-    dateCreated: "2023-09-26T09:00:00",
-    lastUpdated: "2023-09-26T10:30:00",
-    startTime: "2023-09-26T14:00:00",
-    endTime: "2023-09-26T15:30:00",
-    serviceListing: {
-      id: 2,
-      title: "Pet Training Session",
-      description: "Training session for pets",
-      basePrice: 50.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-25T16:00:00",
-      lastUpdated: "2023-09-26T10:00:00",
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 202,
-      calendarGroupId: 1,
-    },
-    timeSlot: {
-      id: 102,
-      startTime: "2023-09-26T14:00:00",
-      endTime: "2023-09-26T15:30:00",
-      vacancies: 2,
-      calendarGroupId: 1,
-    },
-  },
-  {
-    id: 3,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 103,
-    dateCreated: "2023-09-26T10:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-26T16:00:00",
-    endTime: "2023-09-26T17:00:00",
-    serviceListing: {
-      id: 3,
-      title: "Dinner Reservation",
-      description: "Reservation for dinner",
-      basePrice: 0.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-25T17:00:00",
-      lastUpdated: null,
-      category: "Restaurant",
-      tags: [],
-      addresses: [],
-      petBusinessId: 203,
-      calendarGroupId: 0,
-    },
-    timeSlot: {
-      id: 103,
-      startTime: "2023-09-26T16:00:00",
-      endTime: "2023-09-26T17:00:00",
-      vacancies: 4,
-      calendarGroupId: 0,
-    },
-  },
+  if (!session) return null;
 
-  // Day 2
-  {
-    id: 4,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 104,
-    dateCreated: "2023-09-27T08:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T09:00:00",
-    endTime: "2023-09-27T10:00:00",
-    serviceListing: {
-      id: 4,
-      title: "Morning Walk",
-      description: "A refreshing morning walk for your pet",
-      basePrice: 10.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T12:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 204,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 104,
-      startTime: "2023-09-27T09:00:00",
-      endTime: "2023-09-27T10:00:00",
-      vacancies: 3,
-      calendarGroupId: 2,
-    },
-  },
-  {
-    id: 5,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 105,
-    dateCreated: "2023-09-27T10:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T14:00:00",
-    endTime: "2023-09-27T15:00:00",
-    serviceListing: {
-      id: 5,
-      title: "Cat Grooming",
-      description: "Grooming for cats",
-      basePrice: 25.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T14:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 205,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 105,
-      startTime: "2023-09-27T14:00:00",
-      endTime: "2023-09-27T15:00:00",
-      vacancies: 2,
-      calendarGroupId: 2,
-    },
-  },
-  {
-    id: 6,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 106,
-    dateCreated: "2023-09-27T11:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T14:00:00",
-    endTime: "2023-09-27T15:00:00",
-    serviceListing: {
-      id: 6,
-      title: "Dog Training",
-      description: "Training session for dogs",
-      basePrice: 40.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T16:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 206,
-      calendarGroupId: 1,
-    },
-    timeSlot: {
-      id: 106,
-      startTime: "2023-09-27T14:00:00",
-      endTime: "2023-09-27T15:00:00",
-      vacancies: 2,
-      calendarGroupId: 1,
-    },
-  },
-  {
-    id: 7,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 107,
-    dateCreated: "2023-09-27T12:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T17:00:00",
-    endTime: "2023-09-27T18:00:00",
-    serviceListing: {
-      id: 7,
-      title: "Outdoor Pet Playtime",
-      description: "Fun outdoor playtime for pets",
-      basePrice: 20.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T17:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 207,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 107,
-      startTime: "2023-09-27T17:00:00",
-      endTime: "2023-09-27T18:00:00",
-      vacancies: 3,
-      calendarGroupId: 2,
-    },
-  },
-  {
-    id: 8,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 108,
-    dateCreated: "2023-09-27T13:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T18:30:00",
-    endTime: "2023-09-27T19:30:00",
-    serviceListing: {
-      id: 8,
-      title: "Cat Playdate",
-      description: "Playdate for cats",
-      basePrice: 15.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T18:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 208,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 108,
-      startTime: "2023-09-27T18:30:00",
-      endTime: "2023-09-27T19:30:00",
-      vacancies: 2,
-      calendarGroupId: 2,
-    },
-  },
-  {
-    id: 9,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 109,
-    dateCreated: "2023-09-27T14:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T20:00:00",
-    endTime: "2023-09-27T21:00:00",
-    serviceListing: {
-      id: 9,
-      title: "Dog Playdate",
-      description: "Playdate for dogs",
-      basePrice: 25.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T19:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 209,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 109,
-      startTime: "2023-09-27T20:00:00",
-      endTime: "2023-09-27T21:00:00",
-      vacancies: 4,
-      calendarGroupId: 2,
-    },
-  },
-  {
-    id: 10,
-    invoiceId: null,
-    transactionId: null,
-    petOwnerId: 110,
-    dateCreated: "2023-09-27T15:00:00",
-    lastUpdated: null,
-    startTime: "2023-09-27T22:00:00",
-    endTime: "2023-09-27T23:00:00",
-    serviceListing: {
-      id: 10,
-      title: "Pet Spa",
-      description: "Spa treatment for pets",
-      basePrice: 60.0,
-      attachmentKeys: [],
-      attachmentURLs: [],
-      dateCreated: "2023-09-26T20:00:00",
-      lastUpdated: null,
-      category: "Pet Services",
-      tags: [],
-      addresses: [],
-      petBusinessId: 210,
-      calendarGroupId: 2,
-    },
-    timeSlot: {
-      id: 110,
-      startTime: "2023-09-27T22:00:00",
-      endTime: "2023-09-27T23:00:00",
-      vacancies: 1,
-      calendarGroupId: 2,
-    },
-  },
-];
+  const userId = session.user["userId"];
+  const accountType = session.user["accountType"];
 
-// Use dummyBookings as your sample bookings data
-
-const eventsDummy = [
-  {
-    id: "event1",
-    title: "Meeting1",
-    calendarId: "0",
-    start: "2023-09-26T10:00:00",
-    end: "2023-09-26T11:00:00",
-  },
-  {
-    id: "event2",
-    title: "Meeting2",
-    calendarId: "0",
-    start: "2023-09-26T10:00:00",
-    end: "2023-09-26T11:00:00",
-  },
-  {
-    id: "event3",
-    title: "Meeting3",
-    calendarId: "0",
-    start: "2023-09-26T10:00:00",
-    end: "2023-09-26T11:00:00",
-  },
-  {
-    id: "event4",
-    title: "Meeting4",
-    calendarId: "0",
-    start: "2023-09-26T10:00:00",
-    end: "2023-09-26T11:00:00",
-  },
-  {
-    id: "event5",
-    title: "Conference1",
-    calendarId: "1",
-    start: "2023-09-26T14:00:00",
-    end: "2023-09-26T17:00:00",
-  },
-];
+  return { props: { userId, accountType } };
+}

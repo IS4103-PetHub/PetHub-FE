@@ -18,6 +18,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useGetBookingsByPetBusiness } from "@/hooks/booking";
 import BookingsModal from "./BookingsModal";
 
 const TuiCalendar = dynamic(() => import("./CalendarPage"), { ssr: false });
@@ -25,25 +26,52 @@ const CalendarWithForwardedRef = forwardRef((props, ref) => (
   <TuiCalendar {...props} forwardedRef={ref} />
 ));
 
-const MainCalendar = ({ calendarGroupings, bookings }) => {
+const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
   /*
    * Component State
    */
   // @ts-ignore
+  // Current view of the calendar (month, week, day)
   const [currentView, setCurrentView] = useState<ViewType>("month");
   const [selectedCalendarId, setSelectedCalendarId] = useState("all");
+  // calendars is the groups in TUI
   const [calendars, setCalendars] = useState([]);
+  // events is the bookings in TUI
   const [events, setEvents] = useState([]);
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentDateRange, setCurrentDateRange] = useState("");
   const [isBookingModalOpen, { close: closeView, open: openView }] =
     useDisclosure(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const calendarRef = useRef(null);
+  // const [bookings, setBookings] = useState([]);
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  );
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  );
+
+  const bookingsQuery = useGetBookingsByPetBusiness(
+    userId,
+    new Date(
+      startDate.getFullYear(),
+      startDate.getMonth() - 1,
+      1,
+    ).toISOString(),
+    new Date(endDate.getFullYear(), endDate.getMonth() + 2, 0).toISOString(),
+  );
+
+  const { data: bookings = [] } = bookingsQuery;
 
   /*
    * Effect Hooks
    */
+  useEffect(() => {
+    bookingsQuery.refetch();
+  }, [selectedDate]);
+
   useEffect(() => {
     let formattedDateRange = "";
     if (currentView === "month") {
@@ -75,6 +103,19 @@ const MainCalendar = ({ calendarGroupings, bookings }) => {
     });
   }, [bookings]);
 
+  useEffect(() => {
+    const calendarInstance = calendarRef.current?.getInstance();
+    if (calendarInstance) {
+      calendarInstance.setOptions({
+        week: {
+          mileStone: false,
+          taskView: false,
+          allday: false,
+        },
+      });
+    }
+  });
+
   /*
    * Handlers
    */
@@ -105,37 +146,29 @@ const MainCalendar = ({ calendarGroupings, bookings }) => {
     }
   };
 
-  const updateCurrentDateRange = (date) => {
+  const handleViewToggle = (value) => {
     const calendarInstance = calendarRef.current?.getInstance();
     if (calendarInstance) {
-      const currentView = calendarInstance.getViewName();
-
-      let formattedDateRange = "";
-
-      if (currentView === "month") {
-        formattedDateRange = date.d.d.toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "long",
-        });
-      } else if (currentView === "week") {
-        const startDate = new Date(date.d.d);
-        startDate.setDate(date.getDate() - date.getDay());
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
-        formattedDateRange = `${startDate.toLocaleDateString()} ~ ${endDate.toLocaleDateString()}`;
-      } else if (currentView === "day") {
-        formattedDateRange = date.d.d.toLocaleDateString();
-      }
-      setCurrentDateRange(formattedDateRange);
+      const currentDate = calendarInstance.getDate();
+      setCurrentView(value);
+      updateCurrentDateRange(currentDate);
+      calendarInstance.changeView(value);
     }
+  };
+
+  const updateCurrentDateRange = (date) => {
+    const startDate = new Date(date.d.d);
+    startDate.setDate(1);
+    startDate.setMonth(startDate.getMonth());
+    const endDate = new Date(date.d.d);
+    endDate.setMonth(endDate.getMonth() + 1, 0);
+    setStartDate(startDate);
+    setEndDate(endDate);
+    setSelectedDate(new Date(date.d.d));
   };
 
   const handleCalendarChange = (value) => {
     setSelectedCalendarId(value);
-  };
-
-  const handleViewToggle = (value) => {
-    setCurrentView(value);
   };
 
   const handleEditCalendarGroup = () => {
@@ -152,12 +185,24 @@ const MainCalendar = ({ calendarGroupings, bookings }) => {
     console.log("VIEWING", selectedCalendarGroup);
   };
 
-  const onClickEvent = useCallback((e) => {
-    const selectedEvent = bookings.find((event) => event.id == e.event.id);
-    setSelectedBooking(selectedEvent);
-    console.log(selectedEvent);
-    openView();
-    // route to somewhere else
+  const onClickEvent = useCallback(
+    async (e) => {
+      const selectedEvent = bookings.find(
+        (event) => event.bookingId == e.event.id,
+      );
+      setSelectedBooking(selectedEvent);
+      openView();
+    },
+    [bookings],
+  );
+
+  const onClickSchedule = useCallback(async (e) => {
+    const calendarInstance = calendarRef.current?.getInstance();
+    if (calendarInstance) {
+      setCurrentView("day");
+      setSelectedDate(e.start);
+      calendarInstance.setDate(e.start);
+    }
   }, []);
 
   /*
@@ -166,7 +211,7 @@ const MainCalendar = ({ calendarGroupings, bookings }) => {
   async function convertBookingsToEvents() {
     const events = bookings.map((booking) => {
       return {
-        id: `${booking.id}`,
+        id: `${booking.bookingId}`,
         title: booking.serviceListing.title,
         calendarId: booking.timeSlot
           ? booking.timeSlot.calendarGroupId.toString()
@@ -218,7 +263,8 @@ const MainCalendar = ({ calendarGroupings, bookings }) => {
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+      const randomDigit = 8 + Math.floor(Math.random() * 8);
+      color += letters[randomDigit];
     }
     return color;
   }
@@ -282,18 +328,18 @@ const MainCalendar = ({ calendarGroupings, bookings }) => {
         calendars={calendars}
         view={currentView}
         events={filteredEvents}
-        isReadOnly
+        // isReadOnly
         usageStatistics={false}
         onClickEvent={onClickEvent}
-
-        // useDetailPopup
-        // useFormPopup
+        onSelectDateTime={onClickSchedule}
       />
 
       <BookingsModal
         booking={selectedBooking}
         onClose={closeView}
         opened={isBookingModalOpen}
+        addresses={addresses}
+        tags={tags}
       />
     </div>
   );
