@@ -36,9 +36,17 @@ export const useGetCalendarGroupById = (calendarGroupId: number) => {
     queryKey: ["calendar-group", calendarGroupId],
     queryFn: async () => {
       const response = await api.get(
-        `${CALENDER_GROUP_API}/${calendarGroupId}`,
+        `${CALENDER_GROUP_API}/${calendarGroupId}?formatForFrontend=true`,
       );
       return response.data as CalendarGroup;
+    },
+  });
+};
+
+export const useDeleteCalendarGroupById = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (await api.delete(`${CALENDER_GROUP_API}/${id}`)).data;
     },
   });
 };

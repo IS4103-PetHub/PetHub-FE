@@ -161,7 +161,7 @@ const CalendarGroupForm = ({
               onChange={(changes) =>
                 handleScheduleSettingChange(index, changes)
               }
-              timePeriods={setting.recurrence.timePeriods}
+              timePeriods={setting?.recurrence?.timePeriods}
               form={form}
               index={index}
               highlight={settingsError.includes(index) ? true : false} // true if that setting's index matches the index returned by the validation during a create

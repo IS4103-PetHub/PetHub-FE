@@ -23,9 +23,14 @@ import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import LargeDeleteButton from "web-ui/shared/LargeDeleteButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
-import { useGetCalendarGroupById } from "@/hooks/calendar-group";
+import {
+  useDeleteCalendarGroupById,
+  useGetCalendarGroupById,
+} from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { validateCGSettings } from "@/util";
@@ -116,6 +121,31 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
     }
   };
 
+  const deleteCalendarGroupMutation = useDeleteCalendarGroupById(queryClient);
+  const handleDeleteCalendarGroup = async (id: number) => {
+    try {
+      await deleteCalendarGroupMutation.mutateAsync(id);
+      notifications.show({
+        title: "Calendar Group Deleted",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Calendar group deleted successfully.`,
+      });
+      router.push("/business/calendargroup");
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Deleting Calendar Group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   if (!calendarGroupId) {
     return null;
   }
@@ -136,7 +166,22 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
             }
           />
           {isEditingDisabled && (
-            <LargeEditButton text="Edit Calendar Group" onClick={toggleEdit} />
+            <Center>
+              <LargeEditButton
+                text="Edit"
+                onClick={toggleEdit}
+                makeSmallerATeenyBit
+              />
+              &nbsp;
+              <DeleteActionButtonModal
+                title="Delete Calendar Group"
+                subtitle="Are you sure you want to delete this Calendar Group? All involved bookings will be voided and an email notification will be sent to the affected customers."
+                onDelete={async () =>
+                  handleDeleteCalendarGroup(form.values.calendarGroupId)
+                }
+                large
+              />
+            </Center>
           )}
         </Group>
 

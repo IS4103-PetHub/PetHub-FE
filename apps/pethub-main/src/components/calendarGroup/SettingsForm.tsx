@@ -195,7 +195,7 @@ const SettingsForm = ({
             }
           />
         </Card.Section>
-        {setting.recurrence.pattern === RecurrencePatternEnum.Weekly && (
+        {setting?.recurrence?.pattern === RecurrencePatternEnum.Weekly && (
           <Card.Section inheritPadding mb="lg">
             <Checkbox.Group
               defaultValue={setting?.days}
