@@ -12,9 +12,15 @@ import {
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconMail, IconMapPin, IconPhone } from "@tabler/icons-react";
+import {
+  IconMail,
+  IconMapPin,
+  IconPhone,
+  IconHeart,
+} from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
@@ -37,7 +43,13 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
+  const [isFavourite, setIsFavourite] = useState(false);
   const ACCORDION_VALUES = ["description", "business"];
+
+  const handleFavouriteToggle = () => {
+    setIsFavourite(!isFavourite);
+    //  call any API endpoint to save the favourite state
+  };
 
   const handleClickBuyNow = async () => {
     const session = await getSession();
@@ -110,12 +122,24 @@ export default function ServiceListingDetails({
             mt="xl"
             mb={5}
           />
-          <PageTitle
-            title={serviceListing.title}
-            mb="xs"
-            size="2.25rem"
-            weight={700}
-          />
+          <Group position="apart">
+            <PageTitle
+              title={serviceListing.title}
+              mb="xs"
+              size="2.25rem"
+              weight={700}
+            />
+            <Button
+              onClick={handleFavouriteToggle}
+              variant={"subtle"}
+              color={isFavourite ? null : "gray"}
+              leftIcon={
+                <IconHeart size={20} fill={isFavourite ? "red" : "none"} />
+              }
+            >
+              Favourite
+            </Button>
+          </Group>
           <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
           <ServiceListingCarousel
             attachmentURLs={serviceListing.attachmentURLs}
