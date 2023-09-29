@@ -15,7 +15,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
-import { formatISODateString } from "shared-utils";
+import { formatISODateStringLong } from "shared-utils";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
@@ -53,7 +53,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const action =
     accountStatus === AccountStatusEnum.Active ? "Deactivate" : " Reactivate";
 
-  const dateCreated = formatISODateString(
+  const dateCreated = formatISODateStringLong(
     petOwner ? petOwner.dateCreated : petBusiness.dateCreated,
   );
 

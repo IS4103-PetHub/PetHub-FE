@@ -49,4 +49,7 @@ export interface ServiceListing {
   petBusinessId: number;
   // leave as any because the response varies from BE
   petBusiness?: any;
+  // appointment booking
+  duration?: number;
+  calendarGroupId?: number;
 }

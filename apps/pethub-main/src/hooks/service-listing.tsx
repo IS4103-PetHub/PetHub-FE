@@ -57,7 +57,7 @@ export const useGetAllServiceListingsWithQueryParams = (
 ) => {
   const params = { category: categoryValue, tag: { ...tagNames } };
   return useQuery({
-    queryKey: ["service-listings", categoryValue, tagNames],
+    queryKey: ["service-listings", { params }],
     queryFn: async () => {
       if (categoryValue || (tagNames && tagNames.length > 0)) {
         const response = await api.get(`${SERVICE_LISTING_API}/filter`, {

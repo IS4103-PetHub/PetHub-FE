@@ -54,7 +54,7 @@ const ServiceListingCard = ({ serviceListing }: ServiceListingCardProps) => {
 
       <Box mt="md" mb="xs">
         <ServiceCategoryBadge category={serviceListing.category} mb="xs" />
-        <Text weight={600} size="md" lineClamp={2} sx={{ lineHeight: 1.4 }}>
+        <Text weight={600} size="md" lineClamp={1} sx={{ lineHeight: 1.4 }}>
           {serviceListing.title}
         </Text>
       </Box>

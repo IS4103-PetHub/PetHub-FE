@@ -126,3 +126,11 @@ export interface UpdateServiceListingPayload {
   files: File[];
   addressIds: number[];
 }
+
+export interface TimeSlot {
+  calendarGroupId: number;
+  timeSlotId: number;
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+}

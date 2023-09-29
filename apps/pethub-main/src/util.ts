@@ -14,11 +14,6 @@ export function parseRouterQueryParam(param: string | string[] | undefined) {
   return param;
 }
 
-export function formatISODateString(dateString: string) {
-  // e.g. 1 September 2023
-  return dayjs(dateString).format("D MMMM YYYY");
-}
-
 export function validateAddressName(addressName: string) {
   if (!addressName) {
     return "Address name is required.";
