@@ -29,24 +29,34 @@ export function validateChangePassword(password: string, newPassword: string) {
   return validatePassword(newPassword);
 }
 
-export function formatISODateStringLongWithDay(dateString: string) {
+export function formatISOLongWithDay(dateString: string) {
   // e.g. Sat, 1 Sep 2023
   return dayjs(dateString).format("ddd, D MMM YYYY");
 }
 
-export function formatISODateStringLong(dateString: string) {
+export function formatISODayOnly(dateString: string) {
+  // e.g. Sat
+  return dayjs(dateString).format("ddd");
+}
+
+export function formatISOLong(dateString: string) {
   // e.g. 1 September 2023
   return dayjs(dateString).format("D MMMM YYYY");
 }
 
-export function formatISODateStringDateOnly(dateString: string) {
+export function formatISODateOnly(dateString: string) {
   // e.g. 1/9/2023
   return dayjs(dateString).format("D/M/YYYY");
 }
 
-export function formatISODateStringTimeOnly(dateString: string) {
+export function formatISOTimeOnly(dateString: string) {
   // e.g. 4:00pm
   return dayjs(dateString).format("h:mma");
+}
+
+export function formatISODayDateTime(dateString: string) {
+  // e.g. Sat
+  return dayjs(dateString).format("ddd D/M/YYYY h:mma");
 }
 
 export function convertMinsToDurationString(mins: number) {

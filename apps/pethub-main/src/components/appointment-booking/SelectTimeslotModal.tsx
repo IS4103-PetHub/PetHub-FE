@@ -3,85 +3,52 @@ import {
   Box,
   Button,
   Card,
+  Center,
   Chip,
   Divider,
   Grid,
   Group,
+  Loader,
   Modal,
   Text,
   useMantineTheme,
 } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
-import { useMediaQuery } from "@mantine/hooks";
+import { useMediaQuery, useToggle } from "@mantine/hooks";
+import { IconChevronLeft } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import {
   ServiceListing,
   convertMinsToDurationString,
-  formatISODateStringLongWithDay,
-  formatISODateStringTimeOnly,
+  formatISODayDateTime,
+  formatISOLongWithDay,
+  formatISOTimeOnly,
 } from "shared-utils";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
-import { TimeSlot } from "@/types/types";
 
 const CALENDAR_SPAN = 4;
 const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 
-interface SelectTimeSlotModalProps {
+interface SelectTimeslotModalProps {
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
 }
 
-// const mockData: TimeSlot[] = [
-//   {
-//     startTime: "2023-09-29T01:00:00.000Z",
-//     endTime: "2023-09-29T02:00:00.000Z",
-//     vacancies: 1,
-//   },
-//   {
-//     startTime: "2023-09-30T02:00:00.000Z",
-//     endTime: "2023-09-30T03:00:00.000Z",
-//     vacancies: 1,
-//   },
-//   {
-//     startTime: "2023-09-30T04:00:00.000Z",
-//     endTime: "2023-09-30T05:00:00.000Z",
-//     vacancies: 1,
-//   },
-//   {
-//     startTime: "2023-09-30T06:00:00.000Z",
-//     endTime: "2023-09-30T07:00:00.000Z",
-//     vacancies: 1,
-//   },
-//   {
-//     startTime: "2023-09-30T08:00:00.000Z",
-//     endTime: "2023-09-30T09:00:00.000Z",
-//     vacancies: 1,
-//   },
-//   {
-//     startTime: "2023-09-30T10:00:00.000Z",
-//     endTime: "2023-09-30T11:00:00.000Z",
-//     vacancies: 1,
-//   },
-//   {
-//     startTime: "2023-10-01T04:00:00.000Z",
-//     endTime: "2023-10-01T05:00:00.000Z",
-//     vacancies: 3,
-//   },
-// ];
-
-const SelectTimeSlotModal = ({
+const SelectTimeslotModal = ({
   serviceListing,
   opened,
   onClose,
-}: SelectTimeSlotModalProps) => {
-  // console.log(serviceListing);
+}: SelectTimeslotModalProps) => {
   const theme = useMantineTheme();
   const isTablet = useMediaQuery("(max-width: 100em)");
-  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [selectedMonth, setSelectedMonth] = useState<Date>(
+    dayjs(new Date()).startOf("month").toDate(),
+  );
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTimeSlot, setSelectTimeSlot] = useState<string>();
+  const [showConfirmation, setShowConfirmation] = useToggle();
 
   const { data: availTimeSlots = [], isLoading } =
     useGetAvailableTimeSlotsByCGId(
@@ -91,27 +58,136 @@ const SelectTimeSlotModal = ({
       serviceListing.duration,
     );
 
-  useEffect(() => console.log(selectedMonth), [selectedMonth]);
-
-  // useEffect(() => {
-  //   if (!selectedDate && availTimeSlots) {
-  //     setSelectedDate(new Date(availTimeSlots[0].startTime));
-  //   }
-  // }, [availTimeSlots]);
-
   if (!serviceListing.calendarGroupId) {
     return null;
   }
 
+  function handleClickButton() {
+    if (!showConfirmation) {
+      setShowConfirmation();
+      return;
+    }
+  }
+
+  const calendar = (
+    <Calendar
+      ml="md"
+      size="lg"
+      maxLevel="year"
+      minDate={new Date()}
+      excludeDate={(date) =>
+        !availTimeSlots.some((data) =>
+          dayjs(data.startTime).isSame(date, "day"),
+        )
+      }
+      onMonthSelect={(month) => setSelectedMonth(month)}
+      onPreviousMonth={() => {
+        setSelectedMonth(dayjs(selectedMonth).subtract(1, "month").toDate());
+        setSelectedDate(null);
+      }}
+      onNextMonth={() => {
+        setSelectedMonth(dayjs(selectedMonth).add(1, "month").toDate());
+        setSelectedDate(null);
+      }}
+      getDayProps={(date) => ({
+        selected: dayjs(date).isSame(selectedDate, "date"),
+        onClick: () => setSelectedDate(date),
+      })}
+    />
+  );
+
   const timeslotCards = availTimeSlots
     .filter((data) => dayjs(data.startTime).isSame(selectedDate, "day"))
     .map((data) => (
-      <>
-        <Chip variant="filled" radius="xs" size="xl" value={data.startTime}>
-          {formatISODateStringTimeOnly(data.startTime)}
-        </Chip>
-      </>
+      <Chip
+        variant="filled"
+        radius="xs"
+        size="xl"
+        value={data.startTime}
+        key={data.timeSlotId}
+      >
+        {formatISOTimeOnly(data.startTime)}
+      </Chip>
     ));
+
+  const selectTimeslotsGrid = (
+    <Grid>
+      <Grid.Col span={isTablet ? CALENDAR_SPAN + 1 : CALENDAR_SPAN}>
+        {calendar}
+      </Grid.Col>
+      <Grid.Col span={isTablet ? TIMESLOTS_SPAN - 1 : TIMESLOTS_SPAN}>
+        <Text size="xl" weight={600}>
+          {selectedDate
+            ? formatISOLongWithDay(selectedDate.toISOString())
+            : "Select a date to view"}
+        </Text>
+        <Text color="dimmed" mb="xs">
+          Duration: {convertMinsToDurationString(serviceListing.duration)}
+        </Text>
+        <Divider mb="lg" />
+
+        {isLoading ? (
+          // display loader if still fetching avail timeslots
+          <Box h={200} sx={{ verticalAlign: "center" }}>
+            <Center h="100%" w="100%">
+              <Loader />
+            </Center>
+          </Box>
+        ) : null}
+
+        {selectedDate ? (
+          <>
+            <Group mb="md">
+              <Text size="lg" weight={500}>
+                Available start times
+              </Text>
+              <Badge variant="dot" size="lg" radius="xl" ml={-5}>
+                {timeslotCards?.length}
+              </Badge>
+            </Group>
+            <Group>
+              <Chip.Group
+                multiple={false}
+                value={selectedTimeSlot}
+                onChange={setSelectTimeSlot}
+              >
+                {timeslotCards}
+              </Chip.Group>
+            </Group>
+          </>
+        ) : null}
+      </Grid.Col>
+    </Grid>
+  );
+
+  const confirmation = (
+    <>
+      <Text mb="lg">Please check and confirm your selected timeslot.</Text>
+      <Card withBorder mb="lg" sx={{ backgroundColor: theme.colors.gray[0] }}>
+        <Text size="lg" weight={600}>
+          {serviceListing.title}
+        </Text>
+        <Text color="dimmed">{serviceListing.petBusiness.companyName}</Text>
+        <Divider mt="xs" mb="xs" />
+        <Text>
+          <strong>Duration: </strong>
+          {convertMinsToDurationString(serviceListing.duration)}
+        </Text>
+        <Text>
+          <strong>Start: </strong>
+          {formatISODayDateTime(selectedTimeSlot)}
+        </Text>
+        <Text>
+          <strong>End: </strong>
+          {formatISODayDateTime(
+            dayjs(selectedTimeSlot)
+              .add(serviceListing.duration, "minutes")
+              .toISOString(),
+          )}
+        </Text>
+      </Card>
+    </>
+  );
 
   return (
     <Modal
@@ -119,7 +195,7 @@ const SelectTimeSlotModal = ({
       onClose={onClose}
       title={
         <Text size="1.5rem" weight={600}>
-          Select timeslot
+          {showConfirmation ? "Confirm timeslot" : "Select timeslot"}
         </Text>
       }
       size="70vw"
@@ -127,65 +203,36 @@ const SelectTimeSlotModal = ({
       centered
       closeOnClickOutside={false}
     >
-      <Grid>
-        <Grid.Col span={isTablet ? CALENDAR_SPAN + 1 : CALENDAR_SPAN}>
-          <Calendar
-            ml="md"
-            size="lg"
-            maxLevel="year"
-            minDate={new Date()}
-            excludeDate={(date) =>
-              !availTimeSlots.some((data) =>
-                dayjs(data.startTime).isSame(date, "day"),
-              )
-            }
-            onMonthSelect={(month) => setSelectedMonth(month)}
-            onPreviousMonth={() =>
-              setSelectedMonth(
-                dayjs(selectedMonth).subtract(1, "month").toDate(),
-              )
-            }
-            onNextMonth={() =>
-              setSelectedMonth(dayjs(selectedMonth).add(1, "month").toDate())
-            }
-            getDayProps={(date) => ({
-              selected: dayjs(date).isSame(selectedDate, "date"),
-              onClick: () => setSelectedDate(date),
-            })}
-          />
-        </Grid.Col>
-        <Grid.Col span={isTablet ? TIMESLOTS_SPAN - 1 : TIMESLOTS_SPAN}>
-          <Text size="xl" weight={600}>
-            {formatISODateStringLongWithDay(selectedDate?.toISOString())}
-          </Text>
-          <Text color="dimmed" mb="xs">
-            Duration: {convertMinsToDurationString(serviceListing.duration)}
-          </Text>
-          <Divider mb="lg" />
-          <Group mb="md">
-            <Text size="lg" weight={500}>
-              Available start times
+      {showConfirmation ? confirmation : selectTimeslotsGrid}
+
+      <Group position={showConfirmation ? "apart" : "right"}>
+        <Button
+          size="md"
+          variant="light"
+          leftIcon={<IconChevronLeft size="1.25rem" />}
+          display={showConfirmation ? "inline" : "none"}
+          onClick={() => setShowConfirmation(false)}
+        >
+          Back
+        </Button>
+        <Group position="right">
+          {selectedTimeSlot && !showConfirmation ? (
+            <Text>
+              <strong>Selected: </strong>
+              {formatISODayDateTime(selectedTimeSlot)}
             </Text>
-            <Badge variant="dot" size="lg" radius="xl" ml={-5}>
-              {timeslotCards?.length}
-            </Badge>
-          </Group>
-          <Group>
-            <Chip.Group
-              multiple={false}
-              value={selectedTimeSlot}
-              onChange={setSelectTimeSlot}
-            >
-              {timeslotCards}
-            </Chip.Group>
-          </Group>
-        </Grid.Col>
-      </Grid>
-      <Group position="right">
-        <Button size="md">Next</Button>
+          ) : null}
+          <Button
+            size="md"
+            disabled={!selectedTimeSlot}
+            onClick={handleClickButton}
+          >
+            {showConfirmation ? "Confirm" : "Next"}
+          </Button>
+        </Group>
       </Group>
     </Modal>
   );
 };
 
-export default SelectTimeSlotModal;
+export default SelectTimeslotModal;

@@ -6,7 +6,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import { formatISODateStringLong } from "shared-utils";
+import { formatISOLong } from "shared-utils";
 import { AccountStatusEnum } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
@@ -218,7 +218,7 @@ const AccountInfoForm = ({
             {...form.getInputProps("dateOfBirth")}
           />
         ) : (
-          formatISODateStringLong(petOwner.dateOfBirth)
+          formatISOLong(petOwner.dateOfBirth)
         )}
       </Grid.Col>
       <Grid.Col span={12}>
