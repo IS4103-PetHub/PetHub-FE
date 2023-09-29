@@ -206,7 +206,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];

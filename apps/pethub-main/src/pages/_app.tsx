@@ -14,7 +14,6 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Inter } from "next/font/google";
-import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";

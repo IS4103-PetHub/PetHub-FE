@@ -39,7 +39,7 @@ export function formatISODayOnly(dateString: string) {
   return dayjs(dateString).format("ddd");
 }
 
-export function formatISOLong(dateString: string) {
+export function formatISODateLong(dateString: string) {
   // e.g. 1 September 2023
   return dayjs(dateString).format("D MMMM YYYY");
 }

@@ -1,9 +1,9 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import api from "@/api/axiosConfig";
 
 const USERS_API = "/users";
 
-export const useDeactivateAccount = (queryClient: QueryClient) => {
+export const useDeactivateAccount = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(
@@ -19,7 +19,7 @@ export const useDeactivateAccount = (queryClient: QueryClient) => {
   });
 };
 
-export const useActivateAccount = (queryClient: QueryClient) => {
+export const useActivateAccount = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(

@@ -103,7 +103,7 @@ export const useGetServiceListingByPetBusinessIdAndAccountStatus = (
 };
 
 // PATCH Service Listing by Service Id
-export const useUpdateServiceListing = (queryClient: QueryClient) => {
+export const useUpdateServiceListing = () => {
   return useMutation({
     mutationFn: async (payload: UpdateServiceListingPayload) => {
       // Extract the serviceListingId from the payload

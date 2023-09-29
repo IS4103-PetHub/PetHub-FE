@@ -2,7 +2,6 @@ import {
   Badge,
   Box,
   Button,
-  Card,
   Center,
   Chip,
   Divider,
@@ -15,8 +14,10 @@ import {
 } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
-import { IconChevronLeft } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconChevronLeft, IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import {
   ServiceListing,
@@ -25,7 +26,9 @@ import {
   formatISOLongWithDay,
   formatISOTimeOnly,
 } from "shared-utils";
+import { useCreateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import TimeslotCard from "./TimeslotCard";
 
 const CALENDAR_SPAN = 4;
 const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
@@ -41,16 +44,22 @@ const SelectTimeslotModal = ({
   opened,
   onClose,
 }: SelectTimeslotModalProps) => {
-  const theme = useMantineTheme();
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [selectedMonth, setSelectedMonth] = useState<Date>(
     dayjs(new Date()).startOf("month").toDate(),
   );
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [selectedTimeSlot, setSelectTimeSlot] = useState<string>();
+  const [selectedTimeslot, setSelectedTimeslot] = useState<string>();
   const [showConfirmation, setShowConfirmation] = useToggle();
 
-  const { data: availTimeSlots = [], isLoading } =
+  /* 
+  service listing does not belong to calendar group, or does not have a set duration
+  means this service listing is not applicable for appointment booking
+  */
+  const notApplicableForAppointment =
+    !serviceListing.calendarGroupId || !serviceListing.duration;
+
+  const { data: availTimeslots = [], isLoading } =
     useGetAvailableTimeSlotsByCGId(
       serviceListing.calendarGroupId,
       dayjs(selectedMonth).subtract(1, "month").toISOString(),
@@ -58,8 +67,60 @@ const SelectTimeslotModal = ({
       serviceListing.duration,
     );
 
-  if (!serviceListing.calendarGroupId) {
+  const createBookingMutation = useCreateBooking();
+  async function createBooking() {
+    const session = await getSession();
+    if (!session) {
+      notifications.show({
+        title: "Login Required",
+        message: "Please log in to confirm booking!",
+        color: "red",
+      });
+      return;
+    }
+    try {
+      const payload = {
+        petOwnerId: session.user["userId"],
+        calendarGroupId: serviceListing.calendarGroupId,
+        serviceListingId: serviceListing.serviceListingId,
+        startTime: selectedTimeslot,
+        endTime: dayjs(selectedTimeslot)
+          .add(serviceListing.duration, "minutes")
+          .toISOString(),
+      };
+      await createBookingMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Appointment Confirmed",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Your appointment on ${formatISODayDateTime(
+          selectedTimeslot,
+        )} has been confirmed!`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Creating Appointment",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  }
+
+  if (notApplicableForAppointment) {
     return null;
+  }
+
+  function handleClose() {
+    onClose();
+    setSelectedMonth(dayjs(new Date()).startOf("month").toDate());
+    setSelectedTimeslot(null);
+    setSelectedDate(null);
+    setShowConfirmation(false);
   }
 
   function handleClickButton() {
@@ -67,6 +128,8 @@ const SelectTimeslotModal = ({
       setShowConfirmation();
       return;
     }
+    createBooking();
+    handleClose();
   }
 
   const calendar = (
@@ -76,7 +139,7 @@ const SelectTimeslotModal = ({
       maxLevel="year"
       minDate={new Date()}
       excludeDate={(date) =>
-        !availTimeSlots.some((data) =>
+        !availTimeslots.some((data) =>
           dayjs(data.startTime).isSame(date, "day"),
         )
       }
@@ -96,7 +159,7 @@ const SelectTimeslotModal = ({
     />
   );
 
-  const timeslotCards = availTimeSlots
+  const timeslotCards = availTimeslots
     .filter((data) => dayjs(data.startTime).isSame(selectedDate, "day"))
     .map((data) => (
       <Chip
@@ -148,8 +211,8 @@ const SelectTimeslotModal = ({
             <Group>
               <Chip.Group
                 multiple={false}
-                value={selectedTimeSlot}
-                onChange={setSelectTimeSlot}
+                value={selectedTimeslot}
+                onChange={setSelectedTimeslot}
               >
                 {timeslotCards}
               </Chip.Group>
@@ -163,36 +226,17 @@ const SelectTimeslotModal = ({
   const confirmation = (
     <>
       <Text mb="lg">Please check and confirm your selected timeslot.</Text>
-      <Card withBorder mb="lg" sx={{ backgroundColor: theme.colors.gray[0] }}>
-        <Text size="lg" weight={600}>
-          {serviceListing.title}
-        </Text>
-        <Text color="dimmed">{serviceListing.petBusiness.companyName}</Text>
-        <Divider mt="xs" mb="xs" />
-        <Text>
-          <strong>Duration: </strong>
-          {convertMinsToDurationString(serviceListing.duration)}
-        </Text>
-        <Text>
-          <strong>Start: </strong>
-          {formatISODayDateTime(selectedTimeSlot)}
-        </Text>
-        <Text>
-          <strong>End: </strong>
-          {formatISODayDateTime(
-            dayjs(selectedTimeSlot)
-              .add(serviceListing.duration, "minutes")
-              .toISOString(),
-          )}
-        </Text>
-      </Card>
+      <TimeslotCard
+        serviceListing={serviceListing}
+        selectedTimeslot={selectedTimeslot}
+      />
     </>
   );
 
   return (
     <Modal
       opened={opened}
-      onClose={onClose}
+      onClose={handleClose}
       title={
         <Text size="1.5rem" weight={600}>
           {showConfirmation ? "Confirm timeslot" : "Select timeslot"}
@@ -216,15 +260,15 @@ const SelectTimeslotModal = ({
           Back
         </Button>
         <Group position="right">
-          {selectedTimeSlot && !showConfirmation ? (
+          {selectedTimeslot && !showConfirmation ? (
             <Text>
               <strong>Selected: </strong>
-              {formatISODayDateTime(selectedTimeSlot)}
+              {formatISODayDateTime(selectedTimeslot)}
             </Text>
           ) : null}
           <Button
             size="md"
-            disabled={!selectedTimeSlot}
+            disabled={!selectedTimeslot}
             onClick={handleClickButton}
           >
             {showConfirmation ? "Confirm" : "Next"}

@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
@@ -13,7 +13,7 @@ export const useCreatePetBusiness = () => {
   });
 };
 
-export const useUpdatePetBusiness = (queryClient: QueryClient) => {
+export const useUpdatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
       const payloadWithoutId = Object.fromEntries(

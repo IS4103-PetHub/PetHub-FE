@@ -1,24 +1,18 @@
 import {
-  MultiSelect,
   Button,
   Container,
   Grid,
   Textarea,
   TextInput,
   Group,
-  FileInput,
   Text,
-  SimpleGrid,
   Select,
-  Alert,
   Badge,
 } from "@mantine/core";
-// import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconSend, IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -45,7 +39,6 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
   const [applicationStatus, setApplicationStatus] = useState(null);
   const [loading, setLoading] = useState(true);
-  const queryClient = useQueryClient();
   const [isDisabled, setIsDisabled] = useState(false);
 
   const {
@@ -154,7 +147,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   }
 
   const createPetBusinessApplicationMutation =
-    useCreatePetBusinessApplication(queryClient);
+    useCreatePetBusinessApplication();
   const createPetBusinessApplication = async (
     payload: CreatePetBusinessApplicationPayload,
   ) => {
@@ -182,7 +175,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   };
 
   const updatePetBusinessApplicationMutation =
-    useUpdatePetBusinessApplication(queryClient);
+    useUpdatePetBusinessApplication();
   const updatePetBusinessApplication = async (
     payload: CreatePetBusinessApplicationPayload,
   ) => {
@@ -357,7 +350,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];

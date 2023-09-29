@@ -10,7 +10,6 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconUser, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useActivateAccount, useDeactivateAccount } from "@/hooks/account";
 
@@ -25,7 +24,6 @@ const DeactivateReactivateAccountModal = ({
   action,
   refetch,
 }: DeactivateReactivateAccountModalProps) => {
-  const queryClient = useQueryClient();
   const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm({
@@ -38,8 +36,8 @@ const DeactivateReactivateAccountModal = ({
 
   type FormValues = typeof form.values;
 
-  const deactivateAccountMutation = useDeactivateAccount(queryClient);
-  const reactivateAccountMutation = useActivateAccount(queryClient);
+  const deactivateAccountMutation = useDeactivateAccount();
+  const reactivateAccountMutation = useActivateAccount();
 
   const handleDeactivateAccount = async (values: FormValues) => {
     const payload = { userId: userId, password: values.password };

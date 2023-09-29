@@ -11,11 +11,10 @@ import {
   IconAlertOctagon,
   IconAddressBook,
 } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
-import { formatISOLong } from "shared-utils";
+import { formatISODateLong } from "shared-utils";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
@@ -33,8 +32,6 @@ interface MyAccountProps {
 
 export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const theme = useMantineTheme();
-  const queryClient = useQueryClient();
-
   const defaultValues = ["account"];
 
   const { data: petOwner, refetch: refetchPetOwner } =
@@ -53,7 +50,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const action =
     accountStatus === AccountStatusEnum.Active ? "Deactivate" : " Reactivate";
 
-  const dateCreated = formatISOLong(
+  const dateCreated = formatISODateLong(
     petOwner ? petOwner.dateCreated : petBusiness.dateCreated,
   );
 
@@ -143,7 +140,6 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
             </Accordion.Control>
             <Accordion.Panel p="md">
               <ChangePasswordForm
-                queryClient={queryClient}
                 email={petOwner ? petOwner.email : petBusiness.email}
               />
             </Accordion.Panel>
@@ -185,7 +181,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];

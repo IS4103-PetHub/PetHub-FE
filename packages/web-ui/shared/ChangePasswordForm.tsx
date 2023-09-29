@@ -3,7 +3,6 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { QueryClient } from "@tanstack/react-query";
 import React from "react";
 import {
   ChangePasswordPayload,
@@ -14,13 +13,9 @@ import PasswordBar from "web-ui/shared/PasswordBar";
 
 interface ChangePasswordFormProps {
   email: string;
-  queryClient: QueryClient;
 }
 
-const ChangePasswordForm = ({
-  email,
-  queryClient,
-}: ChangePasswordFormProps) => {
+const ChangePasswordForm = ({ email }: ChangePasswordFormProps) => {
   const isMobile = useMediaQuery("(max-width: 64em)");
   const form = useForm({
     initialValues: {
@@ -39,7 +34,7 @@ const ChangePasswordForm = ({
 
   type FormValues = typeof form.values;
 
-  const changePasswordMutation = useChangePassword(queryClient);
+  const changePasswordMutation = useChangePassword();
   const changePassword = async (payload: ChangePasswordPayload) => {
     try {
       await changePasswordMutation.mutateAsync(payload);

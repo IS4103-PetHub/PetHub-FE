@@ -4,9 +4,8 @@ import { TransformedValues, isEmail, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import { formatISOLong } from "shared-utils";
+import { formatISODateLong } from "shared-utils";
 import { AccountStatusEnum } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
@@ -25,7 +24,6 @@ const AccountInfoForm = ({
   petBusiness,
   refetch,
 }: AccountInfoFormProps) => {
-  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useToggle();
 
   const formDefaultValues = {
@@ -86,8 +84,8 @@ const AccountInfoForm = ({
     form.setValues(formDefaultValues);
   }, [petOwner, petBusiness]);
 
-  const updatePetOwnerMutation = useUpdatePetOwner(queryClient);
-  const updatePetBusinessMutation = useUpdatePetBusiness(queryClient);
+  const updatePetOwnerMutation = useUpdatePetOwner();
+  const updatePetBusinessMutation = useUpdatePetBusiness();
 
   if (!petOwner && !petBusiness) {
     return null;
@@ -95,7 +93,6 @@ const AccountInfoForm = ({
 
   const KEY_SPAN = petOwner ? 3 : 4;
   const VALUE_SPAN = 12 - KEY_SPAN;
-  const BUSINESS_DESCRIPTION_MAX_CHARACTERS = 50;
 
   const updateAccount = async (payload: any) => {
     try {
@@ -218,7 +215,7 @@ const AccountInfoForm = ({
             {...form.getInputProps("dateOfBirth")}
           />
         ) : (
-          formatISOLong(petOwner.dateOfBirth)
+          formatISODateLong(petOwner.dateOfBirth)
         )}
       </Grid.Col>
       <Grid.Col span={12}>

@@ -16,7 +16,6 @@ import {
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import {
   Address,
@@ -136,9 +135,8 @@ const ServiceListingModal = ({
   /*
    * Service Handlers
    */
-  const queryClient = useQueryClient();
   const createServiceListingMutation = useCreateServiceListing();
-  const updateServiceListingMutation = useUpdateServiceListing(queryClient);
+  const updateServiceListingMutation = useUpdateServiceListing();
   const handleAction = async (values: ServiceFormValues) => {
     try {
       if (isUpdating) {
