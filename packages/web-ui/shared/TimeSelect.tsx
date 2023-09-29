@@ -7,6 +7,7 @@ interface TimeSelectProps {
   interval: number;
   onChange?: (time: string) => void;
   sx?: any;
+  disabled?: boolean;
 }
 
 // defaultTime is in HH:MM format, get the correct HH:MM:AM/PM format if it exists, else return midnight
@@ -35,6 +36,7 @@ const TimeSelect = ({
   interval,
   onChange,
   sx,
+  disabled,
   ...props
 }: TimeSelectProps) => {
   const time = parseDefaultTime(defaultTime);
@@ -77,6 +79,7 @@ const TimeSelect = ({
     <Group sx={sx} {...props}>
       <Select
         label={label || " "}
+        disabled={disabled}
         w={80}
         mr={-10}
         data={hours}
@@ -89,6 +92,7 @@ const TimeSelect = ({
       />
       <Select
         label=" "
+        disabled={disabled}
         w={80}
         mr={-10}
         data={minutes}
@@ -101,6 +105,7 @@ const TimeSelect = ({
       />
       <Select
         label=" "
+        disabled={disabled}
         w={80}
         data={["AM", "PM"]}
         value={ampm}

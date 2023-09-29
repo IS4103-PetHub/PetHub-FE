@@ -20,8 +20,10 @@ import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeEditButton from "web-ui/shared/LargeEditButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { useGetCalendarGroupById } from "@/hooks/calendar-group";
+import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { validateCGSettings } from "@/util";
 
 interface ViewCalendarGroupProps {
@@ -30,6 +32,13 @@ interface ViewCalendarGroupProps {
 
 export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
   const router = useRouter();
+  const [isEditingDisabled, setIsEditingDisabled] = useState(true);
+  const [key, setKey] = useState(Math.random());
+  const [initialValues, setInitialValues] = useState<CalendarGroup>({
+    name: "",
+    description: "",
+    scheduleSettings: null,
+  });
 
   const calendarGroupId = Number(router.query.id);
 
@@ -54,13 +63,24 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
 
   useEffect(() => {
     if (calendarGroup) {
-      form.setValues({
+      const values = {
         name: calendarGroup.name,
         description: calendarGroup.description,
         scheduleSettings: calendarGroup.scheduleSettings,
-      });
+      };
+      form.setValues(values);
+      setInitialValues(values);
     }
   }, [calendarGroup]);
+
+  function toggleEdit() {
+    setIsEditingDisabled(!isEditingDisabled);
+  }
+
+  function cancelEdit() {
+    form.setValues(initialValues);
+    setKey(Math.random()); // Force CalendarGroupForm to re-render with initialValues upon cancel
+  }
 
   if (!calendarGroupId) {
     return null;
@@ -75,10 +95,21 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       <Container mt="xl" mb="xl">
         <Group position="apart">
           <PageTitle title="View Calendar Group" />
+          {isEditingDisabled && (
+            <LargeEditButton text="Edit Calendar Group" onClick={toggleEdit} />
+          )}
         </Group>
 
         <Group mt="xs">
-          <CalendarGroupForm form={form} userId={userId} />
+          <CalendarGroupForm
+            key={key}
+            form={form}
+            userId={userId}
+            isEditingDisabled={isEditingDisabled}
+            forView={true}
+            toggleEdit={toggleEdit}
+            cancelEdit={cancelEdit}
+          />
         </Group>
       </Container>
     </>

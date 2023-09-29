@@ -4,27 +4,12 @@ import {
   Grid,
   Group,
   Textarea,
-  Center,
-  Card,
-  Menu,
   Text,
-  Switch,
-  SegmentedControl,
-  Box,
-  Checkbox,
   Stack,
   Divider,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import {
-  IconBuildingStore,
-  IconCalendar,
-  IconCheck,
-  IconPawFilled,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -38,9 +23,20 @@ import SettingsForm from "./SettingsForm";
 interface CalendarGroupFormProps {
   form: any;
   userId: number;
+  forView: boolean; // true if this form is for viewing an existing calendar group, false if it is for creating a new calendar group
+  isEditingDisabled?: boolean;
+  toggleEdit?: () => void;
+  cancelEdit?: () => void;
 }
 
-const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
+const CalendarGroupForm = ({
+  form,
+  userId,
+  forView,
+  isEditingDisabled,
+  toggleEdit,
+  cancelEdit,
+}: CalendarGroupFormProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [settingsError, setSettingsError] = useState([]);
@@ -143,6 +139,7 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
             defaultValue={form.values.name}
             placeholder="Enter a name for the calendar group"
             withAsterisk
+            disabled={isEditingDisabled}
             {...form.getInputProps("name")}
           />
         </Grid.Col>
@@ -155,6 +152,7 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
             autosize
             minRows={3}
             maxRows={3}
+            disabled={isEditingDisabled}
             {...form.getInputProps("description")}
           />
         </Grid.Col>
@@ -188,29 +186,43 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
               form={form}
               index={index}
               highlight={settingsError.includes(index) ? true : false} // true if that setting's index matches the index returned by the validation during a create
+              isEditingDisabled={isEditingDisabled}
             />
           ),
         )}
-        <Grid.Col span={12}>
-          <CreateButton
-            text="Add another schedule"
-            onClick={addNewScheduleSettings}
-            fullWidth
-            variant="light"
-            radius="lg"
-            h={320}
-          />
-        </Grid.Col>
+        {!isEditingDisabled && (
+          <Grid.Col span={12}>
+            <CreateButton
+              text="Add another schedule"
+              onClick={addNewScheduleSettings}
+              fullWidth
+              variant="light"
+              radius="lg"
+              h={320}
+            />
+          </Grid.Col>
+        )}
       </Grid>
       <Group mt="25px" position="right">
-        <Button
-          type="reset"
-          color="gray"
-          onClick={() => router.push("/business/calendargroup")}
-        >
-          Back
-        </Button>
-        <Button type="submit">Create</Button>
+        {forView ? (
+          !isEditingDisabled && (
+            <>
+              <Button
+                type="reset"
+                color="red"
+                onClick={() => {
+                  cancelEdit();
+                  toggleEdit();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Update</Button>
+            </>
+          )
+        ) : (
+          <Button type="submit">Create</Button>
+        )}
       </Group>
     </form>
   );

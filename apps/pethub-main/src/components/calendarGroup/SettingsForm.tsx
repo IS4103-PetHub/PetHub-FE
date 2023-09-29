@@ -32,6 +32,7 @@ interface SettingsFormProps {
   form: any;
   index: number;
   highlight: boolean;
+  isEditingDisabled: boolean;
 }
 
 const SettingsForm = ({
@@ -42,6 +43,7 @@ const SettingsForm = ({
   form,
   index,
   highlight,
+  isEditingDisabled,
 }: SettingsFormProps) => {
   const errors = form.errors?.scheduleSettings?.errors;
   const theme = useMantineTheme();
@@ -112,11 +114,13 @@ const SettingsForm = ({
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
             <Text>Schedule setting {index + 1}</Text>
-            <IconX
-              size="1rem"
+            <ActionIcon
               onClick={onRemove}
               style={{ cursor: "pointer" }}
-            />
+              disabled={isEditingDisabled}
+            >
+              <IconX size="1rem" />
+            </ActionIcon>
           </Group>
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
@@ -135,6 +139,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
+              disabled={isEditingDisabled}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, startDate: value },
@@ -156,6 +161,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
+              disabled={isEditingDisabled}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, endDate: value },
@@ -174,6 +180,7 @@ const SettingsForm = ({
             fullWidth
             size="xs"
             data={segmentedControlData}
+            disabled={isEditingDisabled}
             onChange={(value) =>
               onChange({
                 recurrence: { ...setting.recurrence, pattern: value },
@@ -190,13 +197,41 @@ const SettingsForm = ({
               error={errors?.[index]?.days}
             >
               <Group mt="xs" mb="xs">
-                <Checkbox value={DayOfWeekEnum.Monday} label="Mon" />
-                <Checkbox value={DayOfWeekEnum.Tuesday} label="Tue" />
-                <Checkbox value={DayOfWeekEnum.Wednesday} label="Wed" />
-                <Checkbox value={DayOfWeekEnum.Thursday} label="Thu" />
-                <Checkbox value={DayOfWeekEnum.Friday} label="Fri" />
-                <Checkbox value={DayOfWeekEnum.Saturday} label="Sat" />
-                <Checkbox value={DayOfWeekEnum.Sunday} label="Sun" />
+                <Checkbox
+                  value={DayOfWeekEnum.Monday}
+                  label="Mon"
+                  disabled={isEditingDisabled}
+                />
+                <Checkbox
+                  value={DayOfWeekEnum.Tuesday}
+                  label="Tue"
+                  disabled={isEditingDisabled}
+                />
+                <Checkbox
+                  value={DayOfWeekEnum.Wednesday}
+                  label="Wed"
+                  disabled={isEditingDisabled}
+                />
+                <Checkbox
+                  value={DayOfWeekEnum.Thursday}
+                  label="Thu"
+                  disabled={isEditingDisabled}
+                />
+                <Checkbox
+                  value={DayOfWeekEnum.Friday}
+                  label="Fri"
+                  disabled={isEditingDisabled}
+                />
+                <Checkbox
+                  value={DayOfWeekEnum.Saturday}
+                  label="Sat"
+                  disabled={isEditingDisabled}
+                />
+                <Checkbox
+                  value={DayOfWeekEnum.Sunday}
+                  label="Sun"
+                  disabled={isEditingDisabled}
+                />
               </Group>
             </Checkbox.Group>
           </Card.Section>
@@ -210,17 +245,21 @@ const SettingsForm = ({
               onRemove={() => removeTimePeriod(timePeriod.timePeriodId)}
               onChange={(changes) => handleTimePeriodChange(idx, changes)}
               errors={errors?.[index]?.recurrence?.timePeriods}
+              isEditingDisabled={isEditingDisabled}
             />
           ))}
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
-          <CreateButton
-            text="Add another time period"
-            fullWidth
-            variant=""
-            mt="sm"
-            onClick={addTimePeriod}
-          />
+          {!isEditingDisabled && (
+            <CreateButton
+              text="Add another time period"
+              fullWidth
+              variant=""
+              mt="sm"
+              mb="sm"
+              onClick={addTimePeriod}
+            />
+          )}
         </Card.Section>
       </Card>
     </Grid.Col>

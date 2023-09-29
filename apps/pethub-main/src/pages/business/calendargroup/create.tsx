@@ -2,10 +2,12 @@ import { Container, Group } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { validateCGSettings } from "@/util";
 
@@ -16,6 +18,8 @@ interface CreateCalendarGroupProps {
 export default function CreateCalendarGroup({
   userId,
 }: CreateCalendarGroupProps) {
+  const router = useRouter();
+
   const form = useForm({
     initialValues: {
       name: "",
@@ -59,10 +63,19 @@ export default function CreateCalendarGroup({
       <Container mt="xl" mb="xl">
         <Group position="apart">
           <PageTitle title="Create Calendar Group" />
+          <LargeBackButton
+            text="Back to Calendar View"
+            onClick={() => router.push("/business/calendargroup")}
+          />
         </Group>
 
         <Group mt="xs">
-          <CalendarGroupForm form={form} userId={userId} />
+          <CalendarGroupForm
+            form={form}
+            userId={userId}
+            forView={false}
+            isEditingDisabled={false}
+          />
         </Group>
       </Container>
     </>
