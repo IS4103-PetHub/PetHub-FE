@@ -16,6 +16,7 @@ import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
 import { formatISODateString } from "shared-utils";
+import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
@@ -24,7 +25,6 @@ import AddressInfoForm from "@/components/account/AddressInfoForm";
 import DeactivateReactivateAccountModal from "@/components/account/DeactivateReactivateAccountModal";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
-import { AccountStatusEnum, AccountTypeEnum } from "@/types/constants";
 
 interface MyAccountProps {
   userId: number;

@@ -28,12 +28,12 @@ import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/react";
 import React from "react";
 import { validatePassword } from "shared-utils";
+import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
 import { useCreatePetOwner } from "@/hooks/pet-owner";
-import { AccountTypeEnum } from "@/types/constants";
 import {
   CreatePetBusinessPayload,
   CreatePetOwnerPayload,

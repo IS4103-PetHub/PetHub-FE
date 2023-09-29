@@ -10,14 +10,13 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { Address, ServiceListing, Tag, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { Address, ServiceListing, Tag } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 

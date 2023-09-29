@@ -19,13 +19,13 @@ import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { AccountTypeEnum } from "shared-utils";
 import {
   LoadingOverlayProvider,
   useLoadingOverlay,
 } from "web-ui/shared/LoadingOverlayContext";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
-import { AccountTypeEnum } from "@/types/constants";
 import type { AppProps } from "next/app";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -71,14 +71,7 @@ export function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <>
-      <Head>
-        <style jsx global>{`
-          html {
-            font-family: ${inter.style.fontFamily};
-          }
-        `}</style>
-      </Head>
+    <main className={inter.className}>
       <ColorSchemeProvider
         colorScheme={colorScheme}
         toggleColorScheme={toggleColorScheme}
@@ -133,7 +126,7 @@ export function App({ Component, pageProps }: AppProps) {
           </QueryClientProvider>
         </MantineProvider>
       </ColorSchemeProvider>
-    </>
+    </main>
   );
 }
 

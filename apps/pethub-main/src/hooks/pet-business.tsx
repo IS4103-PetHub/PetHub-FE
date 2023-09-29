@@ -1,6 +1,6 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { AccountTypeEnum } from "@/types/constants";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
 
 const PET_BUSINESS_API = "/users/pet-businesses";
@@ -46,7 +46,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         websiteURL: data.websiteURL,
         contactNumber: data.contactNumber,
         email: data.user.email,
-        accountType: data.useraccountType,
+        accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
         businessAddresses: data.businessAddresses,

@@ -9,9 +9,9 @@ import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { ForgotPasswordPayload } from "shared-utils";
+import { AccountTypeEnum } from "shared-utils";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
-import { AccountTypeEnum } from "@/types/constants";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
 

@@ -3,10 +3,11 @@ import {
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
   DayOfWeekEnum,
+  Address,
   PetBusinessTypeEnum,
   RecurrencePatternEnum,
   ServiceCategoryEnum,
-} from "./constants";
+} from "shared-utils";
 
 /*
  * USER MANAGEMENT
@@ -65,16 +66,6 @@ export interface PetOwner extends User {
   dateOfBirth: string;
 }
 
-export interface Address {
-  addressId?: string;
-  addressName: string;
-  line1: string;
-  line2: string;
-  postalCode: string;
-  petBusinessId?: Number;
-  petBusinessApplicationId?: Number;
-}
-
 export interface BusinessApplicationApprover {
   firstName: String;
   lastName: String;
@@ -113,32 +104,6 @@ export interface PetBusinessApplication {
 /*
  * SERVICE MANAGEMENT
  */
-export interface ServiceListing {
-  serviceListingId: number;
-  title: string;
-  description: string;
-  basePrice: number;
-  category: ServiceCategoryEnum;
-  tags: Tag[];
-  // address
-  dateCreated: string;
-  lastUpdated?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  addresses: Address[];
-  //pet business
-  petBusinessId: number;
-  petBusiness?: {
-    companyName: string;
-  };
-}
-
-export interface Tag {
-  tagId: number;
-  name: string;
-  dateCreated: string;
-  lastUpdated?: string;
-}
 
 export interface CreateServiceListingPayload {
   title: string;

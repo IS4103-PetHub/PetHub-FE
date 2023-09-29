@@ -6,9 +6,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE, Tag } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -24,24 +24,14 @@ import {
   useGetAllTags,
   useUpdateTag,
 } from "@/hooks/tag";
-import {
-  EMPTY_STATE_DELAY_MS,
-  PermissionsCodeEnum,
-  TABLE_PAGE_SIZE,
-} from "@/types/constants";
-import {
-  CreateTagPayload,
-  Permission,
-  Tag,
-  UpdateTagPayload,
-} from "@/types/types";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { CreateTagPayload, Permission, UpdateTagPayload } from "@/types/types";
 
 interface TagsProps {
   permissions: Permission[];
 }
 
 export default function Tags({ permissions }: TagsProps) {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   //permissions
@@ -238,7 +228,7 @@ export default function Tags({ permissions }: TagsProps) {
       </Head>
       <Container fluid>
         <Group position="apart" mb="xl">
-          <PageTitle title="Tags Management" />
+          <PageTitle title="Tag Management" />
           {canWrite ? (
             <CreateTagButtonModal onCreate={handleCreateTag} />
           ) : null}

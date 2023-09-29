@@ -1,21 +1,18 @@
 import {
   Button,
   TextInput,
-  Group,
   Container,
-  createStyles,
   Grid,
   PasswordInput,
-  Text,
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconPlus, IconX, IconCheck } from "@tabler/icons-react";
-import React, { useState } from "react";
-import { validatePassword } from "shared-utils";
+
+import { AccountTypeEnum, validatePassword } from "shared-utils";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreateInternalUser } from "@/hooks/internal-user";
-import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
+import { InternalUserRoleEnum } from "@/types/constants";
 import { CreateInternalUserPayload } from "@/types/types";
 
 export function CreateInternalUserForm({

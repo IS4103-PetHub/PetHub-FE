@@ -17,6 +17,7 @@ import {
   IconUsersGroup,
   IconArticle,
 } from "@tabler/icons-react";
+import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -93,6 +94,11 @@ const data = [
     link: "/admin/pb-applications",
     label: "Pet Business Applications",
     icon: IconArticle,
+  },
+  {
+    link: "/admin/service-listings",
+    label: "Service Listings",
+    icon: IconBoxMultiple,
   },
 ];
 

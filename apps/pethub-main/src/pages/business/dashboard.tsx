@@ -4,14 +4,12 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import ApplicationStatusAlert from "@/components/pb-application/ApplicationStatusAlert";
 import { useGetPetBusinessApplicationByPBId } from "@/hooks/pet-business-application";
-import {
-  AccountTypeEnum,
-  BusinessApplicationStatusEnum,
-} from "@/types/constants";
+import { BusinessApplicationStatusEnum } from "@/types/constants";
 
 interface DashboardProps {
   userId: number;

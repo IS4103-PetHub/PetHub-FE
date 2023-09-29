@@ -2,13 +2,14 @@ import { Container, Tabs } from "@mantine/core";
 import { IconPaw, IconBuildingStore, IconUserCog } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
+import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import InternalUserTable from "@/components/users/InternalUserTable";
 import PetBusinessTable from "@/components/users/PetBusinessTable";
 import PetOwnerTable from "@/components/users/PetOwnerTable";
-import { AccountTypeEnum, PermissionsCodeEnum } from "@/types/constants";
+import { PermissionsCodeEnum } from "@/types/constants";
 import { Permission } from "@/types/types";
 
 interface AccountTabsProps {

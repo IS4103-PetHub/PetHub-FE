@@ -5,6 +5,13 @@ import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import {
+  AccountTypeEnum,
+  EMPTY_STATE_DELAY_MS,
+  ServiceListing,
+  TABLE_PAGE_SIZE,
+  searchServiceListingsForPB,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
@@ -16,13 +23,6 @@ import ServiceListTable from "@/components/service-listing-management/ServiceLis
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import {
-  AccountTypeEnum,
-  EMPTY_STATE_DELAY_MS,
-  TABLE_PAGE_SIZE,
-} from "@/types/constants";
-import { ServiceListing } from "@/types/types";
-import { searchServiceListingsForPB } from "@/util";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
