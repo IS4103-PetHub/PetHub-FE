@@ -32,10 +32,9 @@ import { validateAddressName } from "@/util";
 
 interface ApplicationProps {
   userId: number;
-  accountType: AccountTypeEnum;
 }
 
-export default function Application({ userId, accountType }: ApplicationProps) {
+export default function Application({ userId }: ApplicationProps) {
   const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
   const [applicationStatus, setApplicationStatus] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -353,7 +352,5 @@ export async function getServerSideProps(context) {
   if (!session) return { props: {} };
 
   const userId = session.user["userId"];
-  const accountType = session.user["accountType"];
-
-  return { props: { userId, accountType } };
+  return { props: { userId } };
 }
