@@ -10,6 +10,7 @@ import {
 import { useMediaQuery, useToggle } from "@mantine/hooks";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
@@ -25,12 +26,16 @@ import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ServiceListingFavouriteCard from "@/components/service-listing-discovery/ServiceListingFavouriteCard";
 import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
-import { useGetAllServiceListingsWithQueryParams } from "@/hooks/service-listing";
+import { useGetFavouriteServiceListingByPetOwnerId } from "@/hooks/pet-owner";
 import { useGetAllTags } from "@/hooks/tags";
 import { serviceListingSortOptions } from "@/types/constants";
 import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
 
-export default function ServiceListings() {
+interface FavouritesProps {
+  userId: number;
+}
+
+export default function Favourites({ userId }: FavouritesProps) {
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 64em)");
   const isTablet = useMediaQuery("(max-width: 100em)");
@@ -45,7 +50,7 @@ export default function ServiceListings() {
 
   //CHANGE THIS to get all favourite listings by petowner ID
   const { data: serviceListings = [], isLoading } =
-    useGetAllServiceListingsWithQueryParams(activeCategory, selectedTags);
+    useGetFavouriteServiceListingByPetOwnerId(userId);
   const { data: tags = [] } = useGetAllTags();
 
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
@@ -198,4 +203,11 @@ export default function ServiceListings() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+  const userId = session.user["userId"];
+  return { props: { userId } };
 }

@@ -1,7 +1,11 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { AccountTypeEnum } from "shared-utils";
+import { AccountTypeEnum, ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { CreatePetOwnerPayload, PetOwner } from "@/types/types";
+import {
+  AddRemoveFavouriteServiceListingPayload,
+  CreatePetOwnerPayload,
+  PetOwner,
+} from "@/types/types";
 
 const PET_OWNER_API = "/users/pet-owners";
 
@@ -48,5 +52,45 @@ export const useGetPetOwnerByIdAndAccountType = (
       return petOwner as PetOwner;
     },
     enabled: accountType === AccountTypeEnum.PetOwner,
+  });
+};
+
+// GET Favourite Service Listings by PO Id
+export const useGetFavouriteServiceListingByPetOwnerId = (userId: number) => {
+  return useQuery({
+    queryFn: async () => {
+      const response = await api.get(`${PET_OWNER_API}/favourites/${userId}`);
+      return response.data as ServiceListing[];
+    },
+  });
+};
+
+// POST add to favourites
+export const useAddServiceListingToFavourites = () => {
+  return useMutation({
+    mutationFn: async (payload: AddRemoveFavouriteServiceListingPayload) => {
+      const { userId, ...payloadWithoutUserId } = payload;
+      return (
+        await api.post(
+          `${PET_OWNER_API}/add-to-favourites/${userId}`,
+          payloadWithoutUserId,
+        )
+      ).data;
+    },
+  });
+};
+
+// POST remove from favourites
+export const useRemoveServiceListingFromFavourites = () => {
+  return useMutation({
+    mutationFn: async (payload: AddRemoveFavouriteServiceListingPayload) => {
+      const { userId, ...payloadWithoutUserId } = payload;
+      return (
+        await api.post(
+          `${PET_OWNER_API}/remove-from-favourites/${userId}`,
+          payloadWithoutUserId,
+        )
+      ).data;
+    },
   });
 };

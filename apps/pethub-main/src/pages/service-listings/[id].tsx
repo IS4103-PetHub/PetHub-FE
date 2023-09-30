@@ -17,6 +17,8 @@ import {
   IconMapPin,
   IconPhone,
   IconHeart,
+  IconCheck,
+  IconX,
 } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -31,24 +33,102 @@ import ServiceCategoryBadge from "@/components/service-listing-discovery/Service
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
+import {
+  useAddServiceListingToFavourites,
+  useRemoveServiceListingFromFavourites,
+} from "@/hooks/pet-owner";
+import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {
   serviceListing: ServiceListing;
+  userId: number;
 }
 
 export default function ServiceListingDetails({
   serviceListing,
+  userId,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const [isFavourite, setIsFavourite] = useState(false);
+  const [isFavourite, setIsFavourite] = useState(
+    serviceListing.favouritedUsers
+      ? serviceListing.favouritedUsers.some((user) => user.userId === userId)
+      : false,
+  );
+
+  console.log(isFavourite + " on start");
   const ACCORDION_VALUES = ["description", "business"];
 
+  const serviceListingId = serviceListing.serviceListingId;
+  const payload: AddRemoveFavouriteServiceListingPayload = {
+    userId,
+    serviceListingId,
+  };
+
+  const addFavouriteMutation = useAddServiceListingToFavourites();
+  const handleAddFavourite = async (
+    payload: AddRemoveFavouriteServiceListingPayload,
+  ) => {
+    try {
+      await addFavouriteMutation.mutateAsync(payload);
+      setIsFavourite(!isFavourite);
+      console.log(isFavourite + " on add");
+      notifications.show({
+        title: "Favourite Added",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Listing ${payload.serviceListingId} added to favourites.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Adding Listing to Favourites",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const removeFavouriteMutation = useRemoveServiceListingFromFavourites();
+  const handleRemoveFavourite = async (
+    payload: AddRemoveFavouriteServiceListingPayload,
+  ) => {
+    try {
+      await removeFavouriteMutation.mutateAsync(payload);
+      setIsFavourite(!isFavourite);
+      console.log(isFavourite + " on remove");
+      notifications.show({
+        title: "Favourite Removed",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Listing ${payload.serviceListingId} removed from favourites.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Removing Listing from Favourites",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   const handleFavouriteToggle = () => {
-    setIsFavourite(!isFavourite);
-    //  call any API endpoint to save the favourite state
+    if (isFavourite) {
+      handleRemoveFavourite(payload);
+    } else {
+      handleAddFavourite(payload);
+    }
   };
 
   const handleClickBuyNow = async () => {
@@ -188,6 +268,10 @@ export default function ServiceListingDetails({
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
+
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+  const userId = session.user["userId"];
   const serviceListing = await (await api.get(`/service-listings/${id}`)).data;
-  return { props: { serviceListing } };
+  return { props: { serviceListing, userId } };
 }
