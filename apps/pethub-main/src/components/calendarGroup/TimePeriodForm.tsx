@@ -20,6 +20,7 @@ interface timePeriodFormProps {
   onRemove: () => void;
   onChange: any;
   errors: any;
+  isEditingDisabled: boolean;
 }
 
 const TimePeriodForm = ({
@@ -28,6 +29,7 @@ const TimePeriodForm = ({
   onRemove,
   onChange,
   errors,
+  isEditingDisabled,
 }: timePeriodFormProps) => {
   // Ensures sequential mounting of TimeSelects to avoid weird state synchronization issues with the onChange for both TimeSelects
   const theme = useMantineTheme();
@@ -45,8 +47,10 @@ const TimePeriodForm = ({
           </Box>
           <Box mr={50}>
             <TimeSelect
+              defaultTime={timePeriod.startTime ?? null}
               label={index === 0 && "Start time"}
               interval={TIME_INTERVAL}
+              disabled={isEditingDisabled}
               onChange={(value) => {
                 onChange({ startTime: value });
                 setIsEndTimeInitialized(true);
@@ -56,8 +60,10 @@ const TimePeriodForm = ({
           <Box mr={50}>
             {isEndTimeInitialized && (
               <TimeSelect
+                defaultTime={timePeriod.endTime ?? null}
                 label={index === 0 && "End time"}
                 interval={TIME_INTERVAL}
+                disabled={isEditingDisabled}
                 onChange={(value) => {
                   onChange({ endTime: value });
                 }}
@@ -68,15 +74,20 @@ const TimePeriodForm = ({
             <NumberInput
               label={index === 0 ? "Vacancies" : " "}
               w={80}
+              disabled={isEditingDisabled}
               placeholder=""
-              defaultValue={1}
+              defaultValue={timePeriod.vacancies || 1}
               min={1}
               onChange={(value) => onChange({ vacancies: value })}
               error={errors?.[index]?.vacancies}
             />
           </Box>
           <Box>
-            <DeleteActionIcon onClick={onRemove} mt={24} />
+            <DeleteActionIcon
+              onClick={onRemove}
+              mt={24}
+              disabled={isEditingDisabled}
+            />
           </Box>
         </Center>
         {errors && (

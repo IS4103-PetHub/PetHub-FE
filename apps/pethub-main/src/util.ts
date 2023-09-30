@@ -162,8 +162,6 @@ function validateCGDates(recurrence: Recurrence) {
   const threeMonthsFromNow = new Date();
   threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
 
-  if (parsedStartDate <= today)
-    errors.startDate = "Start date must be after today.";
   if (parsedEndDate < parsedStartDate)
     errors.endDate = "End date must be after start date.";
   if (parsedEndDate > threeMonthsFromNow)
@@ -221,6 +219,36 @@ export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
   });
 
   return Object.keys(errors).length === 0 ? null : { errors };
+}
+
+export function validateCGName(name: string) {
+  if (!name || name.length > 72) {
+    return "Name is required and should be at most 72 characters long.";
+  }
+  const validPattern = /^[a-zA-Z0-9\s.,]+$/;
+  const alphabetPresence = /[a-zA-Z]+/;
+  if (!validPattern.test(name)) {
+    return "Name must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
+  }
+  if (!alphabetPresence.test(name)) {
+    return "Name must contain at least one alphabet character.";
+  }
+  return null;
+}
+
+export function validateCGDescription(description: string) {
+  if (!description) {
+    return "Description is required.";
+  }
+  const validPattern = /^[a-zA-Z0-9\s.,]+$/;
+  const alphabetPresence = /[a-zA-Z]+/;
+  if (!validPattern.test(description)) {
+    return "Description must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
+  }
+  if (!alphabetPresence.test(description)) {
+    return "Description must contain at least one alphabet character.";
+  }
+  return null;
 }
 
 // Returns an array of days between two dates inclusive
@@ -342,9 +370,7 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
 }
 
 // Clean the dates, clear the IDs, and remove irrelavant fields before sending to backend
-export function sanitizeCreateCGPayload(
-  calendarGroup: CalendarGroup,
-): CalendarGroup {
+export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
   const CGCopy: CalendarGroup = JSON.parse(JSON.stringify(calendarGroup)); // deep copy
 
   for (const setting of CGCopy.scheduleSettings) {

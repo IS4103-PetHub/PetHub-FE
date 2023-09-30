@@ -17,6 +17,41 @@ export const useCreateCalendarGroup = (queryClient: QueryClient) => {
   });
 };
 
+export const useUpdateCalendarGroup = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (payload: CalendarGroup) => {
+      const { calendarGroupId, ...payloadWithoutId } = payload;
+      return (
+        await api.put(
+          `${CALENDAR_GROUP_API}/${calendarGroupId}`,
+          payloadWithoutId,
+        )
+      ).data;
+    },
+  });
+};
+
+export const useGetCalendarGroupById = (calendarGroupId: number) => {
+  return useQuery({
+    queryKey: ["calendar-group", calendarGroupId],
+    queryFn: async () => {
+      const response = await api.get(
+        `${CALENDAR_GROUP_API}/${calendarGroupId}?formatForFrontend=true`,
+      );
+      return response.data as CalendarGroup;
+    },
+    refetchOnMount: true,
+  });
+};
+
+export const useDeleteCalendarGroupById = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (await api.delete(`${CALENDAR_GROUP_API}/${id}`)).data;
+    },
+  });
+};
+
 export const useGetCalendarGroupByPBId = (petBusinessId: number) => {
   return useQuery({
     queryKey: ["calendar-group", petBusinessId],

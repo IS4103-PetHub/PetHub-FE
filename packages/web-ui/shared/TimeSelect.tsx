@@ -2,22 +2,47 @@ import { Group, Select } from "@mantine/core";
 import { useEffect, useState } from "react";
 
 interface TimeSelectProps {
+  defaultTime?: string;
   label?: string;
   interval: number;
   onChange?: (time: string) => void;
   sx?: any;
+  disabled?: boolean;
 }
 
+// defaultTime is in HH:MM format, get the correct HH:MM:AM/PM format if it exists, else return midnight
+const parseDefaultTime = (time: string) => {
+  if (!time) {
+    return { hour: "12", minute: "00", ampm: "AM" }; // default time
+  }
+  let [hourStr, minuteStr] = time.split(":");
+  let hourInt = parseInt(hourStr, 10);
+  let ampm = hourInt >= 12 ? "PM" : "AM";
+  if (hourInt > 12) {
+    hourInt -= 12;
+  } else if (hourInt === 0) {
+    hourInt = 12;
+  }
+  return {
+    hour: hourInt.toString().padStart(2, "0"),
+    minute: minuteStr,
+    ampm: ampm,
+  };
+};
+
 const TimeSelect = ({
+  defaultTime,
   label,
   interval,
   onChange,
   sx,
+  disabled,
   ...props
 }: TimeSelectProps) => {
-  const [hour, setHour] = useState("12");
-  const [minute, setMinute] = useState("00");
-  const [ampm, setAmpm] = useState("AM");
+  const time = parseDefaultTime(defaultTime);
+  const [hour, setHour] = useState(time.hour);
+  const [minute, setMinute] = useState(time.minute);
+  const [ampm, setAmpm] = useState(time.ampm);
 
   // generate static data
   const hours = Array.from({ length: 12 }, (_, i) =>
@@ -54,6 +79,7 @@ const TimeSelect = ({
     <Group sx={sx} {...props}>
       <Select
         label={label || " "}
+        disabled={disabled}
         w={80}
         mr={-10}
         data={hours}
@@ -66,6 +92,7 @@ const TimeSelect = ({
       />
       <Select
         label=" "
+        disabled={disabled}
         w={80}
         mr={-10}
         data={minutes}
@@ -78,6 +105,7 @@ const TimeSelect = ({
       />
       <Select
         label=" "
+        disabled={disabled}
         w={80}
         data={["AM", "PM"]}
         value={ampm}

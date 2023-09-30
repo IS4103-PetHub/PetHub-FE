@@ -5,11 +5,17 @@ import React from "react";
 interface BackButtonProps extends ButtonProps {
   text: string;
   onClick?(): void;
+  customSize?: string; // Coz I don't wanna mess with the other stuff using this :(
 }
-const CreateButton = ({ text, onClick, ...props }: BackButtonProps) => {
+const CreateButton = ({
+  text,
+  onClick,
+  customSize,
+  ...props
+}: BackButtonProps) => {
   return (
     <Button
-      size="md"
+      size={customSize ? customSize : "md"}
       leftIcon={<IconArrowBack size="1.25rem" />}
       onClick={onClick}
     >

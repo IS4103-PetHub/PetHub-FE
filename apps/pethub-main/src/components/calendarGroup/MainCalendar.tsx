@@ -11,6 +11,7 @@ import "@toast-ui/calendar/dist/toastui-calendar.css";
 import { useDisclosure } from "@mantine/hooks";
 import { IconArrowBigLeft, IconArrowBigRight } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import React, {
   forwardRef,
   useCallback,
@@ -28,6 +29,7 @@ const CalendarWithForwardedRef = forwardRef((props, ref) => (
 ));
 
 const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
+  const router = useRouter();
   /*
    * Component State
    */
@@ -184,6 +186,10 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
   const handleViewCalendarGroup = () => {
     const selectedCalendarGroup = calendarGroupings.find(
       (group) => group.calendarGroupId == selectedCalendarId,
+    );
+
+    router.push(
+      `/business/calendargroup/${selectedCalendarGroup.calendarGroupId}`,
     );
   };
 

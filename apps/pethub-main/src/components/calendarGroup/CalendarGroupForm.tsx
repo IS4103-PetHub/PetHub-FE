@@ -17,17 +17,28 @@ import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
-import { checkCGForConflicts, sanitizeCreateCGPayload } from "@/util";
+import { checkCGForConflicts, sanitizeCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
 
 interface CalendarGroupFormProps {
   form: any;
   userId: number;
+  forView: boolean; // true if this form is for viewing an existing calendar group, false if it is for creating a new calendar group
+  isEditingDisabled?: boolean;
+  submit: (payload: CalendarGroup) => void;
+  toggleEdit?: () => void;
+  cancelEdit?: () => void;
 }
 
-const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
-  const router = useRouter();
-  const queryClient = useQueryClient();
+const CalendarGroupForm = ({
+  form,
+  userId,
+  forView,
+  isEditingDisabled,
+  toggleEdit,
+  cancelEdit,
+  submit,
+}: CalendarGroupFormProps) => {
   const [settingsError, setSettingsError] = useState([]);
 
   const rulesToDisplay = [
@@ -35,7 +46,7 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
     "For schedules with conflicting start and end dates with the recurrence pattern of 'Weekly', ensure that the recurring days selected do not overlap.",
     "Schedules with the recurrence pattern of 'Daily' cannot have overlapping start and end dates.",
     "Schedules with the recurrence pattern of 'Daily' will override schedules with the recurrence pattern of 'Weekly' if they have conflicting start and end dates.",
-    "Time period example: If you have 3 vacancies for a 3 hour period, create a single time period instead of multiple ones. The duration specified in the service listing will determine the booking time slots.",
+    "Time period example: If you have 3 groomers free for a 3 hour period, create a single time period instead of multiple ones. The duration specified in the service listing will determine the booking time slots.",
   ];
 
   const addNewScheduleSettings = () => {
@@ -49,8 +60,8 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
         timePeriods: [
           {
             timePeriodId: Date.now(), // default timeslot
-            startTime: "",
-            endTime: "",
+            startTime: "00:00",
+            endTime: "00:00",
             vacancies: 1,
           },
         ],
@@ -76,31 +87,6 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
     form.setFieldValue("scheduleSettings", newScheduleSettings);
   };
 
-  const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
-  const createCalendarGroup = async (payload: CalendarGroup) => {
-    try {
-      await createCalendarGroupMutation.mutateAsync(payload);
-      notifications.show({
-        title: "Calendar group created",
-        color: "green",
-        icon: <IconCheck />,
-        message: `Calendar group created successfully!`,
-      });
-      router.push("/business/calendargroup");
-    } catch (error: any) {
-      notifications.show({
-        title: "Error creating calendar group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
-      });
-    }
-  };
-
   type formValues = typeof form.values;
   function handleSubmit(values: formValues) {
     setSettingsError([]);
@@ -114,9 +100,13 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
         message: check.errorMessage,
       });
     } else {
-      const newCG = sanitizeCreateCGPayload(values);
-      newCG.petBusinessId = userId;
-      createCalendarGroup(newCG);
+      const sanitizedCG = sanitizeCGPayload(values);
+      if (!forView) {
+        sanitizedCG.petBusinessId = userId; // For now create API needs userId
+      } else {
+        sanitizedCG.calendarGroupId = values.calendarGroupId;
+      }
+      submit(sanitizedCG);
     }
   }
 
@@ -126,19 +116,23 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
         <Grid.Col span={12}>
           <TextInput
             label="Name"
+            defaultValue={form.values.name}
             placeholder="Enter a name for the calendar group"
             withAsterisk
+            disabled={isEditingDisabled}
             {...form.getInputProps("name")}
           />
         </Grid.Col>
         <Grid.Col span={12}>
           <Textarea
             withAsterisk
+            defaultValue={form.values.description}
             placeholder="Enter a description for the calendar group"
             label="Description"
             autosize
             minRows={3}
             maxRows={3}
+            disabled={isEditingDisabled}
             {...form.getInputProps("description")}
           />
         </Grid.Col>
@@ -168,33 +162,47 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
               onChange={(changes) =>
                 handleScheduleSettingChange(index, changes)
               }
-              timePeriods={setting.recurrence.timePeriods}
+              timePeriods={setting?.recurrence?.timePeriods}
               form={form}
               index={index}
               highlight={settingsError.includes(index) ? true : false} // true if that setting's index matches the index returned by the validation during a create
+              isEditingDisabled={isEditingDisabled}
             />
           ),
         )}
-        <Grid.Col span={12}>
-          <CreateButton
-            text="Add another schedule"
-            onClick={addNewScheduleSettings}
-            fullWidth
-            variant="light"
-            radius="lg"
-            h={320}
-          />
-        </Grid.Col>
+        {!isEditingDisabled && (
+          <Grid.Col span={12}>
+            <CreateButton
+              text="Add another schedule"
+              onClick={addNewScheduleSettings}
+              fullWidth
+              variant="light"
+              radius="lg"
+              h={320}
+            />
+          </Grid.Col>
+        )}
       </Grid>
       <Group mt="25px" position="right">
-        <Button
-          type="reset"
-          color="gray"
-          onClick={() => router.push("/business/calendargroup")}
-        >
-          Back
-        </Button>
-        <Button type="submit">Create</Button>
+        {forView ? (
+          !isEditingDisabled && (
+            <>
+              <Button
+                type="reset"
+                color="red"
+                onClick={() => {
+                  cancelEdit();
+                  toggleEdit();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Update</Button>
+            </>
+          )
+        ) : (
+          <Button type="submit">Create</Button>
+        )}
       </Group>
     </form>
   );

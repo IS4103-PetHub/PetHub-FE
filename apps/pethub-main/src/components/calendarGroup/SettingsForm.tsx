@@ -32,6 +32,7 @@ interface SettingsFormProps {
   form: any;
   index: number;
   highlight: boolean;
+  isEditingDisabled: boolean;
 }
 
 const SettingsForm = ({
@@ -42,9 +43,17 @@ const SettingsForm = ({
   form,
   index,
   highlight,
+  isEditingDisabled,
 }: SettingsFormProps) => {
   const errors = form.errors?.scheduleSettings?.errors;
   const theme = useMantineTheme();
+
+  // These are for a CG update, to determine if editing the dates should be disabled or not (If the date is in the past you shouldn't be able to edit them)
+  const isPastDate = (date) => date && dayjs(date).isBefore(dayjs());
+  const isStartDateDisabled =
+    setting?.recurrence?.startDate && isPastDate(setting.recurrence.startDate);
+  const isSettingOver =
+    setting?.recurrence?.endDate && isPastDate(setting.recurrence.endDate);
 
   const segmentedControlData = [
     {
@@ -65,11 +74,18 @@ const SettingsForm = ({
     },
   ];
 
+  // GetDayOfWeek shortform
+  const getShortForm = (day: string) => {
+    return (
+      day.charAt(0) + day.toLowerCase().charAt(1) + day.toLowerCase().charAt(2)
+    );
+  };
+
   const addTimePeriod = () => {
     const newTimePeriod: TimePeriod = {
       timePeriodId: Date.now(), // Using current timestamp as a temporary ID for uniqueness
-      startTime: "",
-      endTime: "",
+      startTime: "00:00",
+      endTime: "00:00",
       vacancies: 1,
     };
     onChange({
@@ -105,24 +121,31 @@ const SettingsForm = ({
         radius="lg"
         sx={{
           overflow: "visible",
-          border: "1px solid black",
+          border: "1px solid gray",
           borderColor: highlight && theme.colors.red[6],
         }}
       >
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
             <Text>Schedule setting {index + 1}</Text>
-            <IconX
-              size="1rem"
+            <ActionIcon
               onClick={onRemove}
               style={{ cursor: "pointer" }}
-            />
+              disabled={isEditingDisabled}
+            >
+              <IconX size="1rem" />
+            </ActionIcon>
           </Group>
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
           <Group position="apart">
             <DateInput
               clearable
+              defaultValue={
+                setting?.recurrence?.startDate
+                  ? new Date(setting.recurrence.startDate)
+                  : null
+              }
               minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="Start date"
@@ -130,6 +153,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
+              disabled={isEditingDisabled || isStartDateDisabled}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, startDate: value },
@@ -139,6 +163,11 @@ const SettingsForm = ({
             />
             <DateInput
               clearable
+              defaultValue={
+                setting?.recurrence?.endDate
+                  ? new Date(setting.recurrence.endDate)
+                  : null
+              }
               minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="End date"
@@ -146,6 +175,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
+              disabled={isEditingDisabled || isSettingOver}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, endDate: value },
@@ -160,9 +190,11 @@ const SettingsForm = ({
             Recurrence pattern
           </Text>
           <SegmentedControl
+            defaultValue={setting?.recurrence?.pattern}
             fullWidth
             size="xs"
             data={segmentedControlData}
+            disabled={isEditingDisabled || isSettingOver}
             onChange={(value) =>
               onChange({
                 recurrence: { ...setting.recurrence, pattern: value },
@@ -170,22 +202,23 @@ const SettingsForm = ({
             }
           />
         </Card.Section>
-        {setting.recurrence.pattern === RecurrencePatternEnum.Weekly && (
+        {setting?.recurrence?.pattern === RecurrencePatternEnum.Weekly && (
           <Card.Section inheritPadding mb="lg">
             <Checkbox.Group
-              defaultValue={setting.days}
+              defaultValue={setting?.days}
               label="Select the recurring days of the week"
               onChange={(value) => onChange({ days: value })}
               error={errors?.[index]?.days}
             >
               <Group mt="xs" mb="xs">
-                <Checkbox value={DayOfWeekEnum.Monday} label="Mon" />
-                <Checkbox value={DayOfWeekEnum.Tuesday} label="Tue" />
-                <Checkbox value={DayOfWeekEnum.Wednesday} label="Wed" />
-                <Checkbox value={DayOfWeekEnum.Thursday} label="Thu" />
-                <Checkbox value={DayOfWeekEnum.Friday} label="Fri" />
-                <Checkbox value={DayOfWeekEnum.Saturday} label="Sat" />
-                <Checkbox value={DayOfWeekEnum.Sunday} label="Sun" />
+                {Object.values(DayOfWeekEnum).map((day) => (
+                  <Checkbox
+                    key={day}
+                    value={day}
+                    label={getShortForm(day)}
+                    disabled={isEditingDisabled || isSettingOver}
+                  />
+                ))}
               </Group>
             </Checkbox.Group>
           </Card.Section>
@@ -199,17 +232,21 @@ const SettingsForm = ({
               onRemove={() => removeTimePeriod(timePeriod.timePeriodId)}
               onChange={(changes) => handleTimePeriodChange(idx, changes)}
               errors={errors?.[index]?.recurrence?.timePeriods}
+              isEditingDisabled={isEditingDisabled || isSettingOver}
             />
           ))}
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
-          <CreateButton
-            text="Add another time period"
-            fullWidth
-            variant=""
-            mt="sm"
-            onClick={addTimePeriod}
-          />
+          {!isEditingDisabled && (
+            <CreateButton
+              text="Add another time period"
+              fullWidth
+              variant="white"
+              mt="sm"
+              mb="sm"
+              onClick={addTimePeriod}
+            />
+          )}
         </Card.Section>
       </Card>
     </Grid.Col>

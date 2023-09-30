@@ -1,12 +1,24 @@
 import { Container, Group } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { RecurrencePatternEnum } from "@/types/constants";
-import { validateCGSettings } from "@/util";
+import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
+import {
+  validateCGDescription,
+  validateCGName,
+  validateCGSettings,
+} from "@/util";
 
 interface CreateCalendarGroupProps {
   userId: number;
@@ -15,6 +27,9 @@ interface CreateCalendarGroupProps {
 export default function CreateCalendarGroup({
   userId,
 }: CreateCalendarGroupProps) {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const form = useForm({
     initialValues: {
       name: "",
@@ -30,8 +45,8 @@ export default function CreateCalendarGroup({
             timePeriods: [
               {
                 timePeriodId: Date.now(), // default timePeriod
-                startTime: "",
-                endTime: "",
+                startTime: "00:00",
+                endTime: "00:00",
                 vacancies: 1,
               },
             ],
@@ -40,14 +55,37 @@ export default function CreateCalendarGroup({
       ],
     },
     validate: {
-      name: (value) =>
-        !value || value.length >= 32
-          ? "Name is required and should be at most 32 characters long."
-          : null,
-      description: (value) => (!value ? "Description is required." : null),
-      scheduleSettings: (value) => validateCGSettings(value) as any,
+      name: validateCGName,
+      description: validateCGDescription,
+      scheduleSettings: validateCGSettings as any,
     },
   });
+
+  const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
+  const createCalendarGroup = async (payload: CalendarGroup) => {
+    try {
+      await createCalendarGroupMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Calendar group created",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Calendar group created successfully!`,
+      });
+      window.location.href = "/business/calendargroup"; // Change this in the future
+    } catch (error: any) {
+      notifications.show({
+        title: "Error creating calendar group",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
   return (
     <>
       <Head>
@@ -57,10 +95,20 @@ export default function CreateCalendarGroup({
       <Container mt="xl" mb="xl">
         <Group position="apart">
           <PageTitle title="Create Calendar Group" />
+          <LargeBackButton
+            text="Back to Calendar View"
+            onClick={() => router.push("/business/calendargroup")}
+          />
         </Group>
 
         <Group mt="xs">
-          <CalendarGroupForm form={form} userId={userId} />
+          <CalendarGroupForm
+            form={form}
+            userId={userId}
+            forView={false}
+            isEditingDisabled={false}
+            submit={createCalendarGroup}
+          />
         </Group>
       </Container>
     </>
