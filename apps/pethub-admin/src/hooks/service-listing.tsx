@@ -1,18 +1,15 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { ServiceListing } from "shared-utils";
+import api from "@/api/axiosConfig";
 
-const SERVICE_LISTING_API = "api/service-listings";
+const SERVICE_LISTING_API = "/service-listings";
 
 export const useGetAllServiceListings = () => {
   return useQuery({
     queryKey: ["service-listings"],
     queryFn: async () =>
-      (
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}`,
-        )
-      ).data as ServiceListing[],
+      (await api.get(`${SERVICE_LISTING_API}`)).data as ServiceListing[],
   });
 };
 
@@ -20,11 +17,8 @@ export const useGetAllServiceListings = () => {
 export const useDeleteServiceListingById = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (serviceListingId: number) => {
-      return (
-        await axios.delete(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${SERVICE_LISTING_API}/${serviceListingId}`,
-        )
-      ).data;
+      return (await api.delete(`${SERVICE_LISTING_API}/${serviceListingId}`))
+        .data;
     },
     onSuccess: (data, serviceListingId) => {
       queryClient.setQueryData<ServiceListing[]>(

@@ -14,6 +14,7 @@ import {
   IconUser,
   IconArticle,
   IconHome2,
+  IconCalendar,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -97,6 +98,11 @@ const data = [
     link: "/business/listings",
     label: "Service Listings",
     icon: IconBoxMultiple,
+  },
+  {
+    link: "/business/calendarGroup",
+    label: "Calendar Group",
+    icon: IconCalendar,
   },
 ];
 
