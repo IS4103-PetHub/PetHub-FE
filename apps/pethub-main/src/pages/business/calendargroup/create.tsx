@@ -8,11 +8,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
+import { RecurrencePatternEnum } from "@/types/constants";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import {
   validateCGDescription,
@@ -34,7 +34,6 @@ export default function CreateCalendarGroup({
     initialValues: {
       name: "",
       description: "",
-      // a default scheduleSettings
       scheduleSettings: [
         {
           scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness, same with timePeriod

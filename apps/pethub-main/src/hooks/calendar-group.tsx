@@ -1,18 +1,16 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/api/axiosConfig";
 import { CalendarGroup } from "@/types/types";
-const CALENDER_GROUP_API = "/calendar-groups";
+const CALENDAR_GROUP_API = "/calendar-groups";
 
 export const useCreateCalendarGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CalendarGroup) => {
-      // Temporarily appending petBusinessId since BE does not have session identification merged into dev yet
-      const petBusinessId = payload.petBusinessId;
-      delete payload.petBusinessId;
+      const { petBusinessId, ...payloadWithoutId } = payload;
       return (
         await api.post(
-          `${CALENDER_GROUP_API}/?petBusinessId=${petBusinessId}`,
-          payload,
+          `${CALENDAR_GROUP_API}/?petBusinessId=${petBusinessId}`,
+          payloadWithoutId,
         )
       ).data;
     },
@@ -25,7 +23,7 @@ export const useUpdateCalendarGroup = (queryClient: QueryClient) => {
       const { calendarGroupId, ...payloadWithoutId } = payload;
       return (
         await api.put(
-          `${CALENDER_GROUP_API}/${calendarGroupId}`,
+          `${CALENDAR_GROUP_API}/${calendarGroupId}`,
           payloadWithoutId,
         )
       ).data;
@@ -38,7 +36,7 @@ export const useGetCalendarGroupById = (calendarGroupId: number) => {
     queryKey: ["calendar-group", calendarGroupId],
     queryFn: async () => {
       const response = await api.get(
-        `${CALENDER_GROUP_API}/${calendarGroupId}?formatForFrontend=true`,
+        `${CALENDAR_GROUP_API}/${calendarGroupId}?formatForFrontend=true`,
       );
       return response.data as CalendarGroup;
     },
@@ -48,7 +46,19 @@ export const useGetCalendarGroupById = (calendarGroupId: number) => {
 export const useDeleteCalendarGroupById = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (id: number) => {
-      return (await api.delete(`${CALENDER_GROUP_API}/${id}`)).data;
+      return (await api.delete(`${CALENDAR_GROUP_API}/${id}`)).data;
+    },
+  });
+};
+
+export const useGetCalendarGroupByPBId = (petBusinessId: number) => {
+  return useQuery({
+    queryKey: ["calendar-group", petBusinessId],
+    queryFn: async () => {
+      const data = await (
+        await api.get(`${CALENDAR_GROUP_API}/pet-business/${petBusinessId}`)
+      ).data;
+      return data;
     },
   });
 };
