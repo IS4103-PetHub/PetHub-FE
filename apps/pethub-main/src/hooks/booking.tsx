@@ -7,14 +7,10 @@ const BOOKING_API = "/bookings";
 export const useCreateBooking = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(
-          ([key]) => !["petOwnerId"].includes(key),
-        ),
-      );
+      const { petOwnerId, ...payloadWithoutId } = payload;
       return (
         await api.post(
-          `${BOOKING_API}?petOwnerId=${payload.petOwnerId}`,
+          `${BOOKING_API}?petOwnerId=${petOwnerId}`,
           payloadWithoutId,
         )
       ).data;

@@ -16,12 +16,9 @@ export const useCreatePetOwner = () => {
 export const useUpdatePetOwner = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
-      );
-      return (
-        await api.patch(`${PET_OWNER_API}/${payload.userId}`, payloadWithoutId)
-      ).data;
+      const { userId, ...payloadWithoutId } = payload;
+      return (await api.patch(`${PET_OWNER_API}/${userId}`, payloadWithoutId))
+        .data;
     },
   });
 };

@@ -17,14 +17,10 @@ export const useCreatePetBusinessApplication = () => {
 export const useUpdatePetBusinessApplication = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(
-          ([key]) => !["petBusinessApplicationId"].includes(key),
-        ),
-      );
+      const { petBusinessApplicationId, ...payloadWithoutId } = payload;
       return (
         await api.put(
-          `${PET_BUSINESS_APPLICATION_API}/${payload.petBusinessApplicationId}`,
+          `${PET_BUSINESS_APPLICATION_API}/${petBusinessApplicationId}`,
           payloadWithoutId,
         )
       ).data;
