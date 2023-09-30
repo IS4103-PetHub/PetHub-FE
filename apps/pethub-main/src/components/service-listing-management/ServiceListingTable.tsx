@@ -1,12 +1,7 @@
-import { Container, Modal, Paper, Group, Button, Badge } from "@mantine/core";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { Group, Badge } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconEye,
-  IconPencil,
-  IconTrashFilled,
-  IconX,
-} from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
@@ -17,6 +12,7 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
+import { CalendarGroup } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
@@ -32,6 +28,7 @@ interface ServiceListTableProps {
   onPageChange(p: number): void;
   tags: Tag[];
   addresses: Address[];
+  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
@@ -46,6 +43,7 @@ const ServiceListTable = ({
   onPageChange,
   tags,
   addresses,
+  calendarGroups,
 }: ServiceListTableProps) => {
   /*
    * Component State
@@ -66,6 +64,7 @@ const ServiceListTable = ({
     try {
       const result =
         await deleteServiceListingMutation.mutateAsync(serviceListingId);
+      refetch();
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",
@@ -189,6 +188,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
 
       {/* Update */}
@@ -202,6 +202,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
     </>
   );
