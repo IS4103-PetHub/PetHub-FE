@@ -156,7 +156,6 @@ const BookingsModal = ({
                       />
                     </Grid.Col>
                     <Grid.Col span={12}>
-                      {/* TODO: need check if this works */}
                       <MultiSelect
                         data={
                           addresses
@@ -172,7 +171,6 @@ const BookingsModal = ({
                       />
                     </Grid.Col>
                     <Grid.Col span={12}>
-                      {/* TODO: need check if this works */}
                       <MultiSelect
                         disabled
                         label="Tags"
@@ -191,8 +189,6 @@ const BookingsModal = ({
                 </Container>
               </Accordion.Panel>
             </Accordion.Item>
-
-            {/* Can do accordian to show the different details */}
 
             {/* Customer related details, name, contact nuber, etc */}
             <Accordion.Item value="Customer Details">
