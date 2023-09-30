@@ -4,27 +4,12 @@ import {
   Grid,
   Group,
   Textarea,
-  Center,
-  Card,
-  Menu,
   Text,
-  Switch,
-  SegmentedControl,
-  Box,
-  Checkbox,
   Stack,
   Divider,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import {
-  IconBuildingStore,
-  IconCalendar,
-  IconCheck,
-  IconPawFilled,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
