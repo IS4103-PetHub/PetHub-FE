@@ -10,6 +10,7 @@ import {
   IconKey,
   IconAlertOctagon,
   IconAddressBook,
+  IconPaw,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
@@ -23,6 +24,7 @@ import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
 import AddressInfoForm from "@/components/account/AddressInfoForm";
 import DeactivateReactivateAccountModal from "@/components/account/DeactivateReactivateAccountModal";
+import PetGrid from "@/components/account/PetGrid";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 
@@ -133,6 +135,20 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                 </Accordion.Panel>
               </Accordion.Item>
             )}
+
+          {petOwner && (
+            <Accordion.Item value="pets">
+              <Accordion.Control>
+                <Group>
+                  <IconPaw color={theme.colors.indigo[5]} />
+                  <Text size="lg">My Pets</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md">
+                <PetGrid userId={userId} />
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
 
           <Accordion.Item value="password">
             <Accordion.Control>

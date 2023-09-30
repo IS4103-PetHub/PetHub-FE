@@ -31,3 +31,18 @@ export const serviceListingSortOptions = [
     direction: "desc",
   },
 ];
+
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
+}
+
+export enum GenderEnum {
+  Male = "MALE",
+  Female = "FEMALE",
+}

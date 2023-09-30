@@ -5,7 +5,11 @@ import {
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
 } from "shared-utils";
-import { BusinessApplicationStatusEnum } from "./constants";
+import {
+  BusinessApplicationStatusEnum,
+  GenderEnum,
+  PetTypeEnum,
+} from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -125,4 +129,32 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+}
+
+export interface Pet {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight?: number;
+  dateOfBirth?: string;
+  microchipNumber?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+export interface PetPayload {
+  petId: number;
+  petOwnerId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight: number;
+  dateOfBirth: string;
+  microchipNumber: string;
+  files: File[];
+  dateCreated: string;
+  dateUpdated: string;
 }
