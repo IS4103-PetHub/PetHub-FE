@@ -49,7 +49,10 @@ const ServiceListingFavouriteCard = ({
 
   if (!serviceListing) return null;
 
-  const handleFavouriteToggle = () => setIsFavourite(!isFavourite);
+  const handleFavouriteToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setIsFavourite(!isFavourite);
+  };
 
   const coverImage = (
     <Box className={classes.relativeBox}>
