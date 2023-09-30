@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
-import MainCalendar from "@/components/calendargroup/MainCalendar";
+import MainCalendar from "@/components/calendarGroup/MainCalendar";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetAllTags } from "@/hooks/tags";
@@ -41,12 +41,12 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
             onClick={() => router.push("/business/calendargroup/create")}
           />
         </Group>
-        {/* <MainCalendar
+        <MainCalendar
           calendarGroupings={calendarGroup}
           userId={userId}
           addresses={petBusinessData ? petBusinessData.businessAddresses : []}
           tags={tags}
-        /> */}
+        />
       </Container>
     </>
   );

@@ -4,7 +4,7 @@ import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { PageTitle } from "web-ui";
-import CalendarGroupForm from "@/components/calendargroup/CalendarGroupForm";
+import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { RecurrencePatternEnum } from "@/types/constants";
 import { validateCGSettings } from "@/util";
 
@@ -59,9 +59,9 @@ export default function CreateCalendarGroup({
           <PageTitle title="Create Calendar Group" />
         </Group>
 
-        {/* <Group mt="xs">
+        <Group mt="xs">
           <CalendarGroupForm form={form} userId={userId} />
-        </Group> */}
+        </Group>
       </Container>
     </>
   );
