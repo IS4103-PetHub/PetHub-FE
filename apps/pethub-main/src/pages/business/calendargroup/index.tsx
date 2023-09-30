@@ -41,12 +41,12 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
             onClick={() => router.push("/business/calendargroup/create")}
           />
         </Group>
-        <MainCalendar
+        {/* <MainCalendar
           calendarGroupings={calendarGroup}
           userId={userId}
           addresses={petBusinessData ? petBusinessData.businessAddresses : []}
           tags={tags}
-        />
+        /> */}
       </Container>
     </>
   );
