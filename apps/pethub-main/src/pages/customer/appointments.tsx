@@ -95,7 +95,7 @@ export default function Appointments({ userId }: AppointmentsProps) {
       serviceListing={booking.serviceListing}
       startTime={booking.startTime}
       endTime={booking.endTime}
-      bookingId={booking.bookingId}
+      booking={booking}
       onUpdateBooking={refetchUserBookings}
     />
   ));

@@ -18,6 +18,7 @@ import {
   convertMinsToDurationString,
   formatISODayDateTime,
 } from "shared-utils";
+import { Booking } from "@/types/types";
 import SelectTimeslotModal from "./SelectTimeslotModal";
 
 interface TimeslotCardProps {
@@ -27,7 +28,7 @@ interface TimeslotCardProps {
   endTime?: string;
   // optional, only for updating appointment
   disabled?: boolean;
-  bookingId?: number;
+  booking?: Booking;
   onUpdateBooking?(): void;
 }
 
@@ -36,7 +37,7 @@ const TimeslotCard = ({
   startTime,
   endTime,
   disabled,
-  bookingId,
+  booking,
   onUpdateBooking,
 }: TimeslotCardProps) => {
   const theme = useMantineTheme();
@@ -90,7 +91,7 @@ const TimeslotCard = ({
               opened={opened}
               onClose={close}
               isUpdating
-              bookingId={bookingId}
+              booking={booking}
               onUpdateBooking={onUpdateBooking}
             />
           </>

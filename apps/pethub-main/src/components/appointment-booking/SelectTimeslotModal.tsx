@@ -27,6 +27,7 @@ import {
 } from "shared-utils";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
 
 const CALENDAR_SPAN = 4;
@@ -36,8 +37,9 @@ interface SelectTimeslotModalProps {
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
+  // optional, only for updating
   isUpdating?: boolean;
-  bookingId?: number;
+  booking?: Booking;
   onUpdateBooking?(): void;
 }
 
@@ -46,7 +48,7 @@ const SelectTimeslotModal = ({
   opened,
   onClose,
   isUpdating,
-  bookingId,
+  booking,
   onUpdateBooking,
 }: SelectTimeslotModalProps) => {
   const isTablet = useMediaQuery("(max-width: 100em)");
@@ -93,7 +95,7 @@ const SelectTimeslotModal = ({
         .toISOString();
 
       if (isUpdating) {
-        payload = { bookingId, startTime, endTime };
+        payload = { bookingId: booking.bookingId, startTime, endTime };
         await updateBookingMutation.mutateAsync(payload);
         // refetch user bookings
         onUpdateBooking();
@@ -189,6 +191,7 @@ const SelectTimeslotModal = ({
         size="xl"
         value={data.startTime}
         key={data.timeSlotId}
+        disabled={booking ? booking.startTime === data.startTime : false}
       >
         {formatISOTimeOnly(data.startTime)}
       </Chip>
@@ -287,6 +290,14 @@ const SelectTimeslotModal = ({
               {formatISODayDateTime(selectedTimeslot)}
             </Text>
           ) : null}
+          <Button
+            size="md"
+            color="gray"
+            variant="default"
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
           <Button
             size="md"
             disabled={!selectedTimeslot}
