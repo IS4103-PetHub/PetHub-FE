@@ -1,10 +1,8 @@
 import {
   Button,
   Card,
-  Container,
   FileInput,
   Group,
-  List,
   Modal,
   NumberInput,
   Select,
@@ -77,6 +75,13 @@ const PetInfoModal = ({
     const updatedFiles = [...uploadedFiles];
     updatedFiles.splice(indexToRemove, 1);
     setUploadedFiles(updatedFiles);
+
+    const pdfFiles = [...form.values.healthAttachment];
+    pdfFiles.splice(indexToRemove, 1);
+    form.setValues({
+      ...form.values,
+      healthAttachment: pdfFiles,
+    });
   };
 
   const formDefaultValues = {
@@ -129,9 +134,7 @@ const PetInfoModal = ({
       microchipNumber: pet && pet.microchipNumber ? pet.microchipNumber : "",
       healthAttachment: downloadedFiles,
     });
-
-    const pdfUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
-    setUploadedFiles(pdfUrls);
+    setUploadedFiles(downloadedFiles);
   };
 
   const closeAndResetForm = async () => {
@@ -161,6 +164,7 @@ const PetInfoModal = ({
           petOwnerId: userId.toString(),
           petId: pet.petId.toString(),
           weight: values.petWeight,
+          files: values.healthAttachment,
         };
         // update pet
         const result = await updatePetMutation.mutateAsync(payload);
@@ -174,6 +178,7 @@ const PetInfoModal = ({
           ...values,
           petOwnerId: userId.toString(),
           weight: values.petWeight,
+          files: values.healthAttachment,
         };
         // create pet
         const result = await createPetMutation.mutateAsync(payload);
@@ -185,10 +190,7 @@ const PetInfoModal = ({
       }
       refetch();
       form.reset();
-      setUpdating(isUpdate);
-      setViewing(isView);
-      setUploadedFiles([]);
-      onClose();
+      closeAndResetForm();
     } catch (error) {
       notifications.show({
         title: isUpdating ? "Error Updating Pet" : "Error Creating Pet",
@@ -223,6 +225,11 @@ const PetInfoModal = ({
   const downloadFile = async (url: string, fileName: string) => {
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download file: ${response.status} ${response.statusText}`,
+        );
+      }
       const buffer = await response.arrayBuffer();
       return new File([buffer], fileName);
     } catch (error) {
@@ -354,19 +361,17 @@ const PetInfoModal = ({
             )}
 
             {isViewing && (
-              <>
-                <Group position="right" mt="md">
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      setUpdating(true);
-                      setViewing(false);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </Group>
-              </>
+              <Group position="right" mt="md">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setUpdating(true);
+                    setViewing(false);
+                  }}
+                >
+                  Edit
+                </Button>
+              </Group>
             )}
           </Stack>
         </form>

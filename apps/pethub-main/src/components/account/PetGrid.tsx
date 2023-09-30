@@ -3,17 +3,12 @@ import {
   Box,
   Button,
   Card,
-  Container,
   Grid,
   Group,
-  Image,
-  Modal,
-  Stack,
   Text,
-  TextInput,
+  Transition,
 } from "@mantine/core";
-import { TransformedValues, useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconGenderFemale,
@@ -23,14 +18,14 @@ import {
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
+import CenterLoader from "web-ui/shared/CenterLoader";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { GenderEnum, PetTypeEnum } from "@/types/constants";
-import { Pet } from "@/types/types";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
@@ -41,6 +36,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
   /*
    * Component State
    */
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [selectedPet, setSelectedPet] = useState(null);
   const [isViewPetModalOpen, { close: closeView, open: openView }] =
     useDisclosure(false);
@@ -49,7 +45,21 @@ const PetGrid = ({ userId }: PetGridProps) => {
   const [isUpdatePetModalOpen, { close: closeUpdate, open: openUpdate }] =
     useDisclosure(false);
 
-  const { data: pets, refetch: refetchPets } = useGetPetsByPetOwnerId(userId);
+  const {
+    data: pets = [],
+    isLoading,
+    refetch: refetchPets,
+  } = useGetPetsByPetOwnerId(userId);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (pets.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   const queryClient = useQueryClient();
   const deletePetMutation = useDeletePetById(queryClient);
@@ -64,7 +74,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
       });
     } catch (error) {
       notifications.show({
-        title: "Error Deleting Pets",
+        title: "Error Deleting Pet",
         color: "red",
         icon: <IconX />,
         message:
@@ -108,6 +118,32 @@ const PetGrid = ({ userId }: PetGridProps) => {
     return age;
   };
 
+  const renderNoPetContent = () => {
+    console.log(pets);
+    if (pets && pets.length === 0) {
+      console.log("HERE");
+      if (isLoading) {
+        <CenterLoader />;
+      }
+      return (
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title="No pets"
+                subtitle="Click 'Add new pet' to create a new pet"
+              />
+            </div>
+          )}
+        </Transition>
+      );
+    }
+  };
+
   return (
     <>
       <Group position="apart">
@@ -119,16 +155,12 @@ const PetGrid = ({ userId }: PetGridProps) => {
           leftIcon={<IconPlus size="1.25rem" />}
           onClick={() => {
             openCreate();
-            console.log(isCreatePetModalOpen);
-            console.log("Creating Pet");
           }}
         >
-          Add new Pet
+          Add new pet
         </Button>
       </Group>
-
-      {/* TODO: if no records render sadface */}
-
+      {renderNoPetContent()}
       <Grid
         style={{
           display: "grid",
@@ -164,9 +196,17 @@ const PetGrid = ({ userId }: PetGridProps) => {
                         {`Gender: ${formatStringToLetterCase(pet.gender)}`}
                       </Text>
                       {pet.gender === GenderEnum.Male ? (
-                        <IconGenderMale size="1rem" color="gray" />
+                        <IconGenderMale
+                          size="1rem"
+                          color="gray"
+                          style={{ marginLeft: "-8px" }}
+                        />
                       ) : (
-                        <IconGenderFemale size="1rem" color="gray" />
+                        <IconGenderFemale
+                          size="1rem"
+                          color="gray"
+                          style={{ marginLeft: "-8px" }}
+                        />
                       )}
                     </Group>
                     <Text>
@@ -191,14 +231,12 @@ const PetGrid = ({ userId }: PetGridProps) => {
                         onClick={() => {
                           setSelectedPet(pet);
                           openView();
-                          console.log("opening view", pet.petName);
                         }}
                       />
                       <EditActionButton
                         onClick={() => {
                           setSelectedPet(pet);
                           openUpdate();
-                          console.log("opening edit", pet.petName);
                         }}
                       />
                       <DeleteActionButtonModal
@@ -236,7 +274,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
         refetch={refetchPets}
       />
 
-      {/* View Pet */}
+      {/* Update Pet */}
       <PetInfoModal
         opened={isUpdatePetModalOpen}
         onClose={closeUpdate}

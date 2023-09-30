@@ -154,7 +154,7 @@ export interface PetPayload {
   petWeight: number;
   dateOfBirth: string;
   microchipNumber: string;
-  healthAttachment: File[];
+  files: File[];
   dateCreated: string;
   dateUpdated: string;
 }

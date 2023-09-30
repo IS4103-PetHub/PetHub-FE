@@ -17,8 +17,26 @@ export const useGetPetsByPetOwnerId = (userId: number) => {
 export const useCreatePet = () => {
   return useMutation({
     mutationFn: async (payload: PetPayload) => {
-      console.log("LOGGIN PAYLOAD", payload);
-      return (await api.post(`${PETS_API}`, payload)).data;
+      const formData = new FormData();
+
+      formData.append("petOwnerId", payload.petOwnerId.toString());
+      formData.append("petName", payload.petName);
+      formData.append("petType", payload.petType);
+      formData.append("gender", payload.gender);
+      formData.append("petWeight", payload.petWeight.toString());
+      formData.append("dateOfBirth", payload.dateOfBirth);
+      formData.append("microchipNumber", payload.microchipNumber);
+      payload.files.forEach((file) => {
+        formData.append("file", file);
+      });
+
+      return (
+        await api.post(`${PETS_API}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+      ).data;
     },
     onError: (error) => {
       console.error("Error creating pet:", error);
@@ -30,9 +48,26 @@ export const useCreatePet = () => {
 export const useUpdatePet = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: PetPayload) => {
-      console.log(payload);
       const { petId, ...payloadWithoutId } = payload;
-      return (await api.patch(`${PETS_API}/${petId}`, payloadWithoutId)).data;
+      const formData = new FormData();
+      formData.append("petOwnerId", payload.petOwnerId.toString());
+      formData.append("petName", payload.petName);
+      formData.append("petType", payload.petType);
+      formData.append("gender", payload.gender);
+      formData.append("petWeight", payload.petWeight.toString());
+      formData.append("dateOfBirth", payload.dateOfBirth);
+      formData.append("microchipNumber", payload.microchipNumber);
+      payload.files.forEach((file) => {
+        formData.append("file", file);
+      });
+
+      return (
+        await api.patch(`${PETS_API}/${petId}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+      ).data;
     },
   });
 };

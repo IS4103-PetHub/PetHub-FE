@@ -4,9 +4,6 @@ import {
   Text,
   Group,
   useMantineTheme,
-  Grid,
-  Box,
-  Card,
 } from "@mantine/core";
 import {
   IconUser,
@@ -15,7 +12,6 @@ import {
   IconAddressBook,
   IconPaw,
 } from "@tabler/icons-react";
-import { IconPlus } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -31,9 +27,6 @@ import DeactivateReactivateAccountModal from "@/components/account/DeactivateRea
 import PetGrid from "@/components/account/PetGrid";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
-import { useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { GenderEnum, PetTypeEnum } from "@/types/constants";
-import { Pet } from "@/types/types";
 
 interface MyAccountProps {
   userId: number;
