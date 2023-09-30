@@ -103,6 +103,11 @@ const links: {
     links: undefined,
   },
   {
+    link: "/favourites",
+    label: "Favourites",
+    links: undefined,
+  },
+  {
     link: "/customer/account",
     label: "My account",
     links: undefined,
