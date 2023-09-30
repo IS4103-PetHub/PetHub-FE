@@ -8,6 +8,8 @@ import {
 import {
   BusinessApplicationStatusEnum,
   RecurrencePatternEnum,
+  GenderEnum,
+  PetTypeEnum,
 } from "./constants";
 
 /*
@@ -238,4 +240,32 @@ export interface Timeslot {
   endTime: string;
   isVacant: boolean;
   calenderGroupId: number;
+}
+
+export interface Pet {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight?: number;
+  dateOfBirth?: string;
+  microchipNumber?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+export interface PetPayload {
+  petId: number;
+  petOwnerId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight: number;
+  dateOfBirth: string;
+  microchipNumber: string;
+  files: File[];
+  dateCreated: string;
+  dateUpdated: string;
 }

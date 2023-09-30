@@ -32,6 +32,21 @@ export const serviceListingSortOptions = [
   },
 ];
 
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
+}
+
+export enum GenderEnum {
+  Male = "MALE",
+  Female = "FEMALE",
+}
+
 export enum DayOfWeekEnum {
   Monday = "MONDAY",
   Tuesday = "TUESDAY",
