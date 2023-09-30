@@ -14,7 +14,11 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
-import { validateCGSettings } from "@/util";
+import {
+  validateCGDescription,
+  validateCGName,
+  validateCGSettings,
+} from "@/util";
 
 interface CreateCalendarGroupProps {
   userId: number;
@@ -52,12 +56,9 @@ export default function CreateCalendarGroup({
       ],
     },
     validate: {
-      name: (value) =>
-        !value || value.length >= 32
-          ? "Name is required and should be at most 32 characters long."
-          : null,
-      description: (value) => (!value ? "Description is required." : null),
-      scheduleSettings: (value) => validateCGSettings(value) as any,
+      name: validateCGName,
+      description: validateCGDescription,
+      scheduleSettings: validateCGSettings as any,
     },
   });
 

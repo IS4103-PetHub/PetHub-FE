@@ -33,7 +33,11 @@ import {
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
-import { validateCGSettings } from "@/util";
+import {
+  validateCGDescription,
+  validateCGName,
+  validateCGSettings,
+} from "@/util";
 
 interface ViewCalendarGroupProps {
   userId: number;
@@ -64,12 +68,9 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       scheduleSettings: calendarGroup?.scheduleSettings,
     },
     validate: {
-      name: (value) =>
-        !value || value.length >= 32
-          ? "Name is required and should be at most 32 characters long."
-          : null,
-      description: (value) => (!value ? "Description is required." : null),
-      scheduleSettings: (value) => validateCGSettings(value) as any,
+      name: validateCGName,
+      description: validateCGDescription,
+      scheduleSettings: validateCGSettings as any,
     },
   });
 
