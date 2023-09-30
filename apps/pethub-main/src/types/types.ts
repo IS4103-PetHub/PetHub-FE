@@ -7,6 +7,7 @@ import {
 } from "shared-utils";
 import {
   BusinessApplicationStatusEnum,
+  RecurrencePatternEnum,
   GenderEnum,
   PetTypeEnum,
 } from "./constants";
@@ -106,6 +107,30 @@ export interface PetBusinessApplication {
 /*
  * SERVICE MANAGEMENT
  */
+export interface ServiceListing {
+  serviceListingId: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  // address
+  dateCreated: string;
+  lastUpdated?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  addresses: Address[];
+  CalendarGroup: CalendarGroup;
+  calendarGroupId: number;
+  duration: number;
+}
+
+export interface Tag {
+  tagId: number;
+  name: string;
+  dateCreated: string;
+  lastUpdated?: string;
+}
 
 export interface CreateServiceListingPayload {
   title: string;
@@ -117,6 +142,8 @@ export interface CreateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
+  duration: number;
 }
 
 export interface UpdateServiceListingPayload {
@@ -129,6 +156,90 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
+  duration: number;
+}
+
+/*
+ * TUI Calendar
+ */
+
+export interface tuiEvent {
+  id: string;
+  title: string;
+  calendarId: string;
+  start: string; // ISO FORMAT
+  end: string; // ISO FORMAT
+}
+
+export interface tuiCalendar {
+  id: string;
+  name: string;
+  backgroundColor: string;
+  borderColor: string;
+}
+
+/*
+ * Booking
+ */
+
+export interface BookingResponse {
+  id: number;
+  invoiceId: number;
+  transactionId: number;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated: string;
+  startTime: string;
+  endTime: string;
+  serviceListing: ServiceListingBooking;
+  timeSlot: Timeslot;
+  petOwner: PetOwner;
+}
+
+export interface ServiceListingBooking {
+  id: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  lastUpdated: string;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  addresses: Address[];
+  petBusinessId: number;
+  calendarGroupId: number;
+}
+
+export interface CalendarGroup {
+  calendarGroupId: number;
+  name: string;
+  description: string;
+  timeslots: Timeslot[];
+  petBusinessId: number;
+  scheduleSettings: ScheduleSettings[];
+}
+
+export interface ScheduleSettings {
+  scheduleSettingsId: number;
+  days: string[];
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+  pattern: RecurrencePatternEnum;
+  startDate: string;
+  endDate: string;
+  timeslots: Timeslot[];
+}
+
+export interface Timeslot {
+  timeslotId: number;
+  startTime: string;
+  endTime: string;
+  isVacant: boolean;
+  calenderGroupId: number;
 }
 
 export interface Pet {
