@@ -2,10 +2,11 @@ import { Stack, PasswordInput, Button, Group } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import React from "react";
 import {
   ChangePasswordPayload,
+  getErrorMessageProps,
   useChangePassword,
   validateChangePassword,
 } from "shared-utils";
@@ -47,14 +48,7 @@ const ChangePasswordForm = ({ email }: ChangePasswordFormProps) => {
       form.reset();
     } catch (error: any) {
       notifications.show({
-        title: "Error Changing Password",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Changing Password", error),
       });
     }
   };

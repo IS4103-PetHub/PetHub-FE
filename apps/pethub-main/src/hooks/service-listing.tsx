@@ -40,13 +40,6 @@ export const useCreateServiceListing = () => {
 
       return response.data;
     },
-    onSuccess: () => {
-      console.log("Successfully created service listing");
-    },
-    onError: (error) => {
-      console.error("Error creating service listing:", error);
-      throw error;
-    },
   });
 };
 
@@ -164,10 +157,6 @@ export const useDeleteServiceListingById = (queryClient: QueryClient) => {
           );
         },
       );
-    },
-    onError: (error) => {
-      console.error("Error deleting service listing:", error);
-      throw error;
     },
   });
 };

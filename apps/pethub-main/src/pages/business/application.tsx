@@ -16,7 +16,11 @@ import { IconSend, IconCheck, IconX } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { AccountTypeEnum, Address, PetBusinessTypeEnum } from "shared-utils";
+import {
+  Address,
+  PetBusinessTypeEnum,
+  getErrorMessageProps,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
 import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
@@ -161,14 +165,7 @@ export default function Application({ userId }: ApplicationProps) {
       refetchPetBusinessApplication();
     } catch (error: any) {
       notifications.show({
-        title: "Error submitting application",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Submitting Application", error),
       });
     }
   };
@@ -189,14 +186,7 @@ export default function Application({ userId }: ApplicationProps) {
       refetchPetBusinessApplication();
     } catch (error: any) {
       notifications.show({
-        title: "Error updating application",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Application", error),
       });
     }
   };
@@ -220,7 +210,7 @@ export default function Application({ userId }: ApplicationProps) {
       updatePetBusinessApplication(payload);
     } else {
       notifications.show({
-        title: "Error sending application",
+        title: "Error Sending Application",
         color: "red",
         icon: <IconX />,
         message: `Your application status is currently ${applicationStatus}.`,

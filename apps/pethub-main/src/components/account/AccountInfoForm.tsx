@@ -3,9 +3,9 @@ import { DateInput } from "@mantine/dates";
 import { TransformedValues, isEmail, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCalendar, IconCheck, IconX } from "@tabler/icons-react";
+import { IconCalendar, IconCheck } from "@tabler/icons-react";
 import React, { useEffect } from "react";
-import { formatISODateLong } from "shared-utils";
+import { formatISODateLong, getErrorMessageProps } from "shared-utils";
 import { AccountStatusEnum } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
@@ -113,14 +113,7 @@ const AccountInfoForm = ({
       form.setValues(formDefaultValues);
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Account", error),
       });
     }
   };

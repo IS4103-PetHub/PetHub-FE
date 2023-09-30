@@ -23,6 +23,7 @@ import {
   ServiceListing,
   Tag,
   formatStringToLetterCase,
+  getErrorMessageProps,
 } from "shared-utils";
 import {
   useCreateServiceListing,
@@ -100,7 +101,6 @@ const ServiceListingModal = ({
       },
       files: (value) => {
         if (value.length > 6) {
-          console.log(value.length);
           notifications.show({
             title: isUpdating
               ? "Error Updating Service Listing"
@@ -150,7 +150,7 @@ const ServiceListingModal = ({
           files: values.files,
           addressIds: values.addresses,
         };
-        const result = await updateServiceListingMutation.mutateAsync(payload);
+        await updateServiceListingMutation.mutateAsync(payload);
         notifications.show({
           message: "Service Successfully Updated",
           color: "green",
@@ -167,7 +167,7 @@ const ServiceListingModal = ({
           files: values.files,
           addressIds: values.addresses,
         };
-        const result = await createServiceListingMutation.mutateAsync(payload);
+        await createServiceListingMutation.mutateAsync(payload);
         notifications.show({
           message: "Service Successfully Created",
           color: "green",
@@ -182,16 +182,12 @@ const ServiceListingModal = ({
       onClose();
     } catch (error) {
       notifications.show({
-        title: isUpdating
-          ? "Error Updating Service Listing"
-          : "Error Creating Service Listing",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps(
+          isUpdating
+            ? "Error Updating Service Listing"
+            : "Error Creating Service Listing",
+          error,
+        ),
       });
     }
   };

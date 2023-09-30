@@ -1,3 +1,4 @@
+import { IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { ServiceListing } from "./types";
 
@@ -83,6 +84,17 @@ export function getMinTableHeight(records?: any[]) {
   if (records.length > 0) {
     return 100;
   }
+}
+
+export function getErrorMessageProps(title: string, error: any) {
+  return {
+    title: title,
+    color: "red",
+    icon: <IconX />,
+    message:
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message,
+  };
 }
 
 export function formatStringToLetterCase(enumString: string) {

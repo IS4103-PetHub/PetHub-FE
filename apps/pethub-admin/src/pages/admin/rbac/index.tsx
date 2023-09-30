@@ -1,7 +1,7 @@
 import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
@@ -9,7 +9,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  TABLE_PAGE_SIZE,
+  getErrorMessageProps,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
@@ -90,14 +94,7 @@ export default function Rbac({ permissions }: RbacProps) {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Deleting User Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting User Group", error),
       });
     }
   };

@@ -4,7 +4,7 @@ import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import React, { useEffect } from "react";
-import { Address } from "shared-utils";
+import { Address, getErrorMessageProps } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
 import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
@@ -71,14 +71,7 @@ const AddressInfoForm = ({ petBusiness, refetch }: AddressInfoFormProps) => {
       form.setValues(formDefaultValues);
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating addresses",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Addresses", error),
       });
     }
   };

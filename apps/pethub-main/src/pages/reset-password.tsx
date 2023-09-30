@@ -36,7 +36,6 @@ export default function ResetPassword() {
 
   const handleResetPassword = async () => {
     // Get the token out of the URL and attempt API call
-    console.log("The reset password token is", router.query.token);
     const resetPasswordPayload: ResetPasswordPayload = {
       token: parseRouterQueryParam(router.query.token),
       newPassword: form.values.password,

@@ -9,8 +9,9 @@ import {
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconUser, IconX } from "@tabler/icons-react";
+import { IconCheck, IconUser } from "@tabler/icons-react";
 import React from "react";
+import { getErrorMessageProps } from "shared-utils";
 import { useActivateAccount, useDeactivateAccount } from "@/hooks/account";
 
 interface DeactivateReactivateAccountModalProps {
@@ -52,14 +53,7 @@ const DeactivateReactivateAccountModal = ({
       refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Deactivating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deactivating Account", error),
       });
     }
     close();
@@ -79,14 +73,7 @@ const DeactivateReactivateAccountModal = ({
       refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Reactivating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Reactivating Account", error),
       });
     }
     close();

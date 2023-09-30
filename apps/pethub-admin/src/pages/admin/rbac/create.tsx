@@ -1,11 +1,12 @@
 import { Container } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
@@ -60,14 +61,7 @@ export default function CreateUserGroup({
       router.push(`/admin/rbac/user-groups/${data.groupId}`);
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating User Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating User Group", error),
       });
     }
   };

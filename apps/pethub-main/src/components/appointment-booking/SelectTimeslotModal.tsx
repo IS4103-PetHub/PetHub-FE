@@ -14,7 +14,7 @@ import {
 import { Calendar } from "@mantine/dates";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconChevronLeft, IconX } from "@tabler/icons-react";
+import { IconCheck, IconChevronLeft } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { getSession } from "next-auth/react";
 import React, { useState } from "react";
@@ -24,6 +24,7 @@ import {
   formatISODayDateTime,
   formatISOLongWithDay,
   formatISOTimeOnly,
+  getErrorMessageProps,
 } from "shared-utils";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
@@ -119,14 +120,10 @@ const SelectTimeslotModal = ({
       });
     } catch (error: any) {
       notifications.show({
-        title: `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps(
+          `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
+          error,
+        ),
       });
     }
   }

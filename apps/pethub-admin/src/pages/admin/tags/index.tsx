@@ -1,14 +1,19 @@
 import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE, Tag } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  TABLE_PAGE_SIZE,
+  Tag,
+  getErrorMessageProps,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -108,14 +113,7 @@ export default function Tags({ permissions }: TagsProps) {
       // refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Deleting Tag",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Tag", error),
       });
     }
   };
@@ -133,14 +131,7 @@ export default function Tags({ permissions }: TagsProps) {
       refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating Tag",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Tag", error),
       });
     }
   };
@@ -157,14 +148,7 @@ export default function Tags({ permissions }: TagsProps) {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating Tag",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Tag", error),
       });
     }
   };
