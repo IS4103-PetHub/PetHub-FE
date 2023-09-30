@@ -72,6 +72,9 @@ const PetGrid = ({ userId }: PetGridProps) => {
         color: "green",
         autoClose: 5000,
       });
+      if (pets.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
     } catch (error) {
       notifications.show({
         title: "Error Deleting Pet",
@@ -119,9 +122,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
   };
 
   const renderNoPetContent = () => {
-    console.log(pets);
     if (pets && pets.length === 0) {
-      console.log("HERE");
       if (isLoading) {
         <CenterLoader />;
       }
