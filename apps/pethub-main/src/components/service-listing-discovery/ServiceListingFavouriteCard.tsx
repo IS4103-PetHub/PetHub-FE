@@ -36,21 +36,26 @@ const useStyles = createStyles((theme) => ({
 
 interface ServiceListingFavouriteCardProps {
   serviceListing: ServiceListing;
+  currentFavourite: boolean;
+  onFavourite(serviceListingId: number, isFavourite: boolean): void;
 }
 
 const IMAGE_HEIGHT = 180;
 
 const ServiceListingFavouriteCard = ({
   serviceListing,
+  currentFavourite,
+  onFavourite,
 }: ServiceListingFavouriteCardProps) => {
   const { classes } = useStyles();
   const router = useRouter();
-  const [isFavourite, setIsFavourite] = useState(false);
+  const [isFavourite, setIsFavourite] = useState(currentFavourite);
 
   if (!serviceListing) return null;
 
   const handleFavouriteToggle = (event: React.MouseEvent) => {
     event.stopPropagation();
+    onFavourite(serviceListing.serviceListingId, isFavourite);
     setIsFavourite(!isFavourite);
   };
 

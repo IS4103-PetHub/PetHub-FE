@@ -22,7 +22,7 @@ import {
 } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
@@ -35,6 +35,7 @@ import ServiceListingCarousel from "@/components/service-listing-discovery/Servi
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
 import {
   useAddServiceListingToFavourites,
+  useGetFavouriteServiceListingByPetOwnerId,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
 import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
@@ -52,11 +53,24 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const [isFavourite, setIsFavourite] = useState(
-    serviceListing.favouritedUsers
-      ? serviceListing.favouritedUsers.some((user) => user.userId === userId)
-      : false,
-  );
+
+  const { data: favouritedListings = [] } =
+    useGetFavouriteServiceListingByPetOwnerId(userId);
+
+  const [isFavourite, setIsFavourite] = useState(false);
+
+  useEffect(() => {
+    if (
+      favouritedListings.some(
+        (listing) =>
+          listing.serviceListingId === serviceListing.serviceListingId,
+      )
+    ) {
+      setIsFavourite(true);
+    } else {
+      setIsFavourite(false);
+    }
+  }, [favouritedListings, serviceListing]);
 
   console.log(isFavourite + " on start");
   const ACCORDION_VALUES = ["description", "business"];

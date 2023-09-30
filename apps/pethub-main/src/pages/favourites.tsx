@@ -8,6 +8,8 @@ import {
   Transition,
 } from "@mantine/core";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconX } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -26,9 +28,14 @@ import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ServiceListingFavouriteCard from "@/components/service-listing-discovery/ServiceListingFavouriteCard";
 import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
-import { useGetFavouriteServiceListingByPetOwnerId } from "@/hooks/pet-owner";
+import {
+  useAddServiceListingToFavourites,
+  useGetFavouriteServiceListingByPetOwnerId,
+  useRemoveServiceListingFromFavourites,
+} from "@/hooks/pet-owner";
 import { useGetAllTags } from "@/hooks/tags";
 import { serviceListingSortOptions } from "@/types/constants";
+import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
 import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
 
 interface FavouritesProps {
@@ -48,7 +55,6 @@ export default function Favourites({ userId }: FavouritesProps) {
   // get selected category from router query
   const activeCategory = router.query?.category as string;
 
-  //CHANGE THIS to get all favourite listings by petowner ID
   const { data: serviceListings = [], isLoading } =
     useGetFavouriteServiceListingByPetOwnerId(userId);
   const { data: tags = [] } = useGetAllTags();
@@ -94,12 +100,87 @@ export default function Favourites({ userId }: FavouritesProps) {
     });
   };
 
+  const addFavouriteMutation = useAddServiceListingToFavourites();
+  const handleAddFavourite = async (
+    payload: AddRemoveFavouriteServiceListingPayload,
+  ) => {
+    try {
+      await addFavouriteMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Favourite Added",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Listing ${payload.serviceListingId} added to favourites.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Adding Listing to Favourites",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const removeFavouriteMutation = useRemoveServiceListingFromFavourites();
+  const handleRemoveFavourite = async (
+    payload: AddRemoveFavouriteServiceListingPayload,
+  ) => {
+    try {
+      await removeFavouriteMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Favourite Removed",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Listing ${payload.serviceListingId} removed from favourites.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Removing Listing from Favourites",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const handleFavourite = (serviceListingId: number, isFavourite: boolean) => {
+    const payload: AddRemoveFavouriteServiceListingPayload = {
+      userId,
+      serviceListingId,
+    };
+    if (isFavourite) {
+      handleRemoveFavourite(payload);
+    } else {
+      handleAddFavourite(payload);
+    }
+  };
+
+  // Function to check if a listing is a favorite
+  const isListingFavorite = (listingId: number) => {
+    return serviceListings.some(
+      (listing) => listing.serviceListingId === listingId,
+    );
+  };
+
   const listingCards = records?.map((serviceListing) => (
     <Grid.Col
       key={serviceListing.serviceListingId}
       span={isMobile ? 12 : isTablet ? 4 : 3}
     >
-      <ServiceListingFavouriteCard serviceListing={serviceListing} />
+      <ServiceListingFavouriteCard
+        serviceListing={serviceListing}
+        currentFavourite={isListingFavorite(serviceListing.serviceListingId)}
+        onFavourite={handleFavourite}
+      />
     </Grid.Col>
   ));
 
@@ -190,7 +271,7 @@ export default function Favourites({ userId }: FavouritesProps) {
                 <PageTitle
                   title={
                     !activeCategory
-                      ? `All service listings`
+                      ? `My Favourites`
                       : formatStringToLetterCase(activeCategory)
                   }
                 />
