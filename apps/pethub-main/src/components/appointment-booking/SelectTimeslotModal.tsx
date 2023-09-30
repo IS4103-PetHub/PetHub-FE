@@ -156,9 +156,12 @@ const SelectTimeslotModal = ({
       size="lg"
       maxLevel="year"
       minDate={new Date()}
+      // exclude dates without any available time slots that is later than the system time
       excludeDate={(date) =>
-        !availTimeslots.some((data) =>
-          dayjs(data.startTime).isSame(date, "day"),
+        !availTimeslots.some(
+          (data) =>
+            dayjs(data.startTime).isSame(date, "day") &&
+            dayjs(data.startTime).isAfter(new Date()),
         )
       }
       onMonthSelect={(month) => setSelectedMonth(month)}
