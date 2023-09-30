@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import { sortBy } from "lodash";
+import { ServiceListing } from "shared-utils";
 import {
-  ServiceListing,
+  serviceListingSortOptions,
   DayOfWeekEnum,
   RecurrencePatternEnum,
-} from "shared-utils";
-import { serviceListingSortOptions } from "./types/constants";
+} from "./types/constants";
 import {
   CalendarGroup,
   Recurrence,

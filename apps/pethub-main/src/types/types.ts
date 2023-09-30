@@ -2,13 +2,16 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
-  DayOfWeekEnum,
   Address,
   PetBusinessTypeEnum,
-  RecurrencePatternEnum,
   ServiceCategoryEnum,
 } from "shared-utils";
-import { GenderEnum, PetTypeEnum } from "./constants";
+import {
+  GenderEnum,
+  PetTypeEnum,
+  DayOfWeekEnum,
+  RecurrencePatternEnum,
+} from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -211,27 +214,6 @@ export interface ServiceListingBooking {
   calendarGroupId: number;
 }
 
-export interface CalendarGroup {
-  calendarGroupId?: number;
-  name: string;
-  description: string;
-  timeslots: Timeslot[];
-  petBusinessId?: number;
-  scheduleSettings: ScheduleSettings[];
-}
-
-export interface ScheduleSettings {
-  scheduleSettingsId?: number;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  vacancies: number;
-  pattern: RecurrencePatternEnum;
-  startDate: string;
-  endDate: string;
-  timeslots: Timeslot[];
-}
-
 export interface Timeslot {
   timeslotId: number;
   startTime: string;
@@ -275,15 +257,6 @@ export interface CalendarGroup {
   scheduleSettings: ScheduleSettings[];
 }
 
-export interface TimePeriod {
-  timePeriodId?: number;
-  startTime: string;
-  endTime: string;
-  vacancies: number;
-  bookingId?: number;
-  calenderGroupId?: number;
-}
-
 export interface ScheduleSettings {
   scheduleSettingsId?: number;
   days: string[];
@@ -295,6 +268,15 @@ export interface Recurrence {
   startDate: string;
   endDate: string;
   timePeriods: TimePeriod[];
+}
+
+export interface TimePeriod {
+  timePeriodId?: number;
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+  bookingId?: number;
+  calenderGroupId?: number;
 }
 
 export interface Booking {

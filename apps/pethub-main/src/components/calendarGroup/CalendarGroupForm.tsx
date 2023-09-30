@@ -28,9 +28,9 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { DayOfWeekEnum, RecurrencePatternEnum } from "shared-utils";
 import CreateButton from "web-ui/shared/LargeCreateButton";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
+import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { checkCGForConflicts, sanitizeCreateCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
@@ -50,6 +50,7 @@ const CalendarGroupForm = ({ form, userId }: CalendarGroupFormProps) => {
     "For schedules with conflicting start and end dates with the recurrence pattern of 'Weekly', ensure that the recurring days selected do not overlap.",
     "Schedules with the recurrence pattern of 'Daily' cannot have overlapping start and end dates.",
     "Schedules with the recurrence pattern of 'Daily' will override schedules with the recurrence pattern of 'Weekly' if they have conflicting start and end dates.",
+    "Time period example: If you have 3 vacancies for a 3 hour period, create a single time period instead of multiple ones. The duration specified in the service listing will determine the booking time slots.",
   ];
 
   const addNewScheduleSettings = () => {

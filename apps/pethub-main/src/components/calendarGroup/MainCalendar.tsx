@@ -18,6 +18,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import LargeViewButton from "web-ui/shared/LargeViewButton";
 import { useGetBookingsByPetBusiness } from "@/hooks/booking";
 import BookingsModal from "./BookingsModal";
 
@@ -287,10 +288,11 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
         />
         <Group>
           {selectedCalendarId !== "all" ? (
-            <Button onClick={handleViewCalendarGroup}>View</Button>
-          ) : null}
-          {selectedCalendarId !== "all" ? (
-            <Button onClick={handleEditCalendarGroup}>Edit</Button>
+            <LargeViewButton
+              onClick={handleViewCalendarGroup}
+              text="View Calendar Settings"
+              color="cyan"
+            />
           ) : null}
         </Group>
       </Group>

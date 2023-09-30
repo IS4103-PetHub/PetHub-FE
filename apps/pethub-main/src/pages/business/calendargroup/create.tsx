@@ -1,25 +1,11 @@
-import {
-  Box,
-  Badge,
-  Modal,
-  Textarea,
-  Button,
-  Grid,
-  Text,
-  Center,
-  Title,
-  Switch,
-  Container,
-  Group,
-} from "@mantine/core";
+import { Container, Group } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
-import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import CalendarGroupForm from "@/components/calendargroup/CalendarGroupForm";
+import { RecurrencePatternEnum } from "@/types/constants";
 import { validateCGSettings } from "@/util";
 
 interface CreateCalendarGroupProps {
