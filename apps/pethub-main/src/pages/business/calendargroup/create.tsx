@@ -71,7 +71,7 @@ export default function CreateCalendarGroup({
         icon: <IconCheck />,
         message: `Calendar group created successfully!`,
       });
-      router.push("/business/calendargroup");
+      window.location.href = "/business/calendargroup"; // Change this in the future
     } catch (error: any) {
       notifications.show({
         title: "Error creating calendar group",

@@ -40,6 +40,7 @@ export const useGetCalendarGroupById = (calendarGroupId: number) => {
       );
       return response.data as CalendarGroup;
     },
+    refetchOnMount: true,
   });
 };
 

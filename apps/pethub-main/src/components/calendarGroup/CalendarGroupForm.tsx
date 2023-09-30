@@ -46,7 +46,7 @@ const CalendarGroupForm = ({
     "For schedules with conflicting start and end dates with the recurrence pattern of 'Weekly', ensure that the recurring days selected do not overlap.",
     "Schedules with the recurrence pattern of 'Daily' cannot have overlapping start and end dates.",
     "Schedules with the recurrence pattern of 'Daily' will override schedules with the recurrence pattern of 'Weekly' if they have conflicting start and end dates.",
-    "Time period example: If you have 3 vacancies for a 3 hour period, create a single time period instead of multiple ones. The duration specified in the service listing will determine the booking time slots.",
+    "Time period example: If you have 3 groomers free for a 3 hour period, create a single time period instead of multiple ones. The duration specified in the service listing will determine the booking time slots.",
   ];
 
   const addNewScheduleSettings = () => {

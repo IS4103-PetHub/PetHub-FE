@@ -11,6 +11,7 @@ import {
   Switch,
   Container,
   Group,
+  Stack,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
@@ -21,10 +22,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { RecurrencePatternEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import LargeDeleteButton from "web-ui/shared/LargeDeleteButton";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import {
@@ -32,6 +32,7 @@ import {
   useGetCalendarGroupById,
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
+import { RecurrencePatternEnum } from "@/types/constants";
 import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import {
   validateCGDescription,
@@ -132,7 +133,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         icon: <IconCheck />,
         message: `Calendar group deleted successfully.`,
       });
-      router.push("/business/calendargroup");
+      window.location.href = "/business/calendargroup"; // hotfix, change this in the future
     } catch (error: any) {
       notifications.show({
         title: "Error Deleting Calendar Group",
@@ -147,7 +148,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
     }
   };
 
-  if (!calendarGroupId) {
+  if (!calendarGroupId || !calendarGroup) {
     return null;
   }
 
@@ -162,7 +163,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
           <PageTitle
             title={
               isEditingDisabled
-                ? "View Calendar Group"
+                ? "Viewing Calendar Group"
                 : "Editing Calendar Group"
             }
           />
@@ -172,6 +173,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
                 text="Edit"
                 onClick={toggleEdit}
                 makeSmallerATeenyBit
+                color="gray"
               />
               &nbsp;
               <DeleteActionButtonModal
@@ -181,6 +183,14 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
                   handleDeleteCalendarGroup(form.values.calendarGroupId)
                 }
                 large
+              />
+              &nbsp;
+              <LargeBackButton
+                text="Back"
+                onClick={() =>
+                  (window.location.href = "/business/calendargroup")
+                } // Change this in the future, normal route would break the calendar atm
+                customSize="sm"
               />
             </Center>
           )}
