@@ -19,7 +19,6 @@ export default function CreateCalendarGroup({
     initialValues: {
       name: "",
       description: "",
-      // a default scheduleSettings
       scheduleSettings: [
         {
           scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness, same with timePeriod
