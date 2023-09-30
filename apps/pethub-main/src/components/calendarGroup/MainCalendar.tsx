@@ -53,15 +53,18 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
     new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   );
 
-  const bookingsQuery = useGetBookingsByPetBusiness(
-    userId,
-    new Date(
+  const bookingsQuery = useGetBookingsByPetBusiness(userId, {
+    startTime: new Date(
       startDate.getFullYear(),
       startDate.getMonth() - 1,
       1,
     ).toISOString(),
-    new Date(endDate.getFullYear(), endDate.getMonth() + 2, 0).toISOString(),
-  );
+    endTime: new Date(
+      endDate.getFullYear(),
+      endDate.getMonth() + 2,
+      0,
+    ).toISOString(),
+  });
 
   const { data: bookings = [] } = bookingsQuery;
 

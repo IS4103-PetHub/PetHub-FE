@@ -33,20 +33,6 @@ export const useGetPetOwnerByIdAndAccountType = (
   return useQuery({
     queryKey: ["pet-owners", accountType, userId],
     queryFn: async () => {
-      if (userId == 0) {
-        const petOwner: PetOwner = {
-          firstName: "",
-          lastName: "",
-          dateOfBirth: "",
-          userId: 0,
-          contactNumber: "",
-          email: "",
-          accountType: AccountTypeEnum.PetOwner,
-          accountStatus: AccountStatusEnum.Active,
-          dateCreated: "",
-        };
-        return petOwner;
-      }
       const data = await (await api.get(`${PET_OWNER_API}/${userId}`)).data;
       const petOwner: PetOwner = {
         userId,
