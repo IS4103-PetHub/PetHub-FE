@@ -1,8 +1,16 @@
 import { Container, Text } from "@mantine/core";
 import Head from "next/head";
+import { useEffect } from "react";
 import { PageTitle } from "web-ui";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 
 export default function Home() {
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
+
+  useEffect(() => {
+    hideOverlay(); // Hide the overlay that was triggered via a login
+  }, []);
+
   return (
     <>
       <Head>

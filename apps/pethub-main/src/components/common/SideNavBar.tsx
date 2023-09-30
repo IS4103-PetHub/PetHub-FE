@@ -100,7 +100,7 @@ const data = [
     icon: IconBoxMultiple,
   },
   {
-    link: "/business/calendarGroup",
+    link: "/business/calendargroup",
     label: "Calendar Group",
     icon: IconCalendar,
   },
@@ -148,7 +148,7 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

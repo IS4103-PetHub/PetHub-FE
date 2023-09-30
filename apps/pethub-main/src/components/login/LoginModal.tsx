@@ -1,6 +1,7 @@
 import { Container, useMantineTheme, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
@@ -9,6 +10,7 @@ import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { ForgotPasswordPayload } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
@@ -26,6 +28,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
   const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -97,6 +100,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         session &&
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
+        showOverlay();
         router.push("/business/dashboard");
       }
       close();
@@ -141,6 +145,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       opened={opened}
       onClose={close}
     >
+      {/* <LoadingOverlay visible={visible} zIndex={1000} loaderProps={{ color: "pink", type: "bars" }} /> */}
       <Container fluid>
         {type === "login" ? (
           <LoginBox

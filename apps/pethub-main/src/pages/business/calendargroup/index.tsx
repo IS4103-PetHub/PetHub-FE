@@ -1,8 +1,11 @@
-import { Button, Container, Group } from "@mantine/core";
+import { Container, Group } from "@mantine/core";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import React, { useState, useEffect } from "react";
 import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import MainCalendar from "@/components/calendarGroup/MainCalendar";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
@@ -13,6 +16,8 @@ interface MyAccountProps {
   accountType: AccountTypeEnum;
 }
 export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
+  const router = useRouter();
+
   const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
     useGetCalendarGroupByPBId(userId);
 
@@ -20,7 +25,6 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
     userId,
     accountType,
   );
-
   const { data: tags } = useGetAllTags();
 
   return (
@@ -29,13 +33,14 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
         <title>Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-
       <Container fluid>
         <Group position="apart">
           <PageTitle title="Calendar Group Management" />
-          <Button>Create</Button>
+          <LargeCreateButton
+            text="Create New Calendar Group"
+            onClick={() => router.push("/business/calendargroup/create")}
+          />
         </Group>
-
         <MainCalendar
           calendarGroupings={calendarGroup}
           userId={userId}

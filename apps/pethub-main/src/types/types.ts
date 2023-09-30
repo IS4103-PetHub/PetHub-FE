@@ -1,15 +1,16 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  BusinessApplicationStatusEnum,
   Address,
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
 } from "shared-utils";
 import {
-  BusinessApplicationStatusEnum,
-  RecurrencePatternEnum,
   GenderEnum,
   PetTypeEnum,
+  DayOfWeekEnum,
+  RecurrencePatternEnum,
 } from "./constants";
 
 /*
@@ -213,27 +214,6 @@ export interface ServiceListingBooking {
   calendarGroupId: number;
 }
 
-export interface CalendarGroup {
-  calendarGroupId: number;
-  name: string;
-  description: string;
-  timeslots: Timeslot[];
-  petBusinessId: number;
-  scheduleSettings: ScheduleSettings[];
-}
-
-export interface ScheduleSettings {
-  scheduleSettingsId: number;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  vacancies: number;
-  pattern: RecurrencePatternEnum;
-  startDate: string;
-  endDate: string;
-  timeslots: Timeslot[];
-}
-
 export interface Timeslot {
   timeslotId: number;
   startTime: string;
@@ -268,4 +248,43 @@ export interface PetPayload {
   files: File[];
   dateCreated: string;
   dateUpdated: string;
+}
+export interface CalendarGroup {
+  calendarGroupId?: number;
+  name: string;
+  description: string;
+  petBusinessId?: number;
+  scheduleSettings: ScheduleSettings[];
+}
+
+export interface ScheduleSettings {
+  scheduleSettingsId?: number;
+  days: string[];
+  recurrence: Recurrence;
+}
+
+export interface Recurrence {
+  pattern: RecurrencePatternEnum;
+  startDate: string;
+  endDate: string;
+  timePeriods: TimePeriod[];
+}
+
+export interface TimePeriod {
+  timePeriodId?: number;
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+  bookingId?: number;
+  calenderGroupId?: number;
+}
+
+export interface Booking {
+  bookingId: number;
+  petOwnerId: number;
+  invoiceId?: number;
+  transactionId?: number;
+  dateCreated: string;
+  lastUpdated?: string;
+  timeSlotIds: number[];
 }
