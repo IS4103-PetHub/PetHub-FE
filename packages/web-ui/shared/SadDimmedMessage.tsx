@@ -19,7 +19,7 @@ const SadDimmedMessage = ({
   return (
     <Container fluid className="center-vertically">
       <Box>
-        <Center style={{ marginBottom: 15 }}>
+        <Center mb={15}>
           <IconMoodSad
             size={80}
             color={
@@ -30,13 +30,7 @@ const SadDimmedMessage = ({
             strokeWidth="1.5"
           />
         </Center>
-        <Text
-          size="xl"
-          weight={500}
-          color="dimmed"
-          align="center"
-          style={{ marginBottom: 10 }}
-        >
+        <Text size="xl" weight={500} color="dimmed" align="center" mb={10}>
           {title}
         </Text>
 

@@ -176,8 +176,7 @@ export default function Tags({ permissions }: TagsProps) {
   const renderContent = () => {
     if (tags.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no tags fetched
       return (

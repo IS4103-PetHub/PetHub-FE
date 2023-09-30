@@ -144,7 +144,6 @@ export default function PetBusinessDetails({
       </Group>
 
       {isLoading ? (
-        // still fetching
         <Box h={400} sx={{ verticalAlign: "center" }}>
           <Center h="100%" w="100%">
             <Loader />

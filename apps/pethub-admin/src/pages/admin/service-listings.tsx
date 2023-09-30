@@ -190,7 +190,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       return (
         <Transition

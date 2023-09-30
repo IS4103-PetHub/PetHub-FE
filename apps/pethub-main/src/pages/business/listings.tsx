@@ -123,7 +123,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       return (
         <Transition

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/axiosConfig";
-import { TimeSlot } from "@/types/types";
+import { Timeslot } from "@/types/types";
 
 const CALENDAR_GROUP_API = "/calendar-groups";
 
@@ -18,7 +18,7 @@ export const useGetAvailableTimeSlotsByCGId = (
         `${CALENDAR_GROUP_API}/available-timeslots/${cgId}`,
         { params },
       );
-      return response.data as TimeSlot[];
+      return response.data as Timeslot[];
     },
     // only run this query if all the values are not null
     enabled: !!(cgId && startTime && endTime && duration),

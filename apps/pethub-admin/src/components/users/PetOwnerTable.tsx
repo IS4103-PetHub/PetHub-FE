@@ -89,8 +89,7 @@ export default function PetOwnerTable() {
   const renderContent = () => {
     if (petOwners.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no records fetched
       return (

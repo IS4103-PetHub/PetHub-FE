@@ -102,8 +102,7 @@ export default function ServiceListings() {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no records fetched
       return (

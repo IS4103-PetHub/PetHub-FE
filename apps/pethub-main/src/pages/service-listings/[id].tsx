@@ -20,7 +20,7 @@ import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
-import SelectTimeSlotModal from "@/components/appointment-booking/SelectTimeslotModal";
+import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
@@ -168,7 +168,7 @@ export default function ServiceListingDetails({
                 Buy now
               </Button>
 
-              <SelectTimeSlotModal
+              <SelectTimeslotModal
                 serviceListing={serviceListing}
                 opened={opened}
                 onClose={close}

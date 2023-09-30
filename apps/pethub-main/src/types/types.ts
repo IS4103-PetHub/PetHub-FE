@@ -132,7 +132,7 @@ export interface UpdateServiceListingPayload {
  * APPOINTMENT MANAGEMENT
  */
 
-export interface TimeSlot {
+export interface Timeslot {
   calendarGroupId: number;
   timeSlotId: number;
   startTime: string;

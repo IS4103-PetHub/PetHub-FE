@@ -1,20 +1,26 @@
 import {
   Container,
   SegmentedControl,
-  useMantineTheme,
   Text,
   Group,
   Box,
   Stack,
+  Transition,
+  Center,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { IconCalendar, IconSearch } from "@tabler/icons-react";
+import { useDisclosure, useToggle } from "@mantine/hooks";
+import { IconCalendar } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { EMPTY_STATE_DELAY_MS } from "shared-utils";
 import { PageTitle } from "web-ui";
+import CenterLoader from "web-ui/shared/CenterLoader";
+import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SortBySelect from "web-ui/shared/SortBySelect";
+import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
 import TimeslotCard from "@/components/appointment-booking/TimeslotCard";
 import { useGetBookingsByUserId } from "@/hooks/booking";
 import { bookingsSortOptions } from "@/types/constants";
@@ -32,6 +38,9 @@ export default function Appointments({ userId }: AppointmentsProps) {
     dayjs(new Date()).add(30, "days").toDate(),
   );
   const [sortStatus, setSortStatus] = useState<string>("upcoming");
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+  // for select timeslot modal
+  const [opened, { open, close }] = useDisclosure(false);
 
   // set the number of days ahead to display upcoming appointments for
   const segmentedControlData = [
@@ -55,6 +64,16 @@ export default function Appointments({ userId }: AppointmentsProps) {
     setRecords(newRecords);
   }, [bookings, sortStatus]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (bookings.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
   function handleChangeSegmentedControl(value) {
     if (value === "custom") {
       setStartDate(null);
@@ -67,14 +86,66 @@ export default function Appointments({ userId }: AppointmentsProps) {
     setSegmentedControlValue(value);
   }
 
+  const handleReschedule = () => {
+    open();
+  };
+
   const appointmentCards = records.map((booking) => (
-    <TimeslotCard
-      key={booking.bookingId}
-      serviceListing={booking.serviceListing}
-      startTime={booking.startTime}
-      endTime={booking.endTime}
-    />
+    <div key={booking.bookingId}>
+      <TimeslotCard
+        key={booking.bookingId}
+        serviceListing={booking.serviceListing}
+        startTime={booking.startTime}
+        endTime={booking.endTime}
+        onClickReschedule={handleReschedule}
+      />
+      <SelectTimeslotModal
+        serviceListing={booking.serviceListing}
+        opened={opened}
+        onClose={close}
+      />
+    </div>
   ));
+
+  const renderContent = () => {
+    if (bookings.length === 0) {
+      if (!startDate || !endDate) {
+        // no start date and end date selected
+        return (
+          <Center className="center-vertically" mt={-100}>
+            <Text size="xl" weight={500} color="dimmed" align="center">
+              Select start and end date
+            </Text>
+          </Center>
+        );
+      }
+      if (isLoading) {
+        return <CenterLoader mt={0} />;
+      }
+      // no records fetched
+      return (
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <SadDimmedMessage
+                title={"No bookings found"}
+                subtitle="We cannot find any bookings for the selected time period."
+              />
+            </div>
+          )}
+        </Transition>
+      );
+    }
+    return (
+      <Stack mt="xl" spacing="xs">
+        {appointmentCards}
+      </Stack>
+    );
+  };
 
   return (
     <>
@@ -125,18 +196,8 @@ export default function Appointments({ userId }: AppointmentsProps) {
             value={endDate}
             onChange={setEndDate}
           />
-          {/* <ActionIcon
-                color={theme.primaryColor}
-                variant="filled"
-                size="lg"
-                mb={2}
-              >
-                <IconSearch size="1.125rem" />
-              </ActionIcon> */}
         </Group>
-        <Stack mt="xl" spacing="xs">
-          {appointmentCards}
-        </Stack>
+        {renderContent()}
       </Container>
     </>
   );

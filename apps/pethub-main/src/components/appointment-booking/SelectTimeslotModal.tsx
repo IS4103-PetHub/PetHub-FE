@@ -62,7 +62,7 @@ const SelectTimeslotModal = ({
   const { data: availTimeslots = [], isLoading } =
     useGetAvailableTimeSlotsByCGId(
       serviceListing.calendarGroupId,
-      dayjs(selectedMonth).subtract(1, "month").toISOString(),
+      selectedMonth.toISOString(),
       dayjs(selectedMonth).add(1, "month").toISOString(),
       serviceListing.duration,
     );
@@ -190,10 +190,9 @@ const SelectTimeslotModal = ({
         <Divider mb="lg" />
 
         {isLoading ? (
-          // display loader if still fetching avail timeslots
           <Box h={200} sx={{ verticalAlign: "center" }}>
             <Center h="100%" w="100%">
-              <Loader />
+              <Loader opacity={0.5} />
             </Center>
           </Box>
         ) : null}
@@ -230,6 +229,7 @@ const SelectTimeslotModal = ({
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
+        onClickReschedule={() => {}}
       />
     </>
   );

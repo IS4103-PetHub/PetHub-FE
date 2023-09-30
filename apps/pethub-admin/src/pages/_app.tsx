@@ -73,7 +73,7 @@ export function App({ Component, pageProps }: AppProps) {
                         justifyContent: "center",
                       }}
                     >
-                      <Loader size="3rem" />
+                      <Loader size="lg" opacity={0.5} />
                     </Container>
                   ) : (
                     <Component {...pageProps} />

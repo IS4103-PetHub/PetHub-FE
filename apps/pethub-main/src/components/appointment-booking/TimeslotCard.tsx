@@ -8,7 +8,9 @@ import {
   Box,
   Badge,
 } from "@mantine/core";
+import { IconMapPin } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import Link from "next/link";
 import React from "react";
 import {
   ServiceListing,
@@ -21,12 +23,15 @@ interface TimeslotCardProps {
   startTime: string;
   endTime?: string;
   disabled?: boolean;
+  onClickReschedule(): void;
 }
 
 const TimeslotCard = ({
   serviceListing,
   startTime,
   endTime,
+  disabled,
+  onClickReschedule,
 }: TimeslotCardProps) => {
   const theme = useMantineTheme();
 
@@ -35,24 +40,44 @@ const TimeslotCard = ({
     const diffDays = dayjs(startTime).diff(now, "days");
     if (diffDays < 2) {
       const diffHours = dayjs(startTime).diff(now, "hours");
-      return `in ${diffHours} hours`;
+      return `in ${diffHours} hour${diffHours > 1 ? "s" : ""}`;
     }
-    return `in ${diffDays} days`;
+    return `in ${diffDays} day${diffDays > 1 ? "s" : ""}`;
   }
 
   return (
     <Card withBorder mb="lg" sx={{ backgroundColor: theme.colors.gray[0] }}>
       <Group position="apart">
         <Box>
-          <Badge mb={5} variant="dot">
-            {getTimeDifferenceString()}
-          </Badge>
+          {disabled ? null : (
+            <Badge mb={5} variant="dot">
+              {getTimeDifferenceString()}
+            </Badge>
+          )}
           <Text size="lg" weight={600}>
             {serviceListing.title}
           </Text>
-          <Text color="dimmed">{serviceListing.petBusiness.companyName}</Text>
+          {disabled ? (
+            <Text color="dimmed">{serviceListing.petBusiness.companyName}</Text>
+          ) : (
+            <Link href={`/pet-businesses/${serviceListing.petBusinessId}`}>
+              <Group>
+                <IconMapPin size="1.25rem" color={theme.colors.indigo[6]} />
+                <Text
+                  ml={-10}
+                  color={theme.primaryColor}
+                  weight={500}
+                  sx={{ "&:hover": { fontWeight: 600 } }}
+                >
+                  {serviceListing.petBusiness.companyName}
+                </Text>
+              </Group>
+            </Link>
+          )}
         </Box>
-        <Button>Reschedule</Button>
+        {disabled ? null : (
+          <Button onClick={onClickReschedule}>Reschedule</Button>
+        )}
       </Group>
       <Divider mt="xs" mb="xs" />
       <Text>

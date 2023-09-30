@@ -133,8 +133,7 @@ export default function Rbac({ permissions }: RbacProps) {
   const renderContent = () => {
     if (userGroups.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no user groups fetched
       return (
