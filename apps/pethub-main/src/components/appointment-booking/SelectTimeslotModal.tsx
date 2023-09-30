@@ -10,7 +10,6 @@ import {
   Loader,
   Modal,
   Text,
-  useMantineTheme,
 } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
@@ -18,7 +17,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconChevronLeft, IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { getSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ServiceListing,
   convertMinsToDurationString,
@@ -26,7 +25,7 @@ import {
   formatISOLongWithDay,
   formatISOTimeOnly,
 } from "shared-utils";
-import { useCreateBooking } from "@/hooks/booking";
+import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import TimeslotCard from "./TimeslotCard";
 
@@ -37,12 +36,18 @@ interface SelectTimeslotModalProps {
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
+  isUpdating?: boolean;
+  bookingId?: number;
+  onUpdateBooking?(): void;
 }
 
 const SelectTimeslotModal = ({
   serviceListing,
   opened,
   onClose,
+  isUpdating,
+  bookingId,
+  onUpdateBooking,
 }: SelectTimeslotModalProps) => {
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [selectedMonth, setSelectedMonth] = useState<Date>(
@@ -68,7 +73,9 @@ const SelectTimeslotModal = ({
     );
 
   const createBookingMutation = useCreateBooking();
-  async function createBooking() {
+  const updateBookingMutation = useUpdateBooking();
+
+  async function createOrUpdateBooking() {
     const session = await getSession();
     if (!session) {
       notifications.show({
@@ -79,18 +86,29 @@ const SelectTimeslotModal = ({
       return;
     }
     try {
-      const payload = {
-        petOwnerId: session.user["userId"],
-        calendarGroupId: serviceListing.calendarGroupId,
-        serviceListingId: serviceListing.serviceListingId,
-        startTime: selectedTimeslot,
-        endTime: dayjs(selectedTimeslot)
-          .add(serviceListing.duration, "minutes")
-          .toISOString(),
-      };
-      await createBookingMutation.mutateAsync(payload);
+      let payload;
+      const startTime = selectedTimeslot;
+      const endTime = dayjs(selectedTimeslot)
+        .add(serviceListing.duration, "minutes")
+        .toISOString();
+
+      if (isUpdating) {
+        payload = { bookingId, startTime, endTime };
+        await updateBookingMutation.mutateAsync(payload);
+        // refetch user bookings
+        onUpdateBooking();
+      } else {
+        payload = {
+          petOwnerId: session.user["userId"],
+          calendarGroupId: serviceListing.calendarGroupId,
+          serviceListingId: serviceListing.serviceListingId,
+          startTime,
+          endTime,
+        };
+        await createBookingMutation.mutateAsync(payload);
+      }
       notifications.show({
-        title: "Appointment Confirmed",
+        title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
         color: "green",
         icon: <IconCheck />,
         message: `Your appointment on ${formatISODayDateTime(
@@ -99,7 +117,7 @@ const SelectTimeslotModal = ({
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating Appointment",
+        title: `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
         color: "red",
         icon: <IconX />,
         message:
@@ -128,7 +146,7 @@ const SelectTimeslotModal = ({
       setShowConfirmation();
       return;
     }
-    createBooking();
+    createOrUpdateBooking();
     handleClose();
   }
 
@@ -229,7 +247,6 @@ const SelectTimeslotModal = ({
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
-        onClickReschedule={() => {}}
       />
     </>
   );

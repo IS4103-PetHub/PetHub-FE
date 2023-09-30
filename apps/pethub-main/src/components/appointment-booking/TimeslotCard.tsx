@@ -8,6 +8,7 @@ import {
   Box,
   Badge,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconMapPin } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -17,13 +18,17 @@ import {
   convertMinsToDurationString,
   formatISODayDateTime,
 } from "shared-utils";
+import SelectTimeslotModal from "./SelectTimeslotModal";
 
 interface TimeslotCardProps {
   serviceListing: ServiceListing;
   startTime: string;
+  // optional as endTime can be computed
   endTime?: string;
+  // optional, only for updating appointment
   disabled?: boolean;
-  onClickReschedule(): void;
+  bookingId?: number;
+  onUpdateBooking?(): void;
 }
 
 const TimeslotCard = ({
@@ -31,14 +36,16 @@ const TimeslotCard = ({
   startTime,
   endTime,
   disabled,
-  onClickReschedule,
+  bookingId,
+  onUpdateBooking,
 }: TimeslotCardProps) => {
   const theme = useMantineTheme();
+  const [opened, { open, close }] = useDisclosure(false);
 
   function getTimeDifferenceString() {
     const now = new Date();
     const diffDays = dayjs(startTime).diff(now, "days");
-    if (diffDays < 2) {
+    if (diffDays < 1) {
       const diffHours = dayjs(startTime).diff(now, "hours");
       return `in ${diffHours} hour${diffHours > 1 ? "s" : ""}`;
     }
@@ -76,7 +83,17 @@ const TimeslotCard = ({
           )}
         </Box>
         {disabled ? null : (
-          <Button onClick={onClickReschedule}>Reschedule</Button>
+          <>
+            <Button onClick={open}>Reschedule</Button>
+            <SelectTimeslotModal
+              serviceListing={serviceListing}
+              opened={opened}
+              onClose={close}
+              isUpdating
+              bookingId={bookingId}
+              onUpdateBooking={onUpdateBooking}
+            />
+          </>
         )}
       </Group>
       <Divider mt="xs" mb="xs" />

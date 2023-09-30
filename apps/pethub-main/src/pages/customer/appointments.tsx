@@ -9,7 +9,7 @@ import {
   Center,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { useToggle } from "@mantine/hooks";
 import { IconCalendar } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Head from "next/head";
@@ -20,7 +20,6 @@ import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SortBySelect from "web-ui/shared/SortBySelect";
-import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
 import TimeslotCard from "@/components/appointment-booking/TimeslotCard";
 import { useGetBookingsByUserId } from "@/hooks/booking";
 import { bookingsSortOptions } from "@/types/constants";
@@ -39,8 +38,6 @@ export default function Appointments({ userId }: AppointmentsProps) {
   );
   const [sortStatus, setSortStatus] = useState<string>("upcoming");
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
-  // for select timeslot modal
-  const [opened, { open, close }] = useDisclosure(false);
 
   // set the number of days ahead to display upcoming appointments for
   const segmentedControlData = [
@@ -50,7 +47,11 @@ export default function Appointments({ userId }: AppointmentsProps) {
     { label: "Custom", value: "custom" },
   ];
 
-  const { data: bookings = [], isLoading } = useGetBookingsByUserId(
+  const {
+    data: bookings = [],
+    isLoading,
+    refetch: refetchUserBookings,
+  } = useGetBookingsByUserId(
     userId,
     startDate?.toISOString(),
     endDate?.toISOString(),
@@ -86,25 +87,17 @@ export default function Appointments({ userId }: AppointmentsProps) {
     setSegmentedControlValue(value);
   }
 
-  const handleReschedule = () => {
-    open();
-  };
+  const handleReschedule = () => {};
 
   const appointmentCards = records.map((booking) => (
-    <div key={booking.bookingId}>
-      <TimeslotCard
-        key={booking.bookingId}
-        serviceListing={booking.serviceListing}
-        startTime={booking.startTime}
-        endTime={booking.endTime}
-        onClickReschedule={handleReschedule}
-      />
-      <SelectTimeslotModal
-        serviceListing={booking.serviceListing}
-        opened={opened}
-        onClose={close}
-      />
-    </div>
+    <TimeslotCard
+      key={booking.bookingId}
+      serviceListing={booking.serviceListing}
+      startTime={booking.startTime}
+      endTime={booking.endTime}
+      bookingId={booking.bookingId}
+      onUpdateBooking={refetchUserBookings}
+    />
   ));
 
   const renderContent = () => {
@@ -132,7 +125,7 @@ export default function Appointments({ userId }: AppointmentsProps) {
           {(styles) => (
             <div style={styles}>
               <SadDimmedMessage
-                title={"No bookings found"}
+                title="No bookings found"
                 subtitle="We cannot find any bookings for the selected time period."
               />
             </div>

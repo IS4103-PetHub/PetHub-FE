@@ -18,6 +18,16 @@ export const useCreateBooking = () => {
   });
 };
 
+export const useUpdateBooking = () => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      const { bookingId, ...payloadWithoutId } = payload;
+      return (await api.patch(`${BOOKING_API}/${bookingId}`, payloadWithoutId))
+        .data;
+    },
+  });
+};
+
 export const useGetBookingsByUserId = (
   userId: number,
   startTime: string,
