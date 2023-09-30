@@ -4,7 +4,6 @@ import {
   Button,
   Modal,
   MultiSelect,
-  Checkbox,
   Group,
   Select,
   NumberInput,
@@ -14,8 +13,6 @@ import {
   Textarea,
   Card,
   CloseButton,
-  Slider,
-  Text,
   Autocomplete,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -24,15 +21,17 @@ import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import React, { useEffect, useState } from "react";
-import { Address, formatStringToLetterCase } from "shared-utils";
+import {
+  Address,
+  ServiceCategoryEnum,
+  formatStringToLetterCase,
+} from "shared-utils";
 import {
   useCreateServiceListing,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
-import CalendarGroup from "@/pages/business/calendarGroup";
-import { ServiceCategoryEnum } from "@/types/constants";
 import {
-  CalendarGroup as CalendarGroupObject,
+  CalendarGroup,
   CreateServiceListingPayload,
   ServiceListing,
   Tag,
@@ -49,7 +48,7 @@ interface ServiceListingModalProps {
   refetch(): void;
   tags: Tag[];
   addresses: Address[];
-  calendarGroups: CalendarGroupObject[];
+  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListingModal = ({

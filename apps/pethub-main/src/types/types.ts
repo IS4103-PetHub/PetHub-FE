@@ -183,15 +183,15 @@ export interface tuiCalendar {
 
 export interface BookingResponse {
   id: number;
-  invoiceId: number | null;
-  transactionId: number | null;
+  invoiceId: number;
+  transactionId: number;
   petOwnerId: number;
   dateCreated: string;
-  lastUpdated: string | null;
+  lastUpdated: string;
   startTime: string;
   endTime: string;
   serviceListing: ServiceListingBooking;
-  timeSlot: Timeslot | null;
+  timeSlot: Timeslot;
   petOwner: PetOwner;
 }
 
@@ -203,40 +203,39 @@ export interface ServiceListingBooking {
   attachmentKeys: string[];
   attachmentURLs: string[];
   dateCreated: string;
-  lastUpdated: string | null;
+  lastUpdated: string;
   category: ServiceCategoryEnum;
   tags: Tag[];
   addresses: Address[];
   petBusinessId: number;
-  calendarGroupId: number | null;
+  calendarGroupId: number;
 }
 
 export interface CalendarGroup {
   calendarGroupId: number;
-  name?: string;
-  description?: string;
-  timeslots?: Timeslot[];
-  petBusinessId?: number;
-  scheduleSettings?: ScheduleSettings[];
+  name: string;
+  description: string;
+  timeslots: Timeslot[];
+  petBusinessId: number;
+  scheduleSettings: ScheduleSettings[];
 }
 
 export interface ScheduleSettings {
   scheduleSettingsId: number;
-  days?: string[];
-  startTime?: string;
-  endTime?: string;
-  vacancies?: number;
-  pattern?: RecurrencePatternEnum;
-  startDate?: string;
-  endDate?: string;
-  timeslots?: Timeslot[];
+  days: string[];
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+  pattern: RecurrencePatternEnum;
+  startDate: string;
+  endDate: string;
+  timeslots: Timeslot[];
 }
 
 export interface Timeslot {
   timeslotId: number;
-  startTime?: string;
-  endTime?: string;
-  isVacant?: boolean;
-  bookingId?: number;
-  calenderGroupId?: number;
+  startTime: string;
+  endTime: string;
+  isVacant: boolean;
+  calenderGroupId: number;
 }

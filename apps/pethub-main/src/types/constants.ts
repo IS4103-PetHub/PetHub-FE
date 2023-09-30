@@ -31,13 +31,6 @@ export const serviceListingSortOptions = [
     direction: "desc",
   },
 ];
-export enum ServiceCategoryEnum {
-  PetGrooming = "PET_GROOMING",
-  Dining = "DINING",
-  Veterinary = "VETERINARY",
-  PetRetail = "PET_RETAIL",
-  PetBoarding = "PET_BOARDING",
-}
 
 export enum DayOfWeekEnum {
   Monday = "MONDAY",
@@ -53,7 +46,3 @@ export enum RecurrencePatternEnum {
   Daily = "DAILY",
   Weekly = "WEEKLY",
 }
-
-export const TABLE_PAGE_SIZE = 15;
-
-export const EMPTY_STATE_DELAY_MS = 500;

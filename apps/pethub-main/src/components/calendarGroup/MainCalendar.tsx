@@ -178,14 +178,12 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
     const selectedCalendarGroup = calendarGroupings.find(
       (group) => group.calendarGroupId == selectedCalendarId,
     );
-    console.log("EDITING", selectedCalendarGroup);
   };
 
   const handleViewCalendarGroup = () => {
     const selectedCalendarGroup = calendarGroupings.find(
       (group) => group.calendarGroupId == selectedCalendarId,
     );
-    console.log("VIEWING", selectedCalendarGroup);
   };
 
   const onClickEvent = useCallback(
@@ -274,7 +272,7 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      <Group position="apart">
+      <Group position="apart" mb="xs">
         <Select
           label="Calendar Group"
           data={[
