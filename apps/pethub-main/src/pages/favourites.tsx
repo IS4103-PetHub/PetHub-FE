@@ -4,7 +4,6 @@ import {
   Grid,
   Group,
   MultiSelect,
-  Select,
   Transition,
 } from "@mantine/core";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
@@ -16,7 +15,6 @@ import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
-  ServiceCategoryEnum,
   ServiceListing,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -27,7 +25,6 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ServiceListingFavouriteCard from "@/components/service-listing-discovery/ServiceListingFavouriteCard";
-import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
 import {
   useAddServiceListingToFavourites,
   useGetFavouriteServiceListingByPetOwnerId,
@@ -64,7 +61,6 @@ export default function Favourites({ userId }: FavouritesProps) {
   /*
    * Effect Hooks
    */
-
   useEffect(() => {
     setRecords(sortServiceListings(serviceListings, sortStatus));
   }, [serviceListings, sortStatus]);
@@ -92,12 +88,6 @@ export default function Favourites({ userId }: FavouritesProps) {
       searchStr,
     );
     setRecords(results);
-  };
-
-  const handleChangeCategory = (newCategory: ServiceCategoryEnum) => {
-    router.push({
-      query: { category: newCategory },
-    });
   };
 
   const addFavouriteMutation = useAddServiceListingToFavourites();
@@ -200,8 +190,8 @@ export default function Favourites({ userId }: FavouritesProps) {
           {(styles) => (
             <div style={styles}>
               <SadDimmedMessage
-                title="No service listings found"
-                subtitle="Check back later for new service listings!"
+                title="No favourited service listings found"
+                subtitle="Go to 'Explore services' to find your favourite listings!"
               />
             </div>
           )}
@@ -230,7 +220,8 @@ export default function Favourites({ userId }: FavouritesProps) {
         text="Search by service listing title, business name"
         onSearch={handleSearch}
       />
-      <MultiSelect
+      {/* TO BE UNCOMMENTED after getAllFavouriteWithQueries is done on BE */}
+      {/* <MultiSelect
         w={isTablet ? "30%" : "32%"}
         size="md"
         mt={-25}
@@ -242,7 +233,7 @@ export default function Favourites({ userId }: FavouritesProps) {
         data={tags.map((tag) => tag.name)}
         value={selectedTags}
         onChange={setSelectedTags}
-      />
+      /> */}
       <SortBySelect
         data={serviceListingSortOptions}
         value={sortStatus}
@@ -254,19 +245,13 @@ export default function Favourites({ userId }: FavouritesProps) {
   return (
     <>
       <Head>
-        <title>Service Listings - Pet Hub</title>
+        <title>My Favourites - Pet Hub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
         <Container fluid>
           <Grid m={isMobile ? 20 : 50}>
-            <Grid.Col span={2} hidden={isMobile}>
-              <ServiceListingsSideBar
-                activeCategory={activeCategory}
-                onChangeCategory={handleChangeCategory}
-              />
-            </Grid.Col>
-            <Grid.Col span={isMobile ? 12 : 10}>
+            <Grid.Col span={isMobile ? 14 : 12}>
               <Box ml="xl" mr="xl">
                 <PageTitle
                   title={

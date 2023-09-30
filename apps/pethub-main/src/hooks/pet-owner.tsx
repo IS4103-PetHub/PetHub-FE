@@ -62,6 +62,7 @@ export const useGetFavouriteServiceListingByPetOwnerId = (userId: number) => {
       const response = await api.get(`${PET_OWNER_API}/favourites/${userId}`);
       return response.data as ServiceListing[];
     },
+    refetchOnMount: true,
   });
 };
 

@@ -104,7 +104,7 @@ const links: {
   },
   {
     link: "/favourites",
-    label: "Favourites",
+    label: "My favourites",
     links: undefined,
   },
   {
