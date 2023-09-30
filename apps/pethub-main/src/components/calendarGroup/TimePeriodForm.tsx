@@ -47,7 +47,7 @@ const TimePeriodForm = ({
           </Box>
           <Box mr={50}>
             <TimeSelect
-              defaultTime={timePeriod.startTime || null}
+              defaultTime={timePeriod.startTime ?? null}
               label={index === 0 && "Start time"}
               interval={TIME_INTERVAL}
               disabled={isEditingDisabled}
@@ -60,7 +60,7 @@ const TimePeriodForm = ({
           <Box mr={50}>
             {isEndTimeInitialized && (
               <TimeSelect
-                defaultTime={timePeriod.endTime || null}
+                defaultTime={timePeriod.endTime ?? null}
                 label={index === 0 && "End time"}
                 interval={TIME_INTERVAL}
                 disabled={isEditingDisabled}

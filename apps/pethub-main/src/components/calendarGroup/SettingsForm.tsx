@@ -74,6 +74,13 @@ const SettingsForm = ({
     },
   ];
 
+  // GetDayOfWeek shortform
+  const getShortForm = (day: string) => {
+    return (
+      day.charAt(0) + day.toLowerCase().charAt(1) + day.toLowerCase().charAt(2)
+    );
+  };
+
   const addTimePeriod = () => {
     const newTimePeriod: TimePeriod = {
       timePeriodId: Date.now(), // Using current timestamp as a temporary ID for uniqueness
@@ -114,7 +121,7 @@ const SettingsForm = ({
         radius="lg"
         sx={{
           overflow: "visible",
-          border: "1px solid black",
+          border: "1px solid gray",
           borderColor: highlight && theme.colors.red[6],
         }}
       >
@@ -204,41 +211,14 @@ const SettingsForm = ({
               error={errors?.[index]?.days}
             >
               <Group mt="xs" mb="xs">
-                <Checkbox
-                  value={DayOfWeekEnum.Monday}
-                  label="Mon"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
-                <Checkbox
-                  value={DayOfWeekEnum.Tuesday}
-                  label="Tue"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
-                <Checkbox
-                  value={DayOfWeekEnum.Wednesday}
-                  label="Wed"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
-                <Checkbox
-                  value={DayOfWeekEnum.Thursday}
-                  label="Thu"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
-                <Checkbox
-                  value={DayOfWeekEnum.Friday}
-                  label="Fri"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
-                <Checkbox
-                  value={DayOfWeekEnum.Saturday}
-                  label="Sat"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
-                <Checkbox
-                  value={DayOfWeekEnum.Sunday}
-                  label="Sun"
-                  disabled={isEditingDisabled || isSettingOver}
-                />
+                {Object.values(DayOfWeekEnum).map((day) => (
+                  <Checkbox
+                    key={day}
+                    value={day}
+                    label={getShortForm(day)}
+                    disabled={isEditingDisabled || isSettingOver}
+                  />
+                ))}
               </Group>
             </Checkbox.Group>
           </Card.Section>
@@ -261,7 +241,7 @@ const SettingsForm = ({
             <CreateButton
               text="Add another time period"
               fullWidth
-              variant=""
+              variant="white"
               mt="sm"
               mb="sm"
               onClick={addTimePeriod}

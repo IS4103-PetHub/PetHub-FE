@@ -22,10 +22,12 @@ export const useCreateCalendarGroup = (queryClient: QueryClient) => {
 export const useUpdateCalendarGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CalendarGroup) => {
-      const calendarGroupId = payload.calendarGroupId;
-      delete payload.calendarGroupId;
+      const { calendarGroupId, ...payloadWithoutId } = payload;
       return (
-        await api.put(`${CALENDER_GROUP_API}/${calendarGroupId}`, payload)
+        await api.put(
+          `${CALENDER_GROUP_API}/${calendarGroupId}`,
+          payloadWithoutId,
+        )
       ).data;
     },
   });

@@ -100,7 +100,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
     try {
       await updateCalendarGroupMutation.mutateAsync(payload);
       notifications.show({
-        title: "Calendar group updated",
+        title: "Calendar Group Updated",
         color: "green",
         icon: <IconCheck />,
         message: `Calendar group updated successfully!`,
@@ -109,7 +109,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       refetchCalendarGroup();
     } catch (error: any) {
       notifications.show({
-        title: "Error updating calendar group",
+        title: "Error Updating Calendar Group",
         color: "red",
         icon: <IconX />,
         message:
