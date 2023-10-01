@@ -55,12 +55,27 @@ export const useGetPetOwnerByIdAndAccountType = (
   });
 };
 
-// GET Favourite Service Listings by PO Id
-export const useGetFavouriteServiceListingByPetOwnerId = (userId: number) => {
+// GET Favourite Service Listings by PO Id and QueryParams
+export const useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams = (
+  userId: number,
+  categoryValue?: string,
+) => {
+  const params = { category: categoryValue };
   return useQuery({
+    queryKey: ["pet-owners", categoryValue],
     queryFn: async () => {
-      const response = await api.get(`${PET_OWNER_API}/favourites/${userId}`);
-      return response.data as ServiceListing[];
+      if (categoryValue) {
+        const response = await api.get(
+          `${PET_OWNER_API}/favourites/${userId}`,
+          {
+            params,
+          },
+        );
+        return response.data as ServiceListing[];
+      } else {
+        const response = await api.get(`${PET_OWNER_API}/favourites/${userId}`);
+        return response.data as ServiceListing[];
+      }
     },
     refetchOnMount: true,
   });

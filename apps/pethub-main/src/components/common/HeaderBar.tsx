@@ -108,7 +108,7 @@ const links: {
     label: "My account",
     links: [
       {
-        link: "/customer/favourites",
+        link: "/customer/favourites?category=",
         label: "My favourites",
       },
     ],

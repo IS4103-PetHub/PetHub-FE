@@ -1,11 +1,4 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Group,
-  MultiSelect,
-  Transition,
-} from "@mantine/core";
+import { Box, Container, Grid, Group, Transition } from "@mantine/core";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
@@ -15,6 +8,7 @@ import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
+  ServiceCategoryEnum,
   ServiceListing,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -25,12 +19,12 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ServiceListingFavouriteCard from "@/components/service-listing-discovery/ServiceListingFavouriteCard";
+import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
 import {
   useAddServiceListingToFavourites,
-  useGetFavouriteServiceListingByPetOwnerId,
+  useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
-import { useGetAllTags } from "@/hooks/tags";
 import { serviceListingSortOptions } from "@/types/constants";
 import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
 import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
@@ -45,7 +39,6 @@ export default function Favourites({ userId }: FavouritesProps) {
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [isSearching, setIsSearching] = useToggle();
   const [sortStatus, setSortStatus] = useState<string>("recent");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
@@ -53,8 +46,10 @@ export default function Favourites({ userId }: FavouritesProps) {
   const activeCategory = router.query?.category as string;
 
   const { data: serviceListings = [], isLoading } =
-    useGetFavouriteServiceListingByPetOwnerId(userId);
-  const { data: tags = [] } = useGetAllTags();
+    useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(
+      userId,
+      activeCategory,
+    );
 
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
 
@@ -180,6 +175,12 @@ export default function Favourites({ userId }: FavouritesProps) {
     </Grid.Col>
   ));
 
+  const handleChangeCategory = (newCategory: ServiceCategoryEnum) => {
+    router.push({
+      query: { category: newCategory },
+    });
+  };
+
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
@@ -222,24 +223,10 @@ export default function Favourites({ userId }: FavouritesProps) {
     <Group position="apart" align="center">
       <SearchBar
         size="md"
-        w="45%"
+        w="78%"
         text="Search by service listing title, business name"
         onSearch={handleSearch}
       />
-      {/* TO BE UNCOMMENTED after getAllFavouriteWithQueries is done on BE */}
-      {/* <MultiSelect
-        w={isTablet ? "30%" : "32%"}
-        size="md"
-        mt={-25}
-        label="Filter by tags"
-        placeholder="Select tags"
-        maxSelectedValues={3}
-        dropdownPosition="bottom"
-        clearable
-        data={tags.map((tag) => tag.name)}
-        value={selectedTags}
-        onChange={setSelectedTags}
-      /> */}
       <SortBySelect
         data={serviceListingSortOptions}
         value={sortStatus}
@@ -257,7 +244,13 @@ export default function Favourites({ userId }: FavouritesProps) {
       <main>
         <Container fluid>
           <Grid m={isMobile ? 20 : 50}>
-            <Grid.Col span={isMobile ? 14 : 12}>
+            <Grid.Col span={2} hidden={isMobile}>
+              <ServiceListingsSideBar
+                activeCategory={activeCategory}
+                onChangeCategory={handleChangeCategory}
+              />
+            </Grid.Col>
+            <Grid.Col span={isMobile ? 12 : 10}>
               <Box ml="xl" mr="xl">
                 <PageTitle
                   title={
