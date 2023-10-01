@@ -196,6 +196,8 @@ export interface BookingResponse {
   serviceListing: ServiceListingBooking;
   timeSlot: Timeslot;
   petOwner: PetOwner;
+  petId: number;
+  pet: Pet;
 }
 
 export interface ServiceListingBooking {

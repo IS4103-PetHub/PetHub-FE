@@ -64,7 +64,7 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
     ).toISOString(),
     endTime: new Date(
       endDate.getFullYear(),
-      endDate.getMonth() + 2,
+      endDate.getMonth() + 1,
       0,
     ).toISOString(),
   });

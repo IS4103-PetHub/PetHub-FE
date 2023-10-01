@@ -1,6 +1,5 @@
 import {
   Accordion,
-  Col,
   Container,
   Grid,
   Group,
@@ -12,13 +11,12 @@ import {
   Textarea,
   useMantineTheme,
 } from "@mantine/core";
-import { DateInput, TimeInput } from "@mantine/dates";
+import { TimeInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { IconClipboardList, IconFileInvoice } from "@tabler/icons-react";
+import { IconClipboardList } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { AccountTypeEnum, Address, Tag } from "shared-utils";
-import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
+import { Address, Tag, formatStringToLetterCase } from "shared-utils";
 import { BookingResponse } from "@/types/types";
 
 interface BookingModalProps {
@@ -61,6 +59,17 @@ const BookingsModal = ({
       : "",
     petOwnerContact: booking ? booking.petOwner.contactNumber : "",
     petOwnerEmail: booking ? booking.petOwner.email : "",
+    petName: booking ? (booking.pet ? booking.pet.petName : "") : "",
+    petType: booking
+      ? booking.pet
+        ? formatStringToLetterCase(booking.pet.petType)
+        : ""
+      : "",
+    petGender: booking
+      ? booking.pet
+        ? formatStringToLetterCase(booking.pet.gender)
+        : ""
+      : "",
   };
 
   const form = useForm({
@@ -222,6 +231,31 @@ const BookingsModal = ({
                         {...form.getInputProps("petOwnerEmail")}
                       />
                     </Grid.Col>
+                    {booking.pet && (
+                      <>
+                        <Grid.Col span={12}>
+                          <TextInput
+                            label="Pet Name"
+                            disabled
+                            {...form.getInputProps("petName")}
+                          />
+                        </Grid.Col>
+                        <Grid.Col span={6}>
+                          <TextInput
+                            label="Pet Type"
+                            disabled
+                            {...form.getInputProps("petType")}
+                          />
+                        </Grid.Col>
+                        <Grid.Col span={6}>
+                          <TextInput
+                            label="Pet Gender"
+                            disabled
+                            {...form.getInputProps("petGender")}
+                          />
+                        </Grid.Col>
+                      </>
+                    )}
                   </Grid>
                 </Container>
               </Accordion.Panel>
