@@ -14,6 +14,7 @@ import {
   IconUser,
   IconArticle,
   IconHome2,
+  IconCalendar,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -98,6 +99,11 @@ const data = [
     label: "Service Listings",
     icon: IconBoxMultiple,
   },
+  {
+    link: "/business/calendargroup",
+    label: "Calendar Group",
+    icon: IconCalendar,
+  },
 ];
 
 const SideNavBar = () => {
@@ -142,7 +148,7 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

@@ -28,3 +28,10 @@ export enum ServiceCategoryEnum {
   PetRetail = "PET_RETAIL",
   PetBoarding = "PET_BOARDING",
 }
+
+export const enum BusinessApplicationStatusEnum {
+  Notfound = "NOTFOUND",
+  Pending = "PENDING",
+  Rejected = "REJECTED",
+  Approved = "APPROVED",
+}

@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import { ForgotPasswordPayload } from "shared-utils";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
 import { LoginBox } from "@/components/login/LoginBox";
@@ -19,6 +20,7 @@ export default function Login() {
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
   const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
 
   if (session) {
     router.push("/");
@@ -95,6 +97,7 @@ export default function Login() {
         autoClose: 5000,
       });
     } else {
+      showOverlay();
       router.push("/");
     }
   };

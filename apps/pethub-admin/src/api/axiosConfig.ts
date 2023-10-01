@@ -14,7 +14,7 @@ api.interceptors.request.use(
       }
     } catch (error) {
       // console.log(
-      //   "api/axiosConfig: Error fetching token in interceptor, this is likely due to there being no active session"
+      //   "api/axiosConfig: Error fetching token in interceptor, this is likely due to there being no active session",
       // );
     }
     // console.log("Sent headers", config.headers);

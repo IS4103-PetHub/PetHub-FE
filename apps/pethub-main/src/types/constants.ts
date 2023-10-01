@@ -1,10 +1,3 @@
-export const enum BusinessApplicationStatusEnum {
-  Notfound = "NOTFOUND",
-  Pending = "PENDING",
-  Rejected = "REJECTED",
-  Approved = "APPROVED",
-}
-
 export const serviceListingSortOptions = [
   {
     value: "recent",
@@ -31,3 +24,33 @@ export const serviceListingSortOptions = [
     direction: "desc",
   },
 ];
+
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
+}
+
+export enum GenderEnum {
+  Male = "MALE",
+  Female = "FEMALE",
+}
+
+export enum DayOfWeekEnum {
+  Monday = "MONDAY",
+  Tuesday = "TUESDAY",
+  Wednesday = "WEDNESDAY",
+  Thursday = "THURSDAY",
+  Friday = "FRIDAY",
+  Saturday = "SATURDAY",
+  Sunday = "SUNDAY",
+}
+
+export enum RecurrencePatternEnum {
+  Daily = "DAILY",
+  Weekly = "WEEKLY",
+}
