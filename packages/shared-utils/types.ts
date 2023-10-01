@@ -1,4 +1,4 @@
-import { PetOwner } from "../../apps/pethub-main/src/types/types";
+import { CalendarGroup } from "../../apps/pethub-main/src/types/types";
 import { ServiceCategoryEnum } from "./constants";
 
 export interface ChangePasswordPayload {
@@ -20,7 +20,7 @@ export interface Tag {
   tagId: number;
   name: string;
   dateCreated: string;
-  lastUpdated: string;
+  lastUpdated?: string;
 }
 
 export interface Address {
@@ -50,6 +50,7 @@ export interface ServiceListing {
   petBusinessId: number;
   // leave as any because the response varies from BE
   petBusiness?: any;
-  //may have to shift PetOwner to shared.utils types
-  favouritedUsers?: PetOwner[];
+  CalendarGroup: CalendarGroup;
+  calendarGroupId: number;
+  duration: number;
 }

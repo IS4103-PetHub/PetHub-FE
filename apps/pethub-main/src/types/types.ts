@@ -6,6 +6,7 @@ import {
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
   ServiceListing,
+  Tag,
 } from "shared-utils";
 import {
   GenderEnum,
@@ -110,30 +111,6 @@ export interface PetBusinessApplication {
 /*
  * SERVICE MANAGEMENT
  */
-export interface ServiceListing {
-  serviceListingId: number;
-  title: string;
-  description: string;
-  basePrice: number;
-  category: ServiceCategoryEnum;
-  tags: Tag[];
-  // address
-  dateCreated: string;
-  lastUpdated?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  addresses: Address[];
-  CalendarGroup: CalendarGroup;
-  calendarGroupId: number;
-  duration: number;
-}
-
-export interface Tag {
-  tagId: number;
-  name: string;
-  dateCreated: string;
-  lastUpdated?: string;
-}
 
 export interface CreateServiceListingPayload {
   title: string;

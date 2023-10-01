@@ -25,6 +25,8 @@ import {
   Address,
   ServiceCategoryEnum,
   formatStringToLetterCase,
+  ServiceListing,
+  Tag,
 } from "shared-utils";
 import {
   useCreateServiceListing,
@@ -33,8 +35,6 @@ import {
 import {
   CalendarGroup,
   CreateServiceListingPayload,
-  ServiceListing,
-  Tag,
   UpdateServiceListingPayload,
 } from "@/types/types";
 
