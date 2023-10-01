@@ -234,7 +234,7 @@ export default function PetBusinessApplicationDetails({
           <Group>
             <PageTitle title="Application Details" />
             <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
-              <>Application ID: {applicationId}</>
+              Application ID: {applicationId}
             </Badge>
           </Group>
           <LargeBackButton

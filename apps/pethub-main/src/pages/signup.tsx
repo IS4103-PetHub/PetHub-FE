@@ -29,6 +29,7 @@ import React from "react";
 import { getErrorMessageProps, validatePassword } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
 import { useCreatePetOwner } from "@/hooks/pet-owner";
@@ -54,6 +55,7 @@ const useStyles = createStyles((theme) => ({
 export default function SignUp() {
   const { classes } = useStyles();
   const router = useRouter();
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
 
   const form = useForm({
     initialValues: {
@@ -121,6 +123,7 @@ export default function SignUp() {
       const session = await getSession();
       if (session) {
         if (session.user["accountType"] === AccountTypeEnum.PetBusiness) {
+          showOverlay();
           router.push("/business/dashboard");
         } else {
           router.push("/");

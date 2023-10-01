@@ -46,3 +46,23 @@ export const useGetBookingsByUserId = (
     enabled: !!(userId && startTime && endTime),
   });
 };
+
+export const useGetBookingsByPetBusiness = (
+  petBusinessId: number,
+  params: {
+    startTime: string;
+    endTime: string;
+  },
+) => {
+  return useQuery({
+    queryKey: ["bookings", { petBusinessId: petBusinessId }],
+    queryFn: async () => {
+      const data = await (
+        await api.get(`${BOOKING_API}/pet-business/${petBusinessId}`, {
+          params: params,
+        })
+      ).data;
+      return data;
+    },
+  });
+};

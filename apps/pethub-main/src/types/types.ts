@@ -1,12 +1,15 @@
 import {
   AccountStatusEnum,
   AccountTypeEnum,
+  BusinessApplicationStatusEnum,
   Address,
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
   ServiceListing,
+  Tag,
+  GenderEnum,
 } from "shared-utils";
-import { BusinessApplicationStatusEnum } from "./constants";
+import { PetTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -114,6 +117,8 @@ export interface CreateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
+  duration: number;
 }
 
 export interface UpdateServiceListingPayload {
@@ -126,10 +131,97 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
+  duration: number;
 }
 
 /*
- * APPOINTMENT MANAGEMENT
+ * TUI Calendar
+ */
+
+export interface tuiEvent {
+  id: string;
+  title: string;
+  calendarId: string;
+  start: string; // ISO FORMAT
+  end: string; // ISO FORMAT
+}
+
+export interface tuiCalendar {
+  id: string;
+  name: string;
+  backgroundColor: string;
+  borderColor: string;
+}
+
+/*
+ * Booking
+ */
+
+export interface BookingResponse {
+  id: number;
+  invoiceId: number;
+  transactionId: number;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated: string;
+  startTime: string;
+  endTime: string;
+  serviceListing: ServiceListingBooking;
+  timeSlot: Timeslot;
+  petOwner: PetOwner;
+}
+
+export interface ServiceListingBooking {
+  id: number;
+  title: string;
+  description: string;
+  basePrice: number;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  lastUpdated: string;
+  category: ServiceCategoryEnum;
+  tags: Tag[];
+  addresses: Address[];
+  petBusinessId: number;
+  calendarGroupId: number;
+}
+
+/*
+ * Pet
+ */
+
+export interface Pet {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight?: number;
+  dateOfBirth?: string;
+  microchipNumber?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+export interface PetPayload {
+  petId: number;
+  petOwnerId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight: number;
+  dateOfBirth: string;
+  microchipNumber: string;
+  files: File[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+/*
+ * Appointment Booking
  */
 
 export interface Timeslot {

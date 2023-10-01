@@ -6,6 +6,7 @@ import {
   Loader,
   Container,
   MantineProvider,
+  LoadingOverlay,
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import {
@@ -18,6 +19,10 @@ import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { AccountTypeEnum } from "shared-utils";
+import {
+  LoadingOverlayProvider,
+  useLoadingOverlay,
+} from "web-ui/shared/LoadingOverlayContext";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
@@ -25,6 +30,7 @@ import type { AppProps } from "next/app";
 const inter = Inter({ subsets: ["latin"] });
 
 export function App({ Component, pageProps }: AppProps) {
+  const { visible } = useLoadingOverlay();
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
   const { data: session, status } = useSession();
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -98,7 +104,21 @@ export function App({ Component, pageProps }: AppProps) {
                     <Loader size="lg" opacity={0.5} />
                   </Container>
                 ) : (
-                  <Component {...pageProps} />
+                  <>
+                    {visible && (
+                      <LoadingOverlay
+                        visible={visible}
+                        zIndex={1000}
+                        overlayBlur={10}
+                        loaderProps={{
+                          size: "md",
+                          color: "pink",
+                          variant: "bars",
+                        }}
+                      />
+                    )}
+                    <Component {...pageProps} />
+                  </>
                 )}
               </AppShell>
             </Hydrate>
@@ -112,7 +132,9 @@ export function App({ Component, pageProps }: AppProps) {
 export default function AppProvider(props: any) {
   return (
     <SessionProvider session={props.pageProps.session}>
-      <App {...props} />
+      <LoadingOverlayProvider>
+        <App {...props} />
+      </LoadingOverlayProvider>
     </SessionProvider>
   );
 }

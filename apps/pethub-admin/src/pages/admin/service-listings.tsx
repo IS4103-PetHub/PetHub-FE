@@ -163,7 +163,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
         title: "Service Listing Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `ServiceListing ID: ${id} deleted successfully.`,
+        message: `Service Listing ID: ${id} deleted successfully.`,
       });
       // refetch();
     } catch (error: any) {

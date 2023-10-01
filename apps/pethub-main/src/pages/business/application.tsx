@@ -17,8 +17,10 @@ import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import {
+  AccountTypeEnum,
   Address,
   PetBusinessTypeEnum,
+  BusinessApplicationStatusEnum,
   getErrorMessageProps,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -30,7 +32,6 @@ import {
   useGetPetBusinessApplicationByPBId,
   useUpdatePetBusinessApplication,
 } from "@/hooks/pet-business-application";
-import { BusinessApplicationStatusEnum } from "@/types/constants";
 import { CreatePetBusinessApplicationPayload } from "@/types/types";
 import { validateAddressName } from "@/util";
 

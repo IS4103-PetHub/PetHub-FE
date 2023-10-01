@@ -1,10 +1,3 @@
-export const enum BusinessApplicationStatusEnum {
-  Notfound = "NOTFOUND",
-  Pending = "PENDING",
-  Rejected = "REJECTED",
-  Approved = "APPROVED",
-}
-
 export const serviceListingSortOptions = [
   {
     value: "recent",
@@ -46,3 +39,13 @@ export const bookingsSortOptions = [
     direction: "desc",
   },
 ];
+
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
+}

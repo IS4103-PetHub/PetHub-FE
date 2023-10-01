@@ -6,6 +6,7 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
 import {
   Address,
+  CalendarGroup,
   ServiceListing,
   Tag,
   getErrorMessageProps,
@@ -32,6 +33,7 @@ interface ServiceListTableProps {
   onPageChange(p: number): void;
   tags: Tag[];
   addresses: Address[];
+  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
@@ -46,6 +48,7 @@ const ServiceListTable = ({
   onPageChange,
   tags,
   addresses,
+  calendarGroups,
 }: ServiceListTableProps) => {
   /*
    * Component State
@@ -65,6 +68,7 @@ const ServiceListTable = ({
   const handleDeleteService = async (serviceListingId: number) => {
     try {
       await deleteServiceListingMutation.mutateAsync(serviceListingId);
+      refetch();
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",
@@ -181,6 +185,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
 
       {/* Update */}
@@ -194,6 +199,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
     </>
   );

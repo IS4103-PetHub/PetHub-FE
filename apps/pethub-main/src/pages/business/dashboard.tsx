@@ -1,12 +1,14 @@
-import { Container, Group } from "@mantine/core";
+import { Container, Group, LoadingOverlay } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { AccountTypeEnum } from "shared-utils";
+import { AccountTypeEnum, BusinessApplicationStatusEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import ApplicationStatusAlert from "@/components/pb-application/ApplicationStatusAlert";
 import { useGetPetBusinessApplicationByPBId } from "@/hooks/pet-business-application";
-import { BusinessApplicationStatusEnum } from "@/types/constants";
 
 interface DashboardProps {
   userId: number;
@@ -15,11 +17,17 @@ interface DashboardProps {
 
 export default function Dashboard({ userId, accountType }: DashboardProps) {
   const [applicationStatus, setApplicationStatus] = useState(null);
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
+  const router = useRouter();
 
   const {
     data: petBusinessApplication,
     refetch: refetchPetBusinessApplication,
   } = useGetPetBusinessApplicationByPBId(userId);
+
+  useEffect(() => {
+    hideOverlay(); // Hide the overlay that was triggered via a PB login
+  }, []);
 
   useEffect(() => {
     if (!petBusinessApplication) {

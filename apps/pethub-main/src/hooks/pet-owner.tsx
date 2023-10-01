@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AccountTypeEnum } from "shared-utils";
+import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
 import { CreatePetOwnerPayload, PetOwner } from "@/types/types";
 
