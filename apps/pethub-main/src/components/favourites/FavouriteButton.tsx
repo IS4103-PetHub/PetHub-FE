@@ -16,15 +16,16 @@ const FavouriteButton = ({
   size,
   onClick,
 }: FavouriteButtonProps) => {
-  const icon = <IconHeart size={size} fill={isFavourite ? "red" : "none"} />;
   if (text) {
     return (
       <Button
         onClick={(event) => onClick(event)}
         variant={"subtle"}
-        color={isFavourite ? null : "gray"}
+        color={isFavourite ? "blue" : "gray"}
         {...(className && { className })}
-        leftIcon={icon}
+        leftIcon={
+          <IconHeart size={size} fill={isFavourite ? "blue" : "none"} />
+        }
       >
         {text}
       </Button>
@@ -34,10 +35,10 @@ const FavouriteButton = ({
       <Button
         onClick={(event) => onClick(event)}
         variant={"subtle"}
-        color={isFavourite ? null : "gray"}
+        color={isFavourite ? "gray" : "gray"}
         {...(className && { className })}
       >
-        {icon}
+        <IconHeart size={size} fill={isFavourite ? "white" : "none"} />
       </Button>
     );
   }

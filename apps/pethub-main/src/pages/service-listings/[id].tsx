@@ -221,7 +221,7 @@ export default function ServiceListingDetails({
               weight={700}
             />
             <FavouriteButton
-              text="Favourite"
+              text={isFavourite ? "Remove Favourite" : "Favourite"}
               isFavourite={isFavourite}
               size={20}
               onClick={handleFavouriteToggle}
