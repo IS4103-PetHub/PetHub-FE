@@ -15,6 +15,7 @@ import {
   IconArticle,
   IconHome2,
   IconCalendar,
+  IconLogout,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -155,6 +156,7 @@ const SideNavBar = () => {
       {session && (
         <Button
           uppercase
+          leftIcon={<IconLogout size="1.25rem" />}
           onClick={() => {
             notifications.show({
               message: "Logging you out...",
@@ -166,7 +168,7 @@ const SideNavBar = () => {
             });
           }}
         >
-          logout
+          Logout
         </Button>
       )}
     </Navbar>
