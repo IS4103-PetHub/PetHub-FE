@@ -12,7 +12,7 @@ import {
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCalendar, IconX } from "@tabler/icons-react";
+import { IconCalendar } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   GenderEnum,
@@ -111,7 +111,6 @@ const PetInfoModal = ({
       },
       petType: isNotEmpty("Pet Type required."),
       gender: isNotEmpty("Gender required."),
-      dateOfBirth: isNotEmpty("Date of Birth required."),
     },
   });
 
@@ -241,10 +240,9 @@ const PetInfoModal = ({
         title="Pet Profile"
         centered
         size="lg"
-        padding="xl"
       >
         <form onSubmit={form.onSubmit((values) => handleAction(values))}>
-          <Stack>
+          <Stack m="xs" mt={0}>
             <TextInput
               withAsterisk
               disabled={isViewing}
@@ -256,7 +254,7 @@ const PetInfoModal = ({
               withAsterisk
               disabled={isViewing}
               label="Type"
-              placeholder="Pick one"
+              placeholder="Select pet type"
               data={petTypeOptions}
               {...form.getInputProps("petType")}
             />
@@ -264,13 +262,14 @@ const PetInfoModal = ({
               withAsterisk
               disabled={isViewing}
               label="Gender"
-              placeholder="Pick one"
+              placeholder="Select pet gender"
               data={genderOptions}
               {...form.getInputProps("gender")}
             />
             <DateInput
               disabled={isViewing}
-              label="Date of birth"
+              label="Date of Birth"
+              clearable
               placeholder="Date of birth"
               valueFormat="DD/MM/YYYY"
               maxDate={new Date()}
@@ -286,8 +285,8 @@ const PetInfoModal = ({
             />
             <TextInput
               disabled={isViewing}
-              label="Microchip number"
-              placeholder="Pet Microchip number"
+              label="Microchip Number"
+              placeholder="Pet microchip number"
               {...form.getInputProps("microchipNumber")}
             />
             <FileInput

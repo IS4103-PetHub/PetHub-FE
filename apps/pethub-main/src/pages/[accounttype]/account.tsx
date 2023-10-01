@@ -79,7 +79,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
         <title>My Account - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="50px" mb="xl">
+      <Container mt={50} mb="xl">
         <Group position="left">
           <PageTitle title="My account" />
           <AccountStatusBadge accountStatus={accountStatus} size="lg" />
@@ -138,7 +138,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
               <Accordion.Control>
                 <Group>
                   <IconPaw color={theme.colors.indigo[5]} />
-                  <Text size="lg">My Pets</Text>
+                  <Text size="lg">My pets</Text>
                 </Group>
               </Accordion.Control>
               <Accordion.Panel p="md">

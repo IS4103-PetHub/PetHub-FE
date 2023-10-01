@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
@@ -189,7 +189,8 @@ const HeaderBar = () => {
         <Group position="right">
           {session ? (
             <Button
-              size="md"
+              leftIcon={<IconLogout size="1.25rem" />}
+              size="sm"
               radius="md"
               onClick={() => {
                 notifications.show({
