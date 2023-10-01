@@ -230,6 +230,13 @@ export default function PetBusinessApplicationDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
+        <LargeBackButton
+          text="Back to applications"
+          size="sm"
+          onClick={() => {
+            window.location.href = "/admin/pb-applications";
+          }}
+        />
         <Group position="apart" mb="xl">
           <Group>
             <PageTitle title="Application Details" />
@@ -237,12 +244,6 @@ export default function PetBusinessApplicationDetails({
               Application ID: {applicationId}
             </Badge>
           </Group>
-          <LargeBackButton
-            text="Back to applications"
-            onClick={() => {
-              window.location.href = "/admin/pb-applications";
-            }}
-          />
         </Group>
         <Box>
           <ApplicationDetails

@@ -88,13 +88,13 @@ export default function CreateCalendarGroup({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">
-        <Group position="apart">
-          <PageTitle title="Create Calendar Group" />
-          <LargeBackButton
-            text="Back to Calendar View"
-            onClick={() => router.push("/business/calendar-groups")}
-          />
-        </Group>
+        <LargeBackButton
+          size="sm"
+          text="Back to Calendar View"
+          onClick={() => router.push("/business/calendar-groups")}
+          mb="sm"
+        />
+        <PageTitle title="Create Calendar Group" />
 
         <Group mt="xs">
           <CalendarGroupForm

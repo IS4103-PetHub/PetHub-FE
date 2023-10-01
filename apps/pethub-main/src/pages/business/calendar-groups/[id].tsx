@@ -130,10 +130,10 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       </Head>
       <Container mt="xl" mb="xl">
         <LargeBackButton
-          text="Back"
+          text="Back to Calendar View"
           onClick={() => (window.location.href = "/business/calendar-groups")} // Change this in the future, normal route would break the calendar atm
-          customSize="sm"
-          mb="md"
+          size="sm"
+          mb="sm"
         />
         <Group position="apart">
           <PageTitle
