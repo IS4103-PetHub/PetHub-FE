@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { formatPriceForDisplay } from "@/util";
+import FavouriteButton from "../favourites/FavouriteButton";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
 import ServiceListingTags from "./ServiceListingTags";
 
@@ -70,14 +71,21 @@ const ServiceListingFavouriteCard = ({
         height={IMAGE_HEIGHT}
         alt="Service Listing Photo"
       />
-      <Button
+      <FavouriteButton
+        text=""
+        isFavourite={isFavourite}
+        onClick={handleFavouriteToggle}
+        className={classes.favouriteButton}
+        size={35}
+      />
+      {/* <Button
         className={classes.favouriteButton}
         onClick={handleFavouriteToggle}
         variant={"subtle"}
         color={isFavourite ? null : "gray"}
       >
         <IconHeart size={35} fill={isFavourite ? "red" : "none"} />
-      </Button>
+      </Button> */}
     </Box>
   );
   return (

@@ -27,6 +27,7 @@ import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
+import FavouriteButton from "@/components/favourites/FavouriteButton";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
@@ -72,7 +73,6 @@ export default function ServiceListingDetails({
     }
   }, [favouritedListings, serviceListing]);
 
-  console.log(isFavourite + " on start");
   const ACCORDION_VALUES = ["description", "business"];
 
   const serviceListingId = serviceListing.serviceListingId;
@@ -88,7 +88,6 @@ export default function ServiceListingDetails({
     try {
       await addFavouriteMutation.mutateAsync(payload);
       setIsFavourite(!isFavourite);
-      console.log(isFavourite + " on add");
       notifications.show({
         title: "Favourite Added",
         color: "green",
@@ -116,7 +115,6 @@ export default function ServiceListingDetails({
     try {
       await removeFavouriteMutation.mutateAsync(payload);
       setIsFavourite(!isFavourite);
-      console.log(isFavourite + " on remove");
       notifications.show({
         title: "Favourite Removed",
         color: "green",
@@ -223,16 +221,12 @@ export default function ServiceListingDetails({
               size="2.25rem"
               weight={700}
             />
-            <Button
+            <FavouriteButton
+              text="Favourite"
+              isFavourite={isFavourite}
+              size={20}
               onClick={handleFavouriteToggle}
-              variant={"subtle"}
-              color={isFavourite ? null : "gray"}
-              leftIcon={
-                <IconHeart size={20} fill={isFavourite ? "red" : "none"} />
-              }
-            >
-              Favourite
-            </Button>
+            />
           </Group>
           <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
           <ServiceListingCarousel
