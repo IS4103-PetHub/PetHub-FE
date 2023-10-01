@@ -102,15 +102,16 @@ const links: {
     label: "Help",
     links: undefined,
   },
-  {
-    link: "/favourites",
-    label: "My favourites",
-    links: undefined,
-  },
+
   {
     link: "/customer/account",
     label: "My account",
-    links: undefined,
+    links: [
+      {
+        link: "/customer/favourites",
+        label: "My favourites",
+      },
+    ],
   },
 ];
 
