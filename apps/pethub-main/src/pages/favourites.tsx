@@ -93,6 +93,7 @@ export default function Favourites({ userId }: FavouritesProps) {
   const addFavouriteMutation = useAddServiceListingToFavourites();
   const handleAddFavourite = async (
     payload: AddRemoveFavouriteServiceListingPayload,
+    serviceListingTitle: string,
   ) => {
     try {
       await addFavouriteMutation.mutateAsync(payload);
@@ -100,7 +101,7 @@ export default function Favourites({ userId }: FavouritesProps) {
         title: "Favourite Added",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing ${payload.serviceListingId} added to favourites.`,
+        message: `Listing "${serviceListingTitle}" added to favourites.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -119,6 +120,7 @@ export default function Favourites({ userId }: FavouritesProps) {
   const removeFavouriteMutation = useRemoveServiceListingFromFavourites();
   const handleRemoveFavourite = async (
     payload: AddRemoveFavouriteServiceListingPayload,
+    serviceListingTitle: string,
   ) => {
     try {
       await removeFavouriteMutation.mutateAsync(payload);
@@ -126,7 +128,7 @@ export default function Favourites({ userId }: FavouritesProps) {
         title: "Favourite Removed",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing ${payload.serviceListingId} removed from favourites.`,
+        message: `Listing "${serviceListingTitle}" removed from favourites.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -142,15 +144,19 @@ export default function Favourites({ userId }: FavouritesProps) {
     }
   };
 
-  const handleFavourite = (serviceListingId: number, isFavourite: boolean) => {
+  const handleFavourite = (
+    serviceListing: ServiceListing,
+    isFavourite: boolean,
+  ) => {
+    const serviceListingId = serviceListing.serviceListingId;
     const payload: AddRemoveFavouriteServiceListingPayload = {
       userId,
       serviceListingId,
     };
     if (isFavourite) {
-      handleRemoveFavourite(payload);
+      handleRemoveFavourite(payload, serviceListing.title);
     } else {
-      handleAddFavourite(payload);
+      handleAddFavourite(payload, serviceListing.title);
     }
   };
 

@@ -16,7 +16,6 @@ import {
   IconMail,
   IconMapPin,
   IconPhone,
-  IconHeart,
   IconCheck,
   IconX,
 } from "@tabler/icons-react";
@@ -92,7 +91,7 @@ export default function ServiceListingDetails({
         title: "Favourite Added",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing ${payload.serviceListingId} added to favourites.`,
+        message: `Listing "${serviceListing.title}" added to favourites.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -119,7 +118,7 @@ export default function ServiceListingDetails({
         title: "Favourite Removed",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing ${payload.serviceListingId} removed from favourites.`,
+        message: `Listing "${serviceListing.title}" removed from favourites.`,
       });
     } catch (error: any) {
       notifications.show({

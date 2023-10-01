@@ -1,13 +1,4 @@
-import {
-  Card,
-  Group,
-  Image,
-  Text,
-  createStyles,
-  Box,
-  Button,
-} from "@mantine/core";
-import { IconHeart } from "@tabler/icons-react";
+import { Card, Group, Image, Text, createStyles, Box } from "@mantine/core";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
@@ -38,7 +29,7 @@ const useStyles = createStyles((theme) => ({
 interface ServiceListingFavouriteCardProps {
   serviceListing: ServiceListing;
   currentFavourite: boolean;
-  onFavourite(serviceListingId: number, isFavourite: boolean): void;
+  onFavourite(serviceListing: ServiceListing, isFavourite: boolean): void;
 }
 
 const IMAGE_HEIGHT = 180;
@@ -56,7 +47,7 @@ const ServiceListingFavouriteCard = ({
 
   const handleFavouriteToggle = (event: React.MouseEvent) => {
     event.stopPropagation();
-    onFavourite(serviceListing.serviceListingId, isFavourite);
+    onFavourite(serviceListing, isFavourite);
     setIsFavourite(!isFavourite);
   };
 
@@ -78,14 +69,6 @@ const ServiceListingFavouriteCard = ({
         className={classes.favouriteButton}
         size={35}
       />
-      {/* <Button
-        className={classes.favouriteButton}
-        onClick={handleFavouriteToggle}
-        variant={"subtle"}
-        color={isFavourite ? null : "gray"}
-      >
-        <IconHeart size={35} fill={isFavourite ? "red" : "none"} />
-      </Button> */}
     </Box>
   );
   return (
