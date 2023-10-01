@@ -1,12 +1,12 @@
-import { Group, Loader } from "@mantine/core";
+import { Center, Group, Loader, LoaderProps } from "@mantine/core";
 import React from "react";
 
-const CenterLoader = () => {
+const CenterLoader = ({ ...props }: LoaderProps) => {
   return (
     <div className="center-vertically">
-      <Group position="center">
-        <Loader size="lg" style={{ marginTop: "2rem" }} />
-      </Group>
+      <Center>
+        <Loader mt="2rem" size="lg" {...props} opacity={0.5} />
+      </Center>
     </div>
   );
 };

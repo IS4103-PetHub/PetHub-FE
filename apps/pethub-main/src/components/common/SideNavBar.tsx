@@ -100,8 +100,8 @@ const data = [
     icon: IconBoxMultiple,
   },
   {
-    link: "/business/calendargroup",
-    label: "Calendar Group",
+    link: "/business/calendar-groups",
+    label: "Calendar Groups",
     icon: IconCalendar,
   },
 ];

@@ -1,18 +1,15 @@
 import {
-  ActionIcon,
   Box,
   Center,
   Grid,
-  Group,
   NumberInput,
-  rem,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
+import { TimePeriod } from "shared-utils";
 import DeleteActionIcon from "web-ui/shared/DeleteActionIcon";
 import TimeSelect from "web-ui/shared/TimeSelect";
-import { TimePeriod } from "@/types/types";
 
 interface timePeriodFormProps {
   timePeriod: TimePeriod;
@@ -82,7 +79,7 @@ const TimePeriodForm = ({
               error={errors?.[index]?.vacancies}
             />
           </Box>
-          <Box>
+          <Box sx={{ display: index === 0 ? "none" : "inline" }}>
             <DeleteActionIcon
               onClick={onRemove}
               mt={24}

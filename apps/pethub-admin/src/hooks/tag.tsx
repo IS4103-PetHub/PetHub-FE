@@ -48,7 +48,8 @@ export const useCreateTag = (queryClient: QueryClient) => {
 export const useUpdateTag = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      return (await api.patch(`${TAG_API}/${payload.tagId}`, payload)).data;
+      const { tagId, ...payloadWithoutId } = payload;
+      return (await api.patch(`${TAG_API}/${tagId}`, payloadWithoutId)).data;
     },
   });
 };

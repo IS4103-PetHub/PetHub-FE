@@ -21,13 +21,12 @@ import {
   IconDog,
   IconPawFilled,
   IconPlus,
-  IconX,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/react";
 import React from "react";
-import { validatePassword } from "shared-utils";
+import { getErrorMessageProps, validatePassword } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
@@ -118,7 +117,6 @@ export default function SignUp() {
         title: "Login Failed",
         message: "Invalid Credentials",
         color: "red",
-        autoClose: 5000,
       });
     } else {
       const session = await getSession();
@@ -154,14 +152,7 @@ export default function SignUp() {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Account", error),
       });
     }
   };
@@ -186,14 +177,7 @@ export default function SignUp() {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Account", error),
       });
     }
   };

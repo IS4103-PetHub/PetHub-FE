@@ -13,11 +13,14 @@ import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import {
+  GenderEnum,
+  formatStringToLetterCase,
+  getErrorMessageProps,
+} from "shared-utils";
 import { useCreatePet, useUpdatePet } from "@/hooks/pets";
-import { GenderEnum, PetTypeEnum } from "@/types/constants";
+import { PetTypeEnum } from "@/types/constants";
 import { Pet, PetPayload } from "@/types/types";
 
 interface PetInfoModalProps {
@@ -153,9 +156,8 @@ const PetInfoModal = ({
    * Service Handlers
    */
 
-  const queryClient = useQueryClient();
   const createPetMutation = useCreatePet();
-  const updatePetMutation = useUpdatePet(queryClient);
+  const updatePetMutation = useUpdatePet();
   const handleAction = async (values) => {
     try {
       if (isUpdating) {
@@ -167,11 +169,10 @@ const PetInfoModal = ({
           files: values.healthAttachment,
         };
         // update pet
-        const result = await updatePetMutation.mutateAsync(payload);
+        await updatePetMutation.mutateAsync(payload);
         notifications.show({
           message: "Pet Successfully Updated",
           color: "green",
-          autoClose: 5000,
         });
       } else {
         const payload: PetPayload = {
@@ -181,11 +182,10 @@ const PetInfoModal = ({
           files: values.healthAttachment,
         };
         // create pet
-        const result = await createPetMutation.mutateAsync(payload);
+        await createPetMutation.mutateAsync(payload);
         notifications.show({
           message: "Pet Successfully Created",
           color: "green",
-          autoClose: 5000,
         });
       }
       refetch();
@@ -193,14 +193,10 @@ const PetInfoModal = ({
       closeAndResetForm();
     } catch (error) {
       notifications.show({
-        title: isUpdating ? "Error Updating Pet" : "Error Creating Pet",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps(
+          isUpdating ? "Error Updating Pet" : "Error Creating Pet",
+          error,
+        ),
       });
     }
   };

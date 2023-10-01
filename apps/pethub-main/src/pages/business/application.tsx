@@ -1,24 +1,18 @@
 import {
-  MultiSelect,
   Button,
   Container,
   Grid,
   Textarea,
   TextInput,
   Group,
-  FileInput,
   Text,
-  SimpleGrid,
   Select,
-  Alert,
   Badge,
 } from "@mantine/core";
-// import { Dropzone, PDF_MIME_TYPE } from "@mantine/dropzone";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconSend, IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -27,6 +21,7 @@ import {
   Address,
   PetBusinessTypeEnum,
   BusinessApplicationStatusEnum,
+  getErrorMessageProps,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
@@ -42,14 +37,12 @@ import { validateAddressName } from "@/util";
 
 interface ApplicationProps {
   userId: number;
-  accountType: AccountTypeEnum;
 }
 
-export default function Application({ userId, accountType }: ApplicationProps) {
+export default function Application({ userId }: ApplicationProps) {
   const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
   const [applicationStatus, setApplicationStatus] = useState(null);
   const [loading, setLoading] = useState(true);
-  const queryClient = useQueryClient();
   const [isDisabled, setIsDisabled] = useState(false);
 
   const {
@@ -158,7 +151,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
   }
 
   const createPetBusinessApplicationMutation =
-    useCreatePetBusinessApplication(queryClient);
+    useCreatePetBusinessApplication();
   const createPetBusinessApplication = async (
     payload: CreatePetBusinessApplicationPayload,
   ) => {
@@ -173,20 +166,13 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       refetchPetBusinessApplication();
     } catch (error: any) {
       notifications.show({
-        title: "Error submitting application",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Submitting Application", error),
       });
     }
   };
 
   const updatePetBusinessApplicationMutation =
-    useUpdatePetBusinessApplication(queryClient);
+    useUpdatePetBusinessApplication();
   const updatePetBusinessApplication = async (
     payload: CreatePetBusinessApplicationPayload,
   ) => {
@@ -201,14 +187,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       refetchPetBusinessApplication();
     } catch (error: any) {
       notifications.show({
-        title: "Error updating application",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Application", error),
       });
     }
   };
@@ -232,7 +211,7 @@ export default function Application({ userId, accountType }: ApplicationProps) {
       updatePetBusinessApplication(payload);
     } else {
       notifications.show({
-        title: "Error sending application",
+        title: "Error Sending Application",
         color: "red",
         icon: <IconX />,
         message: `Your application status is currently ${applicationStatus}.`,
@@ -361,10 +340,8 @@ export default function Application({ userId, accountType }: ApplicationProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
-  const accountType = session.user["accountType"];
-
-  return { props: { userId, accountType } };
+  return { props: { userId } };
 }

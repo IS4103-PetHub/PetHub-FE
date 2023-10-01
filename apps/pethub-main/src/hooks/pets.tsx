@@ -45,7 +45,7 @@ export const useCreatePet = () => {
   });
 };
 
-export const useUpdatePet = (queryClient: QueryClient) => {
+export const useUpdatePet = () => {
   return useMutation({
     mutationFn: async (payload: PetPayload) => {
       const { petId, ...payloadWithoutId } = payload;

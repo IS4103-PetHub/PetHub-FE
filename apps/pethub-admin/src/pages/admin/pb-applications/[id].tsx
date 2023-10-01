@@ -19,6 +19,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
@@ -158,14 +159,7 @@ export default function PetBusinessApplicationDetails({
       refetchPetBusinessApplication();
     } catch (error: any) {
       notifications.show({
-        title: "Error approving application",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Approving Application", error),
       });
     }
   };
@@ -186,14 +180,7 @@ export default function PetBusinessApplicationDetails({
       refetchPetBusinessApplication();
     } catch (error: any) {
       notifications.show({
-        title: "Error rejecting application",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Rejecting Application", error),
       });
     }
   };
@@ -220,7 +207,7 @@ export default function PetBusinessApplicationDetails({
       approvePetBusinessApplication(approvePayload);
     } else {
       notifications.show({
-        title: "The application is not in the PENDING state",
+        title: "Application not in Pending state",
         color: "red",
         icon: <IconX />,
         message: `This action is not allowed. The application status is currently ${applicationStatus}.`,
@@ -243,19 +230,20 @@ export default function PetBusinessApplicationDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
+        <LargeBackButton
+          text="Back to applications"
+          size="sm"
+          onClick={() => {
+            window.location.href = "/admin/pb-applications";
+          }}
+        />
         <Group position="apart" mb="xl">
           <Group>
             <PageTitle title="Application Details" />
             <Badge variant="gradient" gradient={{ from: "indigo", to: "cyan" }}>
-              <>Application ID: {applicationId}</>
+              Application ID: {applicationId}
             </Badge>
           </Group>
-          <LargeBackButton
-            text="Back to applications"
-            onClick={() => {
-              window.location.href = "/admin/pb-applications";
-            }}
-          />
         </Group>
         <Box>
           <ApplicationDetails

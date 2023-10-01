@@ -3,9 +3,8 @@ import { TransformedValues, useForm } from "@mantine/form";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import { Address } from "shared-utils";
+import { Address, getErrorMessageProps } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
 import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
@@ -19,7 +18,6 @@ interface AddressInfoFormProps {
 }
 
 const AddressInfoForm = ({ petBusiness, refetch }: AddressInfoFormProps) => {
-  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useToggle();
   const [isAddAddressModalOpened, { open, close }] = useDisclosure(false);
 
@@ -53,7 +51,7 @@ const AddressInfoForm = ({ petBusiness, refetch }: AddressInfoFormProps) => {
     form.setValues(formDefaultValues);
   }, [petBusiness]);
 
-  const updatePetBusinessMutation = useUpdatePetBusiness(queryClient);
+  const updatePetBusinessMutation = useUpdatePetBusiness();
 
   if (!petBusiness) {
     return null;
@@ -73,14 +71,7 @@ const AddressInfoForm = ({ petBusiness, refetch }: AddressInfoFormProps) => {
       form.setValues(formDefaultValues);
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating addresses",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Addresses", error),
       });
     }
   };

@@ -2,7 +2,6 @@ import { Container, Group } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
 import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
@@ -37,8 +36,8 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
         <Group position="apart">
           <PageTitle title="Calendar Group Management" />
           <LargeCreateButton
-            text="Create New Calendar Group"
-            onClick={() => router.push("/business/calendargroup/create")}
+            text="Create Calendar Group"
+            onClick={() => router.push("/business/calendar-groups/create")}
           />
         </Group>
         <MainCalendar

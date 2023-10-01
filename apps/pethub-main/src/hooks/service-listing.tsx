@@ -42,13 +42,6 @@ export const useCreateServiceListing = () => {
 
       return response.data;
     },
-    onSuccess: () => {
-      console.log("Successfully created service listing");
-    },
-    onError: (error) => {
-      console.error("Error creating service listing:", error);
-      throw error;
-    },
   });
 };
 
@@ -59,15 +52,15 @@ export const useGetAllServiceListingsWithQueryParams = (
 ) => {
   const params = { category: categoryValue, tag: { ...tagNames } };
   return useQuery({
-    queryKey: ["service-listings", categoryValue, tagNames],
+    queryKey: ["service-listings", { params }],
     queryFn: async () => {
       if (categoryValue || (tagNames && tagNames.length > 0)) {
-        const response = await api.get(`${SERVICE_LISTING_API}/filter`, {
+        const response = await api.get(`${SERVICE_LISTING_API}/active`, {
           params,
         });
         return response.data as ServiceListing[];
       } else {
-        const response = await api.get(`${SERVICE_LISTING_API}`);
+        const response = await api.get(`${SERVICE_LISTING_API}/active`);
         return response.data as ServiceListing[];
       }
     },
@@ -105,7 +98,7 @@ export const useGetServiceListingByPetBusinessIdAndAccountStatus = (
 };
 
 // PATCH Service Listing by Service Id
-export const useUpdateServiceListing = (queryClient: QueryClient) => {
+export const useUpdateServiceListing = () => {
   return useMutation({
     mutationFn: async (payload: UpdateServiceListingPayload) => {
       // Extract the serviceListingId from the payload
@@ -170,10 +163,6 @@ export const useDeleteServiceListingById = (queryClient: QueryClient) => {
           );
         },
       );
-    },
-    onError: (error) => {
-      console.error("Error deleting service listing:", error);
-      throw error;
     },
   });
 };

@@ -10,15 +10,17 @@ import {
   Box,
   Stack,
 } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconMail, IconMapPin, IconPhone } from "@tabler/icons-react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
+import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
@@ -37,6 +39,9 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
+  // for select timeslot modal
+  const [opened, { open, close }] = useDisclosure(false);
+
   const ACCORDION_VALUES = ["description", "business"];
 
   const handleClickBuyNow = async () => {
@@ -48,6 +53,8 @@ export default function ServiceListingDetails({
         color: "red",
       });
     }
+    // display select timeslot modal
+    open();
   };
 
   const businessSection = (
@@ -97,68 +104,80 @@ export default function ServiceListingDetails({
   );
 
   return (
-    <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
-      <Grid gutter="xl">
-        <Grid.Col span={9}>
-          <ServiceListingBreadcrumbs
-            title={serviceListing.title}
-            id={serviceListing.serviceListingId}
-          />
-          <ServiceCategoryBadge
-            category={serviceListing.category}
-            size="lg"
-            mt="xl"
-            mb={5}
-          />
-          <PageTitle
-            title={serviceListing.title}
-            mb="xs"
-            size="2.25rem"
-            weight={700}
-          />
-          <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
-          <ServiceListingCarousel
-            attachmentURLs={serviceListing.attachmentURLs}
-          />
-          <Accordion
-            radius="md"
-            variant="filled"
-            mt="xl"
-            mb={80}
-            multiple
-            value={ACCORDION_VALUES}
-            chevronSize={0}
-            onChange={() => {}}
-          >
-            {businessSection}
-            <DescriptionAccordionItem
-              title="Description"
-              description={serviceListing.description}
-              showFullDescription={showFullDescription}
-              setShowFullDescription={setShowFullDescription}
+    <>
+      <Head>
+        <title>{serviceListing.title} - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+        <Grid gutter="xl">
+          <Grid.Col span={9}>
+            <ServiceListingBreadcrumbs
+              title={serviceListing.title}
+              id={serviceListing.serviceListingId}
             />
-          </Accordion>
-        </Grid.Col>
-        <Grid.Col span={3}>
-          <Paper
-            radius="md"
-            bg={theme.colors.gray[0]}
-            p="lg"
-            withBorder
-            mt={50}
-          >
-            <Group position="apart">
-              <Text size="xl" weight={500}>
-                ${formatPriceForDisplay(serviceListing.basePrice)}
-              </Text>
-            </Group>
-            <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
-              Buy now
-            </Button>
-          </Paper>
-        </Grid.Col>
-      </Grid>
-    </Container>
+            <ServiceCategoryBadge
+              category={serviceListing.category}
+              size="lg"
+              mt="xl"
+              mb={5}
+            />
+            <PageTitle
+              title={serviceListing.title}
+              mb="xs"
+              size="2.25rem"
+              weight={700}
+            />
+            <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
+            <ServiceListingCarousel
+              attachmentURLs={serviceListing.attachmentURLs}
+            />
+            <Accordion
+              radius="md"
+              variant="filled"
+              mt="xl"
+              mb={80}
+              multiple
+              value={ACCORDION_VALUES}
+              chevronSize={0}
+              onChange={() => {}}
+            >
+              {businessSection}
+              <DescriptionAccordionItem
+                title="Description"
+                description={serviceListing.description}
+                showFullDescription={showFullDescription}
+                setShowFullDescription={setShowFullDescription}
+              />
+            </Accordion>
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <Paper
+              radius="md"
+              bg={theme.colors.gray[0]}
+              p="lg"
+              withBorder
+              mt={50}
+            >
+              <Group position="apart">
+                <Text size="xl" weight={500}>
+                  ${formatPriceForDisplay(serviceListing.basePrice)}
+                </Text>
+              </Group>
+              <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
+                Buy now
+              </Button>
+
+              <SelectTimeslotModal
+                serviceListing={serviceListing}
+                opened={opened}
+                onClose={close}
+              />
+            </Paper>
+          </Grid.Col>
+        </Grid>
+      </Container>
+    </>
   );
 }
 

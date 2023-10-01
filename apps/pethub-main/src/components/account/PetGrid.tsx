@@ -7,6 +7,7 @@ import {
   Group,
   Text,
   Transition,
+  Image,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -18,14 +19,19 @@ import {
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  GenderEnum,
+  formatStringToLetterCase,
+  getErrorMessageProps,
+} from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { GenderEnum, PetTypeEnum } from "@/types/constants";
+import { PetTypeEnum } from "@/types/constants";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
@@ -66,25 +72,17 @@ const PetGrid = ({ userId }: PetGridProps) => {
   const handleDeletePet = async (petId: number) => {
     try {
       // DELETE PET
-      const result = await deletePetMutation.mutateAsync(petId);
+      await deletePetMutation.mutateAsync(petId);
       notifications.show({
         message: "Pet Successfully Deleted",
         color: "green",
-        autoClose: 5000,
       });
       if (pets.length === 0) {
         setHasNoFetchedRecords(true);
       }
     } catch (error) {
       notifications.show({
-        title: "Error Deleting Pet",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Pet", error),
       });
     }
   };
@@ -102,7 +100,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
   const renderPetTypeIcon = (petType) => {
     const iconPath = petTypeIcons[petType];
     if (iconPath) {
-      return <img src={iconPath} alt={petType} />;
+      return <Image src={iconPath} alt={petType} />;
     }
     return null; // Return null if no icon is found for the pet type
   };
@@ -122,9 +120,9 @@ const PetGrid = ({ userId }: PetGridProps) => {
   };
 
   const renderNoPetContent = () => {
-    if (pets && pets.length === 0) {
+    if (pets.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       return (
         <Transition

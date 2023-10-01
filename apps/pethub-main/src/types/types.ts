@@ -5,13 +5,11 @@ import {
   Address,
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
-} from "shared-utils";
-import {
+  ServiceListing,
+  Tag,
   GenderEnum,
-  PetTypeEnum,
-  DayOfWeekEnum,
-  RecurrencePatternEnum,
-} from "./constants";
+} from "shared-utils";
+import { PetTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -108,30 +106,6 @@ export interface PetBusinessApplication {
 /*
  * SERVICE MANAGEMENT
  */
-export interface ServiceListing {
-  serviceListingId: number;
-  title: string;
-  description: string;
-  basePrice: number;
-  category: ServiceCategoryEnum;
-  tags: Tag[];
-  // address
-  dateCreated: string;
-  lastUpdated?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  addresses: Address[];
-  CalendarGroup: CalendarGroup;
-  calendarGroupId: number;
-  duration: number;
-}
-
-export interface Tag {
-  tagId: number;
-  name: string;
-  dateCreated: string;
-  lastUpdated?: string;
-}
 
 export interface CreateServiceListingPayload {
   title: string;
@@ -214,13 +188,9 @@ export interface ServiceListingBooking {
   calendarGroupId: number;
 }
 
-export interface Timeslot {
-  timeslotId: number;
-  startTime: string;
-  endTime: string;
-  isVacant: boolean;
-  calenderGroupId: number;
-}
+/*
+ * Pet
+ */
 
 export interface Pet {
   petId: number;
@@ -249,42 +219,29 @@ export interface PetPayload {
   dateCreated: string;
   dateUpdated: string;
 }
-export interface CalendarGroup {
-  calendarGroupId?: number;
-  name: string;
-  description: string;
-  petBusinessId?: number;
-  scheduleSettings: ScheduleSettings[];
-}
 
-export interface ScheduleSettings {
-  scheduleSettingsId?: number;
-  days: string[];
-  recurrence: Recurrence;
-}
+/*
+ * Appointment Booking
+ */
 
-export interface Recurrence {
-  pattern: RecurrencePatternEnum;
-  startDate: string;
-  endDate: string;
-  timePeriods: TimePeriod[];
-}
-
-export interface TimePeriod {
-  timePeriodId?: number;
+export interface Timeslot {
+  calendarGroupId: number;
+  timeSlotId: number;
   startTime: string;
   endTime: string;
   vacancies: number;
-  bookingId?: number;
-  calenderGroupId?: number;
 }
 
 export interface Booking {
   bookingId: number;
-  petOwnerId: number;
   invoiceId?: number;
   transactionId?: number;
+  petOwnerId: number;
   dateCreated: string;
   lastUpdated?: string;
-  timeSlotIds: number[];
+  startTime: string;
+  endTime: string;
+  timeSlotId: number;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
 }
