@@ -43,11 +43,20 @@ const TimeslotCard = ({
   const theme = useMantineTheme();
   const [opened, { open, close }] = useDisclosure(false);
 
+  const isPastAppointment = dayjs(startTime).isBefore(new Date());
+  const appointmentTextColor = isPastAppointment ? "dimmed" : "";
+
   function getTimeDifferenceString() {
     const now = new Date();
+    if (dayjs(startTime).isBefore(now)) {
+      return "";
+    }
+    const diffHours = dayjs(startTime).diff(now, "hours");
+    if (diffHours < 1) {
+      return "happening soon";
+    }
     const diffDays = dayjs(startTime).diff(now, "days");
     if (diffDays < 1) {
-      const diffHours = dayjs(startTime).diff(now, "hours");
       return `in ${diffHours} hour${diffHours > 1 ? "s" : ""}`;
     }
     return `in ${diffDays} day${diffDays > 1 ? "s" : ""}`;
@@ -58,11 +67,15 @@ const TimeslotCard = ({
       <Group position="apart">
         <Box>
           {disabled ? null : (
-            <Badge mb={5} variant="dot">
-              {getTimeDifferenceString()}
+            <Badge
+              mb={5}
+              variant={isPastAppointment ? "light" : "dot"}
+              color={isPastAppointment ? "dark" : ""}
+            >
+              {isPastAppointment ? "completed" : getTimeDifferenceString()}
             </Badge>
           )}
-          <Text size="lg" weight={600}>
+          <Text size="lg" weight={600} color={appointmentTextColor}>
             {serviceListing.title}
           </Text>
           {disabled ? (
@@ -70,10 +83,13 @@ const TimeslotCard = ({
           ) : (
             <Link href={`/pet-businesses/${serviceListing.petBusinessId}`}>
               <Group>
-                <IconMapPin size="1.25rem" color={theme.colors.indigo[6]} />
+                <IconMapPin
+                  size="1.25rem"
+                  color={isPastAppointment ? "gray" : theme.colors.indigo[6]}
+                />
                 <Text
                   ml={-10}
-                  color={theme.primaryColor}
+                  color={isPastAppointment ? "dimmed" : theme.primaryColor}
                   weight={500}
                   sx={{ "&:hover": { fontWeight: 600 } }}
                 >
@@ -83,7 +99,7 @@ const TimeslotCard = ({
             </Link>
           )}
         </Box>
-        {disabled ? null : (
+        {disabled || isPastAppointment ? null : (
           <>
             <Button onClick={open}>Reschedule</Button>
             <SelectTimeslotModal
@@ -98,15 +114,15 @@ const TimeslotCard = ({
         )}
       </Group>
       <Divider mt="xs" mb="xs" />
-      <Text>
+      <Text color={appointmentTextColor}>
         <strong>Duration: </strong>
         {convertMinsToDurationString(serviceListing.duration)}
       </Text>
-      <Text>
+      <Text color={appointmentTextColor}>
         <strong>Start: </strong>
         {formatISODayDateTime(startTime)}
       </Text>
-      <Text>
+      <Text color={appointmentTextColor}>
         <strong>End: </strong>
         {endTime
           ? formatISODayDateTime(endTime)

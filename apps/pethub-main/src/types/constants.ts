@@ -34,8 +34,8 @@ export const serviceListingSortOptions = [
 
 export const bookingsSortOptions = [
   {
-    value: "upcoming",
-    label: "Upcoming",
+    value: "earliest",
+    label: "Earliest",
     attribute: "startTime",
     direction: "asc",
   },

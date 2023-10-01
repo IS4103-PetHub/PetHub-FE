@@ -28,22 +28,27 @@ import { sortRecords } from "@/util";
 
 interface AppointmentsProps {
   userId: number;
+  memberSince: string;
 }
 
-export default function Appointments({ userId }: AppointmentsProps) {
+export default function Appointments({
+  userId,
+  memberSince,
+}: AppointmentsProps) {
   const [segmentedControlValue, setSegmentedControlValue] = useState("30");
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(
     dayjs(new Date()).add(30, "days").toDate(),
   );
-  const [sortStatus, setSortStatus] = useState<string>("upcoming");
+  const [sortStatus, setSortStatus] = useState<string>("earliest");
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
-  // set the number of days ahead to display upcoming appointments for
+  // set the time period e.g. number of days ahead to display appointments for
   const segmentedControlData = [
     { label: "1 month", value: "30" },
     { label: "3 months", value: "90" },
     { label: "6 months", value: "180" },
+    { label: "Past", value: "past" },
     { label: "Custom", value: "custom" },
   ];
 
@@ -54,7 +59,8 @@ export default function Appointments({ userId }: AppointmentsProps) {
   } = useGetBookingsByUserId(
     userId,
     startDate?.toISOString(),
-    endDate?.toISOString(),
+    // make the end date inclusive
+    endDate ? dayjs(endDate).add(1, "day").toISOString() : null,
   );
 
   const [records, setRecords] = useState<Booking[]>(bookings);
@@ -76,13 +82,16 @@ export default function Appointments({ userId }: AppointmentsProps) {
   }, []);
 
   function handleChangeSegmentedControl(value) {
+    const now = new Date();
     if (value === "custom") {
       setStartDate(null);
       setEndDate(null);
+    } else if (value === "past") {
+      setStartDate(new Date(memberSince));
+      setEndDate(now);
     } else {
-      const start = new Date();
-      setStartDate(start);
-      setEndDate(dayjs(start).add(value, "days").toDate());
+      setStartDate(now);
+      setEndDate(dayjs(now).add(value, "days").toDate());
     }
     setSegmentedControlValue(value);
   }
@@ -201,6 +210,7 @@ export async function getServerSideProps(context) {
 
   if (!session) return { props: {} };
   const userId = session.user["userId"];
+  const memberSince = session.user["dateCreated"];
 
-  return { props: { userId } };
+  return { props: { userId, memberSince } };
 }

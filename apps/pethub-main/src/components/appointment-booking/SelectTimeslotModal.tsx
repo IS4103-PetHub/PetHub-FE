@@ -17,7 +17,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconChevronLeft } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { getSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ServiceListing,
   convertMinsToDurationString,
@@ -74,6 +74,8 @@ const SelectTimeslotModal = ({
       dayjs(selectedMonth).add(1, "month").toISOString(),
       serviceListing.duration,
     );
+
+  useEffect(() => console.log(availTimeslots), [availTimeslots]);
 
   const createBookingMutation = useCreateBooking();
   const updateBookingMutation = useUpdateBooking();
@@ -187,7 +189,7 @@ const SelectTimeslotModal = ({
         radius="xs"
         size="xl"
         value={data.startTime}
-        key={data.timeSlotId}
+        key={data.startTime}
         disabled={booking ? booking.startTime === data.startTime : false}
       >
         {formatISOTimeOnly(data.startTime)}
