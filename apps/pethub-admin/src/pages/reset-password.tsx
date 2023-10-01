@@ -12,7 +12,11 @@ import { AxiosError } from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState, useEffect } from "react";
-import { ResetPasswordPayload, validatePassword } from "shared-utils";
+import {
+  ResetPasswordPayload,
+  getErrorMessageProps,
+  validatePassword,
+} from "shared-utils";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { resetPasswordService } from "@/api/userService";
 import { RegularButton } from "@/components/common/RegularButton";
@@ -48,7 +52,6 @@ export default function ResetPassword() {
 
   const handleResetPassword = async () => {
     // Get the token out of the URL and attempt API call
-    console.log("The reset password token is", router.query.token);
     const resetPasswordPayload: ResetPasswordPayload = {
       token: parseRouterQueryParam(router.query.token),
       newPassword: form.values.password,
@@ -58,11 +61,7 @@ export default function ResetPassword() {
       setIsResetSuccessful(true);
     } catch (e: AxiosError | any) {
       notifications.show({
-        message:
-          (e.response && e.response.data && e.response.data.message) ||
-          e.message,
-        color: "red",
-        autoClose: 5000,
+        ...getErrorMessageProps("Error Resetting Password", e),
       });
     }
   };

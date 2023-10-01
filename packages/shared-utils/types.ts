@@ -1,4 +1,4 @@
-import { ServiceCategoryEnum } from "./constants";
+import { RecurrencePatternEnum, ServiceCategoryEnum } from "./constants";
 
 export interface ChangePasswordPayload {
   email: string;
@@ -32,6 +32,35 @@ export interface Address {
   petBusinessApplicationId?: Number;
 }
 
+export interface TimePeriod {
+  timePeriodId?: number;
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+  bookingId?: number;
+  calenderGroupId?: number;
+}
+export interface Recurrence {
+  pattern: RecurrencePatternEnum;
+  startDate: string;
+  endDate: string;
+  timePeriods: TimePeriod[];
+}
+
+export interface ScheduleSettings {
+  scheduleSettingsId?: number;
+  days: string[];
+  recurrence: Recurrence;
+}
+
+export interface CalendarGroup {
+  calendarGroupId?: number;
+  name: string;
+  description: string;
+  petBusinessId?: number;
+  scheduleSettings: ScheduleSettings[];
+}
+
 export interface ServiceListing {
   serviceListingId: number;
   title: string;
@@ -49,4 +78,8 @@ export interface ServiceListing {
   petBusinessId: number;
   // leave as any because the response varies from BE
   petBusiness?: any;
+  // appointment booking
+  CalendarGroup: CalendarGroup;
+  calendarGroupId?: number;
+  duration?: number;
 }

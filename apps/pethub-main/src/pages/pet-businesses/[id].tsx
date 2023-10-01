@@ -23,6 +23,7 @@ import {
   IconMail,
   IconPhone,
 } from "@tabler/icons-react";
+import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -32,6 +33,7 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
@@ -44,7 +46,7 @@ import ServiceListingCard from "@/components/service-listing-discovery/ServiceLi
 import { useGetServiceListingByPetBusinessIdAndAccountStatus } from "@/hooks/service-listing";
 import { serviceListingSortOptions } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
-import { sortServiceListings } from "@/util";
+import { sortRecords } from "@/util";
 
 const CAROUSEL_SIZE = 5;
 
@@ -91,7 +93,7 @@ export default function PetBusinessDetails({
       );
     }
     // handle sort
-    newRecords = sortServiceListings(newRecords, sortStatus);
+    newRecords = sortRecords(serviceListingSortOptions, newRecords, sortStatus);
     setRecords(newRecords);
   }, [serviceListings, sortStatus, activeCategory, searchStr]);
 
@@ -143,7 +145,6 @@ export default function PetBusinessDetails({
       </Group>
 
       {isLoading ? (
-        // still fetching
         <Box h={400} sx={{ verticalAlign: "center" }}>
           <Center h="100%" w="100%">
             <Loader />
@@ -189,13 +190,11 @@ export default function PetBusinessDetails({
 
   const allServiceListings = (
     <Box mt="xl">
-      <Button
-        leftIcon={<IconChevronLeft size="1.25rem" />}
+      <LargeBackButton
+        text="Back to business profile"
         onClick={() => setShowAllListings(false)}
         mb="xl"
-      >
-        Back to business profile
-      </Button>
+      />
       {serviceListingHeader}
 
       <Group position="apart">
@@ -226,6 +225,7 @@ export default function PetBusinessDetails({
           onChange={setSortStatus}
         />
       </Group>
+
       <SearchBar
         size="md"
         text="Search by service listing title"
@@ -299,41 +299,47 @@ export default function PetBusinessDetails({
   );
 
   return (
-    <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
-      <Group>
-        <PageTitle title={petBusiness.companyName} />
-        <Badge
-          size="lg"
-          variant="gradient"
-          gradient={{ from: "indigo", to: "cyan", deg: 90 }}
-        >
-          {petBusiness.businessType}
-        </Badge>
-      </Group>
-      {showAllListings ? (
-        <>{allServiceListings}</>
-      ) : (
-        <Accordion
-          radius="md"
-          variant="filled"
-          mt="xl"
-          mb={80}
-          multiple
-          value={ACCORDION_VALUES}
-          chevronSize={0}
-          onChange={() => {}}
-        >
-          {listingsCarousel}
-          {businessSection}
-          <DescriptionAccordionItem
-            title="Business description"
-            description={petBusiness.businessDescription}
-            showFullDescription={showFullDescription}
-            setShowFullDescription={setShowFullDescription}
-          />
-        </Accordion>
-      )}
-    </Container>
+    <>
+      <Head>
+        <title>{petBusiness.companyName} - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+        <Group>
+          <PageTitle title={petBusiness.companyName} />
+          <Badge
+            size="lg"
+            variant="gradient"
+            gradient={{ from: "indigo", to: "cyan", deg: 90 }}
+          >
+            {petBusiness.businessType}
+          </Badge>
+        </Group>
+        {showAllListings ? (
+          <>{allServiceListings}</>
+        ) : (
+          <Accordion
+            radius="md"
+            variant="filled"
+            mt="xl"
+            mb={80}
+            multiple
+            value={ACCORDION_VALUES}
+            chevronSize={0}
+            onChange={() => {}}
+          >
+            {listingsCarousel}
+            {businessSection}
+            <DescriptionAccordionItem
+              title="Business description"
+              description={petBusiness.businessDescription}
+              showFullDescription={showFullDescription}
+              setShowFullDescription={setShowFullDescription}
+            />
+          </Accordion>
+        )}
+      </Container>
+    </>
   );
 }
 

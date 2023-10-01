@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
@@ -105,7 +105,12 @@ const links: {
   {
     link: "/customer/account",
     label: "My account",
-    links: undefined,
+    links: [
+      {
+        link: "/customer/appointments",
+        label: "My appointments",
+      },
+    ],
   },
 ];
 
@@ -175,6 +180,7 @@ const HeaderBar = () => {
             height={30}
             mt={-5}
             onClick={() => router.push("/")}
+            alt="PetHub Logo"
           />
         </Group>
         <Group spacing={5} className={classes.links}>
@@ -183,7 +189,8 @@ const HeaderBar = () => {
         <Group position="right">
           {session ? (
             <Button
-              size="md"
+              leftIcon={<IconLogout size="1.25rem" />}
+              size="sm"
               radius="md"
               onClick={() => {
                 notifications.show({

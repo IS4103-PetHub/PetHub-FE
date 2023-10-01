@@ -7,9 +7,12 @@ import {
 } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconPlus, IconX, IconCheck } from "@tabler/icons-react";
-
-import { AccountTypeEnum, validatePassword } from "shared-utils";
+import { IconPlus, IconCheck } from "@tabler/icons-react";
+import {
+  AccountTypeEnum,
+  getErrorMessageProps,
+  validatePassword,
+} from "shared-utils";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreateInternalUser } from "@/hooks/internal-user";
 import { InternalUserRoleEnum } from "@/types/constants";
@@ -66,14 +69,7 @@ export function CreateInternalUserForm({
     } catch (error: any) {
       onUserCreated(false);
       notifications.show({
-        title: "Error Creating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Account", error),
       });
     }
   };

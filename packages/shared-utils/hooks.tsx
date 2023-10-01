@@ -1,8 +1,8 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { ChangePasswordPayload } from "./types";
 
-export const useChangePassword = (queryClient: QueryClient) => {
+export const useChangePassword = () => {
   return useMutation({
     mutationFn: async (payload: ChangePasswordPayload) => {
       return (

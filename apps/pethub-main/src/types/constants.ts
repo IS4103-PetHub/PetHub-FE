@@ -25,6 +25,21 @@ export const serviceListingSortOptions = [
   },
 ];
 
+export const bookingsSortOptions = [
+  {
+    value: "earliest",
+    label: "Earliest",
+    attribute: "startTime",
+    direction: "asc",
+  },
+  {
+    value: "furthest",
+    label: "Furthest",
+    attribute: "startTime",
+    direction: "desc",
+  },
+];
+
 export enum PetTypeEnum {
   Dog = "DOG",
   Cat = "CAT",
@@ -33,24 +48,4 @@ export enum PetTypeEnum {
   Rabbit = "RABBIT",
   Rodent = "RODENT",
   Others = "OTHERS",
-}
-
-export enum GenderEnum {
-  Male = "MALE",
-  Female = "FEMALE",
-}
-
-export enum DayOfWeekEnum {
-  Monday = "MONDAY",
-  Tuesday = "TUESDAY",
-  Wednesday = "WEDNESDAY",
-  Thursday = "THURSDAY",
-  Friday = "FRIDAY",
-  Saturday = "SATURDAY",
-  Sunday = "SUNDAY",
-}
-
-export enum RecurrencePatternEnum {
-  Daily = "DAILY",
-  Weekly = "WEEKLY",
 }

@@ -1,4 +1,4 @@
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
@@ -13,17 +13,12 @@ export const useCreatePetBusiness = () => {
   });
 };
 
-export const useUpdatePetBusiness = (queryClient: QueryClient) => {
+export const useUpdatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
-      );
+      const { userId, ...payloadWithoutId } = payload;
       return (
-        await api.patch(
-          `${PET_BUSINESS_API}/${payload.userId}`,
-          payloadWithoutId,
-        )
+        await api.patch(`${PET_BUSINESS_API}/${userId}`, payloadWithoutId)
       ).data;
     },
   });

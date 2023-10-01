@@ -9,7 +9,11 @@ import {
 } from "@mantine/core";
 import "@toast-ui/calendar/dist/toastui-calendar.css";
 import { useDisclosure } from "@mantine/hooks";
-import { IconArrowBigLeft, IconArrowBigRight } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconSettings,
+} from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React, {
@@ -189,7 +193,7 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
     );
 
     router.push(
-      `/business/calendargroup/${selectedCalendarGroup.calendarGroupId}`,
+      `/business/calendar-groups/${selectedCalendarGroup.calendarGroupId}`,
     );
   };
 
@@ -281,6 +285,7 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
     <div style={{ width: "100%", height: "100vh" }}>
       <Group position="apart" mb="xs">
         <Select
+          w="33%"
           label="Calendar Group"
           data={[
             { value: "all", label: "All" },
@@ -297,7 +302,8 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
             <LargeViewButton
               onClick={handleViewCalendarGroup}
               text="View Calendar Settings"
-              color="cyan"
+              variant="light"
+              leftIcon={<IconSettings size="1.25rem" />}
             />
           ) : null}
         </Group>
@@ -317,13 +323,13 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
         </Group>
         <Group position="center">
           <ActionIcon onClick={navigateTimePrev} variant="outline" size="lg">
-            <IconArrowBigLeft />
+            <IconChevronLeft />
           </ActionIcon>
           <Button onClick={navigateToToday} variant="outline">
             Today
           </Button>
           <ActionIcon onClick={navigateTimeNext} variant="outline" size="lg">
-            <IconArrowBigRight />
+            <IconChevronRight />
           </ActionIcon>
         </Group>
       </Group>

@@ -36,14 +36,9 @@ export const useCreateUserGroup = (queryClient: QueryClient) => {
 export const useUpdateUserGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["groupId"].includes(key)),
-      );
+      const { groupId, ...payloadWithoutId } = payload;
       return (
-        await api.patch(
-          `${RBAC_USER_GROUPS_API}/${payload.groupId}`,
-          payloadWithoutId,
-        )
+        await api.patch(`${RBAC_USER_GROUPS_API}/${groupId}`, payloadWithoutId)
       ).data;
     },
     onSuccess: (data) => {
@@ -103,12 +98,10 @@ export const useGetAllPermissions = () => {
 export const useAddMultipleUsersToUserGroup = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["groupId"].includes(key)),
-      );
+      const { groupId, ...payloadWithoutId } = payload;
       return (
         await api.post(
-          `${RBAC_USER_GROUPS_API}/${payload.groupId}/add-users`,
+          `${RBAC_USER_GROUPS_API}/${groupId}/add-users`,
           payloadWithoutId,
         )
       ).data;

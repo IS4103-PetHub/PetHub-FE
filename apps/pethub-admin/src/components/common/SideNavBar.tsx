@@ -16,6 +16,7 @@ import {
   IconUserShield,
   IconUsersGroup,
   IconArticle,
+  IconLogout,
 } from "@tabler/icons-react";
 import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
@@ -151,6 +152,7 @@ const SideNavBar = () => {
       {session && (
         <Button
           uppercase
+          leftIcon={<IconLogout size="1.25rem" />}
           onClick={() => {
             notifications.show({
               message: "Logging you out...",
@@ -162,7 +164,7 @@ const SideNavBar = () => {
             });
           }}
         >
-          logout
+          Logout
         </Button>
       )}
     </Navbar>

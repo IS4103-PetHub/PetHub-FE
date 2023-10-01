@@ -19,6 +19,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
+    "@tabler/icons-react": "^2.31.0",
     "@tanstack/react-query": "^4.33.0",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",

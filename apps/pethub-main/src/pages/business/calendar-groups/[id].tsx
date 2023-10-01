@@ -1,20 +1,5 @@
-import {
-  Box,
-  Badge,
-  Modal,
-  Textarea,
-  Button,
-  Grid,
-  Text,
-  Center,
-  Title,
-  Switch,
-  Container,
-  Group,
-  Stack,
-} from "@mantine/core";
-import { isNotEmpty, useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import { Center, Container, Group } from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -22,6 +7,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import { CalendarGroup, getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
@@ -32,8 +18,6 @@ import {
   useGetCalendarGroupById,
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
-import { RecurrencePatternEnum } from "@/types/constants";
-import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import {
   validateCGDescription,
   validateCGName,
@@ -97,7 +81,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
     setKey(Math.random()); // Force CalendarGroupForm to re-render with initialValues upon cancel
   }
 
-  const updateCalendarGroupMutation = useUpdateCalendarGroup(queryClient);
+  const updateCalendarGroupMutation = useUpdateCalendarGroup();
   const updateCalendarGroup = async (payload: CalendarGroup) => {
     try {
       await updateCalendarGroupMutation.mutateAsync(payload);
@@ -111,14 +95,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       refetchCalendarGroup();
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating Calendar Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Calendar Group", error),
       });
     }
   };
@@ -133,17 +110,10 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         icon: <IconCheck />,
         message: `Calendar group deleted successfully.`,
       });
-      window.location.href = "/business/calendargroup"; // hotfix, change this in the future
+      window.location.href = "/business/calendar-groups"; // hotfix, change this in the future
     } catch (error: any) {
       notifications.show({
-        title: "Error Deleting Calendar Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Calendar Group", error),
       });
     }
   };
@@ -159,14 +129,21 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">
+        <LargeBackButton
+          text="Back to Calendar View"
+          onClick={() => (window.location.href = "/business/calendar-groups")} // Change this in the future, normal route would break the calendar atm
+          size="sm"
+          mb="sm"
+        />
         <Group position="apart">
           <PageTitle
             title={
               isEditingDisabled
-                ? "Viewing Calendar Group"
-                : "Editing Calendar Group"
+                ? "View Calendar Group"
+                : "Update Calendar Group"
             }
           />
+
           {isEditingDisabled && (
             <Center>
               <LargeEditButton
@@ -185,13 +162,6 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
                 large
               />
               &nbsp;
-              <LargeBackButton
-                text="Back"
-                onClick={() =>
-                  (window.location.href = "/business/calendargroup")
-                } // Change this in the future, normal route would break the calendar atm
-                customSize="sm"
-              />
             </Center>
           )}
         </Group>

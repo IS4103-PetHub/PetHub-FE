@@ -1,6 +1,5 @@
 import {
   Accordion,
-  Container,
   Grid,
   Group,
   Modal,
@@ -97,105 +96,103 @@ const BookingsModal = ({
         <Modal
           opened={opened}
           onClose={onClose}
-          title={booking.serviceListing.title}
+          title={
+            <Text size="lg" weight={600}>
+              {form.values.startTime} - {form.values.endTime}:{" "}
+              {booking.serviceListing.title}
+            </Text>
+          }
           centered
           size="80vh"
         >
-          <Accordion
-            variant="separated"
-            mt="xl"
-            multiple
-            defaultValue={defaultValues}
-          >
+          <Accordion variant="separated" multiple defaultValue={defaultValues}>
             <Accordion.Item value="Booking Details">
               <Accordion.Control>
                 <Group>
                   <IconClipboardList color={theme.colors.indigo[5]} />
-                  <Text size="lg">Service Details</Text>
+                  <Text size="lg">Service details</Text>
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
-                <Container fluid>
-                  <Grid>
-                    <Grid.Col span={12}>
-                      <Textarea
-                        label="Description"
-                        disabled
-                        {...form.getInputProps("description")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <NumberInput
-                        label="Base Price"
-                        disabled
-                        parser={(value) => {
-                          const floatValue = parseFloat(
-                            value.replace(/\$\s?|(,*)/g, ""),
-                          );
-                          return isNaN(floatValue) ? "" : floatValue.toString();
-                        }}
-                        formatter={(value) => {
-                          const formattedValue = parseFloat(
-                            value.replace(/\$\s?/, ""),
-                          ).toFixed(2);
-                          return `$ ${formattedValue}`;
-                        }}
-                        {...form.getInputProps("basePrice")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <TextInput
-                        label="Category"
-                        disabled
-                        {...form.getInputProps("category")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <TimeInput
-                        label="Start Time"
-                        disabled
-                        {...form.getInputProps("startTime")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <TimeInput
-                        label="End Time"
-                        disabled
-                        {...form.getInputProps("endTime")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={12}>
-                      <MultiSelect
-                        data={
-                          addresses
-                            ? addresses.map((address) => ({
-                                value: address.addressId.toString(),
-                                label: address.addressName,
-                              }))
-                            : []
-                        }
-                        disabled
-                        label="Addresses"
-                        {...form.getInputProps("addresses")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={12}>
-                      <MultiSelect
-                        disabled
-                        label="Tags"
-                        data={
-                          tags
-                            ? tags.map((tag) => ({
-                                value: tag.tagId.toString(),
-                                label: tag.name,
-                              }))
-                            : []
-                        }
-                        {...form.getInputProps("tags")}
-                      />
-                    </Grid.Col>
-                  </Grid>
-                </Container>
+                <Grid>
+                  <Grid.Col span={12}>
+                    <Textarea
+                      label="Description"
+                      disabled
+                      {...form.getInputProps("description")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <NumberInput
+                      label="Base Price"
+                      disabled
+                      parser={(value) => {
+                        const floatValue = parseFloat(
+                          value.replace(/\$\s?|(,*)/g, ""),
+                        );
+                        return isNaN(floatValue) ? "" : floatValue.toString();
+                      }}
+                      formatter={(value) => {
+                        const formattedValue = parseFloat(
+                          value.replace(/\$\s?/, ""),
+                        ).toFixed(2);
+                        return `$ ${formattedValue}`;
+                      }}
+                      {...form.getInputProps("basePrice")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Category"
+                      disabled
+                      {...form.getInputProps("category")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TimeInput
+                      label="Start Time"
+                      disabled
+                      {...form.getInputProps("startTime")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TimeInput
+                      label="End Time"
+                      disabled
+                      {...form.getInputProps("endTime")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={12}>
+                    <MultiSelect
+                      data={
+                        addresses
+                          ? addresses.map((address) => ({
+                              value: address.addressId.toString(),
+                              label: address.addressName,
+                            }))
+                          : []
+                      }
+                      disabled
+                      label="Addresses"
+                      {...form.getInputProps("addresses")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={12}>
+                    <MultiSelect
+                      disabled
+                      label="Tags"
+                      data={
+                        tags
+                          ? tags.map((tag) => ({
+                              value: tag.tagId.toString(),
+                              label: tag.name,
+                            }))
+                          : []
+                      }
+                      {...form.getInputProps("tags")}
+                    />
+                  </Grid.Col>
+                </Grid>
               </Accordion.Panel>
             </Accordion.Item>
 
@@ -204,60 +201,58 @@ const BookingsModal = ({
               <Accordion.Control>
                 <Group>
                   <IconUserSquare color={theme.colors.indigo[5]} />
-                  <Text size="lg">Customer Details</Text>
+                  <Text size="lg">Customer details</Text>
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
-                <Container fluid>
-                  <Grid>
-                    <Grid.Col span={12}>
-                      <TextInput
-                        label="Name"
-                        disabled
-                        {...form.getInputProps("petOwnerName")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <TextInput
-                        label="Contact"
-                        disabled
-                        {...form.getInputProps("petOwnerContact")}
-                      />
-                    </Grid.Col>
-                    <Grid.Col span={6}>
-                      <TextInput
-                        label="Emai"
-                        disabled
-                        {...form.getInputProps("petOwnerEmail")}
-                      />
-                    </Grid.Col>
-                    {booking.pet && (
-                      <>
-                        <Grid.Col span={12}>
-                          <TextInput
-                            label="Pet Name"
-                            disabled
-                            {...form.getInputProps("petName")}
-                          />
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <TextInput
-                            label="Pet Type"
-                            disabled
-                            {...form.getInputProps("petType")}
-                          />
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <TextInput
-                            label="Pet Gender"
-                            disabled
-                            {...form.getInputProps("petGender")}
-                          />
-                        </Grid.Col>
-                      </>
-                    )}
-                  </Grid>
-                </Container>
+                <Grid>
+                  <Grid.Col span={12}>
+                    <TextInput
+                      label="Name"
+                      disabled
+                      {...form.getInputProps("petOwnerName")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Contact"
+                      disabled
+                      {...form.getInputProps("petOwnerContact")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Emai"
+                      disabled
+                      {...form.getInputProps("petOwnerEmail")}
+                    />
+                  </Grid.Col>
+                  {booking.pet && (
+                    <>
+                      <Grid.Col span={12}>
+                        <TextInput
+                          label="Pet Name"
+                          disabled
+                          {...form.getInputProps("petName")}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <TextInput
+                          label="Pet Type"
+                          disabled
+                          {...form.getInputProps("petType")}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <TextInput
+                          label="Pet Gender"
+                          disabled
+                          {...form.getInputProps("petGender")}
+                        />
+                      </Grid.Col>
+                    </>
+                  )}
+                </Grid>
               </Accordion.Panel>
             </Accordion.Item>
 

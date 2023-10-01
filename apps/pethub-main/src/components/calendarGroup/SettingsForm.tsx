@@ -8,20 +8,20 @@ import {
   SegmentedControl,
   Box,
   Checkbox,
-  NumberInput,
-  rem,
   useMantineTheme,
 } from "@mantine/core";
 
-import { DateInput, TimeInput } from "@mantine/dates";
-import { useForm } from "@mantine/form";
-import { IconCalendar, IconClock, IconX } from "@tabler/icons-react";
+import { DateInput } from "@mantine/dates";
+import { IconCalendar, IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import React, { useState, useRef } from "react";
+import React from "react";
+import {
+  ScheduleSettings,
+  TimePeriod,
+  RecurrencePatternEnum,
+  DayOfWeekEnum,
+} from "shared-utils";
 import CreateButton from "web-ui/shared/LargeCreateButton";
-import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
-import { ScheduleSettings, TimePeriod } from "@/types/types";
-import styles from "../../styles/Card.module.css";
 import TimePeriodForm from "./TimePeriodForm";
 
 interface SettingsFormProps {
@@ -117,17 +117,17 @@ const SettingsForm = ({
   return (
     <Grid.Col span={12}>
       <Card
-        shadow="md"
+        shadow="sm"
         radius="lg"
         sx={{
           overflow: "visible",
-          border: "1px solid gray",
+          border: "1px solid lightgray",
           borderColor: highlight && theme.colors.red[6],
         }}
       >
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
-            <Text>Schedule setting {index + 1}</Text>
+            <Text weight={600}>Schedule Setting {index + 1}</Text>
             <ActionIcon
               onClick={onRemove}
               style={{ cursor: "pointer" }}

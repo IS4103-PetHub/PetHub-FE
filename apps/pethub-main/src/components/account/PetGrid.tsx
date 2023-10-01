@@ -7,6 +7,8 @@ import {
   Group,
   Text,
   Transition,
+  Center,
+  Loader,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -17,15 +19,21 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  GenderEnum,
+  formatStringToLetterCase,
+  getErrorMessageProps,
+} from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { GenderEnum, PetTypeEnum } from "@/types/constants";
+import { PetTypeEnum } from "@/types/constants";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
@@ -66,25 +74,17 @@ const PetGrid = ({ userId }: PetGridProps) => {
   const handleDeletePet = async (petId: number) => {
     try {
       // DELETE PET
-      const result = await deletePetMutation.mutateAsync(petId);
+      await deletePetMutation.mutateAsync(petId);
       notifications.show({
-        message: "Pet Successfully Deleted",
+        message: "Pet Profile Deleted",
         color: "green",
-        autoClose: 5000,
       });
       if (pets.length === 0) {
         setHasNoFetchedRecords(true);
       }
     } catch (error) {
       notifications.show({
-        title: "Error Deleting Pet",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Pet", error),
       });
     }
   };
@@ -107,40 +107,48 @@ const PetGrid = ({ userId }: PetGridProps) => {
     return null; // Return null if no icon is found for the pet type
   };
 
-  const calculateAge = (dateOfBirth) => {
+  const calculateAge = (dateOfBirth: any) => {
     const currentDate = new Date();
     const dob = new Date(dateOfBirth);
-    let age = currentDate.getFullYear() - dob.getFullYear();
-    if (
-      currentDate.getMonth() < dob.getMonth() ||
-      (currentDate.getMonth() === dob.getMonth() &&
-        currentDate.getDate() < dob.getDate())
-    ) {
-      age--;
+    let age = dayjs(currentDate).diff(dob, "years");
+
+    if (age == 0) {
+      age = dayjs(currentDate).diff(dob, "months");
+      return `${age} month${age !== 1 ? "s" : ""}`;
     }
-    return age;
+    return `${age} year${age > 1 ? "s" : ""}`;
   };
 
   const renderNoPetContent = () => {
-    if (pets && pets.length === 0) {
+    if (pets.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return (
+          <Box h={400} sx={{ verticalAlign: "center" }}>
+            <Center h="100%" w="100%">
+              <Loader opacity={0.5} />
+            </Center>
+          </Box>
+        );
       }
       return (
-        <Transition
-          mounted={hasNoFetchedRecords}
-          transition="fade"
-          duration={100}
-        >
-          {(styles) => (
-            <div style={styles}>
-              <SadDimmedMessage
-                title="No pets"
-                subtitle="Click 'Add new pet' to create a new pet"
-              />
-            </div>
-          )}
-        </Transition>
+        <Box h={400} sx={{ verticalAlign: "center" }}>
+          <Center h="100%" w="100%">
+            <Transition
+              mounted={hasNoFetchedRecords}
+              transition="fade"
+              duration={100}
+            >
+              {(styles) => (
+                <div style={styles}>
+                  <SadDimmedMessage
+                    title="No pets"
+                    subtitle="Click 'Add new pet' to create a new pet"
+                  />
+                </div>
+              )}
+            </Transition>
+          </Center>
+        </Box>
       );
     }
   };
@@ -148,11 +156,11 @@ const PetGrid = ({ userId }: PetGridProps) => {
   return (
     <>
       <Group position="apart">
-        <Badge color="indigo" radius="xl" size="xl">
-          {pets ? pets.length : ""} pets added
+        <Badge color="indigo" size="lg">
+          {pets ? pets.length : ""} pet{pets.length > 1 ? "s" : ""} added
         </Badge>
         <Button
-          size="xs"
+          size="sm"
           leftIcon={<IconPlus size="1.25rem" />}
           onClick={() => {
             openCreate();
@@ -200,13 +208,13 @@ const PetGrid = ({ userId }: PetGridProps) => {
                         <IconGenderMale
                           size="1rem"
                           color="gray"
-                          style={{ marginLeft: "-8px" }}
+                          style={{ marginLeft: "-12px" }}
                         />
                       ) : (
                         <IconGenderFemale
                           size="1rem"
                           color="gray"
-                          style={{ marginLeft: "-8px" }}
+                          style={{ marginLeft: "-12px" }}
                         />
                       )}
                     </Group>
@@ -222,7 +230,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
                     </Text>
                     <Text>
                       {pet.microchipNumber
-                        ? `Microchip Number: ${pet.microchipNumber}`
+                        ? `Microchip No: ${pet.microchipNumber}`
                         : ""}
                     </Text>
                   </Card.Section>
@@ -242,7 +250,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
                       />
                       <DeleteActionButtonModal
                         title={`Are you sure you want to delete ${pet.petName}?`}
-                        subtitle="This action cannot be undone. The pet would be permanently deleted."
+                        subtitle="This action cannot be undone. This pet profile would be permanently deleted."
                         onDelete={() => handleDeletePet(pet.petId)}
                       />
                     </Group>

@@ -7,7 +7,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { ForgotPasswordPayload } from "shared-utils";
+import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
@@ -94,7 +94,6 @@ export default function Login() {
         title: "Login Failed",
         message: "Invalid Credentials",
         color: "red",
-        autoClose: 5000,
       });
     } else {
       showOverlay();
@@ -113,11 +112,7 @@ export default function Login() {
     } catch (e: AxiosError | any) {
       setIsSubmitButtonLoading(false);
       notifications.show({
-        message:
-          (e.response && e.response.data && e.response.data.message) ||
-          e.message,
-        color: "red",
-        autoClose: 5000,
+        ...getErrorMessageProps("Error Encountered", e),
       });
     }
   };

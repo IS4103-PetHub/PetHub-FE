@@ -1,17 +1,14 @@
 import dayjs from "dayjs";
 import { sortBy } from "lodash";
-import { ServiceListing } from "shared-utils";
-import {
-  serviceListingSortOptions,
-  DayOfWeekEnum,
-  RecurrencePatternEnum,
-} from "./types/constants";
 import {
   CalendarGroup,
+  DayOfWeekEnum,
   Recurrence,
+  RecurrencePatternEnum,
   ScheduleSettings,
+  ServiceListing,
   TimePeriod,
-} from "./types/types";
+} from "shared-utils";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -22,11 +19,6 @@ export function parseRouterQueryParam(param: string | string[] | undefined) {
     param = param.join("");
   }
   return param;
-}
-
-export function formatISODateString(dateString: string) {
-  // e.g. 1 September 2023
-  return dayjs(dateString).format("D MMMM YYYY");
 }
 
 export function validateAddressName(addressName: string) {
@@ -64,18 +56,17 @@ export function searchServiceListingsForCustomer(
   );
 }
 
-// sort service listings for customer view service listings
-export function sortServiceListings(
-  serviceListings: ServiceListing[],
+// generic sort by function
+export function sortRecords(
+  sortOptions: any,
+  records: any[],
   sortStatus: string,
 ) {
-  let sorted: ServiceListing[] = serviceListings;
+  let sorted = records;
   if (!sortStatus) return sorted;
 
-  const sortOption = serviceListingSortOptions.find(
-    (x) => sortStatus === x.value,
-  );
-  sorted = sortBy(serviceListings, sortOption.attribute);
+  const sortOption = sortOptions.find((x) => sortStatus === x.value);
+  sorted = sortBy(records, sortOption.attribute);
   if (sortOption.direction == "desc") {
     sorted.reverse();
   }

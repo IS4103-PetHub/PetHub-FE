@@ -15,7 +15,6 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Inter } from "next/font/google";
-import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -102,7 +101,7 @@ export function App({ Component, pageProps }: AppProps) {
                       justifyContent: "center",
                     }}
                   >
-                    <Loader size="3rem" />
+                    <Loader size="lg" opacity={0.5} />
                   </Container>
                 ) : (
                   <>
@@ -113,7 +112,7 @@ export function App({ Component, pageProps }: AppProps) {
                         overlayBlur={10}
                         loaderProps={{
                           size: "md",
-                          color: "pink",
+                          color: "indigo",
                           variant: "bars",
                         }}
                       />
