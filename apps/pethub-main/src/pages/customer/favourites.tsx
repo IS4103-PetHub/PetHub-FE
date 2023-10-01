@@ -18,7 +18,7 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
-import ServiceListingFavouriteCard from "@/components/service-listing-discovery/ServiceListingFavouriteCard";
+import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 import ServiceListingsSideBar from "@/components/service-listing-discovery/ServiceListingsSideBar";
 import {
   useAddServiceListingToFavourites,
@@ -167,9 +167,9 @@ export default function Favourites({ userId }: FavouritesProps) {
       key={serviceListing.serviceListingId}
       span={isMobile ? 12 : isTablet ? 4 : 3}
     >
-      <ServiceListingFavouriteCard
+      <ServiceListingCard
         serviceListing={serviceListing}
-        currentFavourite={isListingFavorite(serviceListing.serviceListingId)}
+        isFavourite={isListingFavorite(serviceListing.serviceListingId)}
         onFavourite={handleFavourite}
       />
     </Grid.Col>

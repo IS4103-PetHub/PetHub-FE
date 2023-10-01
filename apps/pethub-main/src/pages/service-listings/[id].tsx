@@ -35,7 +35,7 @@ import ServiceListingCarousel from "@/components/service-listing-discovery/Servi
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
 import {
   useAddServiceListingToFavourites,
-  useGetFavouriteServiceListingByPetOwnerId,
+  useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
 import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
@@ -55,7 +55,7 @@ export default function ServiceListingDetails({
   const [showFullDescription, setShowFullDescription] = useToggle();
 
   const { data: favouritedListings = [] } =
-    useGetFavouriteServiceListingByPetOwnerId(userId);
+    useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
 
   const [isFavourite, setIsFavourite] = useState(false);
 
