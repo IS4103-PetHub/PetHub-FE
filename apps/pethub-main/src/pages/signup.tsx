@@ -117,7 +117,6 @@ export default function SignUp() {
         title: "Login Failed",
         message: "Invalid Credentials",
         color: "red",
-        autoClose: 5000,
       });
     } else {
       const session = await getSession();

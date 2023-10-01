@@ -224,7 +224,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
 
   return (
     <Container fluid>
-      <PageTitle title="Service Listings Management" />
+      <PageTitle title="Service Listing Management" />
       {renderContent()}
     </Container>
   );

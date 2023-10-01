@@ -163,7 +163,6 @@ const ServiceListingModal = ({
         notifications.show({
           message: "Service Successfully Updated",
           color: "green",
-          autoClose: 5000,
         });
       } else {
         const payload: CreateServiceListingPayload = {
@@ -182,7 +181,6 @@ const ServiceListingModal = ({
         notifications.show({
           message: "Service Successfully Created",
           color: "green",
-          autoClose: 5000,
         });
       }
       refetch();
@@ -320,177 +318,175 @@ const ServiceListingModal = ({
       }
       centered
       size="80%"
+      padding="xl"
     >
-      <Container fluid>
-        <form
-          onSubmit={serviceListingForm.onSubmit((values) =>
-            handleAction(values),
-          )}
-        >
-          <Stack>
-            <TextInput
-              withAsterisk
-              disabled={isViewing}
-              label="Title"
-              placeholder="Input Service Listing Title"
-              {...serviceListingForm.getInputProps("title")}
-            />
+      <form
+        onSubmit={serviceListingForm.onSubmit((values) => handleAction(values))}
+      >
+        <Stack>
+          <TextInput
+            withAsterisk
+            disabled={isViewing}
+            label="Title"
+            placeholder="Input Service Listing Title"
+            {...serviceListingForm.getInputProps("title")}
+          />
 
-            <Textarea
-              withAsterisk
-              disabled={isViewing}
-              label="Description"
-              placeholder="Input Service Listing Description"
-              autosize
-              {...serviceListingForm.getInputProps("description")}
-            />
+          <Textarea
+            withAsterisk
+            disabled={isViewing}
+            label="Description"
+            placeholder="Input Service Listing Description"
+            autosize
+            {...serviceListingForm.getInputProps("description")}
+          />
 
-            <Select
-              withAsterisk
-              disabled={isViewing}
-              label="Category"
-              placeholder="Pick one"
-              // need change to this to use enums
-              data={categoryOptions}
-              {...serviceListingForm.getInputProps("category")}
-            />
+          <Select
+            withAsterisk
+            disabled={isViewing}
+            label="Category"
+            placeholder="Pick one"
+            // need change to this to use enums
+            data={categoryOptions}
+            {...serviceListingForm.getInputProps("category")}
+          />
 
-            <NumberInput
-              withAsterisk
-              disabled={isViewing}
-              label="Price"
-              defaultValue={0.0}
-              min={0}
-              precision={2}
-              parser={(value) => {
-                const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
-                return isNaN(floatValue) ? "" : floatValue.toString();
-              }}
-              formatter={(value) => {
-                const formattedValue = parseFloat(
-                  value.replace(/\$\s?/, ""),
-                ).toFixed(2);
-                return `$ ${formattedValue}`;
-              }}
-              {...serviceListingForm.getInputProps("basePrice")}
-            />
+          <NumberInput
+            withAsterisk
+            disabled={isViewing}
+            label="Price"
+            defaultValue={0.0}
+            min={0}
+            precision={2}
+            parser={(value) => {
+              const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
+              return isNaN(floatValue) ? "" : floatValue.toString();
+            }}
+            formatter={(value) => {
+              const formattedValue = parseFloat(
+                value.replace(/\$\s?/, ""),
+              ).toFixed(2);
+              return `$ ${formattedValue}`;
+            }}
+            {...serviceListingForm.getInputProps("basePrice")}
+          />
 
-            <Autocomplete
-              disabled={isViewing}
-              placeholder="Select Service duration"
-              label="Duration (minutes)"
-              data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
-              onChange={(selectedValue) => {
-                const selectedDuration = parseInt(selectedValue, 10);
-                if (!isNaN(selectedDuration)) {
-                  serviceListingForm.setValues({ duration: selectedDuration });
-                } else {
-                  serviceListingForm.setValues({ duration: 0 });
-                }
-              }}
-              value={
-                serviceListingForm.values.duration
-                  ? serviceListingForm.values.duration.toString()
-                  : ""
+          <Autocomplete
+            disabled={isViewing}
+            placeholder="Select Service duration"
+            label="Duration (minutes)"
+            data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
+            onChange={(selectedValue) => {
+              const selectedDuration = parseInt(selectedValue, 10);
+              if (!isNaN(selectedDuration)) {
+                serviceListingForm.setValues({ duration: selectedDuration });
+              } else {
+                serviceListingForm.setValues({ duration: 0 });
               }
-            />
+            }}
+            value={
+              serviceListingForm.values.duration
+                ? serviceListingForm.values.duration.toString()
+                : ""
+            }
+          />
 
-            <Select
-              disabled={isViewing}
-              label="Calendar Group"
-              placeholder="Pick one"
-              data={
-                calendarGroups
-                  ? [
-                      {
-                        value: "",
-                        label: "",
-                      },
-                      ...calendarGroups.map((group) => ({
-                        value: group.calendarGroupId.toString(),
-                        label: group.name,
-                      })),
-                    ]
-                  : []
-              }
-              {...serviceListingForm.getInputProps("calendarGroupId")}
-            />
+          <Select
+            disabled={isViewing}
+            label="Calendar Group"
+            placeholder="Pick one"
+            data={
+              calendarGroups
+                ? [
+                    {
+                      value: "",
+                      label: "",
+                    },
+                    ...calendarGroups.map((group) => ({
+                      value: group.calendarGroupId.toString(),
+                      label: group.name,
+                    })),
+                  ]
+                : []
+            }
+            {...serviceListingForm.getInputProps("calendarGroupId")}
+          />
 
-            <MultiSelect
-              disabled={isViewing}
-              label="Address"
-              placeholder="Select your address"
-              data={
-                addresses
-                  ? addresses.map((address) => ({
-                      value: address.addressId.toString(),
-                      label: address.addressName,
-                    }))
-                  : []
-              }
-              {...serviceListingForm.getInputProps("addresses")}
-            />
+          <MultiSelect
+            disabled={isViewing}
+            label="Address"
+            placeholder="Select your address"
+            data={
+              addresses
+                ? addresses.map((address) => ({
+                    value: address.addressId.toString(),
+                    label: address.addressName,
+                  }))
+                : []
+            }
+            {...serviceListingForm.getInputProps("addresses")}
+          />
 
-            <MultiSelect
-              disabled={isViewing}
-              label="Tags"
-              placeholder="Select your Tags"
-              data={
-                tags
-                  ? tags.map((tag) => ({
-                      value: tag.tagId.toString(),
-                      label: tag.name,
-                    }))
-                  : []
-              }
-              {...serviceListingForm.getInputProps("tags")}
-            />
+          <MultiSelect
+            disabled={isViewing}
+            label="Tags"
+            placeholder="Select your Tags"
+            data={
+              tags
+                ? tags.map((tag) => ({
+                    value: tag.tagId.toString(),
+                    label: tag.name,
+                  }))
+                : []
+            }
+            {...serviceListingForm.getInputProps("tags")}
+          />
 
-            <FileInput
-              disabled={isViewing}
-              label="Upload Display Images"
-              placeholder={
-                imagePreview.length == 0
-                  ? "No file selected"
-                  : "Upload new images"
-              }
-              accept="image/*"
-              name="images"
-              multiple
-              onChange={(files) => handleFileInputChange(files)}
-              capture={false}
-              key={fileInputKey}
-            />
+          <FileInput
+            disabled={isViewing}
+            label="Upload Display Images"
+            placeholder={
+              imagePreview.length == 0
+                ? "No file selected"
+                : "Upload new images"
+            }
+            accept="image/*"
+            name="images"
+            multiple
+            onChange={(files) => handleFileInputChange(files)}
+            capture={false}
+            key={fileInputKey}
+          />
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-              {imagePreview &&
-                imagePreview.length > 0 &&
-                imagePreview.map((imageUrl, index) => (
-                  <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
-                    <Card style={{ maxWidth: "100%" }}>
-                      {!isViewing && (
-                        <Group position="right">
-                          <CloseButton
-                            size="md"
-                            color="red"
-                            onClick={() => removeImage(index)}
-                          />
-                        </Group>
-                      )}
-                      <Image
-                        src={imageUrl}
-                        alt={`Image Preview ${index}`}
-                        style={{ maxWidth: "100%", display: "block" }}
-                      />
-                    </Card>
-                  </div>
-                ))}
-            </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            {imagePreview &&
+              imagePreview.length > 0 &&
+              imagePreview.map((imageUrl, index) => (
+                <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
+                  <Card style={{ maxWidth: "100%" }}>
+                    {!isViewing && (
+                      <Group position="right">
+                        <CloseButton
+                          size="md"
+                          color="red"
+                          onClick={() => removeImage(index)}
+                        />
+                      </Group>
+                    )}
+                    <Image
+                      src={imageUrl}
+                      alt={`Image Preview ${index}`}
+                      style={{ maxWidth: "100%", display: "block" }}
+                    />
+                  </Card>
+                </div>
+              ))}
+          </div>
 
-            {!isViewing && (
-              <>
-                {/* TODO: link to page with terms and conditions  */}
-                {/* {!isUpdating && (
+          {!isViewing && (
+            <>
+              {/* TODO: link to page with terms and conditions  */}
+              {/* {!isUpdating && (
                   <Checkbox
                     mt="md"
                     label={"I agree to all the terms and conditions."}
@@ -499,43 +495,40 @@ const ServiceListingModal = ({
                     })}
                     />
                   )} */}
-                <Group position="right" mt="sm" mb="sm">
-                  {!isViewing && (
-                    <Button
-                      type="reset"
-                      color="gray"
-                      onClick={() => {
-                        closeAndResetForm();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                  <Button type="submit">
-                    {isUpdating ? "Save" : "Create"}
-                  </Button>
-                </Group>
-              </>
-            )}
-
-            {isViewing && (
-              <>
-                <Group position="right" mt="md" mb="md">
+              <Group position="right">
+                {!isViewing && (
                   <Button
-                    type="button"
+                    type="reset"
+                    color="gray"
                     onClick={() => {
-                      setUpdating(true);
-                      setViewing(false);
+                      closeAndResetForm();
                     }}
                   >
-                    Edit
+                    Cancel
                   </Button>
-                </Group>
-              </>
-            )}
-          </Stack>
-        </form>
-      </Container>
+                )}
+                <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
+              </Group>
+            </>
+          )}
+
+          {isViewing && (
+            <>
+              <Group position="right">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setUpdating(true);
+                    setViewing(false);
+                  }}
+                >
+                  Edit
+                </Button>
+              </Group>
+            </>
+          )}
+        </Stack>
+      </form>
     </Modal>
   );
 };

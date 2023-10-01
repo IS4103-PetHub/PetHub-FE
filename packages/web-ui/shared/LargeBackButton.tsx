@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from "@mantine/core";
-import { IconArrowBack } from "@tabler/icons-react";
+import { IconChevronLeft } from "@tabler/icons-react";
 import React from "react";
 
 interface BackButtonProps extends ButtonProps {
@@ -16,8 +16,9 @@ const CreateButton = ({
   return (
     <Button
       size={customSize ? customSize : "md"}
-      leftIcon={<IconArrowBack size="1.25rem" />}
+      leftIcon={<IconChevronLeft size="1.25rem" />}
       onClick={onClick}
+      {...props}
     >
       {text}
     </Button>

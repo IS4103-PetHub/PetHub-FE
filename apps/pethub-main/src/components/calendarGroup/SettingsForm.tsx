@@ -117,17 +117,17 @@ const SettingsForm = ({
   return (
     <Grid.Col span={12}>
       <Card
-        shadow="md"
+        shadow="sm"
         radius="lg"
         sx={{
           overflow: "visible",
-          border: "1px solid gray",
+          border: "1px solid lightgray",
           borderColor: highlight && theme.colors.red[6],
         }}
       >
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
-            <Text>Schedule setting {index + 1}</Text>
+            <Text weight={600}>Schedule Setting {index + 1}</Text>
             <ActionIcon
               onClick={onRemove}
               style={{ cursor: "pointer" }}

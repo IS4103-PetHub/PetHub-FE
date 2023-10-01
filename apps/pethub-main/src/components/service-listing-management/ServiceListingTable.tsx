@@ -72,7 +72,6 @@ const ServiceListTable = ({
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",
-        autoClose: 5000,
       });
     } catch (error) {
       notifications.show({

@@ -95,14 +95,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       refetchCalendarGroup();
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating Calendar Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Calendar Group", error),
       });
     }
   };
@@ -117,7 +110,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         icon: <IconCheck />,
         message: `Calendar group deleted successfully.`,
       });
-      window.location.href = "/business/calendargroup"; // hotfix, change this in the future
+      window.location.href = "/business/calendar-groups"; // hotfix, change this in the future
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Deleting Calendar Group", error),
@@ -136,14 +129,21 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">
+        <LargeBackButton
+          text="Back"
+          onClick={() => (window.location.href = "/business/calendar-groups")} // Change this in the future, normal route would break the calendar atm
+          customSize="sm"
+          mb="md"
+        />
         <Group position="apart">
           <PageTitle
             title={
               isEditingDisabled
-                ? "Viewing Calendar Group"
-                : "Editing Calendar Group"
+                ? "View Calendar Group"
+                : "Update Calendar Group"
             }
           />
+
           {isEditingDisabled && (
             <Center>
               <LargeEditButton
@@ -162,13 +162,6 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
                 large
               />
               &nbsp;
-              <LargeBackButton
-                text="Back"
-                onClick={() =>
-                  (window.location.href = "/business/calendargroup")
-                } // Change this in the future, normal route would break the calendar atm
-                customSize="sm"
-              />
             </Center>
           )}
         </Group>

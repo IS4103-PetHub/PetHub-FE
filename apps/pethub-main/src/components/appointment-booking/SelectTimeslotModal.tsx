@@ -26,6 +26,7 @@ import {
   formatISOTimeOnly,
   getErrorMessageProps,
 } from "shared-utils";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import { Booking } from "@/types/types";
@@ -273,15 +274,12 @@ const SelectTimeslotModal = ({
       {showConfirmation ? confirmation : selectTimeslotsGrid}
 
       <Group position={showConfirmation ? "apart" : "right"}>
-        <Button
-          size="md"
+        <LargeBackButton
+          text="Back"
           variant="light"
-          leftIcon={<IconChevronLeft size="1.25rem" />}
           display={showConfirmation ? "inline" : "none"}
           onClick={() => setShowConfirmation(false)}
-        >
-          Back
-        </Button>
+        />
         <Group position="right">
           {selectedTimeslot && !showConfirmation ? (
             <Text>

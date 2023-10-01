@@ -112,7 +112,7 @@ export function App({ Component, pageProps }: AppProps) {
                         overlayBlur={10}
                         loaderProps={{
                           size: "md",
-                          color: "pink",
+                          color: "indigo",
                           variant: "bars",
                         }}
                       />

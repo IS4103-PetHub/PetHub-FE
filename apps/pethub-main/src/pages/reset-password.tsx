@@ -13,7 +13,11 @@ import { AxiosError } from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { ResetPasswordPayload, validatePassword } from "shared-utils";
+import {
+  ResetPasswordPayload,
+  getErrorMessageProps,
+  validatePassword,
+} from "shared-utils";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { resetPasswordService } from "@/api/userService";
 import { parseRouterQueryParam } from "@/util";
@@ -45,11 +49,7 @@ export default function ResetPassword() {
       setIsResetSuccessful(true);
     } catch (e: AxiosError | any) {
       notifications.show({
-        message:
-          (e.response && e.response.data && e.response.data.message) ||
-          e.message,
-        color: "red",
-        autoClose: 5000,
+        ...getErrorMessageProps("Error Resetting Password", e),
       });
     }
   };

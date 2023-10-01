@@ -36,8 +36,8 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
         <Group position="apart">
           <PageTitle title="Calendar Group Management" />
           <LargeCreateButton
-            text="Create New Calendar Group"
-            onClick={() => router.push("/business/calendargroup/create")}
+            text="Create Calendar Group"
+            onClick={() => router.push("/business/calendar-groups/create")}
           />
         </Group>
         <MainCalendar

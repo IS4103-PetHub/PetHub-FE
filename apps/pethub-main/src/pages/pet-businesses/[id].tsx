@@ -33,6 +33,7 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
@@ -189,13 +190,11 @@ export default function PetBusinessDetails({
 
   const allServiceListings = (
     <Box mt="xl">
-      <Button
-        leftIcon={<IconChevronLeft size="1.25rem" />}
+      <LargeBackButton
+        text="Back to business profile"
         onClick={() => setShowAllListings(false)}
         mb="xl"
-      >
-        Back to business profile
-      </Button>
+      />
       {serviceListingHeader}
 
       <Group position="apart">
@@ -226,6 +225,7 @@ export default function PetBusinessDetails({
           onChange={setSortStatus}
         />
       </Group>
+
       <SearchBar
         size="md"
         text="Search by service listing title"

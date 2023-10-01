@@ -73,7 +73,7 @@ export default function CreateCalendarGroup({
         icon: <IconCheck />,
         message: `Calendar group created successfully!`,
       });
-      window.location.href = "/business/calendargroup"; // Change this in the future
+      window.location.href = "/business/calendar-groups"; // Change this in the future
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Calendar Group", error),
@@ -92,7 +92,7 @@ export default function CreateCalendarGroup({
           <PageTitle title="Create Calendar Group" />
           <LargeBackButton
             text="Back to Calendar View"
-            onClick={() => router.push("/business/calendargroup")}
+            onClick={() => router.push("/business/calendar-groups")}
           />
         </Group>
 

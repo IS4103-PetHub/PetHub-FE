@@ -181,7 +181,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       </Head>
       <Container fluid>
         <Group position="apart">
-          <PageTitle title="Service Listings Management" />
+          <PageTitle title="Service Listing Management" />
           <LargeCreateButton
             text="Create Service Listing"
             onClick={openCreateServiceModal}

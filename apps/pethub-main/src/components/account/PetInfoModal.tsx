@@ -173,7 +173,6 @@ const PetInfoModal = ({
         notifications.show({
           message: "Pet Successfully Updated",
           color: "green",
-          autoClose: 5000,
         });
       } else {
         const payload: PetPayload = {
@@ -187,7 +186,6 @@ const PetInfoModal = ({
         notifications.show({
           message: "Pet Successfully Created",
           color: "green",
-          autoClose: 5000,
         });
       }
       refetch();

@@ -79,7 +79,7 @@ const TimePeriodForm = ({
               error={errors?.[index]?.vacancies}
             />
           </Box>
-          <Box>
+          <Box sx={{ display: index === 0 ? "none" : "inline" }}>
             <DeleteActionIcon
               onClick={onRemove}
               mt={24}

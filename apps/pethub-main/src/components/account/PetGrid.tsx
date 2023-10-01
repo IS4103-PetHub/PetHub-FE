@@ -76,7 +76,6 @@ const PetGrid = ({ userId }: PetGridProps) => {
       notifications.show({
         message: "Pet Successfully Deleted",
         color: "green",
-        autoClose: 5000,
       });
       if (pets.length === 0) {
         setHasNoFetchedRecords(true);
