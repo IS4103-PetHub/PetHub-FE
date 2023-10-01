@@ -41,7 +41,9 @@ const BookingsModal = ({
     startTime: booking ? formatTime(booking.startTime) : "",
     endTime: booking ? formatTime(booking.endTime) : "",
     description: booking ? booking.serviceListing.description : "",
-    category: booking ? booking.serviceListing.category : "",
+    category: booking
+      ? formatStringToLetterCase(booking.serviceListing.category)
+      : "",
     tags: booking
       ? booking.serviceListing.tags.map((tag) => tag.tagId.toString())
       : [],
