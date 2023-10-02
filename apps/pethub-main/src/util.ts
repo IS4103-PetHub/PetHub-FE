@@ -243,24 +243,12 @@ export function validateCGDescription(description: string) {
 }
 
 // Returns an array of days between two dates inclusive
-function getDaysBetweenDates(startDate: string, endDate: string): string[] {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+function getDaysBetweenDates(inputStartDate, endDate) {
+  const start = new Date(inputStartDate);
   const days = [];
-
-  // to accommodate JS's Date.getDay() function which returns 0 for Sunday as so on
-  const dayOfWeekEnumMapping = [
-    DayOfWeekEnum.Sunday,
-    DayOfWeekEnum.Monday,
-    DayOfWeekEnum.Tuesday,
-    DayOfWeekEnum.Wednesday,
-    DayOfWeekEnum.Thursday,
-    DayOfWeekEnum.Friday,
-    DayOfWeekEnum.Saturday,
-  ];
-  while (start <= end) {
-    days.push(dayOfWeekEnumMapping[start.getDay()]);
-    start.setDate(start.getDate() + 1);
+  while (start <= endDate) {
+    days.push(dayjs(start).format("YYYY-MM-DD"));
+    start.setUTCDate(start.getUTCDate() + 1);
   }
   return days;
 }
@@ -271,10 +259,31 @@ function getDaysBetweenDates(startDate: string, endDate: string): string[] {
 */
 export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
   function getEffectiveDays(recurrence: Recurrence, days: string[]) {
+    const allDays = getDaysBetweenDates(
+      recurrence.startDate,
+      recurrence.endDate,
+    );
     if (recurrence.pattern === RecurrencePatternEnum.Daily) {
-      return getDaysBetweenDates(recurrence.startDate, recurrence.endDate);
+      return allDays;
     } else {
-      return days;
+      const dayOfWeekEnumMapping = {
+        // dayjs treats 0 as sunday
+        [DayOfWeekEnum.Sunday]: 0,
+        [DayOfWeekEnum.Monday]: 1,
+        [DayOfWeekEnum.Tuesday]: 2,
+        [DayOfWeekEnum.Wednesday]: 3,
+        [DayOfWeekEnum.Thursday]: 4,
+        [DayOfWeekEnum.Friday]: 5,
+        [DayOfWeekEnum.Saturday]: 6,
+      };
+      return allDays.filter((date) => {
+        const dayOfWeek = new Date(date).getDay();
+        return days.includes(
+          Object.keys(dayOfWeekEnumMapping).find(
+            (key) => dayOfWeekEnumMapping[key] === dayOfWeek,
+          ) || "",
+        );
+      });
     }
   }
 
@@ -282,17 +291,24 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
     settingAIndex: number,
     settingBIndex: number,
     pattern: RecurrencePatternEnum,
+    overlappingDatesArray: string[],
   ) {
     const headErrorMessage = `There are conflicts with the schedule settings for schedule: ${
       settingAIndex + 1
     } and schedule: ${settingBIndex + 1}. `;
-    const tailErrorMessage = "You may create new schedules to resolve this.";
+
+    const firstThreeDates = overlappingDatesArray.slice(0, 3).join(", ");
+    const tailErrorMessage =
+      overlappingDatesArray.length > 3
+        ? `${firstThreeDates}, ...`
+        : firstThreeDates;
+
     return pattern === RecurrencePatternEnum.Weekly
       ? headErrorMessage +
-          "There is a date overlap between these schedules with recurrence pattern: 'Weekly', please ensure that there is no overlap in the recurring days selected. " +
+          "There is a date overlap between these schedules with recurrence pattern: 'Weekly', the overlapping day(s) are on: " +
           tailErrorMessage
       : headErrorMessage +
-          "Please ensure that there is no date overlap between the schedules of these settings with recurrence pattern: 'Daily'. " +
+          "Please ensure that there is no date overlap between the schedules of these settings with recurrence pattern: 'Daily'. The overlapping day(s) are on: " +
           tailErrorMessage;
   }
 
@@ -329,6 +345,7 @@ export function checkCGForConflicts(scheduleSettings: ScheduleSettings[]) {
                 indexA,
                 indexB,
                 settingA.recurrence.pattern,
+                overlappingDays,
               ),
               indexA: indexA, // Used to highlight the settings card red
               indexB: indexB,
