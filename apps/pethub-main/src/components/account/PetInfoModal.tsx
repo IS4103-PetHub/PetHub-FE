@@ -315,13 +315,13 @@ const PetInfoModal = ({
                       }}
                     >
                       <a
-                        href={URL.createObjectURL(file)}
-                        download={file.name}
+                        href={file ? URL.createObjectURL(file) : ""}
+                        download={file ? file.name : ""}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ flex: "1", textDecoration: "none" }}
                       >
-                        {file.name}
+                        {file ? file.name : ""}
                       </a>{" "}
                       {!isViewing && (
                         <Button

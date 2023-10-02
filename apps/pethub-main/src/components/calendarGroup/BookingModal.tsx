@@ -34,7 +34,7 @@ const BookingModal = ({
   tags,
 }: BookingModalProps) => {
   const theme = useMantineTheme();
-  const defaultValues = ["Booking Details"];
+  const defaultValues = ["Customer Details"];
 
   const formDefaultValues = {
     // Booking details
@@ -108,6 +108,65 @@ const BookingModal = ({
           size="80vh"
         >
           <Accordion variant="separated" multiple defaultValue={defaultValues}>
+            {/* Customer related details, name, contact nuber, etc */}
+            <Accordion.Item value="Customer Details">
+              <Accordion.Control>
+                <Group>
+                  <IconUserSquare color={theme.colors.indigo[5]} />
+                  <Text size="lg">Customer details</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <Grid>
+                  <Grid.Col span={12}>
+                    <TextInput
+                      label="Name"
+                      disabled
+                      {...form.getInputProps("petOwnerName")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Contact"
+                      disabled
+                      {...form.getInputProps("petOwnerContact")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <TextInput
+                      label="Email"
+                      disabled
+                      {...form.getInputProps("petOwnerEmail")}
+                    />
+                  </Grid.Col>
+                  {booking.pet && (
+                    <>
+                      <Grid.Col span={12}>
+                        <TextInput
+                          label="Pet Name"
+                          disabled
+                          {...form.getInputProps("petName")}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <TextInput
+                          label="Pet Type"
+                          disabled
+                          {...form.getInputProps("petType")}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <TextInput
+                          label="Pet Gender"
+                          disabled
+                          {...form.getInputProps("petGender")}
+                        />
+                      </Grid.Col>
+                    </>
+                  )}
+                </Grid>
+              </Accordion.Panel>
+            </Accordion.Item>
             <Accordion.Item value="Booking Details">
               <Accordion.Control>
                 <Group>
@@ -194,66 +253,6 @@ const BookingModal = ({
                       {...form.getInputProps("tags")}
                     />
                   </Grid.Col>
-                </Grid>
-              </Accordion.Panel>
-            </Accordion.Item>
-
-            {/* Customer related details, name, contact nuber, etc */}
-            <Accordion.Item value="Customer Details">
-              <Accordion.Control>
-                <Group>
-                  <IconUserSquare color={theme.colors.indigo[5]} />
-                  <Text size="lg">Customer details</Text>
-                </Group>
-              </Accordion.Control>
-              <Accordion.Panel>
-                <Grid>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Name"
-                      disabled
-                      {...form.getInputProps("petOwnerName")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TextInput
-                      label="Contact"
-                      disabled
-                      {...form.getInputProps("petOwnerContact")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TextInput
-                      label="Emai"
-                      disabled
-                      {...form.getInputProps("petOwnerEmail")}
-                    />
-                  </Grid.Col>
-                  {booking.pet && (
-                    <>
-                      <Grid.Col span={12}>
-                        <TextInput
-                          label="Pet Name"
-                          disabled
-                          {...form.getInputProps("petName")}
-                        />
-                      </Grid.Col>
-                      <Grid.Col span={6}>
-                        <TextInput
-                          label="Pet Type"
-                          disabled
-                          {...form.getInputProps("petType")}
-                        />
-                      </Grid.Col>
-                      <Grid.Col span={6}>
-                        <TextInput
-                          label="Pet Gender"
-                          disabled
-                          {...form.getInputProps("petGender")}
-                        />
-                      </Grid.Col>
-                    </>
-                  )}
                 </Grid>
               </Accordion.Panel>
             </Accordion.Item>
