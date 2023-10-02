@@ -6,7 +6,6 @@ import {
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
   ServiceListing,
-  Tag,
   GenderEnum,
 } from "shared-utils";
 import { PetTypeEnum } from "./constants";
@@ -66,6 +65,7 @@ export interface PetOwner extends User {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
+  favouriteListings?: ServiceListing[];
 }
 
 export interface BusinessApplicationApprover {
@@ -215,4 +215,9 @@ export interface Booking {
   // not yet implemented
   invoiceId?: number;
   transactionId?: number;
+}
+
+export interface AddRemoveFavouriteServiceListingPayload {
+  serviceListingId: number;
+  userId: number;
 }

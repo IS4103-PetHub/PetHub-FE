@@ -102,10 +102,15 @@ const links: {
     label: "Help",
     links: undefined,
   },
+
   {
     link: "/customer/account",
     label: "My account",
     links: [
+      {
+        link: "/customer/favourites?category=",
+        label: "My favourites",
+      },
       {
         link: "/customer/appointments",
         label: "My appointments",

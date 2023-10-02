@@ -19,7 +19,7 @@ export interface Tag {
   tagId: number;
   name: string;
   dateCreated: string;
-  lastUpdated: string;
+  lastUpdated?: string;
 }
 
 export interface Address {
