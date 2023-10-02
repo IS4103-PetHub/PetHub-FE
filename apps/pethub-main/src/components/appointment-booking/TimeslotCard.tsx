@@ -118,10 +118,10 @@ const TimeslotCard = ({
       {serviceListing.addresses?.length > 0 ? (
         <Text color="dimmed" size="sm">
           {serviceListing.addresses.map((address) => (
-            <>
+            <div key={address.addressId} style={{ display: "inline" }}>
               {serviceListing.addresses.indexOf(address) > 0 ? ", " : ""}
               {address.addressName}
-            </>
+            </div>
           ))}
         </Text>
       ) : null}
