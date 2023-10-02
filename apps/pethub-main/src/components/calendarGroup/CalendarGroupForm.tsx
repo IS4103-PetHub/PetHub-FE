@@ -95,7 +95,7 @@ const CalendarGroupForm = ({
     if (check) {
       setSettingsError([check.indexA, check.indexB]);
       notifications.show({
-        title: "Failed to Create: Schedule Conflicts",
+        title: "Error: Schedule Conflicts",
         color: "red",
         icon: <IconX />,
         message: check.errorMessage,
