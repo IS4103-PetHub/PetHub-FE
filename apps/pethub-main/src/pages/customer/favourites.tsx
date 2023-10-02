@@ -27,7 +27,7 @@ import {
 } from "@/hooks/pet-owner";
 import { serviceListingSortOptions } from "@/types/constants";
 import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
-import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
+import { searchServiceListingsForCustomer, sortRecords } from "@/util";
 
 interface FavouritesProps {
   userId: number;
@@ -57,7 +57,9 @@ export default function Favourites({ userId }: FavouritesProps) {
    * Effect Hooks
    */
   useEffect(() => {
-    setRecords(sortServiceListings(serviceListings, sortStatus));
+    setRecords(
+      sortRecords(serviceListingSortOptions, serviceListings, sortStatus),
+    );
   }, [serviceListings, sortStatus]);
 
   useEffect(() => {
