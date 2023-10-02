@@ -29,7 +29,6 @@ export const useGetAvailableTimeSlotsByCGId = (
 export const useCreateCalendarGroup = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CalendarGroup) => {
-      console.log("sent", payload);
       const { petBusinessId, ...payloadWithoutId } = payload;
       return (
         await api.post(
