@@ -133,7 +133,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
           text="Back to Calendar View"
           onClick={() => (window.location.href = "/business/calendar-groups")} // Change this in the future, normal route would break the calendar atm
           size="sm"
-          mb="sm"
+          mb="md"
         />
         <Group position="apart">
           <PageTitle

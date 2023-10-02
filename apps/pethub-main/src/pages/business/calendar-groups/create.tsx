@@ -92,11 +92,11 @@ export default function CreateCalendarGroup({
           size="sm"
           text="Back to Calendar View"
           onClick={() => router.push("/business/calendar-groups")}
-          mb="sm"
+          mb="md"
         />
         <PageTitle title="Create Calendar Group" />
 
-        <Group mt="xs">
+        <Group>
           <CalendarGroupForm
             form={form}
             userId={userId}

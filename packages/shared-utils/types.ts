@@ -79,7 +79,7 @@ export interface ServiceListing {
   // leave as any because the response varies from BE
   petBusiness?: any;
   // appointment booking
-  CalendarGroup: CalendarGroup;
+  CalendarGroup?: CalendarGroup;
   calendarGroupId?: number;
   duration?: number;
 }

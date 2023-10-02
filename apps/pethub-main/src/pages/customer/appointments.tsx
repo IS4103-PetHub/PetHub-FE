@@ -96,8 +96,6 @@ export default function Appointments({
     setSegmentedControlValue(value);
   }
 
-  const handleReschedule = () => {};
-
   const appointmentCards = records.map((booking) => (
     <TimeslotCard
       key={booking.bookingId}
@@ -135,7 +133,7 @@ export default function Appointments({
             <div style={styles}>
               <SadDimmedMessage
                 title="No bookings found"
-                subtitle="We cannot find any bookings for the selected time period."
+                subtitle="We cannot find any appointment bookings for the selected time period."
               />
             </div>
           )}
@@ -155,7 +153,7 @@ export default function Appointments({
         <title>My Appointments - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50}>
+      <Container mt={50} mb={50}>
         <PageTitle title="My appointments" mb="lg" />
 
         <Group position="apart" align="flex-end">
