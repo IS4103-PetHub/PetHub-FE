@@ -7,16 +7,17 @@ import {
   Text,
   Stack,
   Divider,
+  List,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
+import { IconX } from "@tabler/icons-react";
 import React, { useState } from "react";
+import {
+  CalendarGroup,
+  ScheduleSettings,
+  RecurrencePatternEnum,
+} from "shared-utils";
 import CreateButton from "web-ui/shared/LargeCreateButton";
-import { useCreateCalendarGroup } from "@/hooks/calendar-group";
-import { DayOfWeekEnum, RecurrencePatternEnum } from "@/types/constants";
-import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import { checkCGForConflicts, sanitizeCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
 
@@ -45,7 +46,7 @@ const CalendarGroupForm = ({
     "End dates must not be more than 3 months from the current date",
     "For schedules with conflicting start and end dates with the recurrence pattern of 'Weekly', ensure that the recurring days selected do not overlap.",
     "Schedules with the recurrence pattern of 'Daily' cannot have overlapping start and end dates.",
-    "Schedules with the recurrence pattern of 'Daily' will override schedules with the recurrence pattern of 'Weekly' if they have conflicting start and end dates.",
+    "Schedules with the recurrence pattern of 'Daily' will have it's time periods override schedules with the recurrence pattern of 'Weekly' if they have conflicting start and end dates.",
     "Time period example: If you have 3 groomers free for a 3 hour period, create a single time period instead of multiple ones. The duration specified in the service listing will determine the booking time slots.",
   ];
 
@@ -94,7 +95,7 @@ const CalendarGroupForm = ({
     if (check) {
       setSettingsError([check.indexA, check.indexB]);
       notifications.show({
-        title: "Failed to create: schedule conflicts",
+        title: "Error: Schedule Conflicts",
         color: "red",
         icon: <IconX />,
         message: check.errorMessage,
@@ -131,7 +132,7 @@ const CalendarGroupForm = ({
             label="Description"
             autosize
             minRows={3}
-            maxRows={3}
+            maxRows={5}
             disabled={isEditingDisabled}
             {...form.getInputProps("description")}
           />
@@ -141,15 +142,19 @@ const CalendarGroupForm = ({
             <Text size="xl" weight={600} mt="lg">
               Calendar Schedules
             </Text>
-            <Text color="dark" mt={-10}>
+            <Text color="dark">
               Create schedules with the relavant schedule settings and desired
-              time periods here
+              time periods here.
             </Text>
-            {rulesToDisplay.map((rule, index) => (
-              <Text color="dimmed" mt={-10} fz="sm" key={index}>
-                {index + 1}. {rule}
-              </Text>
-            ))}
+            <List type="ordered" size="sm" spacing="xs">
+              {rulesToDisplay.map((rule, index) => (
+                <List.Item key={index}>
+                  <Text color="dimmed" fz="sm">
+                    {rule}
+                  </Text>
+                </List.Item>
+              ))}
+            </List>
             <Divider mb="md" />
           </Stack>
         </Grid.Col>
@@ -189,7 +194,7 @@ const CalendarGroupForm = ({
             <>
               <Button
                 type="reset"
-                color="red"
+                color="gray"
                 onClick={() => {
                   cancelEdit();
                   toggleEdit();
@@ -197,7 +202,7 @@ const CalendarGroupForm = ({
               >
                 Cancel
               </Button>
-              <Button type="submit">Update</Button>
+              <Button type="submit">Save</Button>
             </>
           )
         ) : (

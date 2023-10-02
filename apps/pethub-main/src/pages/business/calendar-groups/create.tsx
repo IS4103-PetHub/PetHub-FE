@@ -1,19 +1,21 @@
 import { Container, Group } from "@mantine/core";
-import { isNotEmpty, useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
+import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React from "react";
+import {
+  CalendarGroup,
+  RecurrencePatternEnum,
+  getErrorMessageProps,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import { useCreateCalendarGroup } from "@/hooks/calendar-group";
-import { RecurrencePatternEnum } from "@/types/constants";
-import { CalendarGroup, ScheduleSettings, TimePeriod } from "@/types/types";
 import {
   validateCGDescription,
   validateCGName,
@@ -66,22 +68,15 @@ export default function CreateCalendarGroup({
     try {
       await createCalendarGroupMutation.mutateAsync(payload);
       notifications.show({
-        title: "Calendar group created",
+        title: "Calendar Group Created",
         color: "green",
         icon: <IconCheck />,
         message: `Calendar group created successfully!`,
       });
-      window.location.href = "/business/calendargroup"; // Change this in the future
+      window.location.href = "/business/calendar-groups"; // Change this in the future
     } catch (error: any) {
       notifications.show({
-        title: "Error creating calendar group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Calendar Group", error),
       });
     }
   };
@@ -93,15 +88,15 @@ export default function CreateCalendarGroup({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">
-        <Group position="apart">
-          <PageTitle title="Create Calendar Group" />
-          <LargeBackButton
-            text="Back to Calendar View"
-            onClick={() => router.push("/business/calendargroup")}
-          />
-        </Group>
+        <LargeBackButton
+          size="sm"
+          text="Back to Calendar View"
+          onClick={() => router.push("/business/calendar-groups")}
+          mb="md"
+        />
+        <PageTitle title="Create Calendar Group" />
 
-        <Group mt="xs">
+        <Group>
           <CalendarGroupForm
             form={form}
             userId={userId}

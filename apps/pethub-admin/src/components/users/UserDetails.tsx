@@ -17,7 +17,11 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
-import { AccountTypeEnum, formatStringToLetterCase } from "shared-utils";
+import {
+  AccountTypeEnum,
+  formatStringToLetterCase,
+  getErrorMessageProps,
+} from "shared-utils";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
   useDeleteInternalUser,
@@ -330,14 +334,7 @@ const DeleteAccountModal = ({
       } catch (error: any) {
         onUserDeleted(false);
         notifications.show({
-          title: "Error Deleting Account",
-          color: "red",
-          icon: <IconX />,
-          message:
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message,
+          ...getErrorMessageProps("Error Deleting Account", error),
         });
       }
     } else {
@@ -346,7 +343,7 @@ const DeleteAccountModal = ({
         title: "Error Deleting Account",
         color: "red",
         icon: <IconX />,
-        message: "You are trying to delete yourself!",
+        message: "You cannot delete your own account!",
       });
     }
   };
@@ -420,10 +417,7 @@ const UpdateInternalUserModal = ({
     } catch (error: any) {
       onUserUpdated(false);
       notifications.show({
-        title: "Error Updating Account",
-        color: "red",
-        icon: <IconX />,
-        message: error.message,
+        ...getErrorMessageProps("Error Updating Account", error),
       });
     }
   };

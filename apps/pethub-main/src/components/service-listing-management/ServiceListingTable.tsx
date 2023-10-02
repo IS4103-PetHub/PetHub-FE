@@ -1,18 +1,23 @@
 import { Group, Badge } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
-import { Address, ServiceListing, Tag, getMinTableHeight } from "shared-utils";
+import {
+  Address,
+  CalendarGroup,
+  ServiceListing,
+  Tag,
+  getErrorMessageProps,
+  getMinTableHeight,
+} from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import { TABLE_PAGE_SIZE } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { CalendarGroup } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
@@ -62,24 +67,15 @@ const ServiceListTable = ({
    */
   const handleDeleteService = async (serviceListingId: number) => {
     try {
-      const result =
-        await deleteServiceListingMutation.mutateAsync(serviceListingId);
+      await deleteServiceListingMutation.mutateAsync(serviceListingId);
       refetch();
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",
-        autoClose: 5000,
       });
     } catch (error) {
       notifications.show({
-        title: "Error Deleting Service Listing",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Service Listing", error),
       });
     }
   };

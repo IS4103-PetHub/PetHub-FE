@@ -14,13 +14,13 @@ import {
   IconClipboardText,
   IconLockOpen,
   IconUsersGroup,
-  IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
+import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import api from "@/api/axiosConfig";
@@ -145,14 +145,7 @@ export default function UserGroupDetails({
       }
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating User Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating User Group", error),
       });
     }
   };
@@ -172,14 +165,7 @@ export default function UserGroupDetails({
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Deleting User Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting User Group", error),
       });
     }
   };

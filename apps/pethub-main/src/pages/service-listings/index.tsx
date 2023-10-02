@@ -28,7 +28,7 @@ import ServiceListingsSideBar from "@/components/service-listing-discovery/Servi
 import { useGetAllServiceListingsWithQueryParams } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
 import { serviceListingSortOptions } from "@/types/constants";
-import { searchServiceListingsForCustomer, sortServiceListings } from "@/util";
+import { searchServiceListingsForCustomer, sortRecords } from "@/util";
 
 export default function ServiceListings() {
   const router = useRouter();
@@ -54,7 +54,9 @@ export default function ServiceListings() {
    */
 
   useEffect(() => {
-    setRecords(sortServiceListings(serviceListings, sortStatus));
+    setRecords(
+      sortRecords(serviceListingSortOptions, serviceListings, sortStatus),
+    );
   }, [serviceListings, sortStatus]);
 
   useEffect(() => {
@@ -100,8 +102,7 @@ export default function ServiceListings() {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no records fetched
       return (

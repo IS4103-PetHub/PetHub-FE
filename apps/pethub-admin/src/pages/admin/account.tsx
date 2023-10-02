@@ -11,7 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
-import { formatISODateString } from "shared-utils";
+import { formatISODateLong } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
@@ -59,7 +59,7 @@ export default function MyAccount({ userId, permissions }: MyAccountProps) {
           />
         </Group>
         <Text size="sm" color="dimmed">
-          Member since {formatISODateString(internalUser?.dateCreated)}
+          Member since {formatISODateLong(internalUser?.dateCreated)}
         </Text>
         <Accordion
           variant="separated"
@@ -107,10 +107,7 @@ export default function MyAccount({ userId, permissions }: MyAccountProps) {
               </Group>
             </Accordion.Control>
             <Accordion.Panel p="md">
-              <ChangePasswordForm
-                queryClient={queryClient}
-                email={internalUser?.email}
-              />
+              <ChangePasswordForm email={internalUser?.email} />
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

@@ -114,8 +114,7 @@ export default function InternalUserTable({
   const renderContent = () => {
     if (internalUsers.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no records fetched
       return (

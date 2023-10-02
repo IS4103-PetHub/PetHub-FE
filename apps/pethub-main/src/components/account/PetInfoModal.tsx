@@ -12,12 +12,15 @@ import {
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCalendar, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { IconCalendar } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import {
+  GenderEnum,
+  formatStringToLetterCase,
+  getErrorMessageProps,
+} from "shared-utils";
 import { useCreatePet, useUpdatePet } from "@/hooks/pets";
-import { GenderEnum, PetTypeEnum } from "@/types/constants";
+import { PetTypeEnum } from "@/types/constants";
 import { Pet, PetPayload } from "@/types/types";
 
 interface PetInfoModalProps {
@@ -108,7 +111,6 @@ const PetInfoModal = ({
       },
       petType: isNotEmpty("Pet Type required."),
       gender: isNotEmpty("Gender required."),
-      dateOfBirth: isNotEmpty("Date of Birth required."),
     },
   });
 
@@ -153,9 +155,8 @@ const PetInfoModal = ({
    * Service Handlers
    */
 
-  const queryClient = useQueryClient();
   const createPetMutation = useCreatePet();
-  const updatePetMutation = useUpdatePet(queryClient);
+  const updatePetMutation = useUpdatePet();
   const handleAction = async (values) => {
     try {
       if (isUpdating) {
@@ -167,11 +168,10 @@ const PetInfoModal = ({
           files: values.healthAttachment,
         };
         // update pet
-        const result = await updatePetMutation.mutateAsync(payload);
+        await updatePetMutation.mutateAsync(payload);
         notifications.show({
           message: "Pet Successfully Updated",
           color: "green",
-          autoClose: 5000,
         });
       } else {
         const payload: PetPayload = {
@@ -181,11 +181,10 @@ const PetInfoModal = ({
           files: values.healthAttachment,
         };
         // create pet
-        const result = await createPetMutation.mutateAsync(payload);
+        await createPetMutation.mutateAsync(payload);
         notifications.show({
           message: "Pet Successfully Created",
           color: "green",
-          autoClose: 5000,
         });
       }
       refetch();
@@ -193,14 +192,10 @@ const PetInfoModal = ({
       closeAndResetForm();
     } catch (error) {
       notifications.show({
-        title: isUpdating ? "Error Updating Pet" : "Error Creating Pet",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps(
+          isUpdating ? "Error Updating Pet" : "Error Creating Pet",
+          error,
+        ),
       });
     }
   };
@@ -245,10 +240,9 @@ const PetInfoModal = ({
         title="Pet Profile"
         centered
         size="lg"
-        padding="xl"
       >
         <form onSubmit={form.onSubmit((values) => handleAction(values))}>
-          <Stack>
+          <Stack m="xs" mt={0}>
             <TextInput
               withAsterisk
               disabled={isViewing}
@@ -260,7 +254,7 @@ const PetInfoModal = ({
               withAsterisk
               disabled={isViewing}
               label="Type"
-              placeholder="Pick one"
+              placeholder="Select pet type"
               data={petTypeOptions}
               {...form.getInputProps("petType")}
             />
@@ -268,13 +262,14 @@ const PetInfoModal = ({
               withAsterisk
               disabled={isViewing}
               label="Gender"
-              placeholder="Pick one"
+              placeholder="Select pet gender"
               data={genderOptions}
               {...form.getInputProps("gender")}
             />
             <DateInput
               disabled={isViewing}
-              label="Date of birth"
+              label="Date of Birth"
+              clearable
               placeholder="Date of birth"
               valueFormat="DD/MM/YYYY"
               maxDate={new Date()}
@@ -290,8 +285,8 @@ const PetInfoModal = ({
             />
             <TextInput
               disabled={isViewing}
-              label="Microchip number"
-              placeholder="Pet Microchip number"
+              label="Microchip Number"
+              placeholder="Pet microchip number"
               {...form.getInputProps("microchipNumber")}
             />
             <FileInput

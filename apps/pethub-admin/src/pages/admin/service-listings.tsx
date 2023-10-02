@@ -1,7 +1,7 @@
 import { Container, Group, Transition, MultiSelect } from "@mantine/core";
 import { useToggle, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
@@ -11,6 +11,7 @@ import {
   EMPTY_STATE_DELAY_MS,
   ServiceListing,
   TABLE_PAGE_SIZE,
+  getErrorMessageProps,
   searchServiceListingsForPB,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -159,22 +160,15 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     try {
       await deleteServiceListingMutation.mutateAsync(id);
       notifications.show({
-        title: "ServiceListing Deleted",
+        title: "Service Listing Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `ServiceListing ID: ${id} deleted successfully.`,
+        message: `Service Listing ID: ${id} deleted successfully.`,
       });
       // refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Deleting ServiceListing",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Service Listing", error),
       });
     }
   };
@@ -190,7 +184,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       return (
         <Transition
@@ -230,7 +224,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
 
   return (
     <Container fluid>
-      <PageTitle title="Service Listings Management" />
+      <PageTitle title="Service Listing Management" />
       {renderContent()}
     </Container>
   );

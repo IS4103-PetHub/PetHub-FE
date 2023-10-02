@@ -35,3 +35,23 @@ export const enum BusinessApplicationStatusEnum {
   Rejected = "REJECTED",
   Approved = "APPROVED",
 }
+
+export enum GenderEnum {
+  Male = "MALE",
+  Female = "FEMALE",
+}
+
+export enum DayOfWeekEnum {
+  Monday = "MONDAY",
+  Tuesday = "TUESDAY",
+  Wednesday = "WEDNESDAY",
+  Thursday = "THURSDAY",
+  Friday = "FRIDAY",
+  Saturday = "SATURDAY",
+  Sunday = "SUNDAY",
+}
+
+export enum RecurrencePatternEnum {
+  Daily = "DAILY",
+  Weekly = "WEEKLY",
+}

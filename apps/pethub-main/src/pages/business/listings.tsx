@@ -39,7 +39,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     refetch: refetchServiceListings,
   } = useGetServiceListingByPetBusinessId(userId);
 
-  const { data: calendarGroups } = useGetCalendarGroupByPBId(userId);
+  const { data: calendarGroups = [] } = useGetCalendarGroupByPBId(userId);
 
   /*
    * Component State
@@ -126,7 +126,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       return (
         <Transition
@@ -181,7 +181,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       </Head>
       <Container fluid>
         <Group position="apart">
-          <PageTitle title="Service Listings Management" />
+          <PageTitle title="Service Listing Management" />
           <LargeCreateButton
             text="Create Service Listing"
             onClick={openCreateServiceModal}
@@ -211,7 +211,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
