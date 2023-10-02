@@ -18,7 +18,6 @@ import {
 import { useToggle } from "@mantine/hooks";
 import {
   IconBuildingStore,
-  IconChevronLeft,
   IconClick,
   IconMail,
   IconPhone,

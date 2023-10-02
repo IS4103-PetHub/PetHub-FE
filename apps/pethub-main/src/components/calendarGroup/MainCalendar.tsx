@@ -25,7 +25,7 @@ import React, {
 } from "react";
 import LargeViewButton from "web-ui/shared/LargeViewButton";
 import { useGetBookingsByPetBusiness } from "@/hooks/booking";
-import BookingsModal from "./BookingsModal";
+import BookingModal from "./BookingModal";
 
 const TuiCalendar = dynamic(() => import("./CalendarPage"), { ssr: false });
 const CalendarWithForwardedRef = forwardRef((props, ref) => (
@@ -349,7 +349,7 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
         onSelectDateTime={onClickSchedule}
       />
 
-      <BookingsModal
+      <BookingModal
         booking={selectedBooking}
         onClose={closeView}
         opened={isBookingModalOpen}

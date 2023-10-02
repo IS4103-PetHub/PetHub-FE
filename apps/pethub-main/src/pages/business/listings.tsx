@@ -39,7 +39,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     refetch: refetchServiceListings,
   } = useGetServiceListingByPetBusinessId(userId);
 
-  const { data: calendarGroups } = useGetCalendarGroupByPBId(userId);
+  const { data: calendarGroups = [] } = useGetCalendarGroupByPBId(userId);
 
   /*
    * Component State

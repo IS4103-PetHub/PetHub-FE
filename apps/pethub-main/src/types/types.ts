@@ -155,42 +155,6 @@ export interface tuiCalendar {
 }
 
 /*
- * Booking
- */
-
-export interface BookingResponse {
-  id: number;
-  invoiceId: number;
-  transactionId: number;
-  petOwnerId: number;
-  dateCreated: string;
-  lastUpdated: string;
-  startTime: string;
-  endTime: string;
-  serviceListing: ServiceListingBooking;
-  timeSlot: Timeslot;
-  petOwner: PetOwner;
-  petId: number;
-  pet: Pet;
-}
-
-export interface ServiceListingBooking {
-  id: number;
-  title: string;
-  description: string;
-  basePrice: number;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  dateCreated: string;
-  lastUpdated: string;
-  category: ServiceCategoryEnum;
-  tags: Tag[];
-  addresses: Address[];
-  petBusinessId: number;
-  calendarGroupId: number;
-}
-
-/*
  * Pet
  */
 
@@ -236,8 +200,6 @@ export interface Timeslot {
 
 export interface Booking {
   bookingId: number;
-  invoiceId?: number;
-  transactionId?: number;
   petOwnerId: number;
   dateCreated: string;
   lastUpdated?: string;
@@ -246,4 +208,11 @@ export interface Booking {
   timeSlotId: number;
   serviceListingId: number;
   serviceListing: ServiceListing;
+  // pet owner and pet details (optional)
+  petOwner?: PetOwner;
+  petId?: number;
+  pet?: Pet;
+  // not yet implemented
+  invoiceId?: number;
+  transactionId?: number;
 }

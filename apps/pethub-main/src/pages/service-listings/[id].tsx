@@ -30,10 +30,12 @@ import ServiceListingTags from "@/components/service-listing-discovery/ServiceLi
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {
+  userId: number;
   serviceListing: ServiceListing;
 }
 
 export default function ServiceListingDetails({
+  userId,
   serviceListing,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
@@ -169,6 +171,7 @@ export default function ServiceListingDetails({
               </Button>
 
               <SelectTimeslotModal
+                petOwnerId={userId}
                 serviceListing={serviceListing}
                 opened={opened}
                 onClose={close}
@@ -184,5 +187,10 @@ export default function ServiceListingDetails({
 export async function getServerSideProps(context) {
   const id = context.params.id;
   const serviceListing = await (await api.get(`/service-listings/${id}`)).data;
-  return { props: { serviceListing } };
+
+  const session = await getSession(context);
+  if (!session) return { props: { serviceListing } };
+  const userId = session.user["userId"];
+
+  return { props: { userId, serviceListing } };
 }

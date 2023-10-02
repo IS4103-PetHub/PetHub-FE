@@ -9,15 +9,16 @@ import {
   Group,
   Loader,
   Modal,
+  Select,
   Text,
 } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconChevronLeft } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { getSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ServiceListing,
   convertMinsToDurationString,
@@ -29,6 +30,7 @@ import {
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
 
@@ -36,6 +38,7 @@ const CALENDAR_SPAN = 4;
 const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 
 interface SelectTimeslotModalProps {
+  petOwnerId: number;
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
@@ -46,6 +49,7 @@ interface SelectTimeslotModalProps {
 }
 
 const SelectTimeslotModal = ({
+  petOwnerId,
   serviceListing,
   opened,
   onClose,
@@ -60,6 +64,9 @@ const SelectTimeslotModal = ({
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTimeslot, setSelectedTimeslot] = useState<string>();
   const [showConfirmation, setShowConfirmation] = useToggle();
+  const [selectedPetId, setSelectedPetId] = useState<string>(
+    booking ? booking.petId?.toString() : "",
+  );
 
   /* 
   service listing does not belong to calendar group, or does not have a set duration
@@ -76,7 +83,7 @@ const SelectTimeslotModal = ({
       serviceListing.duration,
     );
 
-  useEffect(() => console.log(availTimeslots), [availTimeslots]);
+  const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
 
   const createBookingMutation = useCreateBooking();
   const updateBookingMutation = useUpdateBooking();
@@ -111,6 +118,10 @@ const SelectTimeslotModal = ({
           startTime,
           endTime,
         };
+        // append petId if there is a pet selected
+        if (selectedPetId) {
+          payload = { ...payload, petId: parseInt(selectedPetId) };
+        }
         await createBookingMutation.mutateAsync(payload);
       }
       notifications.show({
@@ -248,11 +259,31 @@ const SelectTimeslotModal = ({
 
   const confirmation = (
     <>
-      <Text mb="lg">Please check and confirm your selected timeslot.</Text>
+      <Text mb="lg">
+        {isUpdating
+          ? "Please confirm your new timeslot."
+          : "Please confirm your selected timeslot and select a pet (optional)."}
+      </Text>
       <TimeslotCard
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
+      />
+      <Select
+        disabled={isUpdating}
+        label="Pet"
+        maxDropdownHeight={200}
+        placeholder="Select a pet"
+        dropdownPosition="bottom"
+        withinPortal
+        clearable
+        mb="xl"
+        data={...pets.map((pet) => ({
+          value: pet.petId.toString(),
+          label: pet.petName,
+        }))}
+        value={selectedPetId}
+        onChange={setSelectedPetId}
       />
     </>
   );

@@ -99,6 +99,7 @@ const TimeslotCard = ({
             </Link>
           )}
         </Box>
+
         {disabled || isPastAppointment ? null : (
           <>
             <Button onClick={open}>Reschedule</Button>
@@ -109,11 +110,27 @@ const TimeslotCard = ({
               isUpdating
               booking={booking}
               onUpdateBooking={onUpdateBooking}
+              petOwnerId={booking.petOwnerId}
             />
           </>
         )}
       </Group>
+      {serviceListing.addresses?.length > 0 ? (
+        <Text color="dimmed" size="sm">
+          {serviceListing.addresses.map((address) => (
+            <>
+              {serviceListing.addresses.indexOf(address) > 0 ? ", " : ""}
+              {address.addressName}
+            </>
+          ))}
+        </Text>
+      ) : null}
       <Divider mt="xs" mb="xs" />
+      {!disabled && booking && booking.pet ? (
+        <Text color={appointmentTextColor}>
+          <strong>Pet: </strong> {booking.pet?.petName}
+        </Text>
+      ) : null}
       <Text color={appointmentTextColor}>
         <strong>Duration: </strong>
         {convertMinsToDurationString(serviceListing.duration)}

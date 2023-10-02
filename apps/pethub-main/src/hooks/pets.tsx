@@ -9,7 +9,7 @@ export const useGetPetsByPetOwnerId = (userId: number) => {
     queryKey: ["pets"],
     queryFn: async () => {
       const data = await api.get(`${PETS_API}/pet-owners/${userId}`);
-      return data.data;
+      return data.data as Pet[];
     },
   });
 };

@@ -16,17 +16,17 @@ import { IconClipboardList } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { Address, Tag, formatStringToLetterCase } from "shared-utils";
-import { BookingResponse } from "@/types/types";
+import { Booking } from "@/types/types";
 
 interface BookingModalProps {
-  booking: BookingResponse;
+  booking: Booking;
   opened: boolean;
   onClose(): void;
   addresses: Address[];
   tags: Tag[];
 }
 
-const BookingsModal = ({
+const BookingModal = ({
   booking,
   opened,
   onClose,
@@ -275,4 +275,4 @@ const BookingsModal = ({
   );
 };
 
-export default BookingsModal;
+export default BookingModal;
