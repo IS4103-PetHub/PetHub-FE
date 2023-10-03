@@ -1,5 +1,15 @@
-import { Button } from "@mantine/core";
+import { Button, createStyles, useMantineTheme } from "@mantine/core";
 import { IconHeart } from "@tabler/icons-react";
+
+const useStyles = createStyles((theme) => ({
+  noTextButton: {
+    background: "transparent !important", // ensure the background is transparent
+    "&:hover, &:focus": {
+      background: "transparent !important", // make sure it stays transparent on hover and focus
+      boxShadow: "none !important", // remove any shadows
+    },
+  },
+}));
 
 interface FavouriteButtonProps {
   text: string;
@@ -16,15 +26,20 @@ const FavouriteButton = ({
   size,
   onClick,
 }: FavouriteButtonProps) => {
+  const theme = useMantineTheme();
+  const { classes } = useStyles();
   if (text) {
     return (
       <Button
         onClick={(event) => onClick(event)}
         variant={"subtle"}
-        color={isFavourite ? "blue" : "gray"}
+        color={isFavourite ? theme.colors.indigo[5] : "gray"}
         {...(className && { className })}
         leftIcon={
-          <IconHeart size={size} fill={isFavourite ? "blue" : "none"} />
+          <IconHeart
+            size={size}
+            fill={isFavourite ? theme.colors.indigo[5] : "none"}
+          />
         }
       >
         {text}
@@ -36,7 +51,7 @@ const FavouriteButton = ({
         onClick={(event) => onClick(event)}
         variant={"subtle"}
         color={isFavourite ? "gray" : "gray"}
-        {...(className && { className })}
+        className={`${classes.noTextButton} ${className || ""}`}
       >
         <IconHeart size={size} fill={isFavourite ? "white" : "none"} />
       </Button>
