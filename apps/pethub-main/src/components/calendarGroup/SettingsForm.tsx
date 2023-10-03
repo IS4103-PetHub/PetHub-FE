@@ -201,6 +201,13 @@ const SettingsForm = ({
               })
             }
           />
+          {setting?.recurrence?.pattern === RecurrencePatternEnum.Daily && (
+            <Text fs="italic" fz="xs" mt="xs" color="orange">
+              {
+                "Since 'Daily' is selected, any time periods set will override other schedule settings with recurrence pattern of 'Weekly' for any overlapping dates."
+              }
+            </Text>
+          )}
         </Card.Section>
         {setting?.recurrence?.pattern === RecurrencePatternEnum.Weekly && (
           <Card.Section inheritPadding mb="lg">

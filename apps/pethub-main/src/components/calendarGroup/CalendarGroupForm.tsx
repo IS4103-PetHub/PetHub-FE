@@ -55,7 +55,7 @@ const CalendarGroupForm = ({
       scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness.
       days: [],
       recurrence: {
-        pattern: RecurrencePatternEnum.Daily,
+        pattern: RecurrencePatternEnum.Weekly,
         startDate: "",
         endDate: "",
         timePeriods: [

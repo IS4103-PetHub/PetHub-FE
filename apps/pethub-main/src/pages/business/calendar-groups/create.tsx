@@ -41,7 +41,7 @@ export default function CreateCalendarGroup({
           scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness, same with timePeriod
           days: [],
           recurrence: {
-            pattern: RecurrencePatternEnum.Daily,
+            pattern: RecurrencePatternEnum.Weekly,
             startDate: "",
             endDate: "",
             timePeriods: [
