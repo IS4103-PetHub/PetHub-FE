@@ -12,6 +12,7 @@ import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
+import UpdateActionButtonModal from "web-ui/shared/UpdateActionButtonModal";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import {
   useDeleteCalendarGroupById,
@@ -82,14 +83,14 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
   }
 
   const updateCalendarGroupMutation = useUpdateCalendarGroup();
-  const updateCalendarGroup = async (payload: CalendarGroup) => {
+  const handleUpdateCalendarGroup = async (payload: CalendarGroup) => {
     try {
       await updateCalendarGroupMutation.mutateAsync(payload);
       notifications.show({
         title: "Calendar Group Updated",
         color: "green",
         icon: <IconCheck />,
-        message: `Calendar group updated successfully!`,
+        message: `Calendar group updated successfully! Email notifications have been sent to all affected customers.`,
       });
       toggleEdit();
       refetchCalendarGroup();
@@ -108,7 +109,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         title: "Calendar Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `Calendar group deleted successfully.`,
+        message: `Calendar group deleted successfully! Email notifications have been sent to all affected customers.`,
       });
       window.location.href = "/business/calendar-groups"; // hotfix, change this in the future
     } catch (error: any) {
@@ -155,7 +156,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
               &nbsp;
               <DeleteActionButtonModal
                 title="Delete Calendar Group"
-                subtitle="Are you sure you want to delete this Calendar Group? All involved bookings will be voided and an email notification will be sent to the affected customers."
+                subtitle="Are you sure you want to delete this Calendar Group? All involved bookings will be voided and email notifications will be sent to the affected customers."
                 onDelete={async () =>
                   handleDeleteCalendarGroup(form.values.calendarGroupId)
                 }
@@ -175,7 +176,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
             forView={true}
             toggleEdit={toggleEdit}
             cancelEdit={cancelEdit}
-            submit={updateCalendarGroup}
+            submit={handleUpdateCalendarGroup}
           />
         </Group>
       </Container>
