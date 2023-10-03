@@ -42,9 +42,16 @@ const ServiceListingTable = ({
             accessor: "title",
             title: "Title",
             textAlignment: "left",
-            width: "25vw",
+            width: "20vw",
             sortable: true,
             ellipsis: true,
+          },
+          {
+            accessor: "petBusiness.companyName",
+            title: "Company Name",
+            sortable: true,
+            ellipsis: true,
+            width: "10vw",
           },
           {
             accessor: "category",
@@ -71,16 +78,6 @@ const ServiceListingTable = ({
                 : "-",
           },
           {
-            accessor: "dateCreated",
-            title: "Date Created",
-            sortable: true,
-            ellipsis: true,
-            width: 100,
-            render: ({ dateCreated }) => {
-              return new Date(dateCreated).toLocaleDateString();
-            },
-          },
-          {
             accessor: "basePrice",
             title: "Price ($)",
             textAlignment: "right",
@@ -98,14 +95,22 @@ const ServiceListingTable = ({
             textAlignment: "right",
             render: (record) => (
               <Group position="right">
-                <ViewServiceListingModal serviceListing={record} />
+                <ViewServiceListingModal
+                  canWrite={canWrite}
+                  onDelete={() => {
+                    onDelete(record.serviceListingId);
+                    if (records.length === 1 && page > 1) {
+                      onPageChange(page - 1);
+                    }
+                  }}
+                  serviceListing={record}
+                />
                 {canWrite ? (
                   <DeleteActionButtonModal
                     title={`Are you sure you want to delete ${record.title}?`}
                     subtitle="Pet Owners would no longer be able to view this service listing."
                     onDelete={() => {
                       onDelete(record.serviceListingId);
-                      // Check if there is only 1 record on this page and we're not on the first page.
                       if (records.length === 1 && page > 1) {
                         onPageChange(page - 1);
                       }

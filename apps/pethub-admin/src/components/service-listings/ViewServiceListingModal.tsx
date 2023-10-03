@@ -16,14 +16,19 @@ import {
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import { ServiceListing, formatStringToLetterCase } from "shared-utils";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 
 interface ViewServiceListingModalProps {
   serviceListing: ServiceListing;
+  canWrite: boolean;
+  onDelete(): void;
 }
 
 const ViewServiceListingModal = ({
   serviceListing,
+  canWrite,
+  onDelete,
 }: ViewServiceListingModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
   const [imagePreview, setImagePreview] = useState([]);
@@ -110,15 +115,34 @@ const ViewServiceListingModal = ({
       >
         <Container fluid>
           <Paper style={{ width: "100%", margin: "0 auto" }}>
-            <Text
-              align="center"
-              size="xl"
-              weight={500}
-              style={{ marginBottom: "20px" }}
-              fw={700}
+            <Group
+              style={{
+                width: "100%",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
             >
-              Service Details
-            </Text>
+              <div style={{ flexGrow: 1, textAlign: "center" }}>
+                <Text
+                  align="center"
+                  size="xl"
+                  weight={500}
+                  style={{ width: "100%" }}
+                  fw={700}
+                >
+                  Service Listing Details
+                </Text>
+              </div>
+              {canWrite ? (
+                <DeleteActionButtonModal
+                  title={`Are you sure you want to delete ${serviceListing.title}?`}
+                  subtitle="Pet Owners would no longer be able to view this service listing."
+                  onDelete={() => {
+                    onDelete();
+                  }}
+                />
+              ) : null}
+            </Group>
             <Divider />
             <Grid gutter="md" style={{ marginTop: "20px" }}>
               <Grid.Col span={3}>
