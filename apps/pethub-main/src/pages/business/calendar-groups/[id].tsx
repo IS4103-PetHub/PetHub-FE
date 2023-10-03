@@ -17,6 +17,7 @@ import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import {
   useDeleteCalendarGroupById,
   useGetCalendarGroupById,
+  useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
 import {
@@ -43,6 +44,10 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
 
   const calendarGroupId = Number(router.query.id);
 
+  const {
+    data: calendarGroupByPbId = [],
+    refetch: refetchCalendarGroupByPbId,
+  } = useGetCalendarGroupByPBId(userId);
   const { data: calendarGroup, refetch: refetchCalendarGroup } =
     useGetCalendarGroupById(calendarGroupId);
 
@@ -90,7 +95,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         title: "Calendar Group Updated",
         color: "green",
         icon: <IconCheck />,
-        message: `Calendar group updated successfully! Email notifications have been sent to all affected customers.`,
+        message: `Calendar group updated successfully! For affected bookings (if any), email notifications have been sent to the customers.`,
       });
       toggleEdit();
       refetchCalendarGroup();
@@ -111,7 +116,8 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         icon: <IconCheck />,
         message: `Calendar group deleted successfully! Email notifications have been sent to all affected customers.`,
       });
-      window.location.href = "/business/calendar-groups"; // hotfix, change this in the future
+      refetchCalendarGroupByPbId();
+      router.push("/business/calendar-groups");
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Deleting Calendar Group", error),
@@ -132,7 +138,10 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       <Container mt="xl" mb="xl">
         <LargeBackButton
           text="Back to Calendar View"
-          onClick={() => (window.location.href = "/business/calendar-groups")} // Change this in the future, normal route would break the calendar atm
+          onClick={() => {
+            refetchCalendarGroupByPbId();
+            router.push("/business/calendar-groups");
+          }}
           size="sm"
           mb="sm"
         />

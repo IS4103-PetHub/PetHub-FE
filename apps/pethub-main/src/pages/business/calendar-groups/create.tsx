@@ -15,7 +15,11 @@ import {
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
-import { useCreateCalendarGroup } from "@/hooks/calendar-group";
+import {
+  useCreateCalendarGroup,
+  useGetCalendarGroupByPBId,
+} from "@/hooks/calendar-group";
+import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import {
   validateCGDescription,
   validateCGName,
@@ -31,6 +35,8 @@ export default function CreateCalendarGroup({
 }: CreateCalendarGroupProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
+    useGetCalendarGroupByPBId(userId);
 
   const form = useForm({
     initialValues: {
@@ -73,7 +79,8 @@ export default function CreateCalendarGroup({
         icon: <IconCheck />,
         message: `Calendar group created successfully!`,
       });
-      window.location.href = "/business/calendar-groups"; // Change this in the future
+      refetchCalendarGroup();
+      router.push("/business/calendar-groups");
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Calendar Group", error),
