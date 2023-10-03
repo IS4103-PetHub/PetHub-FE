@@ -4,6 +4,7 @@ import { useToggle } from "@mantine/hooks";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
+import { getCookie, getCookies } from "cookies-next";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
@@ -82,7 +83,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const handleLogin = async (values: LoginFormValues) => {
     const res = await signIn("credentials", {
       callbackUrl: "/",
-      redirect: false,
+      redirect: true,
       email: values.email,
       password: values.password,
       accountType: values.accountType,
@@ -100,7 +101,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
         showOverlay();
-        router.push("/business/dashboard");
+        // The middleware will force a redirect to the business dashboard here
       }
       close();
     }

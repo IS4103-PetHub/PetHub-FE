@@ -128,13 +128,15 @@ const SettingsForm = ({
         <Card.Section withBorder inheritPadding py="xs" mb="md">
           <Group position="apart">
             <Text weight={600}>Schedule Setting {index + 1}</Text>
-            <ActionIcon
-              onClick={onRemove}
-              style={{ cursor: "pointer" }}
-              disabled={isEditingDisabled}
-            >
-              <IconX size="1rem" />
-            </ActionIcon>
+            {form.values.scheduleSettings.length > 1 && (
+              <ActionIcon
+                onClick={onRemove}
+                style={{ cursor: "pointer" }}
+                disabled={isEditingDisabled}
+              >
+                <IconX size="1rem" />
+              </ActionIcon>
+            )}
           </Group>
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
@@ -240,6 +242,10 @@ const SettingsForm = ({
               onChange={(changes) => handleTimePeriodChange(idx, changes)}
               errors={errors?.[index]?.recurrence?.timePeriods}
               isEditingDisabled={isEditingDisabled || isSettingOver}
+              numberOfTimeslots={
+                form.values.scheduleSettings[index].recurrence.timePeriods
+                  .length
+              }
             />
           ))}
         </Card.Section>

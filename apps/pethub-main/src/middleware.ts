@@ -1,3 +1,5 @@
+import path from "path";
+import { setCookie } from "cookies-next";
 import { NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
 import { AccountTypeEnum } from "shared-utils";
@@ -27,6 +29,7 @@ function isSharedPage(path: string) {
 export default withAuth(
   function middleware(req) {
     const pathname = req.nextUrl.pathname;
+    const domain = "http://localhost:3002";
     const token = req.nextauth.token;
     const isBusinessPath = pathname.startsWith("/business");
     const isCustomerPath = pathname.startsWith("/customer");
@@ -35,6 +38,12 @@ export default withAuth(
 
     // If no session and you are tryna access a shared page or a protected path, redirect to home, else let it be
     if (!token) {
+      const response = NextResponse.next();
+      // response.cookies.set({
+      //   name: "next-auth.callback-url",
+      //   value: "test",
+      //   path: "/",
+      // });
       if (
         (!isBusinessPath && !isCustomerPath && !isSharedPage(pathname)) ||
         pathname === "/"

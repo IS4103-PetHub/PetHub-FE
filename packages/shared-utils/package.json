@@ -23,6 +23,8 @@
     "@tanstack/react-query": "^4.33.0",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
-    "next-auth": "^4.23.1"
+    "next-auth": "^4.23.1",
+    "cookie": "0.5.0",
+    "cookies-next": "4.0.0"
   }
 }
