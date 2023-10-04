@@ -7,7 +7,7 @@ interface BackButtonProps extends ButtonProps {
   onClick?(): void;
 }
 
-const CreateButton = ({ text, onClick, ...props }: BackButtonProps) => {
+const BackButton = ({ text, onClick, ...props }: BackButtonProps) => {
   return (
     <Button
       size={"md"}
@@ -20,4 +20,4 @@ const CreateButton = ({ text, onClick, ...props }: BackButtonProps) => {
   );
 };
 
-export default CreateButton;
+export default BackButton;

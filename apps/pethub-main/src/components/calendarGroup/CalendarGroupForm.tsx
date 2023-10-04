@@ -18,6 +18,7 @@ import {
   RecurrencePatternEnum,
 } from "shared-utils";
 import CreateButton from "web-ui/shared/LargeCreateButton";
+import UpdateActionButtonModal from "web-ui/shared/UpdateActionButtonModal";
 import { checkCGForConflicts, sanitizeCGPayload } from "@/util";
 import SettingsForm from "./SettingsForm";
 
@@ -55,7 +56,7 @@ const CalendarGroupForm = ({
       scheduleSettingsId: Date.now(), // Using current timestamp as a temporary ID for uniqueness.
       days: [],
       recurrence: {
-        pattern: RecurrencePatternEnum.Daily,
+        pattern: RecurrencePatternEnum.Weekly,
         startDate: "",
         endDate: "",
         timePeriods: [
@@ -202,7 +203,12 @@ const CalendarGroupForm = ({
               >
                 Cancel
               </Button>
-              <Button type="submit">Save</Button>
+              <UpdateActionButtonModal
+                title="Update Calendar Group"
+                subtitle="All affected bookings may be voided and email notifications will be sent to the affected customers. Confirm update?"
+                onUpdate={form.onSubmit((values: any) => handleSubmit(values))}
+                large
+              />
             </>
           )
         ) : (

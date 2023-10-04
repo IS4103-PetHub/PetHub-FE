@@ -1,4 +1,5 @@
 import Head from "next/head";
+import nookies from "nookies";
 import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
 import Banner from "@/components/common/landing/Banner";
@@ -31,6 +32,11 @@ export default function Home({ newServiceListings }: HomeProps) {
 }
 
 export async function getServerSideProps(context) {
+  const originalPath = context.query.originalPath || context.req.url;
+  nookies.set(context, "originalPath", originalPath, {
+    maxAge: 30 * 24 * 60 * 60,
+    path: "/",
+  });
   const newServiceListings =
     (await (
       await api.get(`/service-listings/active?limit=${LIMIT_SIZE}`)

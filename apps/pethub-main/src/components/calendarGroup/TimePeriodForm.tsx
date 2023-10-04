@@ -18,6 +18,7 @@ interface timePeriodFormProps {
   onChange: any;
   errors: any;
   isEditingDisabled: boolean;
+  numberOfTimeslots: number;
 }
 
 const TimePeriodForm = ({
@@ -27,6 +28,7 @@ const TimePeriodForm = ({
   onChange,
   errors,
   isEditingDisabled,
+  numberOfTimeslots,
 }: timePeriodFormProps) => {
   // Ensures sequential mounting of TimeSelects to avoid weird state synchronization issues with the onChange for both TimeSelects
   const theme = useMantineTheme();
@@ -79,7 +81,7 @@ const TimePeriodForm = ({
               error={errors?.[index]?.vacancies}
             />
           </Box>
-          <Box sx={{ display: index === 0 ? "none" : "inline" }}>
+          <Box sx={{ display: numberOfTimeslots <= 1 ? "none" : "inline" }}>
             <DeleteActionIcon
               onClick={onRemove}
               mt={24}
