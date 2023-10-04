@@ -4,10 +4,10 @@ import { useToggle } from "@mantine/hooks";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
-import { getCookie, getCookies } from "cookies-next";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
 import React, { useState, useEffect } from "react";
 import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
@@ -30,6 +30,9 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     useState(false);
   const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
   const { showOverlay, hideOverlay } = useLoadingOverlay();
+
+  const cookies = parseCookies();
+  const originalPath = cookies.originalPath || "/";
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -82,7 +85,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
 
   const handleLogin = async (values: LoginFormValues) => {
     const res = await signIn("credentials", {
-      callbackUrl: "/",
+      callbackUrl: originalPath,
       redirect: true,
       email: values.email,
       password: values.password,
