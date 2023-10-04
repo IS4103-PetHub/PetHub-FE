@@ -114,7 +114,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         title: "Calendar Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `Calendar group deleted successfully! Email notifications have been sent to all affected customers.`,
+        message: `Calendar group deleted successfully!`,
       });
       refetchCalendarGroupByPbId();
       router.push("/business/calendar-groups");
@@ -165,7 +165,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
               &nbsp;
               <DeleteActionButtonModal
                 title="Delete Calendar Group"
-                subtitle="Are you sure you want to delete this Calendar Group? All involved bookings will be voided and email notifications will be sent to the affected customers."
+                subtitle="Are you sure you want to delete this Calendar Group?"
                 onDelete={async () =>
                   handleDeleteCalendarGroup(form.values.calendarGroupId)
                 }
