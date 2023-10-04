@@ -1,3 +1,13 @@
+import {
+  IconList,
+  IconBuildingCommunity,
+  IconCut,
+  IconStethoscope,
+  IconToolsKitchen2,
+  IconShoppingBag,
+} from "@tabler/icons-react";
+import { ServiceCategoryEnum } from "shared-utils";
+
 export const serviceListingSortOptions = [
   {
     value: "recent",
@@ -49,3 +59,38 @@ export enum PetTypeEnum {
   Rodent = "RODENT",
   Others = "OTHERS",
 }
+
+// for landing page and service listings sidebar
+
+export const landingPageCategories = [
+  {
+    icon: IconBuildingCommunity,
+    value: ServiceCategoryEnum.PetBoarding,
+    label: "Pet boarding",
+  },
+  {
+    icon: IconCut,
+    value: ServiceCategoryEnum.PetGrooming,
+    label: "Pet grooming",
+  },
+  {
+    icon: IconStethoscope,
+    value: ServiceCategoryEnum.Veterinary,
+    label: "Veterinary",
+  },
+  {
+    icon: IconToolsKitchen2,
+    value: ServiceCategoryEnum.Dining,
+    label: "Dining",
+  },
+  {
+    icon: IconShoppingBag,
+    value: ServiceCategoryEnum.PetRetail,
+    label: "Pet retail",
+  },
+];
+
+export const serviceListingSideBarCategories = [
+  { icon: IconList, value: "", label: "All" },
+  ...landingPageCategories,
+];

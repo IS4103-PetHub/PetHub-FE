@@ -143,7 +143,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
             router.push("/business/calendar-groups");
           }}
           size="sm"
-          mb="sm"
+          mb="md"
         />
         <Group position="apart">
           <PageTitle

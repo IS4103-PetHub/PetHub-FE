@@ -10,39 +10,141 @@ import {
   Box,
   Stack,
 } from "@mantine/core";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconMail, IconMapPin, IconPhone } from "@tabler/icons-react";
+import {
+  IconMail,
+  IconMapPin,
+  IconPhone,
+  IconCheck,
+  IconX,
+} from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
+import FavouriteButton from "@/components/favourites/FavouriteButton";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
+import {
+  useAddServiceListingToFavourites,
+  useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
+  useRemoveServiceListingFromFavourites,
+} from "@/hooks/pet-owner";
+import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {
+  userId: number;
   serviceListing: ServiceListing;
 }
 
 export default function ServiceListingDetails({
+  userId,
   serviceListing,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
+
+  const { data: favouritedListings = [] } =
+    useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
+
+  const [isFavourite, setIsFavourite] = useState(false);
+
+  useEffect(() => {
+    if (
+      favouritedListings.some(
+        (listing) =>
+          listing.serviceListingId === serviceListing.serviceListingId,
+      )
+    ) {
+      setIsFavourite(true);
+    } else {
+      setIsFavourite(false);
+    }
+  }, [favouritedListings, serviceListing]);
   // for select timeslot modal
   const [opened, { open, close }] = useDisclosure(false);
 
   const ACCORDION_VALUES = ["description", "business"];
+
+  const serviceListingId = serviceListing.serviceListingId;
+  const payload: AddRemoveFavouriteServiceListingPayload = {
+    userId,
+    serviceListingId,
+  };
+
+  const addFavouriteMutation = useAddServiceListingToFavourites();
+  const handleAddFavourite = async (
+    payload: AddRemoveFavouriteServiceListingPayload,
+  ) => {
+    try {
+      await addFavouriteMutation.mutateAsync(payload);
+      setIsFavourite(!isFavourite);
+      notifications.show({
+        title: "Favourite Added",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Listing "${serviceListing.title}" added to favourites.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Adding Listing to Favourites",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const removeFavouriteMutation = useRemoveServiceListingFromFavourites();
+  const handleRemoveFavourite = async (
+    payload: AddRemoveFavouriteServiceListingPayload,
+  ) => {
+    try {
+      await removeFavouriteMutation.mutateAsync(payload);
+      setIsFavourite(!isFavourite);
+      notifications.show({
+        title: "Favourite Removed",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Listing "${serviceListing.title}" removed from favourites.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        title: "Error Removing Listing from Favourites",
+        color: "red",
+        icon: <IconX />,
+        message:
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message,
+      });
+    }
+  };
+
+  const handleFavouriteToggle = () => {
+    if (isFavourite) {
+      handleRemoveFavourite(payload);
+    } else {
+      handleAddFavourite(payload);
+    }
+  };
 
   const handleClickBuyNow = async () => {
     const session = await getSession();
@@ -122,12 +224,20 @@ export default function ServiceListingDetails({
               mt="xl"
               mb={5}
             />
-            <PageTitle
-              title={serviceListing.title}
-              mb="xs"
-              size="2.25rem"
-              weight={700}
-            />
+            <Group position="apart">
+              <PageTitle
+                title={serviceListing.title}
+                mb="xs"
+                size="2.25rem"
+                weight={700}
+              />
+              <FavouriteButton
+                text={isFavourite ? "Remove Favourite" : "Favourite"}
+                isFavourite={isFavourite}
+                size={20}
+                onClick={handleFavouriteToggle}
+              />
+            </Group>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
             <ServiceListingCarousel
               attachmentURLs={serviceListing.attachmentURLs}
@@ -169,6 +279,7 @@ export default function ServiceListingDetails({
               </Button>
 
               <SelectTimeslotModal
+                petOwnerId={userId}
                 serviceListing={serviceListing}
                 opened={opened}
                 onClose={close}
@@ -183,6 +294,11 @@ export default function ServiceListingDetails({
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
+
   const serviceListing = await (await api.get(`/service-listings/${id}`)).data;
-  return { props: { serviceListing } };
+  const session = await getSession(context);
+  if (!session) return { props: { serviceListing } };
+  const userId = session.user["userId"];
+
+  return { props: { userId, serviceListing } };
 }

@@ -15,18 +15,18 @@ import { useForm } from "@mantine/form";
 import { IconClipboardList } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { Address, Tag } from "shared-utils";
-import { BookingResponse } from "@/types/types";
+import { Address, Tag, formatStringToLetterCase } from "shared-utils";
+import { Booking } from "@/types/types";
 
 interface BookingModalProps {
-  booking: BookingResponse;
+  booking: Booking;
   opened: boolean;
   onClose(): void;
   addresses: Address[];
   tags: Tag[];
 }
 
-const BookingsModal = ({
+const BookingModal = ({
   booking,
   opened,
   onClose,
@@ -41,7 +41,9 @@ const BookingsModal = ({
     startTime: booking ? formatTime(booking.startTime) : "",
     endTime: booking ? formatTime(booking.endTime) : "",
     description: booking ? booking.serviceListing.description : "",
-    category: booking ? booking.serviceListing.category : "",
+    category: booking
+      ? formatStringToLetterCase(booking.serviceListing.category)
+      : "",
     tags: booking
       ? booking.serviceListing.tags.map((tag) => tag.tagId.toString())
       : [],
@@ -58,6 +60,17 @@ const BookingsModal = ({
       : "",
     petOwnerContact: booking ? booking.petOwner.contactNumber : "",
     petOwnerEmail: booking ? booking.petOwner.email : "",
+    petName: booking ? (booking.pet ? booking.pet.petName : "") : "",
+    petType: booking
+      ? booking.pet
+        ? formatStringToLetterCase(booking.pet.petType)
+        : ""
+      : "",
+    petGender: booking
+      ? booking.pet
+        ? formatStringToLetterCase(booking.pet.gender)
+        : ""
+      : "",
   };
 
   const form = useForm({
@@ -216,6 +229,31 @@ const BookingsModal = ({
                       {...form.getInputProps("petOwnerEmail")}
                     />
                   </Grid.Col>
+                  {booking.pet && (
+                    <>
+                      <Grid.Col span={12}>
+                        <TextInput
+                          label="Pet Name"
+                          disabled
+                          {...form.getInputProps("petName")}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <TextInput
+                          label="Pet Type"
+                          disabled
+                          {...form.getInputProps("petType")}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={6}>
+                        <TextInput
+                          label="Pet Gender"
+                          disabled
+                          {...form.getInputProps("petGender")}
+                        />
+                      </Grid.Col>
+                    </>
+                  )}
                 </Grid>
               </Accordion.Panel>
             </Accordion.Item>
@@ -237,4 +275,4 @@ const BookingsModal = ({
   );
 };
 
-export default BookingsModal;
+export default BookingModal;

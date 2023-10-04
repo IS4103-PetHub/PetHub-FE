@@ -19,7 +19,7 @@ export interface Tag {
   tagId: number;
   name: string;
   dateCreated: string;
-  lastUpdated: string;
+  lastUpdated?: string;
 }
 
 export interface Address {
@@ -79,7 +79,7 @@ export interface ServiceListing {
   // leave as any because the response varies from BE
   petBusiness?: any;
   // appointment booking
-  CalendarGroup: CalendarGroup;
+  CalendarGroup?: CalendarGroup;
   calendarGroupId?: number;
   duration?: number;
 }

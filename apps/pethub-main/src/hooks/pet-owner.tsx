@@ -1,7 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
+import { ServiceListing, AccountTypeEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { CreatePetOwnerPayload, PetOwner } from "@/types/types";
+import {
+  AddRemoveFavouriteServiceListingPayload,
+  CreatePetOwnerPayload,
+  PetOwner,
+} from "@/types/types";
 
 const PET_OWNER_API = "/users/pet-owners";
 
@@ -45,5 +49,61 @@ export const useGetPetOwnerByIdAndAccountType = (
       return petOwner as PetOwner;
     },
     enabled: accountType === AccountTypeEnum.PetOwner,
+  });
+};
+
+// GET Favourite Service Listings by PO Id and QueryParams
+export const useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams = (
+  userId: number,
+  categoryValue?: string,
+) => {
+  const params = { category: categoryValue };
+  return useQuery({
+    queryKey: ["pet-owners", categoryValue],
+    queryFn: async () => {
+      if (categoryValue) {
+        const response = await api.get(
+          `${PET_OWNER_API}/favourites/${userId}`,
+          {
+            params,
+          },
+        );
+        return response.data as ServiceListing[];
+      } else {
+        const response = await api.get(`${PET_OWNER_API}/favourites/${userId}`);
+        return response.data as ServiceListing[];
+      }
+    },
+    refetchOnMount: true,
+  });
+};
+
+// POST add to favourites
+export const useAddServiceListingToFavourites = () => {
+  return useMutation({
+    mutationFn: async (payload: AddRemoveFavouriteServiceListingPayload) => {
+      const { userId, ...payloadWithoutUserId } = payload;
+      return (
+        await api.post(
+          `${PET_OWNER_API}/add-to-favourites/${userId}`,
+          payloadWithoutUserId,
+        )
+      ).data;
+    },
+  });
+};
+
+// POST remove from favourites
+export const useRemoveServiceListingFromFavourites = () => {
+  return useMutation({
+    mutationFn: async (payload: AddRemoveFavouriteServiceListingPayload) => {
+      const { userId, ...payloadWithoutUserId } = payload;
+      return (
+        await api.post(
+          `${PET_OWNER_API}/remove-from-favourites/${userId}`,
+          payloadWithoutUserId,
+        )
+      ).data;
+    },
   });
 };

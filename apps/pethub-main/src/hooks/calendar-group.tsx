@@ -90,7 +90,7 @@ export const useGetCalendarGroupByPBId = (petBusinessId: number) => {
       const data = await (
         await api.get(`${CALENDAR_GROUP_API}/pet-business/${petBusinessId}`)
       ).data;
-      return data;
+      return data as CalendarGroup[];
     },
   });
 };

@@ -6,17 +6,9 @@ import {
   useMantineTheme,
   Text,
 } from "@mantine/core";
-import {
-  IconList,
-  IconBuildingCommunity,
-  IconCut,
-  IconStethoscope,
-  IconToolsKitchen2,
-  IconShoppingBag,
-} from "@tabler/icons-react";
 import Link from "next/link";
 import React from "react";
-import { ServiceCategoryEnum } from "shared-utils";
+import { serviceListingSideBarCategories } from "@/types/constants";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -57,35 +49,6 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const categories = [
-  { icon: IconList, value: "", label: "All" },
-  {
-    icon: IconBuildingCommunity,
-    value: ServiceCategoryEnum.PetBoarding,
-    label: "Pet boarding",
-  },
-  {
-    icon: IconCut,
-    value: ServiceCategoryEnum.PetGrooming,
-    label: "Pet grooming",
-  },
-  {
-    icon: IconStethoscope,
-    value: ServiceCategoryEnum.Veterinary,
-    label: "Veterinary",
-  },
-  {
-    icon: IconToolsKitchen2,
-    value: ServiceCategoryEnum.Dining,
-    label: "Dining",
-  },
-  {
-    icon: IconShoppingBag,
-    value: ServiceCategoryEnum.PetRetail,
-    label: "Pet retail",
-  },
-];
-
 interface ServiceListingsSideBarProps {
   activeCategory: string;
   onChangeCategory(category: string): void;
@@ -98,7 +61,7 @@ const ServiceListingsSideBar = ({
   const { classes, cx } = useStyles();
   const theme = useMantineTheme();
 
-  const categoriesList = categories.map((category) => (
+  const categoriesList = serviceListingSideBarCategories.map((category) => (
     <Link
       className={cx(classes.link, {
         [classes.linkActive]: activeCategory === category.value,
