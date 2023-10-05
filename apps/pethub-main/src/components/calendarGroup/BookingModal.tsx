@@ -180,6 +180,7 @@ const BookingModal = ({
                     <Textarea
                       label="Description"
                       disabled
+                      autosize
                       {...form.getInputProps("description")}
                     />
                   </Grid.Col>
