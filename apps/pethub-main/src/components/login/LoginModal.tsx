@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
 import React, { useState, useEffect } from "react";
 import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
@@ -29,6 +30,9 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     useState(false);
   const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
   const { showOverlay, hideOverlay } = useLoadingOverlay();
+
+  const cookies = parseCookies();
+  const originalPath = cookies.originalPath || "/";
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -81,8 +85,8 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
 
   const handleLogin = async (values: LoginFormValues) => {
     const res = await signIn("credentials", {
-      callbackUrl: "/",
-      redirect: false,
+      callbackUrl: originalPath,
+      redirect: true,
       email: values.email,
       password: values.password,
       accountType: values.accountType,
@@ -100,7 +104,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
         showOverlay();
-        router.push("/business/dashboard");
+        // The middleware will force a redirect to the business dashboard here
       }
       close();
     }

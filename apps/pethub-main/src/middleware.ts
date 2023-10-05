@@ -3,7 +3,7 @@ import { withAuth } from "next-auth/middleware";
 import { AccountTypeEnum } from "shared-utils";
 
 // Put all shared pages here
-const sharedPages = ["/account", "/shared1", "/shared2"];
+const sharedPages = ["/account"];
 
 // This checks the last page path of the URL
 function isSharedPage(path: string) {
@@ -35,12 +35,14 @@ export default withAuth(
 
     // If no session and you are tryna access a shared page or a protected path, redirect to home, else let it be
     if (!token) {
+      const redirectUrl = new URL("/", req.url);
       if (
         (!isBusinessPath && !isCustomerPath && !isSharedPage(pathname)) ||
         pathname === "/"
       )
         return;
-      return NextResponse.redirect(new URL("/", req.url));
+      redirectUrl.searchParams.append("originalPath", pathname);
+      return NextResponse.redirect(redirectUrl);
     }
 
     /*
