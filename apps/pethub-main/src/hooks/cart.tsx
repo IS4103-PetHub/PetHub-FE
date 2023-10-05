@@ -12,7 +12,7 @@ export function useCartOperations(userId: number) {
   };
 
   // Set the cart for the specific user only (since 1 browser can have multiple users)
-  const setCartForUser = (updatedCart: Cart) => {
+  const setCartForUser = async (updatedCart: Cart) => {
     const updatedCarts = carts
       .filter((c) => c.userId !== userId)
       .concat(updatedCart);
@@ -28,11 +28,11 @@ export function useCartOperations(userId: number) {
   };
 
   // Happens every add, update or remove to ensure cartItemId is always in order and starting from 1
-  const recalculateCartItemId = (cartItems: CartItem[]): CartItem[] => {
+  const recalculateCartItemId = (cartItems: CartItem[]) => {
     return cartItems.map((item, index) => ({ ...item, cartItemId: index + 1 }));
   };
 
-  const addItemToCart = (item: CartItem) => {
+  const addItemToCart = async (item: CartItem) => {
     const newCartItems = [...cart.cartItems, item];
     const recalculatedCartItems = recalculateCartItemId(newCartItems);
     setCartForUser({
@@ -43,7 +43,10 @@ export function useCartOperations(userId: number) {
     });
   };
 
-  const updateItemInCart = (cartItemId: number, updatedItem: CartItem) => {
+  const updateItemInCart = async (
+    cartItemId: number,
+    updatedItem: CartItem,
+  ) => {
     const itemIndex = cart.cartItems.findIndex(
       (item) => item.cartItemId === cartItemId,
     );
@@ -59,7 +62,7 @@ export function useCartOperations(userId: number) {
     }
   };
 
-  const removeItemFromCart = (cartItemId: number) => {
+  const removeItemFromCart = async (cartItemId: number) => {
     const newCartItems = cart.cartItems.filter(
       (item) => item.cartItemId !== cartItemId,
     );

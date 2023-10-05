@@ -226,7 +226,15 @@ export interface AddRemoveFavouriteServiceListingPayload {
 export interface CartItem {
   cartItemId?: number;
   serviceListing: ServiceListing;
-  timeslot?: Timeslot;
+  bookingSelection: CartItemBookingSelection;
+}
+
+export interface CartItemBookingSelection {
+  petId?: number;
+  calendarGroupId: number;
+  serviceListingId: number;
+  startTime: string;
+  endTime: string;
 }
 
 export interface Cart {

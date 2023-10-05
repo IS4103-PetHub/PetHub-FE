@@ -30,8 +30,9 @@ import {
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useCartOperations } from "@/hooks/cart";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { Booking } from "@/types/types";
+import { Booking, CartItem, CartItemBookingSelection } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
 
 const CALENDAR_SPAN = 4;
@@ -42,6 +43,7 @@ interface SelectTimeslotModalProps {
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
+  refresh(): void;
   // optional, only for updating
   isUpdating?: boolean;
   booking?: Booking;
@@ -53,6 +55,7 @@ const SelectTimeslotModal = ({
   serviceListing,
   opened,
   onClose,
+  refresh,
   isUpdating,
   booking,
   onUpdateBooking,
@@ -67,6 +70,7 @@ const SelectTimeslotModal = ({
   const [selectedPetId, setSelectedPetId] = useState<string>(
     booking ? booking.petId?.toString() : "",
   );
+  const { addItemToCart } = useCartOperations(petOwnerId);
 
   /* 
   service listing does not belong to calendar group, or does not have a set duration
@@ -99,46 +103,79 @@ const SelectTimeslotModal = ({
       return;
     }
     try {
-      let payload;
+      // let payload;
       const startTime = selectedTimeslot;
       const endTime = dayjs(selectedTimeslot)
         .add(serviceListing.duration, "minutes")
         .toISOString();
-
-      if (isUpdating) {
-        payload = { bookingId: booking.bookingId, startTime, endTime };
-        await updateBookingMutation.mutateAsync(payload);
-        // refetch user bookings
-        onUpdateBooking();
-      } else {
-        payload = {
-          petOwnerId: session.user["userId"],
-          calendarGroupId: serviceListing.calendarGroupId,
-          serviceListingId: serviceListing.serviceListingId,
-          startTime,
-          endTime,
+      let bookingSelection: CartItemBookingSelection = {
+        calendarGroupId: serviceListing.calendarGroupId,
+        serviceListingId: serviceListing.serviceListingId,
+        startTime,
+        endTime,
+      };
+      // append petId if there is a pet selected
+      if (selectedPetId) {
+        bookingSelection = {
+          ...bookingSelection,
+          petId: parseInt(selectedPetId),
         };
-        // append petId if there is a pet selected
-        if (selectedPetId) {
-          payload = { ...payload, petId: parseInt(selectedPetId) };
-        }
-        await createBookingMutation.mutateAsync(payload);
       }
+
+      addItemToCart({
+        serviceListing: serviceListing,
+        bookingSelection: bookingSelection,
+      } as CartItem);
       notifications.show({
-        title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
+        title: "Added to cart",
+        message: `Booking time selected and item '${serviceListing.title}' added to cart.`,
         color: "green",
-        icon: <IconCheck />,
-        message: `Your appointment on ${formatISODayDateTime(
-          selectedTimeslot,
-        )} has been confirmed!`,
       });
+      refresh(); // Force the SL page to refetch new cart items from localstorage and display a text if it is added
+      /*
+        Booking will no longer be made instantly, but will be made during cart checkout
+        Todo: Change function name
+      */
+
+      // if (isUpdating) {
+      //   payload = { bookingId: booking.bookingId, startTime, endTime };
+      //   await updateBookingMutation.mutateAsync(payload);
+      //   // refetch user bookings
+      //   onUpdateBooking();
+      // } else {
+      //   payload = {
+      //     petOwnerId: session.user["userId"],
+      //     calendarGroupId: serviceListing.calendarGroupId,
+      //     serviceListingId: serviceListing.serviceListingId,
+      //     startTime,
+      //     endTime,
+      //   };
+      //   // append petId if there is a pet selected
+      //   if (selectedPetId) {
+      //     payload = { ...payload, petId: parseInt(selectedPetId) };
+      //   }
+      //   await createBookingMutation.mutateAsync(payload);
+      // }
+      // notifications.show({
+      //   title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
+      //   color: "green",
+      //   icon: <IconCheck />,
+      //   message: `Your appointment on ${formatISODayDateTime(
+      //     selectedTimeslot,
+      //   )} has been confirmed!`,
+      // });
     } catch (error: any) {
       notifications.show({
-        ...getErrorMessageProps(
-          `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
-          error,
-        ),
+        title: "Error Adding to Cart",
+        message: "Please try again later.",
+        color: "red",
       });
+      // notifications.show({
+      //   ...getErrorMessageProps(
+      //     `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
+      //     error,
+      //   ),
+      // });
     }
   }
 
@@ -331,7 +368,7 @@ const SelectTimeslotModal = ({
             disabled={!selectedTimeslot}
             onClick={handleClickButton}
           >
-            {showConfirmation ? "Confirm" : "Next"}
+            {showConfirmation ? "Confirm and add to cart" : "Next"}
           </Button>
         </Group>
       </Group>

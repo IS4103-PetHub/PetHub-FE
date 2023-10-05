@@ -9,6 +9,7 @@ import {
   useMantineTheme,
   Box,
   Stack,
+  Center,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -59,11 +60,12 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const { addItemToCart } = useCartOperations(userId);
-
+  const [isServiceListingInCart, setIsServiceListingInCart] = useState(false);
+  // Force the SL page to refetch new cart items from localstorage and display a text if it is added from the timeslot modal
+  const [key, setKey] = useState(Math.random());
+  const { addItemToCart, getCartItems } = useCartOperations(userId);
   const { data: favouritedListings = [] } =
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
-
   const [isFavourite, setIsFavourite] = useState(false);
 
   useEffect(() => {
@@ -78,6 +80,16 @@ export default function ServiceListingDetails({
       setIsFavourite(false);
     }
   }, [favouritedListings, serviceListing]);
+
+  useEffect(() => {
+    const cartItems = getCartItems();
+    setIsServiceListingInCart(
+      cartItems.some(
+        (item) => item.serviceListing.serviceListingId === serviceListingId,
+      ),
+    );
+  }, [key, getCartItems]);
+
   // for select timeslot modal
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -87,6 +99,11 @@ export default function ServiceListingDetails({
   const payload: AddRemoveFavouriteServiceListingPayload = {
     userId,
     serviceListingId,
+  };
+
+  // Todo: At the moment, even though the refreshing of key is causing the useEffect to setIsServiceListingInCart to run, the cart fetched WHEN ADDING FROM THE MODAL is not the updated one
+  const refetchCart = () => {
+    setKey(Math.random());
   };
 
   const addFavouriteMutation = useAddServiceListingToFavourites();
@@ -161,12 +178,26 @@ export default function ServiceListingDetails({
       });
       return;
     }
-    const cartItem: CartItem = {
-      serviceListing: serviceListing,
-    };
-    addItemToCart(cartItem);
-    // // display select timeslot modal
-    // open();
+    if (serviceListing.calendarGroupId !== null) {
+      open(); // Handle add to cart in the modal
+    } else {
+      try {
+        addItemToCart({
+          serviceListing: serviceListing,
+        } as CartItem);
+        notifications.show({
+          title: "Added to cart",
+          message: `'${serviceListing.title}' added to cart.`,
+          color: "green",
+        });
+      } catch (error) {
+        notifications.show({
+          title: "Error Adding to Cart",
+          message: "Please try again later.",
+          color: "red",
+        });
+      }
+    }
   };
 
   const businessSection = (
@@ -216,7 +247,7 @@ export default function ServiceListingDetails({
   );
 
   return (
-    <>
+    <div key={key}>
       <Head>
         <title>{serviceListing.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -287,18 +318,31 @@ export default function ServiceListingDetails({
               <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
                 Buy now
               </Button>
-
+              {isServiceListingInCart && (
+                <Center>
+                  <Text
+                    size="xs"
+                    fs="italic"
+                    mt="xs"
+                    variant="gradient"
+                    gradient={{ from: "violet", to: "blue", deg: 90 }}
+                  >
+                    Item is currently already in your cart
+                  </Text>
+                </Center>
+              )}
               <SelectTimeslotModal
                 petOwnerId={userId}
                 serviceListing={serviceListing}
                 opened={opened}
                 onClose={close}
+                refresh={refetchCart}
               />
             </Paper>
           </Grid.Col>
         </Grid>
       </Container>
-    </>
+    </div>
   );
 }
 
