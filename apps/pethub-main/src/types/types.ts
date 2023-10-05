@@ -1,3 +1,4 @@
+import { NumberInputStylesNames } from "@mantine/core";
 import {
   AccountStatusEnum,
   AccountTypeEnum,
@@ -219,5 +220,19 @@ export interface Booking {
 
 export interface AddRemoveFavouriteServiceListingPayload {
   serviceListingId: number;
+  userId: number;
+}
+
+export interface CartItem {
+  cartItemId?: number;
+  serviceListing: ServiceListing;
+  timeslot?: Timeslot;
+}
+
+export interface Cart {
+  cartId?: number;
+  cartItems: CartItem[];
+  subtotal: number;
+  itemCount: number;
   userId: number;
 }

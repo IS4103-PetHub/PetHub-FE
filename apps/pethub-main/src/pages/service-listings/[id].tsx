@@ -35,12 +35,16 @@ import ServiceCategoryBadge from "@/components/service-listing-discovery/Service
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
+import { useCartOperations } from "@/hooks/cart";
 import {
   useAddServiceListingToFavourites,
   useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
-import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
+import {
+  AddRemoveFavouriteServiceListingPayload,
+  CartItem,
+} from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {
@@ -55,6 +59,7 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
+  const { addItemToCart } = useCartOperations(userId);
 
   const { data: favouritedListings = [] } =
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
@@ -154,9 +159,14 @@ export default function ServiceListingDetails({
         message: "Please log in to buy!",
         color: "red",
       });
+      return;
     }
-    // display select timeslot modal
-    open();
+    const cartItem: CartItem = {
+      serviceListing: serviceListing,
+    };
+    addItemToCart(cartItem);
+    // // display select timeslot modal
+    // open();
   };
 
   const businessSection = (

@@ -102,6 +102,11 @@ const links: {
     label: "Help",
     links: undefined,
   },
+  {
+    link: "/customer/cart",
+    label: "Cart",
+    links: undefined,
+  },
 
   {
     link: "/customer/account",
