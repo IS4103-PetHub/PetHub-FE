@@ -119,6 +119,8 @@ const SelectTimeslotModal = ({
         bookingSelection = {
           ...bookingSelection,
           petId: parseInt(selectedPetId),
+          petName: pets.find((pet) => pet.petId === parseInt(selectedPetId))
+            .petName,
         };
       }
 

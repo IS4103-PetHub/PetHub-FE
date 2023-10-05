@@ -1,8 +1,21 @@
-import { Button, Card, Container, Text } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Container,
+  Grid,
+  Group,
+  Paper,
+  Stack,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
 
 interface CartProps {
@@ -21,15 +34,20 @@ export default function Cart({ userId }: CartProps) {
     getCartSubtotal,
     getItemCount,
   } = useCartOperations(userId);
+  const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     setCartItems(getCartItems());
   }, [cart]);
 
-  const toggleAction = () => {
+  function toggleAction() {
     clearCart();
-  };
+  }
+
+  function checkout() {
+    console.log("checkout");
+  }
 
   return (
     <>
@@ -37,22 +55,47 @@ export default function Cart({ userId }: CartProps) {
         <title>My Cart - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} mb={50}>
-        <PageTitle title="My Cart" mb="lg" />
-        Temporary page to display cart items and test stuff
-        <div>
-          {cartItems.map((item) => (
-            <Card key={item.cartItemId}>
-              <Text>CartitemId: {item.cartItemId}</Text>
-              <Text>service listing: {item.serviceListing.title}</Text>
-              <Text>price: {item.serviceListing.basePrice}</Text>
-              <Text>
-                booking selection starttime: {item.bookingSelection?.startTime}
-              </Text>
+      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+        <Grid gutter="xl">
+          <Grid.Col span={9}>
+            <Group position="apart">
+              <PageTitle title="My Cart" mb="lg" />
+            </Group>
+          </Grid.Col>
+          <Grid.Col span={9}>
+            <Card
+              withBorder
+              mb="lg"
+              sx={{ backgroundColor: theme.colors.gray[0] }}
+              radius="lg"
+            >
+              <Checkbox defaultChecked label="Select all" color="cyan" />
             </Card>
-          ))}
-        </div>
-        <Button onClick={toggleAction}>Toggle action</Button>
+            {cartItems.map((item) => (
+              <CartItemCard
+                key={item.cartItemId}
+                serviceListing={item.serviceListing}
+                bookingSelection={item.bookingSelection}
+                checked={true}
+              />
+            ))}
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
+              <Group position="left">
+                <Stack>
+                  <Text size="md">Subtotal (2 items): </Text>
+                  <Text size="xl" weight={500}>
+                    ${100}
+                  </Text>
+                </Stack>
+              </Group>
+              <Button size="md" fullWidth mt="xs" onClick={checkout}>
+                Book now
+              </Button>
+            </Paper>
+          </Grid.Col>
+        </Grid>
       </Container>
     </>
   );

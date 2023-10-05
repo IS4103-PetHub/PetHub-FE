@@ -231,6 +231,7 @@ export interface CartItem {
 
 export interface CartItemBookingSelection {
   petId?: number;
+  petName?: string;
   calendarGroupId: number;
   serviceListingId: number;
   startTime: string;
