@@ -9,9 +9,9 @@ import {
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconUser, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { IconCheck, IconUser } from "@tabler/icons-react";
 import React from "react";
+import { getErrorMessageProps } from "shared-utils";
 import { useActivateAccount, useDeactivateAccount } from "@/hooks/account";
 
 interface DeactivateReactivateAccountModalProps {
@@ -25,7 +25,6 @@ const DeactivateReactivateAccountModal = ({
   action,
   refetch,
 }: DeactivateReactivateAccountModalProps) => {
-  const queryClient = useQueryClient();
   const [opened, { open, close }] = useDisclosure(false);
 
   const form = useForm({
@@ -38,8 +37,8 @@ const DeactivateReactivateAccountModal = ({
 
   type FormValues = typeof form.values;
 
-  const deactivateAccountMutation = useDeactivateAccount(queryClient);
-  const reactivateAccountMutation = useActivateAccount(queryClient);
+  const deactivateAccountMutation = useDeactivateAccount();
+  const reactivateAccountMutation = useActivateAccount();
 
   const handleDeactivateAccount = async (values: FormValues) => {
     const payload = { userId: userId, password: values.password };
@@ -54,14 +53,7 @@ const DeactivateReactivateAccountModal = ({
       refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Deactivating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deactivating Account", error),
       });
     }
     close();
@@ -81,14 +73,7 @@ const DeactivateReactivateAccountModal = ({
       refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Reactivating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Reactivating Account", error),
       });
     }
     close();

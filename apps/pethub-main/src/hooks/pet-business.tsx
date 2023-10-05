@@ -1,34 +1,24 @@
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { AccountTypeEnum } from "@/types/constants";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AccountTypeEnum } from "shared-utils";
+import api from "@/api/axiosConfig";
 import { CreatePetBusinessPayload, PetBusiness } from "@/types/types";
 
-const PET_BUSINESS_API = "api/users/pet-businesses";
+const PET_BUSINESS_API = "/users/pet-businesses";
 
 export const useCreatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: CreatePetBusinessPayload) => {
-      return (
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}`,
-          payload,
-        )
-      ).data;
+      return (await api.post(`${PET_BUSINESS_API}`, payload)).data;
     },
   });
 };
 
-export const useUpdatePetBusiness = (queryClient: QueryClient) => {
+export const useUpdatePetBusiness = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
-      );
+      const { userId, ...payloadWithoutId } = payload;
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}/${payload.userId}`,
-          payloadWithoutId,
-        )
+        await api.patch(`${PET_BUSINESS_API}/${userId}`, payloadWithoutId)
       ).data;
     },
   });
@@ -41,11 +31,7 @@ export const useGetPetBusinessByIdAndAccountType = (
   return useQuery({
     queryKey: ["pet-businesses", accountType, userId],
     queryFn: async () => {
-      const data = await (
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_API}/${userId}`,
-        )
-      ).data;
+      const data = await (await api.get(`${PET_BUSINESS_API}/${userId}`)).data;
       const petBusiness: PetBusiness = {
         userId,
         companyName: data.companyName,
@@ -55,7 +41,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         websiteURL: data.websiteURL,
         contactNumber: data.contactNumber,
         email: data.user.email,
-        accountType: data.useraccountType,
+        accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
         businessAddresses: data.businessAddresses,

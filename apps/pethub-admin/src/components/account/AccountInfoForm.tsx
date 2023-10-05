@@ -2,9 +2,10 @@ import { Grid, TextInput } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
+import { getErrorMessageProps } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdateInternalUser } from "@/hooks/internal-user";
 import { InternalUser } from "@/types/types";
@@ -66,14 +67,7 @@ const AccountInfoForm = ({ internalUser, refetch }: AccountInfoFormProps) => {
       form.setValues(formDefaultValues);
     } catch (error: any) {
       notifications.show({
-        title: "Error Updating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Updating Account", error),
       });
     }
   };

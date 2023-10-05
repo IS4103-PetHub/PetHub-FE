@@ -1,9 +1,9 @@
-import { Modal, Title, Button, Group, Grid, TextInput } from "@mantine/core";
+import { Modal, Title } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import React from "react";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
-import { CreateTagPayload, UpdateTagPayload } from "@/types/types";
+import { CreateTagPayload } from "@/types/types";
 import TagForm from "./TagForm";
 
 interface CreateTagButtonModalProps {

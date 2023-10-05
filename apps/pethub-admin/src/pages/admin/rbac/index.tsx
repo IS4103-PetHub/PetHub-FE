@@ -1,30 +1,31 @@
 import { Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import {
+  EMPTY_STATE_DELAY_MS,
+  TABLE_PAGE_SIZE,
+  getErrorMessageProps,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import api from "@/api/axiosConfig";
 import { ErrorAlert } from "@/components/common/ErrorAlert";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import UserGroupsTable from "@/components/rbac/UserGroupsTable";
 import { useDeleteUserGroup, useGetAllUserGroups } from "@/hooks/rbac";
-import {
-  EMPTY_STATE_DELAY_MS,
-  PermissionsCodeEnum,
-  TABLE_PAGE_SIZE,
-} from "@/types/constants";
+import { PermissionsCodeEnum } from "@/types/constants";
 import { Permission, UserGroup } from "@/types/types";
 
 interface RbacProps {
@@ -51,7 +52,7 @@ export default function Rbac({ permissions }: RbacProps) {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<UserGroup[]>(userGroups);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "groupId",
     direction: "asc",
@@ -75,7 +76,7 @@ export default function Rbac({ permissions }: RbacProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (userGroups.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
@@ -93,14 +94,7 @@ export default function Rbac({ permissions }: RbacProps) {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Deleting User Group",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting User Group", error),
       });
     }
   };
@@ -136,8 +130,7 @@ export default function Rbac({ permissions }: RbacProps) {
   const renderContent = () => {
     if (userGroups.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no user groups fetched
       return (
@@ -211,9 +204,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const permissions = await (
-    await axios.get(
-      `${process.env.NEXT_PUBLIC_DEV_API_URL}/api/rbac/users/${userId}/permissions`,
-    )
+    await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
   return { props: { permissions } };
 }

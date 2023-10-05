@@ -1,21 +1,23 @@
 import { Button, ButtonProps } from "@mantine/core";
-import { IconArrowBack } from "@tabler/icons-react";
+import { IconChevronLeft } from "@tabler/icons-react";
 import React from "react";
 
 interface BackButtonProps extends ButtonProps {
   text: string;
   onClick?(): void;
 }
-const CreateButton = ({ text, onClick, ...props }: BackButtonProps) => {
+
+const BackButton = ({ text, onClick, ...props }: BackButtonProps) => {
   return (
     <Button
-      size="md"
-      leftIcon={<IconArrowBack size="1.25rem" />}
+      size={"md"}
+      leftIcon={<IconChevronLeft size="1.25rem" />}
       onClick={onClick}
+      {...props}
     >
       {text}
     </Button>
   );
 };
 
-export default CreateButton;
+export default BackButton;

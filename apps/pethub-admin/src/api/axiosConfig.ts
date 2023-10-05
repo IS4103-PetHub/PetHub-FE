@@ -5,8 +5,19 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => {
-    // For future use: Do something before a request is sent, e.g. append auth headers
+  async (config) => {
+    try {
+      const { data } = await axios.get("/api/auth/jwt");
+      if (data.token) {
+        // console.log("api/axiosConfig: Token from axios interceptor", data.token);
+        config.headers.Authorization = `Bearer ${data.token}`;
+      }
+    } catch (error) {
+      // console.log(
+      //   "api/axiosConfig: Error fetching token in interceptor, this is likely due to there being no active session",
+      // );
+    }
+    // console.log("Sent headers", config.headers);
     return config;
   },
   (error) => {

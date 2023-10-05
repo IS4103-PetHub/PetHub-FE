@@ -4,12 +4,12 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { getErrorMessageProps, getMinTableHeight } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { useAddMultipleUsersToUserGroup } from "@/hooks/rbac";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { InternalUser, UserGroup } from "@/types/types";
 import { searchInternalUsers } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
@@ -72,14 +72,7 @@ const AddUsersToUserGroupModal = ({
       handleCloseModal();
     } catch (error: any) {
       notifications.show({
-        title: "Error Assigning User(s)",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Assigning User(s)", error),
       });
     }
   };

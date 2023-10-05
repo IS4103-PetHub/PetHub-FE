@@ -15,14 +15,14 @@ const useStyles = createStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: "rgba(0,8,18,0.5)",
   },
 }));
 
 const Banner = () => {
   const { classes } = useStyles();
   return (
-    <BackgroundImage src="pet-banner.jpg">
+    <BackgroundImage src="/pet-banner.jpg">
       <Container className={classes.inner} fluid>
         <Box p="10vw">
           <Text size="3rem" weight="600" color="white">

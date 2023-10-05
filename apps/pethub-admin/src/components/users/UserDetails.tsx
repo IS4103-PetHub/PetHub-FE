@@ -17,14 +17,18 @@ import { IconCheck } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import {
+  AccountTypeEnum,
+  formatStringToLetterCase,
+  getErrorMessageProps,
+} from "shared-utils";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import {
   useDeleteInternalUser,
   useUpdateInternalUser,
 } from "@/hooks/internal-user";
 import { useGetPermissionsByUserIdAndAccountType } from "@/hooks/rbac";
-import { AccountTypeEnum, InternalUserRoleEnum } from "@/types/constants";
+import { InternalUserRoleEnum } from "@/types/constants";
 import {
   InternalUser,
   Permission,
@@ -32,13 +36,13 @@ import {
   PetOwner,
   User,
 } from "@/types/types";
-type UserDetailsProps = {
+interface UserDetailsProps {
   user: PetOwner | PetBusiness | InternalUser | null;
   onUserDeleted?: (success: boolean) => void;
   onUserUpdated?: (success: boolean) => void;
   sessionUserId?: number;
   disabled?: boolean;
-};
+}
 
 const getUserName = (user: any): string => {
   switch (user.accountType) {
@@ -287,14 +291,14 @@ const PetOwnerDetails = ({
 );
 
 //Delete Logic
-type DeleteAccountModalProps = {
+interface DeleteAccountModalProps {
   closeDeleteModal: () => void;
   opened: boolean;
   name: string;
   userId: number;
   onUserDeleted: (success: boolean) => void;
   sessionUserId: number;
-};
+}
 
 const DeleteAccountModal = ({
   closeDeleteModal,
@@ -330,14 +334,7 @@ const DeleteAccountModal = ({
       } catch (error: any) {
         onUserDeleted(false);
         notifications.show({
-          title: "Error Deleting Account",
-          color: "red",
-          icon: <IconX />,
-          message:
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message,
+          ...getErrorMessageProps("Error Deleting Account", error),
         });
       }
     } else {
@@ -346,7 +343,7 @@ const DeleteAccountModal = ({
         title: "Error Deleting Account",
         color: "red",
         icon: <IconX />,
-        message: "You are trying to delete yourself!",
+        message: "You cannot delete your own account!",
       });
     }
   };
@@ -383,12 +380,12 @@ const DeleteAccountModal = ({
 };
 
 //Update Logic
-type UpdateInternalUserModalProps = {
+interface UpdateInternalUserModalProps {
   closeUpdateModal: () => void;
   opened: boolean;
   user: InternalUser;
   onUserUpdated: (success: boolean) => void;
-};
+}
 
 const UpdateInternalUserModal = ({
   closeUpdateModal,
@@ -420,10 +417,7 @@ const UpdateInternalUserModal = ({
     } catch (error: any) {
       onUserUpdated(false);
       notifications.show({
-        title: "Error Updating Account",
-        color: "red",
-        icon: <IconX />,
-        message: error.message,
+        ...getErrorMessageProps("Error Updating Account", error),
       });
     }
   };
@@ -490,9 +484,6 @@ const UserDetails = ({
     useDisclosure(false);
   const [updateModalOpened, { open: openUpdate, close: closeUpdate }] =
     useDisclosure(false);
-  // const propSessionUserId = sessionUserId || -1;
-  // const propOnUserDeleted = onUserDeleted || ((_success: boolean) => {});
-  // const propOnUserUpdated = onUserUpdated || ((_success: boolean) => {});
 
   const { data: internalUserPermissions = [] } =
     useGetPermissionsByUserIdAndAccountType(user?.userId, user?.accountType);

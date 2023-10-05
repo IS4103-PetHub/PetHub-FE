@@ -4,6 +4,7 @@ import sortBy from "lodash/sortBy";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useEffect, useState } from "react";
 import { getMinTableHeight } from "shared-utils";
+import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -11,7 +12,6 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
-import { EMPTY_STATE_DELAY_MS, TABLE_PAGE_SIZE } from "@/types/constants";
 import { PetBusiness } from "@/types/types";
 import { searchPetBusinesses } from "@/util";
 import { ErrorAlert } from "../common/ErrorAlert";
@@ -32,7 +32,7 @@ export default function PetBusinessTable() {
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetBusiness[]>(petBusinesses);
   const [isSearching, setIsSearching] = useToggle();
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PetBusiness | null>(
     null,
@@ -71,7 +71,7 @@ export default function PetBusinessTable() {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petBusinesses.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
@@ -98,8 +98,7 @@ export default function PetBusinessTable() {
   const renderContent = () => {
     if (petBusinesses.length === 0) {
       if (isLoading) {
-        // still fetching
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       // no records fetched
       return (

@@ -1,4 +1,6 @@
+import { IconX } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { ServiceListing } from "./types";
 
 export function validatePassword(password: string) {
   if (password.length < 8) {
@@ -28,9 +30,45 @@ export function validateChangePassword(password: string, newPassword: string) {
   return validatePassword(newPassword);
 }
 
-export function formatISODateString(dateString: string) {
+export function formatISOLongWithDay(dateString: string) {
+  // e.g. Sat, 1 Sep 2023
+  return dayjs(dateString).format("ddd, D MMM YYYY");
+}
+
+export function formatISODayOnly(dateString: string) {
+  // e.g. Sat
+  return dayjs(dateString).format("ddd");
+}
+
+export function formatISODateLong(dateString: string) {
   // e.g. 1 September 2023
   return dayjs(dateString).format("D MMMM YYYY");
+}
+
+export function formatISODateOnly(dateString: string) {
+  // e.g. 1/9/2023
+  return dayjs(dateString).format("D/M/YYYY");
+}
+
+export function formatISOTimeOnly(dateString: string) {
+  // e.g. 4:00pm
+  return dayjs(dateString).format("h:mma");
+}
+
+export function formatISODayDateTime(dateString: string) {
+  // e.g. Sat
+  return dayjs(dateString).format("ddd D/M/YYYY h:mma");
+}
+
+export function convertMinsToDurationString(mins: number) {
+  const minutes = mins % 60;
+  const hours = Math.floor(mins / 60);
+
+  if (!minutes) {
+    return `${hours}h`;
+  }
+  // e.g. 1h 30min
+  return `${hours}h ${minutes}min`;
 }
 
 // for tables inside pages that have variable length
@@ -48,9 +86,43 @@ export function getMinTableHeight(records?: any[]) {
   }
 }
 
+export function getErrorMessageProps(title: string, error: any) {
+  return {
+    title: title,
+    color: "red",
+    icon: <IconX />,
+    message:
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message,
+  };
+}
+
 export function formatStringToLetterCase(enumString: string) {
   return enumString
     .replace(/_/g, " ")
     .toLowerCase()
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export const formatEnumValueToLowerCase = (value: string) => {
+  return value.replace(/_/g, " ").toLowerCase();
+};
+
+export function searchServiceListingsForPB(
+  serviceListings: ServiceListing[],
+  searchStr: string,
+) {
+  return serviceListings.filter((serviceListing: ServiceListing) => {
+    const formattedCategory = formatEnumValueToLowerCase(
+      serviceListing.category,
+    );
+    const formattedTags = serviceListing.tags.map((tag) =>
+      tag.name.toLowerCase(),
+    );
+    return (
+      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
+      formattedCategory.includes(searchStr.toLowerCase()) ||
+      formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
+    );
+  });
 }

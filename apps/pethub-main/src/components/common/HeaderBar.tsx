@@ -8,11 +8,11 @@ import {
   Button,
   Burger,
   rem,
-  Text,
+  Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
@@ -67,27 +67,27 @@ const links: {
   links: { link: string; label: string }[] | undefined;
 }[] = [
   {
-    link: "/services",
+    link: "/service-listings?category=",
     label: "Explore services",
     links: [
       {
-        link: "/services/boarding",
+        link: "/service-listings?category=PET_BOARDING",
         label: "Pet boarding",
       },
       {
-        link: "/services/grooming",
+        link: "/service-listings?category=PET_GROOMING",
         label: "Pet grooming",
       },
       {
-        link: "/services/vet",
+        link: "/service-listings?category=VETERINARY",
         label: "Veterinary",
       },
       {
-        link: "/services/dining",
+        link: "/service-listings?category=DINING",
         label: "Dining",
       },
       {
-        link: "/services/retail",
+        link: "/service-listings?category=PET_RETAIL",
         label: "Pet retail",
       },
     ],
@@ -102,10 +102,20 @@ const links: {
     label: "Help",
     links: undefined,
   },
+
   {
     link: "/customer/account",
     label: "My account",
-    links: undefined,
+    links: [
+      {
+        link: "/customer/favourites?category=",
+        label: "My favourites",
+      },
+      {
+        link: "/customer/appointments",
+        label: "My appointments",
+      },
+    ],
   },
 ];
 
@@ -126,7 +136,9 @@ const HeaderBar = () => {
     }
 
     const menuItems = link.links?.map((item) => (
-      <Menu.Item key={item.link}>{item.label}</Menu.Item>
+      <Menu.Item key={item.link}>
+        <Link href={item.link}>{item.label}</Link>
+      </Menu.Item>
     ));
 
     if (menuItems) {
@@ -168,14 +180,13 @@ const HeaderBar = () => {
             size="sm"
             color="white"
           />
-          <Text
-            size="xl"
-            weight={600}
-            color="white"
+          <Image
+            src="/pethub-logo-white.png"
+            height={30}
+            mt={-5}
             onClick={() => router.push("/")}
-          >
-            PetHub
-          </Text>
+            alt="PetHub Logo"
+          />
         </Group>
         <Group spacing={5} className={classes.links}>
           {items}
@@ -183,7 +194,8 @@ const HeaderBar = () => {
         <Group position="right">
           {session ? (
             <Button
-              size="md"
+              leftIcon={<IconLogout size="1.25rem" />}
+              size="sm"
               radius="md"
               onClick={() => {
                 notifications.show({

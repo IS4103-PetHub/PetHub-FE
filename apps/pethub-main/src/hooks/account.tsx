@@ -1,17 +1,15 @@
-import { QueryClient, useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import api from "@/api/axiosConfig";
 
-const USERS_API = "api/users";
+const USERS_API = "/users";
 
-export const useDeactivateAccount = (queryClient: QueryClient) => {
+export const useDeactivateAccount = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
-      );
+      const { userId, ...payloadWithoutId } = payload;
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${USERS_API}/${payload.userId}/deactivate-user`,
+        await api.patch(
+          `${USERS_API}/${userId}/deactivate-user`,
           payloadWithoutId,
         )
       ).data;
@@ -19,15 +17,13 @@ export const useDeactivateAccount = (queryClient: QueryClient) => {
   });
 };
 
-export const useActivateAccount = (queryClient: QueryClient) => {
+export const useActivateAccount = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(([key]) => !["userId"].includes(key)),
-      );
+      const { userId, ...payloadWithoutId } = payload;
       return (
-        await axios.patch(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${USERS_API}/${payload.userId}/activate-user`,
+        await api.patch(
+          `${USERS_API}/${userId}/activate-user`,
           payloadWithoutId,
         )
       ).data;

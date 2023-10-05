@@ -1,15 +1,18 @@
 import { Container, useMantineTheme, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
 import React, { useState, useEffect } from "react";
-import { ForgotPasswordPayload } from "shared-utils";
+import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
+import { AccountTypeEnum } from "shared-utils";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
-import { AccountTypeEnum } from "@/types/constants";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
 
@@ -26,6 +29,10 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
     useState(false);
   const [isSubmitButtonLoading, setIsSubmitButtonLoading] = useState(false);
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
+
+  const cookies = parseCookies();
+  const originalPath = cookies.originalPath || "/";
 
   // Reset the entire modal (including forms, states etc) if it is closed and re-opened
   useEffect(() => {
@@ -78,8 +85,8 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
 
   const handleLogin = async (values: LoginFormValues) => {
     const res = await signIn("credentials", {
-      callbackUrl: "/",
-      redirect: false,
+      callbackUrl: originalPath,
+      redirect: true,
       email: values.email,
       password: values.password,
       accountType: values.accountType,
@@ -89,7 +96,6 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         title: "Login Failed",
         message: "Invalid Credentials",
         color: "red",
-        autoClose: 5000,
       });
     } else {
       const session = await getSession();
@@ -97,7 +103,8 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         session &&
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
-        router.push("/business/dashboard");
+        showOverlay();
+        // The middleware will force a redirect to the business dashboard here
       }
       close();
     }
@@ -117,11 +124,7 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     } catch (e: AxiosError | any) {
       setIsSubmitButtonLoading(false);
       notifications.show({
-        message:
-          (e.response && e.response.data && e.response.data.message) ||
-          e.message,
-        color: "red",
-        autoClose: 5000,
+        ...getErrorMessageProps("Error Encountered", e),
       });
     }
   };

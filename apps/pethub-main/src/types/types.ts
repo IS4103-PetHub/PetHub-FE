@@ -2,9 +2,13 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   BusinessApplicationStatusEnum,
+  Address,
   PetBusinessTypeEnum,
   ServiceCategoryEnum,
-} from "./constants";
+  ServiceListing,
+  GenderEnum,
+} from "shared-utils";
+import { PetTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -61,16 +65,7 @@ export interface PetOwner extends User {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-}
-
-export interface Address {
-  addressId?: string;
-  addressName: string;
-  line1: string;
-  line2: string;
-  postalCode: string;
-  petBusinessId?: Number;
-  petBusinessApplicationId?: Number;
+  favouriteListings?: ServiceListing[];
 }
 
 export interface BusinessApplicationApprover {
@@ -111,27 +106,6 @@ export interface PetBusinessApplication {
 /*
  * SERVICE MANAGEMENT
  */
-export interface ServiceListing {
-  serviceListingId: number;
-  title: string;
-  description: string;
-  basePrice: number;
-  category: ServiceCategoryEnum;
-  tags: Tag[];
-  // address
-  dateCreated: string;
-  lastUpdated?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  addresses: Address[];
-}
-
-export interface Tag {
-  tagId: number;
-  name: string;
-  dateCreated: string;
-  lastUpdated?: string;
-}
 
 export interface CreateServiceListingPayload {
   title: string;
@@ -143,6 +117,8 @@ export interface CreateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
+  duration: number;
 }
 
 export interface UpdateServiceListingPayload {
@@ -155,4 +131,93 @@ export interface UpdateServiceListingPayload {
   tagIds: number[];
   files: File[];
   addressIds: number[];
+  calendarGroupId: number;
+  duration: number;
+}
+
+/*
+ * TUI Calendar
+ */
+
+export interface tuiEvent {
+  id: string;
+  title: string;
+  calendarId: string;
+  start: string; // ISO FORMAT
+  end: string; // ISO FORMAT
+}
+
+export interface tuiCalendar {
+  id: string;
+  name: string;
+  backgroundColor: string;
+  borderColor: string;
+}
+
+/*
+ * Pet
+ */
+
+export interface Pet {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight?: number;
+  dateOfBirth?: string;
+  microchipNumber?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+export interface PetPayload {
+  petId: number;
+  petOwnerId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight: number;
+  dateOfBirth: string;
+  microchipNumber: string;
+  files: File[];
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+/*
+ * Appointment Booking
+ */
+
+export interface Timeslot {
+  calendarGroupId: number;
+  timeSlotId: number;
+  startTime: string;
+  endTime: string;
+  vacancies: number;
+}
+
+export interface Booking {
+  bookingId: number;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated?: string;
+  startTime: string;
+  endTime: string;
+  timeSlotId: number;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
+  // pet owner and pet details (optional)
+  petOwner?: PetOwner;
+  petId?: number;
+  pet?: Pet;
+  // not yet implemented
+  invoiceId?: number;
+  transactionId?: number;
+}
+
+export interface AddRemoveFavouriteServiceListingPayload {
+  serviceListingId: number;
+  userId: number;
 }

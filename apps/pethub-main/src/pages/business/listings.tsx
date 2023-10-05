@@ -5,23 +5,25 @@ import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
+import {
+  AccountTypeEnum,
+  EMPTY_STATE_DELAY_MS,
+  ServiceListing,
+  TABLE_PAGE_SIZE,
+  searchServiceListingsForPB,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import ServiceListingModal from "@/components/service/ServiceListingModal";
-import ServiceListTable from "@/components/service/ServiceListingTable";
+import ServiceListingModal from "@/components/service-listing-management/ServiceListingModal";
+import ServiceListTable from "@/components/service-listing-management/ServiceListingTable";
+import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
-import { useGetServiceListingByPetBusinessIdAndAccountType } from "@/hooks/service-listing";
+import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import {
-  AccountTypeEnum,
-  EMPTY_STATE_DELAY_MS,
-  TABLE_PAGE_SIZE,
-} from "@/types/constants";
-import { ServiceListing } from "@/types/types";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
@@ -35,7 +37,9 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     data: serviceListings = [],
     isLoading,
     refetch: refetchServiceListings,
-  } = useGetServiceListingByPetBusinessIdAndAccountType(userId);
+  } = useGetServiceListingByPetBusinessId(userId);
+
+  const { data: calendarGroups = [] } = useGetCalendarGroupByPBId(userId);
 
   /*
    * Component State
@@ -49,7 +53,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
-  const [hasNoFetchedRecords, sethasNoFetchedRecords] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const { data: tags } = useGetAllTags();
   const [petBusiness, setPetBusiness] = useState(null);
   const { data: petBusinessData } = useGetPetBusinessByIdAndAccountType(
@@ -95,7 +99,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
-        sethasNoFetchedRecords(true);
+        setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
@@ -111,24 +115,10 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       setPage(1);
       return;
     }
-    // search by id or name
-    const formatEnumValue = (value: string) => {
-      return value.replace(/_/g, " ").toLowerCase();
-    };
 
-    // Search by title or category
+    // Search by title, category, tag
     setIsSearching(true);
-    const results = serviceListings.filter((serviceListing: ServiceListing) => {
-      const formattedCategory = formatEnumValue(serviceListing.category);
-      const formattedTags = serviceListing.tags.map((tag) =>
-        tag.name.toLowerCase(),
-      );
-      return (
-        serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-        formattedCategory.includes(searchStr.toLowerCase()) ||
-        formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
-      );
-    });
+    const results = searchServiceListingsForPB(serviceListings, searchStr);
     setRecords(results);
     setPage(1);
   };
@@ -136,7 +126,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   const renderContent = () => {
     if (serviceListings.length === 0) {
       if (isLoading) {
-        <CenterLoader />;
+        return <CenterLoader />;
       }
       return (
         <Transition
@@ -176,6 +166,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
             onPageChange={setPage}
             tags={tags}
             addresses={petBusiness ? petBusiness.businessAddresses : []}
+            calendarGroups={calendarGroups}
           />
         )}
       </>
@@ -190,7 +181,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       </Head>
       <Container fluid>
         <Group position="apart">
-          <PageTitle title="Service Listings Management" />
+          <PageTitle title="Service Listing Management" />
           <LargeCreateButton
             text="Create Service Listing"
             onClick={openCreateServiceModal}
@@ -208,6 +199,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
             refetch={refetchServiceListings}
             tags={tags}
             addresses={petBusiness ? petBusiness.businessAddresses : []}
+            calendarGroups={calendarGroups}
           />
         </Group>
         {renderContent()}
@@ -219,7 +211,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return null;
+  if (!session) return { props: {} };
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];

@@ -1,10 +1,10 @@
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import React, { useState, useEffect } from "react";
-import { getMinTableHeight } from "shared-utils";
+import { getErrorMessageProps, getMinTableHeight } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import { useRemoveUserFromUserGroup } from "@/hooks/rbac";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
 import { UserGroup, UserGroupMembership } from "@/types/types";
 import RemoveUserFromGroupButton from "./RemoveUserFromGroupButton";
 
@@ -46,14 +46,7 @@ const MembershipsTable = ({
       refetch();
     } catch (error: any) {
       notifications.show({
-        title: "Error Removing Member",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Removing Member", error),
       });
     }
   };

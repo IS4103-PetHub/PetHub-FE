@@ -1,37 +1,96 @@
-export const enum AccountTypeEnum {
-  PetOwner = "PET_OWNER",
-  PetBusiness = "PET_BUSINESS",
-  InternalUser = "INTERNAL_USER",
+import {
+  IconList,
+  IconBuildingCommunity,
+  IconCut,
+  IconStethoscope,
+  IconToolsKitchen2,
+  IconShoppingBag,
+} from "@tabler/icons-react";
+import { ServiceCategoryEnum } from "shared-utils";
+
+export const serviceListingSortOptions = [
+  {
+    value: "recent",
+    label: "Recently added",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+  {
+    value: "priceLowToHigh",
+    label: "Price (low to high)",
+    attribute: "basePrice",
+    direction: "asc",
+  },
+  {
+    value: "priceHighToLow",
+    label: "Price (high to low)",
+    attribute: "basePrice",
+    direction: "desc",
+  },
+];
+
+export const bookingsSortOptions = [
+  {
+    value: "earliest",
+    label: "Earliest",
+    attribute: "startTime",
+    direction: "asc",
+  },
+  {
+    value: "furthest",
+    label: "Furthest",
+    attribute: "startTime",
+    direction: "desc",
+  },
+];
+
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
 }
 
-export enum PetBusinessTypeEnum {
-  Fnb = "FNB",
-  Service = "SERVICE",
-  Healthcare = "HEALTHCARE",
-}
+// for landing page and service listings sidebar
 
-export const enum AccountStatusEnum {
-  Pending = "PENDING",
-  Active = "ACTIVE",
-  Inactive = "INACTIVE",
-  Suspended = "SUSPENDED",
-}
+export const landingPageCategories = [
+  {
+    icon: IconBuildingCommunity,
+    value: ServiceCategoryEnum.PetBoarding,
+    label: "Pet boarding",
+  },
+  {
+    icon: IconCut,
+    value: ServiceCategoryEnum.PetGrooming,
+    label: "Pet grooming",
+  },
+  {
+    icon: IconStethoscope,
+    value: ServiceCategoryEnum.Veterinary,
+    label: "Veterinary",
+  },
+  {
+    icon: IconToolsKitchen2,
+    value: ServiceCategoryEnum.Dining,
+    label: "Dining",
+  },
+  {
+    icon: IconShoppingBag,
+    value: ServiceCategoryEnum.PetRetail,
+    label: "Pet retail",
+  },
+];
 
-export const enum BusinessApplicationStatusEnum {
-  Notfound = "NOTFOUND",
-  Pending = "PENDING",
-  Rejected = "REJECTED",
-  Approved = "APPROVED",
-}
-
-export enum ServiceCategoryEnum {
-  PetGrooming = "PET_GROOMING",
-  Dining = "DINING",
-  Veterinary = "VETERINARY",
-  PetRetail = "PET_RETAIL",
-  PetBoarding = "PET_BOARDING",
-}
-
-export const TABLE_PAGE_SIZE = 15;
-
-export const EMPTY_STATE_DELAY_MS = 500;
+export const serviceListingSideBarCategories = [
+  { icon: IconList, value: "", label: "All" },
+  ...landingPageCategories,
+];

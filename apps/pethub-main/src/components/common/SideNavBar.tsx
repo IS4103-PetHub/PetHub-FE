@@ -14,6 +14,8 @@ import {
   IconUser,
   IconArticle,
   IconHome2,
+  IconCalendar,
+  IconLogout,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -98,6 +100,11 @@ const data = [
     label: "Service Listings",
     icon: IconBoxMultiple,
   },
+  {
+    link: "/business/calendar-groups",
+    label: "Calendar Groups",
+    icon: IconCalendar,
+  },
 ];
 
 const SideNavBar = () => {
@@ -142,13 +149,14 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>
       {session && (
         <Button
           uppercase
+          leftIcon={<IconLogout size="1.25rem" />}
           onClick={() => {
             notifications.show({
               message: "Logging you out...",
@@ -160,7 +168,7 @@ const SideNavBar = () => {
             });
           }}
         >
-          logout
+          Logout
         </Button>
       )}
     </Navbar>

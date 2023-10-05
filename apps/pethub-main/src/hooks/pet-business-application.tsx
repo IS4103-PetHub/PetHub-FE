@@ -1,35 +1,26 @@
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "@/api/axiosConfig";
 import {
   PetBusinessApplication,
   CreatePetBusinessApplicationPayload,
 } from "@/types/types";
-const PET_BUSINESS_APPLICATION_API = "api/pb-applications";
+const PET_BUSINESS_APPLICATION_API = "/pb-applications";
 
-export const useCreatePetBusinessApplication = (queryClient: QueryClient) => {
+export const useCreatePetBusinessApplication = () => {
   return useMutation({
     mutationFn: async (payload: CreatePetBusinessApplicationPayload) => {
-      return (
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}`,
-          payload,
-        )
-      ).data;
+      return (await api.post(`${PET_BUSINESS_APPLICATION_API}`, payload)).data;
     },
   });
 };
 
-export const useUpdatePetBusinessApplication = (queryClient: QueryClient) => {
+export const useUpdatePetBusinessApplication = () => {
   return useMutation({
     mutationFn: async (payload: any) => {
-      const payloadWithoutId = Object.fromEntries(
-        Object.entries(payload).filter(
-          ([key]) => !["petBusinessApplicationId"].includes(key),
-        ),
-      );
+      const { petBusinessApplicationId, ...payloadWithoutId } = payload;
       return (
-        await axios.put(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/${payload.petBusinessApplicationId}`,
+        await api.put(
+          `${PET_BUSINESS_APPLICATION_API}/${petBusinessApplicationId}`,
           payloadWithoutId,
         )
       ).data;
@@ -44,8 +35,8 @@ export const useGetPetBusinessApplicationByPBId = (
     queryKey: ["pet-business-application", petBusinessApplicationId],
     queryFn: async () => {
       const data = await (
-        await axios.get(
-          `${process.env.NEXT_PUBLIC_DEV_API_URL}/${PET_BUSINESS_APPLICATION_API}/pet-business/${petBusinessApplicationId}`,
+        await api.get(
+          `${PET_BUSINESS_APPLICATION_API}/pet-business/${petBusinessApplicationId}`,
         )
       ).data;
       const petBusinessApplication: PetBusinessApplication = {

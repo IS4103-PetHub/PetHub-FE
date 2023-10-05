@@ -21,18 +21,18 @@ import {
   IconDog,
   IconPawFilled,
   IconPlus,
-  IconX,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession, signIn } from "next-auth/react";
 import React from "react";
-import { validatePassword } from "shared-utils";
+import { getErrorMessageProps, validatePassword } from "shared-utils";
+import { AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
+import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
 import { useCreatePetOwner } from "@/hooks/pet-owner";
-import { AccountTypeEnum } from "@/types/constants";
 import {
   CreatePetBusinessPayload,
   CreatePetOwnerPayload,
@@ -55,6 +55,7 @@ const useStyles = createStyles((theme) => ({
 export default function SignUp() {
   const { classes } = useStyles();
   const router = useRouter();
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
 
   const form = useForm({
     initialValues: {
@@ -116,12 +117,12 @@ export default function SignUp() {
         title: "Login Failed",
         message: "Invalid Credentials",
         color: "red",
-        autoClose: 5000,
       });
     } else {
       const session = await getSession();
       if (session) {
         if (session.user["accountType"] === AccountTypeEnum.PetBusiness) {
+          showOverlay();
           router.push("/business/dashboard");
         } else {
           router.push("/");
@@ -151,14 +152,7 @@ export default function SignUp() {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Account", error),
       });
     }
   };
@@ -183,14 +177,7 @@ export default function SignUp() {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Creating Account",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Creating Account", error),
       });
     }
   };

@@ -6,6 +6,7 @@ import {
   Loader,
   Container,
   MantineProvider,
+  LoadingOverlay,
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import {
@@ -14,18 +15,22 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { Inter } from "next/font/google";
-import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { AccountTypeEnum } from "shared-utils";
+import {
+  LoadingOverlayProvider,
+  useLoadingOverlay,
+} from "web-ui/shared/LoadingOverlayContext";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
-import { AccountTypeEnum } from "@/types/constants";
 import type { AppProps } from "next/app";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export function App({ Component, pageProps }: AppProps) {
+  const { visible } = useLoadingOverlay();
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
   const { data: session, status } = useSession();
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -65,14 +70,7 @@ export function App({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <>
-      <Head>
-        <style jsx global>{`
-          html {
-            font-family: ${inter.style.fontFamily};
-          }
-        `}</style>
-      </Head>
+    <main className={inter.className}>
       <ColorSchemeProvider
         colorScheme={colorScheme}
         toggleColorScheme={toggleColorScheme}
@@ -103,24 +101,40 @@ export function App({ Component, pageProps }: AppProps) {
                       justifyContent: "center",
                     }}
                   >
-                    <Loader size="3rem" />
+                    <Loader size="lg" opacity={0.5} />
                   </Container>
                 ) : (
-                  <Component {...pageProps} />
+                  <>
+                    {visible && (
+                      <LoadingOverlay
+                        visible={visible}
+                        zIndex={1000}
+                        overlayBlur={10}
+                        loaderProps={{
+                          size: "md",
+                          color: "indigo",
+                          variant: "bars",
+                        }}
+                      />
+                    )}
+                    <Component {...pageProps} />
+                  </>
                 )}
               </AppShell>
             </Hydrate>
           </QueryClientProvider>
         </MantineProvider>
       </ColorSchemeProvider>
-    </>
+    </main>
   );
 }
 
 export default function AppProvider(props: any) {
   return (
     <SessionProvider session={props.pageProps.session}>
-      <App {...props} />
+      <LoadingOverlayProvider>
+        <App {...props} />
+      </LoadingOverlayProvider>
     </SessionProvider>
   );
 }

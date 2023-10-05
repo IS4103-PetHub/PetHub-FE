@@ -16,7 +16,9 @@ import {
   IconUserShield,
   IconUsersGroup,
   IconArticle,
+  IconLogout,
 } from "@tabler/icons-react";
+import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
@@ -94,6 +96,11 @@ const data = [
     label: "Pet Business Applications",
     icon: IconArticle,
   },
+  {
+    link: "/admin/service-listings",
+    label: "Service Listings",
+    icon: IconBoxMultiple,
+  },
 ];
 
 const SideNavBar = () => {
@@ -138,13 +145,14 @@ const SideNavBar = () => {
           >
             PetHub Admin
           </Text>
-          <LightDarkModeToggle />
+          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>
       {session && (
         <Button
           uppercase
+          leftIcon={<IconLogout size="1.25rem" />}
           onClick={() => {
             notifications.show({
               message: "Logging you out...",
@@ -156,7 +164,7 @@ const SideNavBar = () => {
             });
           }}
         >
-          logout
+          Logout
         </Button>
       )}
     </Navbar>

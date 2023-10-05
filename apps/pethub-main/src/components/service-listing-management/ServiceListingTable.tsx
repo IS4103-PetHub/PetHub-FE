@@ -1,23 +1,24 @@
-import { Container, Modal, Paper, Group, Button, Badge } from "@mantine/core";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { Group, Badge } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconEye,
-  IconPencil,
-  IconTrashFilled,
-  IconX,
-} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import React, { useState } from "react";
-import { getMinTableHeight } from "shared-utils";
+import {
+  Address,
+  CalendarGroup,
+  ServiceListing,
+  Tag,
+  getErrorMessageProps,
+  getMinTableHeight,
+} from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
+import { TABLE_PAGE_SIZE } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { TABLE_PAGE_SIZE } from "@/types/constants";
-import { Address, ServiceListing, Tag } from "@/types/types";
+import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
@@ -32,6 +33,7 @@ interface ServiceListTableProps {
   onPageChange(p: number): void;
   tags: Tag[];
   addresses: Address[];
+  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
@@ -46,6 +48,7 @@ const ServiceListTable = ({
   onPageChange,
   tags,
   addresses,
+  calendarGroups,
 }: ServiceListTableProps) => {
   /*
    * Component State
@@ -64,23 +67,15 @@ const ServiceListTable = ({
    */
   const handleDeleteService = async (serviceListingId: number) => {
     try {
-      const result =
-        await deleteServiceListingMutation.mutateAsync(serviceListingId);
+      await deleteServiceListingMutation.mutateAsync(serviceListingId);
+      refetch();
       notifications.show({
         message: "Service Successfully Deleted",
         color: "green",
-        autoClose: 5000,
       });
     } catch (error) {
       notifications.show({
-        title: "Error Deleting Service Listing",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Deleting Service Listing", error),
       });
     }
   };
@@ -113,11 +108,14 @@ const ServiceListTable = ({
             width: "10vw",
             render: (record) =>
               record.tags.map((tag, index) => (
-                <React.Fragment key={tag.tagId}>
-                  <Badge color="blue">{tag.name}</Badge>
-                  {index < record.tags.length - 1 && "\u00A0"}{" "}
-                  {/* Add space if not the last tag */}
-                </React.Fragment>
+                <Badge
+                  key={tag.tagId}
+                  color="blue"
+                  mr={index < record.tags.length - 1 ? 5 : 0}
+                  /* Add margin right if not the last tag */
+                >
+                  {tag.name}
+                </Badge>
               )),
           },
           {
@@ -127,7 +125,7 @@ const ServiceListTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return `${record.basePrice.toFixed(2)}`;
+              return formatPriceForDisplay(record.basePrice);
             },
           },
           {
@@ -186,6 +184,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
 
       {/* Update */}
@@ -199,6 +198,7 @@ const ServiceListTable = ({
         refetch={refetch}
         tags={tags}
         addresses={addresses ? addresses : []}
+        calendarGroups={calendarGroups}
       />
     </>
   );
