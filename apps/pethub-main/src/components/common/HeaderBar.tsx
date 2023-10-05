@@ -16,7 +16,11 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useCartOperations } from "@/hooks/cart";
+import CartButton from "../cart/CartButton";
 import { LoginModal } from "../login/LoginModal";
+
 const HEADER_HEIGHT = rem(80);
 
 const useStyles = createStyles((theme) => ({
@@ -103,12 +107,6 @@ const links: {
     links: undefined,
   },
   {
-    link: "/customer/cart",
-    label: "Cart",
-    links: undefined,
-  },
-
-  {
     link: "/customer/account",
     label: "My account",
     links: [
@@ -122,6 +120,11 @@ const links: {
       },
     ],
   },
+  {
+    link: "/customer/cart",
+    label: "Cart",
+    links: undefined,
+  },
 ];
 
 const HeaderBar = () => {
@@ -132,9 +135,21 @@ const HeaderBar = () => {
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
 
+  const { getItemCount, cart } = useCartOperations(session.user["userId"]);
+
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  // const newCart = JSON.parse(JSON.stringify(cart));
+  // setCart(newCart);
+
+  useEffect(() => {
+    console.log("Cart changed:", cart);
+    setCartItemCount(getItemCount());
+  }, [cart]);
+
   const items = links.map((link) => {
     // Only logged in users can see the account tab
-    if (link.label === "My account") {
+    if (link.label === "My account" || link.label === "Cart") {
       if (!session) {
         return null;
       }
@@ -167,6 +182,14 @@ const HeaderBar = () => {
       );
     }
 
+    if (link.label === "Cart") {
+      return (
+        <Link key={link.label} href={link.link} className={classes.link}>
+          <CartButton size={cartItemCount} />
+        </Link>
+      );
+    }
+
     return (
       <Link key={link.label} href={link.link} className={classes.link}>
         {link.label}
@@ -175,7 +198,12 @@ const HeaderBar = () => {
   });
 
   return (
-    <Header height={HEADER_HEIGHT} sx={{ borderBottom: 0 }} mb={120}>
+    <Header
+      height={HEADER_HEIGHT}
+      sx={{ borderBottom: 0 }}
+      mb={120}
+      key={cartItemCount}
+    >
       <Container className={classes.inner} fluid>
         <Group>
           <Burger

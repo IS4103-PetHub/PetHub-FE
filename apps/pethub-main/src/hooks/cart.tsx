@@ -1,22 +1,36 @@
+import { useEffect, useState } from "react";
 import { Cart, CartItem } from "@/types/types";
 import useLocalStorage from "./use-local-storage";
 
 export function useCartOperations(userId: number) {
   const [carts, setCarts] = useLocalStorage<Cart[]>("carts", []);
+  const [cart, setCart] = useState<Cart>(
+    carts.find((c) => c.userId === userId) || {
+      userId,
+      subtotal: 0,
+      itemCount: 0,
+      cartItems: [],
+    },
+  );
 
-  const cart = carts.find((c) => c.userId === userId) || {
-    userId,
-    subtotal: 0,
-    itemCount: 0,
-    cartItems: [],
-  };
+  useEffect(() => {
+    const userCart = carts.find((c) => c.userId === userId) || {
+      userId,
+      subtotal: 0,
+      itemCount: 0,
+      cartItems: [],
+    };
+    setCart(userCart);
+  }, [carts, userId]);
 
   // Set the cart for the specific user only (since 1 browser can have multiple users)
   const setCartForUser = async (updatedCart: Cart) => {
+    console.log("Setting cart for user:", updatedCart);
     const updatedCarts = carts
       .filter((c) => c.userId !== userId)
       .concat(updatedCart);
     setCarts(updatedCarts);
+    setCart(updatedCart);
   };
 
   // Happens every add, update or remove

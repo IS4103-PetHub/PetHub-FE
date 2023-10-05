@@ -182,7 +182,7 @@ export default function ServiceListingDetails({
       open(); // Handle add to cart in the modal
     } else {
       try {
-        addItemToCart({
+        await addItemToCart({
           serviceListing: serviceListing,
         } as CartItem);
         notifications.show({
