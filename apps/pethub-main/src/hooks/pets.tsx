@@ -23,7 +23,7 @@ export const useCreatePet = () => {
       formData.append("petName", payload.petName);
       formData.append("petType", payload.petType);
       formData.append("gender", payload.gender);
-      formData.append("petWeight", payload.petWeight.toString());
+      formData.append("weight", payload.petWeight.toString());
       if (payload.dateOfBirth) {
         formData.append("dateOfBirth", payload.dateOfBirth);
       }
@@ -56,7 +56,7 @@ export const useUpdatePet = () => {
       formData.append("petName", payload.petName);
       formData.append("petType", payload.petType);
       formData.append("gender", payload.gender);
-      formData.append("petWeight", payload.petWeight.toString());
+      formData.append("weight", payload.petWeight.toString());
       formData.append("dateOfBirth", payload.dateOfBirth);
       formData.append("microchipNumber", payload.microchipNumber);
       payload.files.forEach((file) => {
