@@ -56,7 +56,7 @@ const CartItemCard = ({
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(quantity || 1);
-  const hasProcessedCheckboxDisabled = useRef(false);
+  const hasProcessedCheckboxDisabled = useRef(false); // Track the thing even through re-renders from other state changes
 
   // Always call the hook, but the hook should not run if any of these are null due to the enabled property
   const shouldFetch = bookingSelection && serviceListing.calendarGroupId;
@@ -74,6 +74,7 @@ const CartItemCard = ({
       : false;
 
   useEffect(() => {
+    // This ideally should be replaced with timeslot checking in the parent page (cart), but laze coz will have to change a lot of things for this
     if (isCheckboxDisabled && !hasProcessedCheckboxDisabled.current) {
       onCheckedChange(false);
       setCardExpired(true);
@@ -84,12 +85,6 @@ const CartItemCard = ({
       hasProcessedCheckboxDisabled.current = false;
     }
   }, [isCheckboxDisabled, onCheckedChange]);
-
-  //   useEffect(() => {
-  //     if (serviceListing.calendarGroupId && availTimeslots.length === 0) {
-  //       setCardExpired();
-  //     }
-  //   }, [availTimeslots]);
 
   useEffect(() => {
     setValue(quantity || 1);
