@@ -38,6 +38,7 @@ interface CartItemCardProps {
   checked: boolean;
   onCheckedChange: (checked: any) => void;
   setItemQuantity: (cartItemId: number, quantity: number) => void;
+  removeItem: () => void;
   quantity?: number;
 }
 
@@ -48,6 +49,7 @@ const CartItemCard = ({
   checked,
   onCheckedChange,
   setItemQuantity,
+  removeItem,
   quantity,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
@@ -63,6 +65,11 @@ const CartItemCard = ({
       shouldFetch ? serviceListing.duration : null,
     );
 
+  const isCheckboxDisabled =
+    serviceListing.calendarGroupId && availTimeslots.length === 0
+      ? true
+      : false;
+
   useEffect(() => {
     setValue(quantity || 1);
   }, [quantity]);
@@ -72,61 +79,57 @@ const CartItemCard = ({
     setItemQuantity(itemId, newQuantity);
   };
 
-  console.log("SLID", serviceListing.serviceListingId);
-  console.log("PETID", bookingSelection?.petId);
-  console.log("Start", bookingSelection?.startTime);
-  console.log("End", bookingSelection?.endTime);
-  console.log("availTimeslots", availTimeslots);
+  //   console.log("CGID", serviceListing.calendarGroupId);
+  //   console.log("SLID", serviceListing.serviceListingId);
+  //   console.log("PETID", bookingSelection?.petId);
+  //   console.log("Start", bookingSelection?.startTime);
+  //   console.log("End", bookingSelection?.endTime);
+  //   console.log("availTimeslots", availTimeslots);
 
   return (
     <Card
       withBorder
       mb="lg"
-      mah={220}
-      mih={220}
+      mah={250}
+      mih={250}
       sx={{ backgroundColor: theme.colors.gray[0] }}
       radius="lg"
     >
       <Group position="apart" mb="xs">
         <Center>
           <Checkbox
-            color="cyan"
             mr="md"
-            checked={checked}
+            checked={
+              !serviceListing.calendarGroupId
+                ? checked
+                : checked && availTimeslots.length > 0
+            }
+            disabled={isCheckboxDisabled}
             onChange={(event) => onCheckedChange(event.currentTarget.checked)}
           />
           <CartItemBadge
-            text={`Duration: ${serviceListing.duration} minutes`}
-            type="DURATION"
-          />
-        </Center>
-        <Box>
-          {!serviceListing.calendarGroupId && (
-            <CartItemBadge
-              text={`Unit price: $${formatPriceForDisplay(
-                serviceListing.basePrice,
-              )}`}
-              type="UNITPRICE"
-              variant="dot"
-              square={true}
-            />
-          )}
-          &nbsp;
-          <CartItemBadge
-            text={`Item total: $${formatPriceForDisplay(
-              quantity
-                ? serviceListing.basePrice * quantity
-                : serviceListing.basePrice,
+            text={`Duration: ${convertMinsToDurationString(
+              serviceListing.duration,
             )}`}
-            type="TOTALPRICE"
+            type="DURATION"
             variant="dot"
             square={true}
           />
-        </Box>
+        </Center>
+        <Center>
+          <Button variant="subtle" onClick={removeItem}>
+            Remove item
+          </Button>
+        </Center>
       </Group>
       <Divider mt={1} mb="xs" />
-      <Grid>
-        <Grid.Col span={2} mr={5}>
+      <Grid
+        columns={24}
+        sx={{
+          height: "100%",
+        }}
+      >
+        <Grid.Col span={4} mt="xs">
           {serviceListing?.attachmentURLs?.length > 0 ? (
             <Image
               radius="md"
@@ -145,65 +148,104 @@ const CartItemCard = ({
             />
           )}
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={15}>
           <Box>
             <Text fw={600} size={18}>
-              {serviceListing.title}
+              {serviceListing.title} &nbsp;
+              <CartItemBadge
+                text={serviceListing.petBusiness?.companyName}
+                type="PETBUSINESS"
+                variant="light"
+                square={true}
+                size="md"
+                mb="xs"
+              />
             </Text>
-            <CartItemBadge
-              text={serviceListing.petBusiness?.companyName}
-              type="PETBUSINESS"
-              variant="gradient"
-              square={true}
-              size="md"
-              mb="xs"
-            />
-            <ServiceListingTags tags={serviceListing.tags} />
-            <Text size={12} mt="xs">
-              {serviceListing.description.length > 200
-                ? serviceListing.description.substring(0, 200) + "..."
+            <Text size={12} mb="xs">
+              {serviceListing.description.length > 150
+                ? serviceListing.description.substring(0, 150) + "..."
                 : serviceListing.description}
             </Text>
+            <Box>
+              {!serviceListing.calendarGroupId ? (
+                <NumberInputWithIcons
+                  value={value}
+                  setValue={handleQuantityChange}
+                  min={0}
+                  max={20}
+                  step={1}
+                />
+              ) : (
+                <Alert
+                  variant="light"
+                  color={availTimeslots.length > 0 ? "teal" : "red"}
+                  title={
+                    availTimeslots.length > 0
+                      ? "Booking selection"
+                      : "Selected time slot unavailable"
+                  }
+                  radius="md"
+                  mih={80}
+                  mah={80}
+                  miw={475}
+                  maw={475}
+                >
+                  {availTimeslots.length > 0 ? (
+                    <Text size="xs">
+                      <b>Start:</b>{" "}
+                      {formatISODayDateTime(bookingSelection?.startTime)}{" "}
+                      &nbsp;&nbsp;
+                      <b>End:</b>{" "}
+                      {formatISODayDateTime(bookingSelection?.endTime)}{" "}
+                      &nbsp;&nbsp;
+                      {bookingSelection?.petName && (
+                        <>
+                          <b>Pet:</b> {bookingSelection?.petName}
+                        </>
+                      )}
+                    </Text>
+                  ) : (
+                    <Text>
+                      Please remove this item and re-attempt time slot
+                      selection.
+                    </Text>
+                  )}
+                </Alert>
+              )}
+            </Box>
           </Box>
         </Grid.Col>
-        <Grid.Col span={3} ml={65}>
-          <Group position="right">
-            {!serviceListing.calendarGroupId ? (
-              <NumberInputWithIcons
-                value={value}
-                setValue={handleQuantityChange}
-                min={0}
-                max={20}
-                step={1}
-              />
-            ) : availTimeslots.length > 0 ? (
-              <Alert
-                variant="outline"
-                color="cyan"
-                title="Booking selection"
-                radius="md"
-                mih={140}
-                mah={140}
-                miw={230}
-                maw={230}
-              >
-                <Text size="xs">
-                  <b>Start:</b>{" "}
-                  {formatISODayDateTime(bookingSelection?.startTime)}
-                </Text>
-                <Text size="xs">
-                  <b>End:</b> {formatISODayDateTime(bookingSelection?.endTime)}
-                </Text>
-                {bookingSelection?.petName && (
-                  <Text size="xs">
-                    <b>Pet:</b> {bookingSelection?.petName}
-                  </Text>
-                )}
-              </Alert>
-            ) : (
-              <>Your selected timeslot is no longer available</>
-            )}
-          </Group>
+        <Grid.Col
+          span={5}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+          }}
+        >
+          {!serviceListing.calendarGroupId && (
+            <CartItemBadge
+              fullWidth
+              text={`Unit $${formatPriceForDisplay(serviceListing.basePrice)}`}
+              type="UNITPRICE"
+              variant="outline"
+              square={true}
+              size="xl"
+            />
+          )}
+          <CartItemBadge
+            fullWidth
+            text={`Total $${formatPriceForDisplay(
+              quantity
+                ? serviceListing.basePrice * quantity
+                : serviceListing.basePrice,
+            )}`}
+            type="TOTALPRICE"
+            variant="gradient"
+            square={true}
+            size="xl"
+          />
         </Grid.Col>
       </Grid>
     </Card>

@@ -107,7 +107,6 @@ export default function Cart({ userId }: CartProps) {
               <Group position="apart">
                 <Checkbox
                   label="Select all"
-                  color="cyan"
                   checked={areAllChecked}
                   onChange={(event) =>
                     handleAllCheckChange(event.currentTarget.checked)
@@ -130,6 +129,9 @@ export default function Cart({ userId }: CartProps) {
                 }
                 quantity={item.quantity}
                 setItemQuantity={setItemQuantity}
+                removeItem={async () =>
+                  await removeItemFromCart(item.cartItemId)
+                }
               />
             ))}
           </Grid.Col>
