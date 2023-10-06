@@ -184,6 +184,8 @@ export default function ServiceListingDetails({
       try {
         await addItemToCart({
           serviceListing: serviceListing,
+          dateAdded: new Date(),
+          ...(serviceListing.calendarGroupId ? {} : { quantity: 1 }), // No CG = not singular, so add quantity
         } as CartItem);
         notifications.show({
           title: "Added to cart",

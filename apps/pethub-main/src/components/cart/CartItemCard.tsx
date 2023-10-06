@@ -33,12 +33,14 @@ interface CartItemCardProps {
   serviceListing: ServiceListing;
   bookingSelection: CartItemBookingSelection;
   checked: boolean;
+  onCheckedChange: (checked: any) => void;
 }
 
 const CartItemCard = ({
   serviceListing,
   bookingSelection,
   checked,
+  onCheckedChange,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(1); // Change to value from prop
@@ -56,7 +58,12 @@ const CartItemCard = ({
     >
       <Group position="apart" mb="xs">
         <Center>
-          <Checkbox defaultChecked color="cyan" mr="md" />
+          <Checkbox
+            color="cyan"
+            mr="md"
+            checked={checked}
+            onChange={(event) => onCheckedChange(event.currentTarget.checked)}
+          />
           <CartItemBadge
             text={`Duration: ${serviceListing.duration} minutes`}
             type="DURATION"

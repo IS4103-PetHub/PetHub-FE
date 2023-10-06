@@ -224,9 +224,10 @@ export interface AddRemoveFavouriteServiceListingPayload {
 }
 
 export interface CartItem {
-  cartItemId?: number;
+  cartItemId?: number; // Added to cart order, basically corresponds to date added
   serviceListing: ServiceListing;
-  bookingSelection: CartItemBookingSelection;
+  bookingSelection?: CartItemBookingSelection;
+  quantity?: number;
 }
 
 export interface CartItemBookingSelection {

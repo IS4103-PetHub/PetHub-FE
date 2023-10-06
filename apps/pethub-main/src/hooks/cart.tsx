@@ -23,6 +23,22 @@ export function useCartOperations(userId: number) {
     setCart(userCart);
   }, [carts, userId]);
 
+  /* ============================================== Helper Functions ============================================== */
+
+  // Happens every add, update or remove
+  const recalculateSubtotal = (cartItems: CartItem[]) => {
+    return cartItems.reduce((acc, item) => {
+      const itemPrice = item.serviceListing.basePrice || 0;
+      const itemQuantity = item.quantity || 1;
+      return acc + itemPrice * itemQuantity;
+    }, 0);
+  };
+
+  // Happens every add, update or remove to ensure cartItemId is always in order and starting from 1
+  const recalculateCartItemId = (cartItems: CartItem[]) => {
+    return cartItems.map((item, index) => ({ ...item, cartItemId: index + 1 }));
+  };
+
   // Set the cart for the specific user only (since 1 browser can have multiple users)
   const setCartForUser = async (updatedCart: Cart) => {
     console.log("Setting cart for user:", updatedCart);
@@ -33,20 +49,23 @@ export function useCartOperations(userId: number) {
     setCart(updatedCart);
   };
 
-  // Happens every add, update or remove
-  const recalculateSubtotal = (cartItems: CartItem[]) => {
-    return cartItems.reduce(
-      (acc, item) => acc + (item.serviceListing.basePrice || 0),
-      0,
-    );
-  };
-
-  // Happens every add, update or remove to ensure cartItemId is always in order and starting from 1
-  const recalculateCartItemId = (cartItems: CartItem[]) => {
-    return cartItems.map((item, index) => ({ ...item, cartItemId: index + 1 }));
-  };
+  /* ============================================== Helper Functions ============================================== */
 
   const addItemToCart = async (item: CartItem) => {
+    if (!item.serviceListing.calendarGroupId) {
+      const existingItem = cart.cartItems.find(
+        (cartItem) =>
+          cartItem.serviceListing.serviceListingId ===
+          item.serviceListing.serviceListingId,
+      );
+
+      // Item doesn't have a CG and already exists in cart, increment its quantity
+      if (existingItem) {
+        return incrementItemQuantity(existingItem.cartItemId);
+      }
+    }
+
+    // Item has a CG and hence is singular, add it to cart regardless
     const newCartItems = [...cart.cartItems, item];
     const recalculatedCartItems = recalculateCartItemId(newCartItems);
     setCartForUser({
@@ -57,16 +76,32 @@ export function useCartOperations(userId: number) {
     });
   };
 
-  const updateItemInCart = async (
-    cartItemId: number,
-    updatedItem: CartItem,
-  ) => {
+  const incrementItemQuantity = async (cartItemId: number) => {
     const itemIndex = cart.cartItems.findIndex(
       (item) => item.cartItemId === cartItemId,
     );
-    if (itemIndex !== -1) {
+    if (itemIndex !== -1 && cart.cartItems[itemIndex]?.quantity) {
       const newCartItems = [...cart.cartItems];
-      newCartItems[itemIndex] = updatedItem;
+      newCartItems[itemIndex].quantity += 1;
+      const recalculatedCartItems = recalculateCartItemId(newCartItems);
+      setCartForUser({
+        ...cart,
+        subtotal: recalculateSubtotal(recalculatedCartItems),
+        cartItems: recalculatedCartItems,
+      });
+    }
+  };
+
+  const decrementItemQuantity = async (cartItemId: number) => {
+    const itemIndex = cart.cartItems.findIndex(
+      (item) => item.cartItemId === cartItemId,
+    );
+    if (itemIndex !== -1 && cart.cartItems[itemIndex]?.quantity) {
+      const newCartItems = [...cart.cartItems];
+      newCartItems[itemIndex].quantity -= 1;
+      if (newCartItems[itemIndex].quantity === 0) {
+        newCartItems.splice(itemIndex, 1);
+      }
       const recalculatedCartItems = recalculateCartItemId(newCartItems);
       setCartForUser({
         ...cart,
@@ -117,7 +152,8 @@ export function useCartOperations(userId: number) {
   return {
     cart,
     addItemToCart,
-    updateItemInCart,
+    incrementItemQuantity,
+    decrementItemQuantity,
     removeItemFromCart,
     getCartItems,
     getCartItem,

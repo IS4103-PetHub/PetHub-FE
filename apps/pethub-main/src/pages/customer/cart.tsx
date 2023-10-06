@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
@@ -26,7 +26,6 @@ export default function Cart({ userId }: CartProps) {
   const {
     cart,
     addItemToCart,
-    updateItemInCart,
     removeItemFromCart,
     getCartItems,
     getCartItem,
@@ -36,18 +35,39 @@ export default function Cart({ userId }: CartProps) {
   } = useCartOperations(userId);
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
+  const [checkedItems, setCheckedItems] = useState({});
 
   useEffect(() => {
     setCartItems(getCartItems());
+    const initialCheckedState = {};
+    cartItems.forEach((item) => {
+      initialCheckedState[item.cartItemId] = true;
+    });
+    setCheckedItems(initialCheckedState);
   }, [cart]);
 
-  function toggleAction() {
-    clearCart();
+  function handleItemCheckChange(cartItemId, isChecked) {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [cartItemId]: isChecked,
+    }));
+  }
+
+  function handleAllCheckChange(isChecked) {
+    const newState = {};
+    cartItems.forEach((item) => {
+      newState[item.cartItemId] = isChecked;
+    });
+    setCheckedItems(newState);
   }
 
   function checkout() {
     console.log("checkout");
   }
+
+  const areAllChecked = Object.values(checkedItems).every(
+    (isChecked) => isChecked,
+  );
 
   return (
     <>
@@ -59,7 +79,7 @@ export default function Cart({ userId }: CartProps) {
         <Grid gutter="xl">
           <Grid.Col span={9}>
             <Group position="apart">
-              <PageTitle title="My Cart" mb="lg" />
+              <PageTitle title={`My Cart (${getItemCount()})`} mb="lg" />
             </Group>
           </Grid.Col>
           <Grid.Col span={9}>
@@ -69,14 +89,29 @@ export default function Cart({ userId }: CartProps) {
               sx={{ backgroundColor: theme.colors.gray[0] }}
               radius="lg"
             >
-              <Checkbox defaultChecked label="Select all" color="cyan" />
+              <Group position="apart">
+                <Checkbox
+                  label="Select all"
+                  color="cyan"
+                  checked={areAllChecked}
+                  onChange={(event) =>
+                    handleAllCheckChange(event.currentTarget.checked)
+                  }
+                />
+                <Button variant="subtle" onClick={() => clearCart()}>
+                  Clear all items
+                </Button>
+              </Group>
             </Card>
             {cartItems.map((item) => (
               <CartItemCard
                 key={item.cartItemId}
                 serviceListing={item.serviceListing}
                 bookingSelection={item.bookingSelection}
-                checked={true}
+                checked={checkedItems[item.cartItemId] || false}
+                onCheckedChange={(isChecked) =>
+                  handleItemCheckChange(item.cartItemId, isChecked)
+                }
               />
             ))}
           </Grid.Col>
@@ -86,7 +121,7 @@ export default function Cart({ userId }: CartProps) {
                 <Stack>
                   <Text size="md">Subtotal (2 items): </Text>
                   <Text size="xl" weight={500}>
-                    ${100}
+                    ${100.79}
                   </Text>
                 </Stack>
               </Group>
