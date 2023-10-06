@@ -9,12 +9,14 @@ interface MiniCartItemCardProps {
   serviceListing: ServiceListing;
   closePopup: () => void;
   removeItem: () => void;
+  quantity?: number;
 }
 
 const MiniCartItemCard = ({
   serviceListing,
   closePopup,
   removeItem,
+  quantity,
 }: MiniCartItemCardProps) => {
   const router = useRouter();
 
@@ -58,7 +60,8 @@ const MiniCartItemCard = ({
             {serviceListing.title} &nbsp;
           </Text>
           <Text size={14}>
-            {"$" + formatPriceForDisplay(serviceListing.basePrice)}
+            {"$" + formatPriceForDisplay(serviceListing.basePrice)}{" "}
+            {quantity && `(${quantity})`}
           </Text>
         </Grid.Col>
         <Grid.Col span={3}>

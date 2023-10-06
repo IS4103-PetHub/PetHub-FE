@@ -53,6 +53,7 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
                   key={item.cartItemId}
                   serviceListing={item.serviceListing}
                   closePopup={close}
+                  quantity={item.quantity}
                   removeItem={async () => removeItemFromCart(item.cartItemId)}
                 />
               ))
