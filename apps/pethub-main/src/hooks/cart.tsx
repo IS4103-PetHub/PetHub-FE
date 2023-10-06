@@ -41,7 +41,6 @@ export function useCartOperations(userId: number) {
 
   // Set the cart for the specific user only (since 1 browser can have multiple users)
   const setCartForUser = async (updatedCart: Cart) => {
-    console.log("Setting cart for user:", updatedCart);
     const updatedCarts = carts
       .filter((c) => c.userId !== userId)
       .concat(updatedCart);

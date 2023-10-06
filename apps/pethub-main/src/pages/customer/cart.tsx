@@ -17,6 +17,7 @@ import { use, useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
+import { formatPriceForDisplay } from "@/util";
 
 interface CartProps {
   userId: number;
@@ -70,6 +71,18 @@ export default function Cart({ userId }: CartProps) {
   const areAllChecked = Object.values(checkedItems).every(
     (isChecked) => isChecked,
   );
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    cartItems.forEach((item) => {
+      if (item.quantity) {
+        totalPrice += item.quantity * item.serviceListing.basePrice;
+      } else {
+        totalPrice += item.serviceListing.basePrice;
+      }
+    });
+    return totalPrice;
+  };
 
   return (
     <>
@@ -126,7 +139,7 @@ export default function Cart({ userId }: CartProps) {
                 <Stack>
                   <Text size="md">Subtotal (2 items): </Text>
                   <Text size="xl" weight={500}>
-                    ${100.79}
+                    ${formatPriceForDisplay(calculateTotalPrice())}
                   </Text>
                 </Stack>
               </Group>

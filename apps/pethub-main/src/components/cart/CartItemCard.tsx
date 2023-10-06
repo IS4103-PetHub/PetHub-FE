@@ -25,7 +25,9 @@ import {
   formatISODayDateTime,
 } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
+import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import { Booking, CartItemBookingSelection } from "@/types/types";
+import { formatPriceForDisplay } from "@/util";
 import ServiceListingTags from "../service-listing-discovery/ServiceListingTags";
 import CartItemBadge from "./CartItemBadge";
 
@@ -51,6 +53,16 @@ const CartItemCard = ({
   const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(quantity || 1);
 
+  // Always call the hook, but the hook should not run if any of these are null due to the enabled property
+  const shouldFetch = bookingSelection && serviceListing.calendarGroupId;
+  const { data: availTimeslots = [], isLoading } =
+    useGetAvailableTimeSlotsByCGId(
+      shouldFetch ? serviceListing.calendarGroupId : null,
+      shouldFetch ? bookingSelection.startTime : null,
+      shouldFetch ? bookingSelection.endTime : null,
+      shouldFetch ? serviceListing.duration : null,
+    );
+
   useEffect(() => {
     setValue(quantity || 1);
   }, [quantity]);
@@ -60,7 +72,11 @@ const CartItemCard = ({
     setItemQuantity(itemId, newQuantity);
   };
 
-  console.log("SL", checked);
+  console.log("SLID", serviceListing.serviceListingId);
+  console.log("PETID", bookingSelection?.petId);
+  console.log("Start", bookingSelection?.startTime);
+  console.log("End", bookingSelection?.endTime);
+  console.log("availTimeslots", availTimeslots);
 
   return (
     <Card
@@ -87,7 +103,9 @@ const CartItemCard = ({
         <Box>
           {!serviceListing.calendarGroupId && (
             <CartItemBadge
-              text={`Unit price: $${serviceListing.basePrice}`}
+              text={`Unit price: $${formatPriceForDisplay(
+                serviceListing.basePrice,
+              )}`}
               type="UNITPRICE"
               variant="dot"
               square={true}
@@ -95,7 +113,11 @@ const CartItemCard = ({
           )}
           &nbsp;
           <CartItemBadge
-            text={`Item total: $${serviceListing.basePrice * 3}`}
+            text={`Item total: $${formatPriceForDisplay(
+              quantity
+                ? serviceListing.basePrice * quantity
+                : serviceListing.basePrice,
+            )}`}
             type="TOTALPRICE"
             variant="dot"
             square={true}
@@ -151,10 +173,10 @@ const CartItemCard = ({
                 value={value}
                 setValue={handleQuantityChange}
                 min={0}
-                max={10}
+                max={20}
                 step={1}
               />
-            ) : (
+            ) : availTimeslots.length > 0 ? (
               <Alert
                 variant="outline"
                 color="cyan"
@@ -170,15 +192,16 @@ const CartItemCard = ({
                   {formatISODayDateTime(bookingSelection?.startTime)}
                 </Text>
                 <Text size="xs">
-                  <b>End:</b>{" "}
-                  {formatISODayDateTime(bookingSelection?.startTime)}
+                  <b>End:</b> {formatISODayDateTime(bookingSelection?.endTime)}
                 </Text>
                 {bookingSelection?.petName && (
                   <Text size="xs">
-                    <b>Pet:</b> {bookingSelection.petName}
+                    <b>Pet:</b> {bookingSelection?.petName}
                   </Text>
                 )}
               </Alert>
+            ) : (
+              <>Your selected timeslot is no longer available</>
             )}
           </Group>
         </Grid.Col>

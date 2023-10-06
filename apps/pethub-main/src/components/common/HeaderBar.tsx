@@ -143,7 +143,7 @@ const HeaderBar = () => {
   // setCart(newCart);
 
   useEffect(() => {
-    console.log("Cart changed:", cart);
+    // console.log("Cart changed:", cart);
     setCartItemCount(getItemCount());
   }, [cart]);
 
