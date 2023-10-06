@@ -14,10 +14,10 @@ const CartItemBadge = ({
   ...props
 }: CartItemBadgeProps) => {
   const colourMap = new Map([
-    ["UNITPRICE", "cyan"],
-    ["TOTALPRICE", "orange"],
+    ["UNITPRICE", "dark"],
+    ["TOTALPRICE", "dark"],
     ["DURATION", "blue"],
-    ["PETBUSINESS", "orange"],
+    ["PETBUSINESS", "dark"],
   ]);
 
   const additionalProps = square ? { radius: "xs" } : {};

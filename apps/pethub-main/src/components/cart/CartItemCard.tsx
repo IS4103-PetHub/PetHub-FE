@@ -15,9 +15,10 @@ import {
   Alert,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconMapPin } from "@tabler/icons-react";
+import { IconMapPin, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ServiceListing,
@@ -57,6 +58,7 @@ const CartItemCard = ({
   setCardExpired,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
+  const router = useRouter();
   const [value, setValue] = useState<number | "">(quantity || 1);
   const hasProcessedCheckboxDisabled = useRef(false); // Track the thing even through re-renders from other state changes
 
@@ -97,21 +99,20 @@ const CartItemCard = ({
     setItemQuantity(itemId, newQuantity);
   };
 
-  //   console.log("CGID", serviceListing.calendarGroupId);
-  //   console.log("SLID", serviceListing.serviceListingId);
-  //   console.log("PETID", bookingSelection?.petId);
-  //   console.log("Start", bookingSelection?.startTime);
-  //   console.log("End", bookingSelection?.endTime);
-  //   console.log("availTimeslots", availTimeslots);
-
   return (
     <Card
       withBorder
       mb="lg"
-      mah={250}
-      mih={250}
-      sx={{ backgroundColor: theme.colors.gray[0] }}
+      mah={270}
+      mih={270}
+      sx={{
+        backgroundColor: isExpired
+          ? theme.colors.gray[3]
+          : theme.colors.gray[0],
+        opacity: isExpired ? 0.7 : 1,
+      }}
       radius="lg"
+      shadow="sm"
     >
       <Group position="apart" mb="xs">
         <Center>
@@ -125,18 +126,24 @@ const CartItemCard = ({
             disabled={isCheckboxDisabled}
             onChange={(event) => onCheckedChange(event.currentTarget.checked)}
           />
-          <CartItemBadge
-            text={`Duration: ${convertMinsToDurationString(
-              serviceListing.duration,
-            )}`}
-            type="DURATION"
-            variant="dot"
-            square={true}
-          />
+          {serviceListing.calendarGroupId && (
+            <CartItemBadge
+              text={`Duration: ${convertMinsToDurationString(
+                serviceListing.duration,
+              )}`}
+              type="DURATION"
+              variant="dot"
+              square={true}
+            />
+          )}
         </Center>
         <Center>
-          <Button variant="subtle" onClick={removeItem}>
-            Remove item
+          <Button
+            variant="subtle"
+            onClick={removeItem}
+            leftIcon={<IconTrash size="1rem" />}
+          >
+            Remove from cart
           </Button>
         </Center>
       </Group>
@@ -155,6 +162,9 @@ const CartItemCard = ({
               fit="contain"
               w="auto"
               alt="Cart Item Photo"
+              sx={{
+                filter: isExpired ? "grayscale(100%)" : "none",
+              }}
             />
           ) : (
             <Image
@@ -168,21 +178,25 @@ const CartItemCard = ({
         </Grid.Col>
         <Grid.Col span={15}>
           <Box>
-            <Text fw={600} size={18}>
-              {serviceListing.title} &nbsp;
-              <CartItemBadge
-                text={serviceListing.petBusiness?.companyName}
-                type="PETBUSINESS"
-                variant="light"
-                square={true}
-                size="md"
-                mb="xs"
-              />
-            </Text>
-            <Text size={12} mb="xs">
-              {serviceListing.description.length > 150
-                ? serviceListing.description.substring(0, 150) + "..."
-                : serviceListing.description}
+            <Link
+              href={`/service-listings/${serviceListing.serviceListingId}`}
+              style={{ textDecoration: "underline" }}
+            >
+              <Text fw={600} size={18}>
+                {serviceListing.title}
+              </Text>
+            </Link>
+            <CartItemBadge
+              text={serviceListing.petBusiness?.companyName}
+              type="PETBUSINESS"
+              variant=""
+              square={true}
+              size="md"
+              mb="xs"
+              ml={-10}
+            />
+            <Text size={12} mb="xs" lineClamp={2}>
+              {serviceListing.description}
             </Text>
             <Box>
               {!serviceListing.calendarGroupId ? (
@@ -196,7 +210,7 @@ const CartItemCard = ({
               ) : (
                 <Alert
                   variant="light"
-                  color={availTimeslots.length > 0 ? "teal" : "red"}
+                  color={availTimeslots.length > 0 ? "blue" : "red"}
                   title={
                     availTimeslots.length > 0
                       ? "Booking selection"
@@ -249,7 +263,7 @@ const CartItemCard = ({
               type="UNITPRICE"
               variant="outline"
               square={true}
-              size="xl"
+              size="lg"
             />
           )}
           <CartItemBadge
@@ -260,9 +274,9 @@ const CartItemCard = ({
                 : serviceListing.basePrice,
             )}`}
             type="TOTALPRICE"
-            variant="gradient"
+            variant="outline"
             square={true}
-            size="xl"
+            size="lg"
           />
         </Grid.Col>
       </Grid>

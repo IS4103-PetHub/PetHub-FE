@@ -12,10 +12,12 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { IconAlertCircle, IconX } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { use, useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import CartItemBadge from "@/components/cart/CartItemBadge";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
 import { formatPriceForDisplay } from "@/util";
@@ -126,6 +128,18 @@ export default function Cart({ userId }: CartProps) {
             <Group position="apart">
               <PageTitle title={`My Cart (${getItemCount()})`} mb="lg" />
             </Group>
+            <Alert
+              icon={<IconAlertCircle size="1rem" />}
+              variant="light"
+              color={"indigo"}
+              title={
+                "Checkout now to make your bookings and receive your redemption vouchers!"
+              }
+              radius="md"
+              pb={0}
+            >
+              {}
+            </Alert>
           </Grid.Col>
           <Grid.Col span={9}>
             <Card
@@ -142,8 +156,12 @@ export default function Cart({ userId }: CartProps) {
                     handleAllCheckChange(event.currentTarget.checked)
                   }
                 />
-                <Button variant="subtle" onClick={() => clearCart()}>
-                  Clear all items
+                <Button
+                  variant="subtle"
+                  onClick={() => clearCart()}
+                  leftIcon={<IconX size="1rem" />}
+                >
+                  Clear all cart items
                 </Button>
               </Group>
             </Card>
@@ -175,17 +193,23 @@ export default function Cart({ userId }: CartProps) {
             <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
               <Group position="right">
                 <Stack>
-                  <Text size="xl" mb={-10}>
+                  <Text size="xl" weight={600} mb={-10}>
                     Subtotal ({calculateTotalBuyables()}{" "}
                     {calculateTotalBuyables() === 1 ? "item" : "items"})
                   </Text>
-                  <Text size={40} weight={500} align="right">
+                  <Text size={40} weight={800} align="right">
                     ${formatPriceForDisplay(calculateTotalPrice())}
                   </Text>
                 </Stack>
               </Group>
-              <Button size="md" fullWidth mt="xs" onClick={checkout}>
-                Checkout and book
+              <Button
+                size="md"
+                fullWidth
+                mt="xs"
+                onClick={checkout}
+                variant="gradient"
+              >
+                Checkout
               </Button>
             </Paper>
           </Grid.Col>

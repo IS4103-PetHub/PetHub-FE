@@ -318,7 +318,7 @@ export default function ServiceListingDetails({
                 </Text>
               </Group>
               <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
-                Buy now
+                Add to cart
               </Button>
               {isServiceListingInCart && (
                 <Center>

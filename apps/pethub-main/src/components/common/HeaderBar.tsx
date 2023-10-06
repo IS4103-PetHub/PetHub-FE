@@ -18,7 +18,8 @@ import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useCartOperations } from "@/hooks/cart";
-import CartButton from "../cart/CartButton";
+import CartDisplayPopover from "../cart/CartDisplayPopover";
+import CartButton from "../cart/CartIcon";
 import { LoginModal } from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
@@ -185,7 +186,10 @@ const HeaderBar = () => {
     if (link.label === "Cart") {
       return (
         <Link key={link.label} href={link.link} className={classes.link}>
-          <CartButton size={cartItemCount} />
+          <CartDisplayPopover
+            size={cartItemCount}
+            userId={session.user["userId"]}
+          />
         </Link>
       );
     }
