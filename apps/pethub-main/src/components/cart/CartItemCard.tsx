@@ -18,7 +18,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconMapPin } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ServiceListing,
   convertMinsToDurationString,
@@ -39,6 +39,7 @@ interface CartItemCardProps {
   onCheckedChange: (checked: any) => void;
   setItemQuantity: (cartItemId: number, quantity: number) => void;
   removeItem: () => void;
+  setCardExpired: (isExpired: boolean) => void;
   quantity?: number;
 }
 
@@ -51,9 +52,11 @@ const CartItemCard = ({
   setItemQuantity,
   removeItem,
   quantity,
+  setCardExpired,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(quantity || 1);
+  const hasProcessedCheckboxDisabled = useRef(false);
 
   // Always call the hook, but the hook should not run if any of these are null due to the enabled property
   const shouldFetch = bookingSelection && serviceListing.calendarGroupId;
@@ -69,6 +72,24 @@ const CartItemCard = ({
     serviceListing.calendarGroupId && availTimeslots.length === 0
       ? true
       : false;
+
+  useEffect(() => {
+    if (isCheckboxDisabled && !hasProcessedCheckboxDisabled.current) {
+      onCheckedChange(false);
+      setCardExpired(true);
+      hasProcessedCheckboxDisabled.current = true;
+    } else if (!isCheckboxDisabled && hasProcessedCheckboxDisabled.current) {
+      onCheckedChange(true);
+      setCardExpired(false);
+      hasProcessedCheckboxDisabled.current = false;
+    }
+  }, [isCheckboxDisabled, onCheckedChange]);
+
+  //   useEffect(() => {
+  //     if (serviceListing.calendarGroupId && availTimeslots.length === 0) {
+  //       setCardExpired();
+  //     }
+  //   }, [availTimeslots]);
 
   useEffect(() => {
     setValue(quantity || 1);

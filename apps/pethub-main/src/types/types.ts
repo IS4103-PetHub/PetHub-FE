@@ -242,7 +242,6 @@ export interface CartItemBookingSelection {
 export interface Cart {
   cartId?: number;
   cartItems: CartItem[];
-  subtotal: number;
   itemCount: number;
   userId: number;
 }

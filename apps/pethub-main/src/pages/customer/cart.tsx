@@ -32,21 +32,24 @@ export default function Cart({ userId }: CartProps) {
     setItemQuantity,
     getCartItem,
     clearCart,
-    getCartSubtotal,
     getItemCount,
   } = useCartOperations(userId);
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
+  const [expiredItems, setExpiredItems] = useState({});
 
   useEffect(() => {
     const updatedCartItems = getCartItems();
     setCartItems(updatedCartItems);
     const initialCheckedState = {};
+    const initialExpiredState = {};
     updatedCartItems.forEach((item) => {
       initialCheckedState[item.cartItemId] = true; // default is all boxes checked
+      initialExpiredState[item.cartItemId] = false; // default is all items not expired
     });
     setCheckedItems(initialCheckedState);
+    setExpiredItems(initialExpiredState);
   }, [cart]);
 
   function handleItemCheckChange(cartItemId, isChecked) {
@@ -64,25 +67,47 @@ export default function Cart({ userId }: CartProps) {
     setCheckedItems(newState);
   }
 
-  function checkout() {
-    console.log("checkout");
+  function setCardExpired(cartItemId, isExpired) {
+    setExpiredItems((prev) => ({
+      ...prev,
+      [cartItemId]: isExpired,
+    }));
   }
 
-  const areAllChecked = Object.values(checkedItems).every(
-    (isChecked) => isChecked,
-  );
+  const calculateTotalBuyables = () => {
+    let totalBuyables = 0;
+    cartItems.forEach((item) => {
+      if (!expiredItems[item.cartItemId] && checkedItems[item.cartItemId]) {
+        // Check if item is not expired and is checked
+        totalBuyables += item.quantity || 1; // Rmr some items got quantity
+      }
+    });
+    return totalBuyables;
+  };
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     cartItems.forEach((item) => {
-      if (item.quantity) {
-        totalPrice += item.quantity * item.serviceListing.basePrice;
-      } else {
-        totalPrice += item.serviceListing.basePrice;
+      if (!expiredItems[item.cartItemId] && checkedItems[item.cartItemId]) {
+        // Check if item is not expired and is checked
+        if (item.quantity) {
+          totalPrice += item.quantity * item.serviceListing.basePrice;
+        } else {
+          totalPrice += item.serviceListing.basePrice;
+        }
       }
     });
     return totalPrice;
   };
+
+  function checkout() {
+    console.log("checkout");
+  }
+
+  // As long as all non-expired items are checked, this will be true
+  const areAllChecked = cartItems.every((item) =>
+    expiredItems[item.cartItemId] ? true : checkedItems[item.cartItemId],
+  );
 
   return (
     <>
@@ -132,6 +157,9 @@ export default function Cart({ userId }: CartProps) {
                 removeItem={async () =>
                   await removeItemFromCart(item.cartItemId)
                 }
+                setCardExpired={(isExpired) =>
+                  setCardExpired(item.cartItemId, isExpired)
+                }
               />
             ))}
           </Grid.Col>
@@ -139,7 +167,10 @@ export default function Cart({ userId }: CartProps) {
             <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
               <Group position="left">
                 <Stack>
-                  <Text size="md">Subtotal (2 items): </Text>
+                  <Text size="md">
+                    Subtotal ({calculateTotalBuyables()}{" "}
+                    {calculateTotalBuyables() === 1 ? "item" : "items"})
+                  </Text>
                   <Text size="xl" weight={500}>
                     ${formatPriceForDisplay(calculateTotalPrice())}
                   </Text>

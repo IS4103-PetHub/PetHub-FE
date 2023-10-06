@@ -7,7 +7,6 @@ export function useCartOperations(userId: number) {
   const [cart, setCart] = useState<Cart>(
     carts.find((c) => c.userId === userId) || {
       userId,
-      subtotal: 0,
       itemCount: 0,
       cartItems: [],
     },
@@ -16,7 +15,6 @@ export function useCartOperations(userId: number) {
   useEffect(() => {
     const userCart = carts.find((c) => c.userId === userId) || {
       userId,
-      subtotal: 0,
       itemCount: 0,
       cartItems: [],
     };
@@ -24,15 +22,6 @@ export function useCartOperations(userId: number) {
   }, [carts, userId]);
 
   /* ============================================== Helper Functions ============================================== */
-
-  // Happens every add, update or remove
-  const recalculateSubtotal = (cartItems: CartItem[]) => {
-    return cartItems.reduce((acc, item) => {
-      const itemPrice = item.serviceListing.basePrice || 0;
-      const itemQuantity = item.quantity || 1;
-      return acc + itemPrice * itemQuantity;
-    }, 0);
-  };
 
   // Happens every add, update or remove to ensure cartItemId is always in order and starting from 1
   const recalculateCartItemId = (cartItems: CartItem[]) => {
@@ -74,7 +63,6 @@ export function useCartOperations(userId: number) {
     setCartForUser({
       ...cart,
       itemCount: calculateTotalItemCount(recalculatedCartItems),
-      subtotal: recalculateSubtotal(recalculatedCartItems),
       cartItems: recalculatedCartItems,
     });
   };
@@ -89,7 +77,6 @@ export function useCartOperations(userId: number) {
       const recalculatedCartItems = recalculateCartItemId(newCartItems);
       setCartForUser({
         ...cart,
-        subtotal: recalculateSubtotal(recalculatedCartItems),
         itemCount: calculateTotalItemCount(recalculatedCartItems),
         cartItems: recalculatedCartItems,
       });
@@ -104,7 +91,6 @@ export function useCartOperations(userId: number) {
     setCartForUser({
       ...cart,
       itemCount: calculateTotalItemCount(recalculatedCartItems),
-      subtotal: recalculateSubtotal(recalculatedCartItems),
       cartItems: recalculatedCartItems,
     });
   };
@@ -125,7 +111,6 @@ export function useCartOperations(userId: number) {
       setCartForUser({
         ...cart,
         itemCount: calculateTotalItemCount(recalculatedCartItems),
-        subtotal: recalculateSubtotal(recalculatedCartItems),
         cartItems: recalculatedCartItems,
       });
     }
@@ -134,7 +119,6 @@ export function useCartOperations(userId: number) {
   const clearCart = () => {
     setCartForUser({
       ...cart,
-      subtotal: 0,
       itemCount: 0,
       cartItems: [],
     });
@@ -146,10 +130,6 @@ export function useCartOperations(userId: number) {
 
   const getCartItem = (cartItemId: number) => {
     return cart.cartItems[cartItemId - 1];
-  };
-
-  const getCartSubtotal = () => {
-    return cart.subtotal;
   };
 
   const getItemCount = () => {
@@ -165,7 +145,6 @@ export function useCartOperations(userId: number) {
     getCartItems,
     getCartItem,
     clearCart,
-    getCartSubtotal,
     getItemCount,
   };
 }
