@@ -28,6 +28,7 @@ export default function Cart({ userId }: CartProps) {
     addItemToCart,
     removeItemFromCart,
     getCartItems,
+    setItemQuantity,
     getCartItem,
     clearCart,
     getCartSubtotal,
@@ -38,10 +39,11 @@ export default function Cart({ userId }: CartProps) {
   const [checkedItems, setCheckedItems] = useState({});
 
   useEffect(() => {
-    setCartItems(getCartItems());
+    const updatedCartItems = getCartItems();
+    setCartItems(updatedCartItems);
     const initialCheckedState = {};
-    cartItems.forEach((item) => {
-      initialCheckedState[item.cartItemId] = true;
+    updatedCartItems.forEach((item) => {
+      initialCheckedState[item.cartItemId] = true; // default is all boxes checked
     });
     setCheckedItems(initialCheckedState);
   }, [cart]);
@@ -106,12 +108,15 @@ export default function Cart({ userId }: CartProps) {
             {cartItems.map((item) => (
               <CartItemCard
                 key={item.cartItemId}
+                itemId={item.cartItemId}
                 serviceListing={item.serviceListing}
                 bookingSelection={item.bookingSelection}
                 checked={checkedItems[item.cartItemId] || false}
                 onCheckedChange={(isChecked) =>
                   handleItemCheckChange(item.cartItemId, isChecked)
                 }
+                quantity={item.quantity}
+                setItemQuantity={setItemQuantity}
               />
             ))}
           </Grid.Col>

@@ -18,7 +18,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconMapPin } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ServiceListing,
   convertMinsToDurationString,
@@ -30,22 +30,37 @@ import ServiceListingTags from "../service-listing-discovery/ServiceListingTags"
 import CartItemBadge from "./CartItemBadge";
 
 interface CartItemCardProps {
+  itemId: number;
   serviceListing: ServiceListing;
   bookingSelection: CartItemBookingSelection;
   checked: boolean;
   onCheckedChange: (checked: any) => void;
+  setItemQuantity: (cartItemId: number, quantity: number) => void;
+  quantity?: number;
 }
 
 const CartItemCard = ({
+  itemId,
   serviceListing,
   bookingSelection,
   checked,
   onCheckedChange,
+  setItemQuantity,
+  quantity,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
-  const [value, setValue] = useState<number | "">(1); // Change to value from prop
+  const [value, setValue] = useState<number | "">(quantity || 1);
 
-  console.log("SL", serviceListing);
+  useEffect(() => {
+    setValue(quantity || 1);
+  }, [quantity]);
+
+  const handleQuantityChange = (newQuantity: number) => {
+    setValue(newQuantity);
+    setItemQuantity(itemId, newQuantity);
+  };
+
+  console.log("SL", checked);
 
   return (
     <Card
@@ -134,8 +149,8 @@ const CartItemCard = ({
             {!serviceListing.calendarGroupId ? (
               <NumberInputWithIcons
                 value={value}
-                setValue={setValue}
-                min={1}
+                setValue={handleQuantityChange}
+                min={0}
                 max={10}
                 step={1}
               />

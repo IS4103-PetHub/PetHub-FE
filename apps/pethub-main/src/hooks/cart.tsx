@@ -92,25 +92,6 @@ export function useCartOperations(userId: number) {
     }
   };
 
-  const decrementItemQuantity = async (cartItemId: number) => {
-    const itemIndex = cart.cartItems.findIndex(
-      (item) => item.cartItemId === cartItemId,
-    );
-    if (itemIndex !== -1 && cart.cartItems[itemIndex]?.quantity) {
-      const newCartItems = [...cart.cartItems];
-      newCartItems[itemIndex].quantity -= 1;
-      if (newCartItems[itemIndex].quantity === 0) {
-        newCartItems.splice(itemIndex, 1);
-      }
-      const recalculatedCartItems = recalculateCartItemId(newCartItems);
-      setCartForUser({
-        ...cart,
-        subtotal: recalculateSubtotal(recalculatedCartItems),
-        cartItems: recalculatedCartItems,
-      });
-    }
-  };
-
   const removeItemFromCart = async (cartItemId: number) => {
     const newCartItems = cart.cartItems.filter(
       (item) => item.cartItemId !== cartItemId,
@@ -122,6 +103,28 @@ export function useCartOperations(userId: number) {
       subtotal: recalculateSubtotal(recalculatedCartItems),
       cartItems: recalculatedCartItems,
     });
+  };
+
+  const setItemQuantity = (cartItemId: number, newQuantity: number) => {
+    const itemIndex = cart.cartItems.findIndex(
+      (item) => item.cartItemId === cartItemId,
+    );
+
+    if (itemIndex !== -1) {
+      const newCartItems = [...cart.cartItems];
+      if (newQuantity <= 0) {
+        newCartItems.splice(itemIndex, 1); // remove item for cart if set to 0
+      } else {
+        newCartItems[itemIndex].quantity = newQuantity;
+      }
+      const recalculatedCartItems = recalculateCartItemId(newCartItems);
+      setCartForUser({
+        ...cart,
+        itemCount: recalculatedCartItems.length,
+        subtotal: recalculateSubtotal(recalculatedCartItems),
+        cartItems: recalculatedCartItems,
+      });
+    }
   };
 
   const clearCart = () => {
@@ -153,7 +156,7 @@ export function useCartOperations(userId: number) {
     cart,
     addItemToCart,
     incrementItemQuantity,
-    decrementItemQuantity,
+    setItemQuantity,
     removeItemFromCart,
     getCartItems,
     getCartItem,
