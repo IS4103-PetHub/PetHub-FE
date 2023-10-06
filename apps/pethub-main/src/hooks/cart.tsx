@@ -49,6 +49,10 @@ export function useCartOperations(userId: number) {
     setCart(updatedCart);
   };
 
+  const calculateTotalItemCount = (cartItems: CartItem[]) => {
+    return cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  };
+
   /* ============================================== Helper Functions ============================================== */
 
   const addItemToCart = async (item: CartItem) => {
@@ -70,7 +74,7 @@ export function useCartOperations(userId: number) {
     const recalculatedCartItems = recalculateCartItemId(newCartItems);
     setCartForUser({
       ...cart,
-      itemCount: recalculatedCartItems.length,
+      itemCount: calculateTotalItemCount(recalculatedCartItems),
       subtotal: recalculateSubtotal(recalculatedCartItems),
       cartItems: recalculatedCartItems,
     });
@@ -87,6 +91,7 @@ export function useCartOperations(userId: number) {
       setCartForUser({
         ...cart,
         subtotal: recalculateSubtotal(recalculatedCartItems),
+        itemCount: calculateTotalItemCount(recalculatedCartItems),
         cartItems: recalculatedCartItems,
       });
     }
@@ -99,7 +104,7 @@ export function useCartOperations(userId: number) {
     const recalculatedCartItems = recalculateCartItemId(newCartItems);
     setCartForUser({
       ...cart,
-      itemCount: recalculatedCartItems.length,
+      itemCount: calculateTotalItemCount(recalculatedCartItems),
       subtotal: recalculateSubtotal(recalculatedCartItems),
       cartItems: recalculatedCartItems,
     });
@@ -120,7 +125,7 @@ export function useCartOperations(userId: number) {
       const recalculatedCartItems = recalculateCartItemId(newCartItems);
       setCartForUser({
         ...cart,
-        itemCount: recalculatedCartItems.length,
+        itemCount: calculateTotalItemCount(recalculatedCartItems),
         subtotal: recalculateSubtotal(recalculatedCartItems),
         cartItems: recalculatedCartItems,
       });
