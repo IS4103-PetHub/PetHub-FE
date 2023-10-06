@@ -39,6 +39,7 @@ interface CartItemCardProps {
   onCheckedChange: (checked: any) => void;
   setItemQuantity: (cartItemId: number, quantity: number) => void;
   removeItem: () => void;
+  isExpired: boolean;
   setCardExpired: (isExpired: boolean) => void;
   quantity?: number;
 }
@@ -52,6 +53,7 @@ const CartItemCard = ({
   setItemQuantity,
   removeItem,
   quantity,
+  isExpired,
   setCardExpired,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();

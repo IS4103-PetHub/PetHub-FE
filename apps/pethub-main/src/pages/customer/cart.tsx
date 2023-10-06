@@ -11,6 +11,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { use, useEffect, useState } from "react";
@@ -101,7 +102,11 @@ export default function Cart({ userId }: CartProps) {
   };
 
   function checkout() {
-    console.log("checkout");
+    notifications.show({
+      title: "Checking out cart placeholder",
+      color: "orange",
+      message: "TODO: implement checkout and book",
+    });
   }
 
   // As long as all non-expired items are checked, this will be true
@@ -142,26 +147,29 @@ export default function Cart({ userId }: CartProps) {
                 </Button>
               </Group>
             </Card>
-            {cartItems.map((item) => (
-              <CartItemCard
-                key={item.cartItemId}
-                itemId={item.cartItemId}
-                serviceListing={item.serviceListing}
-                bookingSelection={item.bookingSelection}
-                checked={checkedItems[item.cartItemId] || false}
-                onCheckedChange={(isChecked) =>
-                  handleItemCheckChange(item.cartItemId, isChecked)
-                }
-                quantity={item.quantity}
-                setItemQuantity={setItemQuantity}
-                removeItem={async () =>
-                  await removeItemFromCart(item.cartItemId)
-                }
-                setCardExpired={(isExpired) =>
-                  setCardExpired(item.cartItemId, isExpired)
-                }
-              />
-            ))}
+            {cartItems
+              .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1))
+              .map((item) => (
+                <CartItemCard
+                  key={item.cartItemId}
+                  itemId={item.cartItemId}
+                  serviceListing={item.serviceListing}
+                  bookingSelection={item.bookingSelection}
+                  checked={checkedItems[item.cartItemId] || false}
+                  onCheckedChange={(isChecked) =>
+                    handleItemCheckChange(item.cartItemId, isChecked)
+                  }
+                  quantity={item.quantity}
+                  setItemQuantity={setItemQuantity}
+                  removeItem={async () =>
+                    await removeItemFromCart(item.cartItemId)
+                  }
+                  isExpired={expiredItems[item.cartItemId] || false}
+                  setCardExpired={(isExpired) =>
+                    setCardExpired(item.cartItemId, isExpired)
+                  }
+                />
+              ))}
           </Grid.Col>
           <Grid.Col span={3}>
             <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
