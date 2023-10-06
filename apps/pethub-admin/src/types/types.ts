@@ -145,3 +145,13 @@ export interface RejectPetBusinessApplicationPayload {
   petBusinessApplicationId: Number;
   remark: String;
 }
+
+export interface CommissionRule {
+  commissionRuleId: number;
+  name: string;
+  commissionRate: number;
+  default: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  petBusinesses: PetBusiness[];
+}

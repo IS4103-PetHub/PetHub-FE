@@ -17,6 +17,7 @@ import {
   IconUsersGroup,
   IconArticle,
   IconLogout,
+  IconBusinessplan,
 } from "@tabler/icons-react";
 import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
@@ -100,6 +101,11 @@ const data = [
     link: "/admin/service-listings",
     label: "Service Listings",
     icon: IconBoxMultiple,
+  },
+  {
+    link: "/admin/commission",
+    label: "Commission Group",
+    icon: IconBusinessplan,
   },
 ];
 
