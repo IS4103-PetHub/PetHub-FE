@@ -187,7 +187,7 @@ export default function CommissionRuleDetails({
           <Accordion.Control>
             <Group>
               <Text weight={600} size="xl">
-                Commission Group Information
+                Commission Rule Information
               </Text>
             </Group>
           </Accordion.Control>
