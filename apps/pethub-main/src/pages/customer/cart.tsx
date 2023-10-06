@@ -173,19 +173,19 @@ export default function Cart({ userId }: CartProps) {
           </Grid.Col>
           <Grid.Col span={3}>
             <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
-              <Group position="left">
+              <Group position="right">
                 <Stack>
-                  <Text size="md">
+                  <Text size="xl" mb={-10}>
                     Subtotal ({calculateTotalBuyables()}{" "}
                     {calculateTotalBuyables() === 1 ? "item" : "items"})
                   </Text>
-                  <Text size="xl" weight={500}>
+                  <Text size={40} weight={500} align="right">
                     ${formatPriceForDisplay(calculateTotalPrice())}
                   </Text>
                 </Stack>
               </Group>
               <Button size="md" fullWidth mt="xs" onClick={checkout}>
-                Book now
+                Checkout and book
               </Button>
             </Paper>
           </Grid.Col>
