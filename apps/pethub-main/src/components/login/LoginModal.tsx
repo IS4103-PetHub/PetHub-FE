@@ -13,6 +13,7 @@ import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
+import { allowedRoutesAfterLogin } from "@/types/constants";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import { LoginBox } from "./LoginBox";
 
@@ -84,9 +85,10 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
 
   const handleLogin = async (values: LoginFormValues) => {
+    let successfullyLoggedIn = false;
     const res = await signIn("credentials", {
       callbackUrl: originalPath,
-      redirect: true,
+      redirect: false,
       email: values.email,
       password: values.password,
       accountType: values.accountType,
@@ -98,6 +100,8 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         color: "red",
       });
     } else {
+      // Only set redirect to true if the login is successful
+      successfullyLoggedIn = true;
       const session = await getSession();
       if (
         session &&
@@ -106,8 +110,15 @@ export const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         showOverlay();
         // The middleware will force a redirect to the business dashboard here
       }
-      close();
     }
+    if (
+      successfullyLoggedIn &&
+      allowedRoutesAfterLogin.includes(originalPath)
+    ) {
+      router.push(originalPath);
+    }
+    close();
+
     const timer = setTimeout(() => {
       loginForm.reset();
     }, 800);
