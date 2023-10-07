@@ -27,7 +27,10 @@ import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
 
-const inter = localFont({ src: "../../public/Inter-VariableFont.ttf" });
+const inter = localFont({
+  src: "../../public/Inter-VariableFont.ttf",
+  variable: "--font-inter",
+});
 
 export function App({ Component, pageProps }: AppProps) {
   const { visible } = useLoadingOverlay();
@@ -79,7 +82,7 @@ export function App({ Component, pageProps }: AppProps) {
           withGlobalStyles
           withNormalizeCSS
           theme={{
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "var(--font-inter)",
             primaryColor: "indigo",
             colorScheme,
           }}
