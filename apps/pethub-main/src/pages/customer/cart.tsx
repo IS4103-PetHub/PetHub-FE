@@ -252,12 +252,19 @@ export default function Cart({ userId }: CartProps) {
               <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
                 <Group position="right">
                   <Stack>
-                    <Text size="xl" weight={600} mb={-10}>
+                    <Text size="xl" weight={600} align="right">
                       Subtotal ({calculateTotalBuyables()}{" "}
                       {calculateTotalBuyables() === 1 ? "item" : "items"})
                     </Text>
+                    <Text size="sm" weight={400} align="right">
+                      Service listings - $
+                      {formatPriceForDisplay(calculateTotalPrice())}
+                    </Text>
+                    <Text size="sm" weight={400} align="right">
+                      Platform fees - $3.99
+                    </Text>
                     <Text size={40} weight={700} align="right">
-                      ${formatPriceForDisplay(calculateTotalPrice())}
+                      ${formatPriceForDisplay(calculateTotalPrice() + 3.99)}
                     </Text>
                   </Stack>
                 </Group>
