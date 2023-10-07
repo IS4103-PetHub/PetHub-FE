@@ -85,7 +85,7 @@ const ServiceListingCard = ({
         height={IMAGE_HEIGHT}
         alt="Service Listing Photo"
       />
-      {initialFavourite !== undefined && (
+      {initialFavourite && (
         <FavouriteButton
           text=""
           isFavourite={isFavourite}
