@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-
 import {
   AppShell,
   ColorScheme,
@@ -15,8 +14,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { Inter } from "next/font/google";
-import Head from "next/head";
+import localFont from "next/font/local";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -27,7 +25,10 @@ import {
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = localFont({
+  src: "../../public/Inter-VariableFont.ttf",
+  variable: "--font-inter",
+});
 
 export function App({ Component, pageProps }: AppProps) {
   const { visible } = useLoadingOverlay();
@@ -57,7 +58,7 @@ export function App({ Component, pageProps }: AppProps) {
           withGlobalStyles
           withNormalizeCSS
           theme={{
-            fontFamily: "Inter, sans-serif",
+            fontFamily: inter.style.fontFamily,
             primaryColor: "indigo",
             colorScheme,
           }}
