@@ -196,10 +196,7 @@ const CartItemCard = ({
         </Grid.Col>
         <Grid.Col span={15}>
           <Box>
-            <Link
-              href={`/service-listings/${serviceListing.serviceListingId}`}
-              style={{ textDecoration: "underline" }}
-            >
+            <Link href={`/service-listings/${serviceListing.serviceListingId}`}>
               <Text fw={600} size={18}>
                 {serviceListing.title}
               </Text>

@@ -2,8 +2,10 @@ import {
   Alert,
   Button,
   Card,
+  Center,
   Checkbox,
   Container,
+  Divider,
   Grid,
   Group,
   Paper,
@@ -27,6 +29,7 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import CartItemBadge from "@/components/cart/CartItemBadge";
 import CartItemCard from "@/components/cart/CartItemCard";
+import PlatformFeePopover from "@/components/cart/PlatformFeePopover";
 import { useCartOperations } from "@/hooks/cart";
 import { formatPriceForDisplay } from "@/util";
 
@@ -204,14 +207,6 @@ export default function Cart({ userId }: CartProps) {
                       handleAllCheckChange(event.currentTarget.checked)
                     }
                   />
-                  {/* <Button
-                  variant="subtle"
-                  onClick={clearAllCartItems}
-                  leftIcon={<IconX size="1rem" />}
-                  color="red"
-                >
-                  Clear cart
-                </Button> */}
                   <DeleteActionButtonModal
                     large
                     largeText="Clear cart"
@@ -250,23 +245,43 @@ export default function Cart({ userId }: CartProps) {
             </Grid.Col>
             <Grid.Col span={3}>
               <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
-                <Group position="right">
-                  <Stack>
-                    <Text size="xl" weight={600} align="right">
-                      Subtotal ({calculateTotalBuyables()}{" "}
-                      {calculateTotalBuyables() === 1 ? "item" : "items"})
+                <Text size="xl" weight={600} mb="md">
+                  Summary
+                </Text>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" align="left" c="dimmed">
+                    Subtotal ({calculateTotalBuyables()}{" "}
+                    {calculateTotalBuyables() === 1 ? "item" : "items"})
+                  </Text>
+                  <Text size="sm" fw={500} c="dimmed">
+                    ${formatPriceForDisplay(calculateTotalPrice() * 0.92)}
+                  </Text>
+                </Group>
+                <Group position="apart" mb="xs">
+                  <Text size="sm" c="dimmed">
+                    GST (8%)
+                  </Text>
+                  <Text size="sm" fw={500} c="dimmed">
+                    ${formatPriceForDisplay(calculateTotalPrice() * 0.08)}
+                  </Text>
+                </Group>
+                <Group position="apart" mb="xs">
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Text size="sm" c="dimmed">
+                      Platform fee
                     </Text>
-                    <Text size="sm" weight={400} align="right">
-                      Service listings - $
-                      {formatPriceForDisplay(calculateTotalPrice())}
-                    </Text>
-                    <Text size="sm" weight={400} align="right">
-                      Platform fees - $3.99
-                    </Text>
-                    <Text size={40} weight={700} align="right">
-                      ${formatPriceForDisplay(calculateTotalPrice() + 3.99)}
-                    </Text>
-                  </Stack>
+                    <PlatformFeePopover />
+                  </div>
+                  <Text size="sm" fw={500} c="dimmed">
+                    ${formatPriceForDisplay(3.99)}
+                  </Text>
+                </Group>
+                <Divider mb="xs" />
+                <Group position="apart">
+                  <Text size="lg">Total</Text>
+                  <Text size="lg" fw={700}>
+                    ${formatPriceForDisplay(calculateTotalPrice() + 3.99)}
+                  </Text>
                 </Group>
                 <Button
                   size="md"
