@@ -65,7 +65,15 @@ const MiniCartItemCard = ({
           </Text>
         </Grid.Col>
         <Grid.Col span={3}>
-          <Button color="red" variant="light" onClick={removeItem}>
+          <Button
+            color="red"
+            variant="light"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              removeItem();
+            }}
+          >
             Remove
           </Button>
         </Grid.Col>
