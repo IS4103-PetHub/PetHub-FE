@@ -1,8 +1,7 @@
 import { Center, Container, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { IconCheck } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -12,7 +11,6 @@ import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
-import UpdateActionButtonModal from "web-ui/shared/UpdateActionButtonModal";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import {
   useDeleteCalendarGroupById,
@@ -32,7 +30,6 @@ interface ViewCalendarGroupProps {
 
 export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [isEditingDisabled, setIsEditingDisabled] = useState(true);
   const [key, setKey] = useState(Math.random());
   const [initialValues, setInitialValues] = useState<CalendarGroup>({
@@ -106,7 +103,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
     }
   };
 
-  const deleteCalendarGroupMutation = useDeleteCalendarGroupById(queryClient);
+  const deleteCalendarGroupMutation = useDeleteCalendarGroupById();
   const handleDeleteCalendarGroup = async (id: number) => {
     try {
       await deleteCalendarGroupMutation.mutateAsync(id);
@@ -114,7 +111,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         title: "Calendar Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `Calendar group deleted successfully!`,
+        message: `Calendar group deleted successfully! Emails regarding the refund process have been sent out to affected customers (if any).`,
       });
       refetchCalendarGroupByPbId();
       router.push("/business/calendar-groups");
