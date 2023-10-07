@@ -25,8 +25,7 @@ import {
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
 
-// const inter = Inter({ subsets: ["latin"] });
-const inter = localFont({ src: "../public/Inter-VariableFont.ttf" });
+const inter = localFont({ src: "../../public/Inter-VariableFont.ttf" });
 
 export function App({ Component, pageProps }: AppProps) {
   const { visible } = useLoadingOverlay();
