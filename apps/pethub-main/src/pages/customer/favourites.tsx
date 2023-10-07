@@ -11,6 +11,7 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   formatStringToLetterCase,
+  getErrorMessageProps,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -102,14 +103,7 @@ export default function Favourites({ userId }: FavouritesProps) {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Adding Listing to Favourites",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Adding Listing to Favourites", error),
       });
     }
   };
@@ -129,14 +123,10 @@ export default function Favourites({ userId }: FavouritesProps) {
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Removing Listing from Favourites",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps(
+          "Error Removing Listing from Favourites",
+          error,
+        ),
       });
     }
   };
