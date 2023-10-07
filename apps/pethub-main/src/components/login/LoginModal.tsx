@@ -3,6 +3,7 @@ import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
+import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
@@ -22,6 +23,7 @@ interface LoginModalProps {
 }
 
 const LoginModal = ({ opened, open, close }: LoginModalProps) => {
+  const router = useRouter();
   const theme = useMantineTheme();
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
