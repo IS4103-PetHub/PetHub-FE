@@ -47,7 +47,6 @@ export default function Appointments({
   const segmentedControlData = [
     { label: "1 month", value: "30" },
     { label: "3 months", value: "90" },
-    { label: "6 months", value: "180" },
     { label: "Past", value: "past" },
     { label: "Custom", value: "custom" },
   ];
