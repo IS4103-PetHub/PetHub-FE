@@ -14,7 +14,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -27,7 +27,7 @@ import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = localFont({ src: "../../public/Inter-VariableFont.ttf" });
 
 export function App({ Component, pageProps }: AppProps) {
   const { visible } = useLoadingOverlay();
