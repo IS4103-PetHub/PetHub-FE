@@ -9,14 +9,22 @@ import {
   Paper,
   Stack,
   Text,
+  Transition,
   useMantineTheme,
 } from "@mantine/core";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconAlertCircle, IconX } from "@tabler/icons-react";
+import {
+  IconAlertCircle,
+  IconShoppingCartExclamation,
+  IconX,
+} from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { use, useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import CartItemBadge from "@/components/cart/CartItemBadge";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
@@ -41,6 +49,7 @@ export default function Cart({ userId }: CartProps) {
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [expiredItems, setExpiredItems] = useState({});
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
   useEffect(() => {
     const updatedCartItems = getCartItems();
@@ -53,6 +62,9 @@ export default function Cart({ userId }: CartProps) {
     });
     setCheckedItems(initialCheckedState);
     setExpiredItems(initialExpiredState);
+    if (cartItems.length === 0) {
+      setHasNoFetchedRecords(true);
+    }
   }, [cart]);
 
   function handleItemCheckChange(cartItemId, isChecked) {
@@ -103,6 +115,15 @@ export default function Cart({ userId }: CartProps) {
     return totalPrice;
   };
 
+  const clearAllCartItems = () => {
+    clearCart();
+    notifications.show({
+      title: "Cart Cleared",
+      color: "green",
+      message: "All items have been removed from your cart",
+    });
+  };
+
   function checkout() {
     notifications.show({
       title: "Checking out cart placeholder",
@@ -116,6 +137,30 @@ export default function Cart({ userId }: CartProps) {
     expiredItems[item.cartItemId] ? true : checkedItems[item.cartItemId],
   );
 
+  const emptyCartMessage = (
+    <Transition mounted={hasNoFetchedRecords} transition="fade" duration={100}>
+      {(styles) => (
+        <div style={styles}>
+          <SadDimmedMessage
+            title="Your cart is empty"
+            subtitle="Add items from the available service listings to the cart before proceeding to checkout"
+            replaceIcon={
+              <IconShoppingCartExclamation
+                size={80}
+                color={
+                  theme.colorScheme === "dark"
+                    ? theme.colors.gray[6]
+                    : theme.colors.gray[4]
+                }
+                strokeWidth="1.5"
+              />
+            }
+          />
+        </div>
+      )}
+    </Transition>
+  );
+
   return (
     <>
       <Head>
@@ -123,97 +168,112 @@ export default function Cart({ userId }: CartProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
-        <Grid gutter="xl">
-          <Grid.Col span={9}>
-            <Group position="apart">
-              <PageTitle title={`My Cart (${getItemCount()})`} mb="lg" />
-            </Group>
-            <Alert
-              icon={<IconAlertCircle size="1rem" />}
-              variant="light"
-              color={"indigo"}
-              title={
-                "Checkout now to make your bookings and receive your redemption vouchers!"
-              }
-              radius="md"
-              pb={0}
-            >
-              {}
-            </Alert>
-          </Grid.Col>
-          <Grid.Col span={9}>
-            <Card
-              withBorder
-              mb="lg"
-              sx={{ backgroundColor: theme.colors.gray[0] }}
-              radius="lg"
-            >
-              <Group position="apart">
-                <Checkbox
-                  label="Select all"
-                  checked={areAllChecked}
-                  onChange={(event) =>
-                    handleAllCheckChange(event.currentTarget.checked)
-                  }
-                />
-                <Button
-                  variant="subtle"
-                  onClick={() => clearCart()}
-                  leftIcon={<IconX size="1rem" />}
-                >
-                  Clear all cart items
-                </Button>
-              </Group>
-            </Card>
-            {cartItems
-              .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1))
-              .map((item) => (
-                <CartItemCard
-                  key={item.cartItemId}
-                  itemId={item.cartItemId}
-                  serviceListing={item.serviceListing}
-                  bookingSelection={item.bookingSelection}
-                  checked={checkedItems[item.cartItemId] || false}
-                  onCheckedChange={(isChecked) =>
-                    handleItemCheckChange(item.cartItemId, isChecked)
-                  }
-                  quantity={item.quantity}
-                  setItemQuantity={setItemQuantity}
-                  removeItem={async () =>
-                    await removeItemFromCart(item.cartItemId)
-                  }
-                  isExpired={expiredItems[item.cartItemId] || false}
-                  setCardExpired={(isExpired) =>
-                    setCardExpired(item.cartItemId, isExpired)
-                  }
-                />
-              ))}
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
-              <Group position="right">
-                <Stack>
-                  <Text size="xl" weight={600} mb={-10}>
-                    Subtotal ({calculateTotalBuyables()}{" "}
-                    {calculateTotalBuyables() === 1 ? "item" : "items"})
-                  </Text>
-                  <Text size={40} weight={800} align="right">
-                    ${formatPriceForDisplay(calculateTotalPrice())}
-                  </Text>
-                </Stack>
-              </Group>
-              <Button
-                size="md"
-                fullWidth
-                mt="xs"
-                onClick={checkout}
-                variant="gradient"
+        <Group position="apart">
+          <PageTitle title={`My Cart (${getItemCount()})`} mb="lg" />
+        </Group>
+        {cartItems.length === 0 ? (
+          <>{emptyCartMessage}</>
+        ) : (
+          <Grid gutter="xl">
+            <Grid.Col span={9}>
+              <Alert
+                icon={<IconAlertCircle size="1rem" />}
+                variant="light"
+                color={"indigo"}
+                title={
+                  "Checkout now to make your bookings and receive your redemption vouchers!"
+                }
+                radius="md"
+                pb={0}
               >
-                Checkout
-              </Button>
-            </Paper>
-          </Grid.Col>
-        </Grid>
+                {}
+              </Alert>
+            </Grid.Col>
+            <Grid.Col span={9}>
+              <Card
+                withBorder
+                mb="lg"
+                sx={{ backgroundColor: theme.colors.gray[0] }}
+                radius="lg"
+              >
+                <Group position="apart">
+                  <Checkbox
+                    label="Select all"
+                    checked={areAllChecked}
+                    onChange={(event) =>
+                      handleAllCheckChange(event.currentTarget.checked)
+                    }
+                  />
+                  {/* <Button
+                  variant="subtle"
+                  onClick={clearAllCartItems}
+                  leftIcon={<IconX size="1rem" />}
+                  color="red"
+                >
+                  Clear cart
+                </Button> */}
+                  <DeleteActionButtonModal
+                    large
+                    largeText="Clear cart"
+                    onDelete={clearAllCartItems}
+                    leftIcon={<IconX size="1rem" />}
+                    color="red"
+                    variant="subtle"
+                    subtitle="Are you sure you want to clear all cart items? All existing chosen appointment time slots will be removed."
+                    title="Clear cart"
+                  />
+                </Group>
+              </Card>
+              {cartItems
+                .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1))
+                .map((item) => (
+                  <CartItemCard
+                    key={item.cartItemId}
+                    itemId={item.cartItemId}
+                    serviceListing={item.serviceListing}
+                    bookingSelection={item.bookingSelection}
+                    checked={checkedItems[item.cartItemId] || false}
+                    onCheckedChange={(isChecked) =>
+                      handleItemCheckChange(item.cartItemId, isChecked)
+                    }
+                    quantity={item.quantity}
+                    setItemQuantity={setItemQuantity}
+                    removeItem={async () =>
+                      await removeItemFromCart(item.cartItemId)
+                    }
+                    isExpired={expiredItems[item.cartItemId] || false}
+                    setCardExpired={(isExpired) =>
+                      setCardExpired(item.cartItemId, isExpired)
+                    }
+                  />
+                ))}
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
+                <Group position="right">
+                  <Stack>
+                    <Text size="xl" weight={600} mb={-10}>
+                      Subtotal ({calculateTotalBuyables()}{" "}
+                      {calculateTotalBuyables() === 1 ? "item" : "items"})
+                    </Text>
+                    <Text size={40} weight={700} align="right">
+                      ${formatPriceForDisplay(calculateTotalPrice())}
+                    </Text>
+                  </Stack>
+                </Group>
+                <Button
+                  size="md"
+                  fullWidth
+                  mt="xs"
+                  onClick={checkout}
+                  variant="gradient"
+                >
+                  Checkout
+                </Button>
+              </Paper>
+            </Grid.Col>
+          </Grid>
+        )}
       </Container>
     </>
   );

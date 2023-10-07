@@ -39,7 +39,7 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
         <Text size="lg" weight={700} color="dark" mb="xs">
           Recently added items
         </Text>
-        <ScrollArea mah={300}>
+        <ScrollArea.Autosize mah={300} type="auto">
           {cartItems.length === 0 ? (
             <Text color="dark" mb="xs" align="center">
               The cart is currently empty
@@ -58,7 +58,7 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
                 />
               ))
           )}
-        </ScrollArea>
+        </ScrollArea.Autosize>
         <Button
           fullWidth
           onClick={() => {

@@ -15,6 +15,7 @@ import {
   Alert,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { IconMapPin, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -99,6 +100,22 @@ const CartItemCard = ({
     setItemQuantity(itemId, newQuantity);
   };
 
+  const removeItemFromCart = () => {
+    removeItem();
+    notifications.show({
+      title: "Item Removed from Cart",
+      color: "green",
+      message: `${serviceListing.title} has been removed from your cart.`,
+    });
+  };
+
+  console.log("SLID", serviceListing.serviceListingId);
+  console.log("CGID", serviceListing.calendarGroupId);
+  console.log("PETID", bookingSelection?.petId);
+  console.log("Start", bookingSelection?.startTime);
+  console.log("End", bookingSelection?.endTime);
+  console.log("availTimeslots", availTimeslots);
+
   return (
     <Card
       withBorder
@@ -140,8 +157,9 @@ const CartItemCard = ({
         <Center>
           <Button
             variant="subtle"
-            onClick={removeItem}
+            onClick={removeItemFromCart}
             leftIcon={<IconTrash size="1rem" />}
+            color="gray"
           >
             Remove from cart
           </Button>
