@@ -8,6 +8,7 @@ import {
   Button,
   Burger,
   rem,
+  Text,
   Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -16,7 +17,8 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { LoginModal } from "../login/LoginModal";
+import LoginModal from "../login/LoginModal";
+
 const HEADER_HEIGHT = rem(80);
 
 const useStyles = createStyles((theme) => ({
@@ -137,7 +139,9 @@ const HeaderBar = () => {
 
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>
-        <Link href={item.link}>{item.label}</Link>
+        <Link href={item.link}>
+          <Text>{item.label}</Text>
+        </Link>
       </Menu.Item>
     ));
 
@@ -152,7 +156,9 @@ const HeaderBar = () => {
           <Menu.Target>
             <Link href={link.link} className={classes.link}>
               <Center>
-                <span className={classes.linkLabel}>{link.label}</span>
+                <span className={classes.linkLabel}>
+                  <Text>{link.label}</Text>
+                </span>
                 <IconChevronDown size={rem(12)} stroke={1.5} />
               </Center>
             </Link>
@@ -164,7 +170,7 @@ const HeaderBar = () => {
 
     return (
       <Link key={link.label} href={link.link} className={classes.link}>
-        {link.label}
+        <Text>{link.label}</Text>
       </Link>
     );
   });
