@@ -54,6 +54,8 @@ export default function Cart({ userId }: CartProps) {
   const [expiredItems, setExpiredItems] = useState({});
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
+  const PLATFORM_FEE = 3.99; // stub value
+
   useEffect(() => {
     const updatedCartItems = getCartItems();
     setCartItems(updatedCartItems);
@@ -92,6 +94,15 @@ export default function Cart({ userId }: CartProps) {
     }));
   }
 
+  function hasNoCheckedItems() {
+    for (const cartItemId in checkedItems) {
+      if (checkedItems[cartItemId] && !expiredItems[cartItemId]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   const calculateTotalBuyables = () => {
     let totalBuyables = 0;
     cartItems.forEach((item) => {
@@ -105,6 +116,9 @@ export default function Cart({ userId }: CartProps) {
 
   const calculateTotalPrice = () => {
     let totalPrice = 0;
+    if (hasNoCheckedItems()) {
+      return totalPrice;
+    }
     cartItems.forEach((item) => {
       if (!expiredItems[item.cartItemId] && checkedItems[item.cartItemId]) {
         // Check if item is not expired and is checked
@@ -115,7 +129,7 @@ export default function Cart({ userId }: CartProps) {
         }
       }
     });
-    return totalPrice;
+    return totalPrice + PLATFORM_FEE;
   };
 
   const clearAllCartItems = () => {
@@ -128,6 +142,14 @@ export default function Cart({ userId }: CartProps) {
   };
 
   function checkout() {
+    if (hasNoCheckedItems()) {
+      notifications.show({
+        title: "Cannot Checkout",
+        color: "red",
+        message: "Please select at least one item to checkout.",
+      });
+      return;
+    }
     notifications.show({
       title: "Checking out cart placeholder",
       color: "orange",
@@ -257,30 +279,34 @@ export default function Cart({ userId }: CartProps) {
                     ${formatPriceForDisplay(calculateTotalPrice() * 0.92)}
                   </Text>
                 </Group>
-                <Group position="apart" mb="xs">
-                  <Text size="sm" c="dimmed">
-                    GST (8%)
-                  </Text>
-                  <Text size="sm" fw={500} c="dimmed">
-                    ${formatPriceForDisplay(calculateTotalPrice() * 0.08)}
-                  </Text>
-                </Group>
-                <Group position="apart" mb="xs">
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <Text size="sm" c="dimmed">
-                      Platform fee
-                    </Text>
-                    <PlatformFeePopover />
-                  </div>
-                  <Text size="sm" fw={500} c="dimmed">
-                    ${formatPriceForDisplay(3.99)}
-                  </Text>
-                </Group>
+                {!hasNoCheckedItems() && (
+                  <>
+                    <Group position="apart" mb="xs">
+                      <Text size="sm" c="dimmed">
+                        GST (8%)
+                      </Text>
+                      <Text size="sm" fw={500} c="dimmed">
+                        ${formatPriceForDisplay(calculateTotalPrice() * 0.08)}
+                      </Text>
+                    </Group>
+                    <Group position="apart" mb="xs">
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Text size="sm" c="dimmed">
+                          Platform fee
+                        </Text>
+                        <PlatformFeePopover />
+                      </div>
+                      <Text size="sm" fw={500} c="dimmed">
+                        ${formatPriceForDisplay(PLATFORM_FEE)}
+                      </Text>
+                    </Group>
+                  </>
+                )}
                 <Divider mb="xs" />
                 <Group position="apart">
                   <Text size="lg">Total</Text>
                   <Text size="lg" fw={700}>
-                    ${formatPriceForDisplay(calculateTotalPrice() + 3.99)}
+                    ${formatPriceForDisplay(calculateTotalPrice())}
                   </Text>
                 </Group>
                 <Button
