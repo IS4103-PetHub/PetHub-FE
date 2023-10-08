@@ -30,8 +30,9 @@ import {
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useCartOperations } from "@/hooks/cart";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { Booking } from "@/types/types";
+import { Booking, CartItem, CartItemBookingSelection } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
 
 const CALENDAR_SPAN = 4;
@@ -42,6 +43,7 @@ interface SelectTimeslotModalProps {
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
+  refresh(): void;
   // optional, only for updating
   isUpdating?: boolean;
   booking?: Booking;
@@ -53,6 +55,7 @@ const SelectTimeslotModal = ({
   serviceListing,
   opened,
   onClose,
+  refresh,
   isUpdating,
   booking,
   onUpdateBooking,
@@ -67,6 +70,9 @@ const SelectTimeslotModal = ({
   const [selectedPetId, setSelectedPetId] = useState<string>(
     booking ? booking.petId?.toString() : "",
   );
+  const { addItemToCart } = useCartOperations(petOwnerId);
+
+  console.log("selected timeslot", selectedTimeslot);
 
   /* 
   service listing does not belong to calendar group, or does not have a set duration
@@ -85,10 +91,10 @@ const SelectTimeslotModal = ({
 
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
 
-  const createBookingMutation = useCreateBooking();
+  /* const createBookingMutation = useCreateBooking(); // Moved to checkout cart page */
   const updateBookingMutation = useUpdateBooking();
 
-  async function createOrUpdateBooking() {
+  async function scheduleOrUpdateBooking() {
     const session = await getSession();
     if (!session) {
       notifications.show({
@@ -99,20 +105,19 @@ const SelectTimeslotModal = ({
       return;
     }
     try {
-      let payload;
       const startTime = selectedTimeslot;
       const endTime = dayjs(selectedTimeslot)
         .add(serviceListing.duration, "minutes")
         .toISOString();
 
       if (isUpdating) {
+        let payload;
         payload = { bookingId: booking.bookingId, startTime, endTime };
         await updateBookingMutation.mutateAsync(payload);
         // refetch user bookings
         onUpdateBooking();
       } else {
-        payload = {
-          petOwnerId: session.user["userId"],
+        let bookingSelection: CartItemBookingSelection = {
           calendarGroupId: serviceListing.calendarGroupId,
           serviceListingId: serviceListing.serviceListingId,
           startTime,
@@ -120,22 +125,31 @@ const SelectTimeslotModal = ({
         };
         // append petId if there is a pet selected
         if (selectedPetId) {
-          payload = { ...payload, petId: parseInt(selectedPetId) };
+          bookingSelection = {
+            ...bookingSelection,
+            petId: parseInt(selectedPetId),
+            petName: pets.find((pet) => pet.petId === parseInt(selectedPetId))
+              .petName,
+          };
         }
-        await createBookingMutation.mutateAsync(payload);
+        addItemToCart({
+          serviceListing: serviceListing,
+          bookingSelection: bookingSelection,
+        } as CartItem);
+        refresh(); // Force the SL page to refetch new cart items from localstorage and display a text if it is added
       }
       notifications.show({
-        title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
+        title: `Appointment ${isUpdating ? "Rescheduled" : "Added to Cart"}`,
         color: "green",
         icon: <IconCheck />,
         message: `Your appointment on ${formatISODayDateTime(
           selectedTimeslot,
-        )} has been confirmed!`,
+        )} has been ${isUpdating ? "confirmed" : "Added to Cart"}`,
       });
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(
-          `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
+          `Error ${isUpdating ? "Updating" : "Adding"} Appointment`,
           error,
         ),
       });
@@ -159,7 +173,7 @@ const SelectTimeslotModal = ({
       setShowConfirmation();
       return;
     }
-    createOrUpdateBooking();
+    scheduleOrUpdateBooking();
     handleClose();
   }
 
@@ -331,7 +345,7 @@ const SelectTimeslotModal = ({
             disabled={!selectedTimeslot}
             onClick={handleClickButton}
           >
-            {showConfirmation ? "Confirm" : "Next"}
+            {showConfirmation ? "Confirm and add to cart" : "Next"}
           </Button>
         </Group>
       </Group>
