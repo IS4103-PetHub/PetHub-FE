@@ -154,6 +154,7 @@ export default function ServiceListingDetails({
         message: "Please log in to buy!",
         color: "red",
       });
+      return;
     }
     // display select timeslot modal
     open();
