@@ -226,7 +226,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   return (
     <>
       <Head>
-        <title>Pet Business Applications - Admin Portal - PetHub</title>
+        <title>Service Listings - Admin Portal - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
