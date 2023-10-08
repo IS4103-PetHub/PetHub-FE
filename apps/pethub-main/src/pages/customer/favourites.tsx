@@ -230,7 +230,7 @@ export default function Favourites({ userId }: FavouritesProps) {
   return (
     <>
       <Head>
-        <title>My Favourites - Pet Hub</title>
+        <title>My Favourites - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
