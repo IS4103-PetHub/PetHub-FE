@@ -50,8 +50,7 @@ const SettingsForm = ({
 
   // These are for a CG update, to determine if editing the dates should be disabled or not (If the date is in the past you shouldn't be able to edit them)
   const isPastDate = (date) => date && dayjs(date).isBefore(dayjs());
-  const isStartDateDisabled =
-    setting?.recurrence?.startDate && isPastDate(setting.recurrence.startDate);
+  // const isStartDateDisabled = setting?.recurrence?.startDate && isPastDate(setting.recurrence.startDate);
   const isSettingOver =
     setting?.recurrence?.endDate && isPastDate(setting.recurrence.endDate);
 
@@ -155,7 +154,7 @@ const SettingsForm = ({
               valueFormat="DD/MM/YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
-              disabled={isEditingDisabled || isStartDateDisabled}
+              disabled={isEditingDisabled}
               onChange={(value) =>
                 onChange({
                   recurrence: { ...setting.recurrence, startDate: value },
