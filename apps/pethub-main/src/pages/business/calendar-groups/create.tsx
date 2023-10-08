@@ -2,7 +2,6 @@ import { Container, Group } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -19,7 +18,6 @@ import {
   useCreateCalendarGroup,
   useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
-import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import {
   validateCGDescription,
   validateCGName,
@@ -34,7 +32,6 @@ export default function CreateCalendarGroup({
   userId,
 }: CreateCalendarGroupProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
     useGetCalendarGroupByPBId(userId);
 
@@ -69,7 +66,7 @@ export default function CreateCalendarGroup({
     },
   });
 
-  const createCalendarGroupMutation = useCreateCalendarGroup(queryClient);
+  const createCalendarGroupMutation = useCreateCalendarGroup();
   const createCalendarGroup = async (payload: CalendarGroup) => {
     try {
       await createCalendarGroupMutation.mutateAsync(payload);
