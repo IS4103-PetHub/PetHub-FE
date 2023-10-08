@@ -178,7 +178,7 @@ export default function ServiceListingDetails({
       });
       return;
     }
-    if (serviceListing.calendarGroupId !== null) {
+    if (serviceListing.calendarGroupId) {
       open(); // Handle add to cart in the modal
     } else {
       try {

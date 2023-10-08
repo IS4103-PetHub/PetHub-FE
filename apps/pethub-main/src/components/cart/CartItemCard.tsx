@@ -109,19 +109,12 @@ const CartItemCard = ({
     });
   };
 
-  console.log("SLID", serviceListing.serviceListingId);
-  console.log("CGID", serviceListing.calendarGroupId);
-  console.log("PETID", bookingSelection?.petId);
-  console.log("Start", bookingSelection?.startTime);
-  console.log("End", bookingSelection?.endTime);
-  console.log("availTimeslots", availTimeslots);
-
   return (
     <Card
       withBorder
       mb="lg"
-      mah={270}
-      mih={270}
+      mah={280}
+      mih={280}
       sx={{
         backgroundColor: isExpired
           ? theme.colors.gray[3]
@@ -234,20 +227,18 @@ const CartItemCard = ({
                   radius="md"
                   mih={80}
                   mah={80}
-                  miw={475}
-                  maw={475}
+                  w="100%"
                 >
                   {availTimeslots.length > 0 ? (
                     <Text size="xs">
-                      <b>Start:</b>{" "}
-                      {formatISODayDateTime(bookingSelection?.startTime)}{" "}
-                      &nbsp;&nbsp;
-                      <b>End:</b>{" "}
-                      {formatISODayDateTime(bookingSelection?.endTime)}{" "}
-                      &nbsp;&nbsp;
+                      <b>Start: </b>
+                      {formatISODayDateTime(bookingSelection?.startTime)}
+                      <b style={{ marginLeft: "8px" }}>End: </b>
+                      {formatISODayDateTime(bookingSelection?.endTime)}
                       {bookingSelection?.petName && (
                         <>
-                          <b>Pet:</b> {bookingSelection?.petName}
+                          <b style={{ marginLeft: "8px" }}>Pet:</b>{" "}
+                          {bookingSelection?.petName}
                         </>
                       )}
                     </Text>

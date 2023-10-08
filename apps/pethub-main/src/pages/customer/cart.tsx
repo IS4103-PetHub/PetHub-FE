@@ -186,6 +186,82 @@ export default function Cart({ userId }: CartProps) {
     </Transition>
   );
 
+  const displayCartItems = (
+    <>
+      {cartItems
+        .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1)) // Sort expired items to the back
+        .map((item) => (
+          <CartItemCard
+            key={item.cartItemId}
+            itemId={item.cartItemId}
+            serviceListing={item.serviceListing}
+            bookingSelection={item.bookingSelection}
+            checked={checkedItems[item.cartItemId] || false}
+            onCheckedChange={(isChecked) =>
+              handleItemCheckChange(item.cartItemId, isChecked)
+            }
+            quantity={item.quantity}
+            setItemQuantity={setItemQuantity}
+            removeItem={async () => await removeItemFromCart(item.cartItemId)}
+            isExpired={expiredItems[item.cartItemId] || false}
+            setCardExpired={(isExpired) =>
+              setCardExpired(item.cartItemId, isExpired)
+            }
+          />
+        ))}
+    </>
+  );
+
+  const displayCheckoutSummary = (
+    <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
+      <Text size="xl" weight={600} mb="md">
+        Summary
+      </Text>
+      <Group position="apart" mb="xs">
+        <Text size="sm" align="left" c="dimmed">
+          Subtotal ({calculateTotalBuyables()}{" "}
+          {calculateTotalBuyables() === 1 ? "item" : "items"})
+        </Text>
+        <Text size="sm" fw={500} c="dimmed">
+          ${formatPriceForDisplay(calculateTotalPrice() * 0.92)}
+        </Text>
+      </Group>
+      {!hasNoCheckedItems() && (
+        <>
+          <Group position="apart" mb="xs">
+            <Text size="sm" c="dimmed">
+              GST (8%)
+            </Text>
+            <Text size="sm" fw={500} c="dimmed">
+              ${formatPriceForDisplay(calculateTotalPrice() * 0.08)}
+            </Text>
+          </Group>
+          <Group position="apart" mb="xs">
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Text size="sm" c="dimmed">
+                Platform fee
+              </Text>
+              <PlatformFeePopover />
+            </div>
+            <Text size="sm" fw={500} c="dimmed">
+              ${formatPriceForDisplay(PLATFORM_FEE)}
+            </Text>
+          </Group>
+        </>
+      )}
+      <Divider mb="xs" />
+      <Group position="apart">
+        <Text size="lg">Total</Text>
+        <Text size="lg" fw={700}>
+          ${formatPriceForDisplay(calculateTotalPrice())}
+        </Text>
+      </Group>
+      <Button size="md" fullWidth mt="xs" onClick={checkout} variant="gradient">
+        Checkout
+      </Button>
+    </Paper>
+  );
+
   return (
     <>
       <Head>
@@ -241,85 +317,9 @@ export default function Cart({ userId }: CartProps) {
                   />
                 </Group>
               </Card>
-              {cartItems
-                .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1))
-                .map((item) => (
-                  <CartItemCard
-                    key={item.cartItemId}
-                    itemId={item.cartItemId}
-                    serviceListing={item.serviceListing}
-                    bookingSelection={item.bookingSelection}
-                    checked={checkedItems[item.cartItemId] || false}
-                    onCheckedChange={(isChecked) =>
-                      handleItemCheckChange(item.cartItemId, isChecked)
-                    }
-                    quantity={item.quantity}
-                    setItemQuantity={setItemQuantity}
-                    removeItem={async () =>
-                      await removeItemFromCart(item.cartItemId)
-                    }
-                    isExpired={expiredItems[item.cartItemId] || false}
-                    setCardExpired={(isExpired) =>
-                      setCardExpired(item.cartItemId, isExpired)
-                    }
-                  />
-                ))}
+              {displayCartItems}
             </Grid.Col>
-            <Grid.Col span={3}>
-              <Paper radius="md" bg={theme.colors.gray[0]} p="lg" withBorder>
-                <Text size="xl" weight={600} mb="md">
-                  Summary
-                </Text>
-                <Group position="apart" mb="xs">
-                  <Text size="sm" align="left" c="dimmed">
-                    Subtotal ({calculateTotalBuyables()}{" "}
-                    {calculateTotalBuyables() === 1 ? "item" : "items"})
-                  </Text>
-                  <Text size="sm" fw={500} c="dimmed">
-                    ${formatPriceForDisplay(calculateTotalPrice() * 0.92)}
-                  </Text>
-                </Group>
-                {!hasNoCheckedItems() && (
-                  <>
-                    <Group position="apart" mb="xs">
-                      <Text size="sm" c="dimmed">
-                        GST (8%)
-                      </Text>
-                      <Text size="sm" fw={500} c="dimmed">
-                        ${formatPriceForDisplay(calculateTotalPrice() * 0.08)}
-                      </Text>
-                    </Group>
-                    <Group position="apart" mb="xs">
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <Text size="sm" c="dimmed">
-                          Platform fee
-                        </Text>
-                        <PlatformFeePopover />
-                      </div>
-                      <Text size="sm" fw={500} c="dimmed">
-                        ${formatPriceForDisplay(PLATFORM_FEE)}
-                      </Text>
-                    </Group>
-                  </>
-                )}
-                <Divider mb="xs" />
-                <Group position="apart">
-                  <Text size="lg">Total</Text>
-                  <Text size="lg" fw={700}>
-                    ${formatPriceForDisplay(calculateTotalPrice())}
-                  </Text>
-                </Group>
-                <Button
-                  size="md"
-                  fullWidth
-                  mt="xs"
-                  onClick={checkout}
-                  variant="gradient"
-                >
-                  Checkout
-                </Button>
-              </Paper>
-            </Grid.Col>
+            <Grid.Col span={3}>{displayCheckoutSummary}</Grid.Col>
           </Grid>
         )}
       </Container>
