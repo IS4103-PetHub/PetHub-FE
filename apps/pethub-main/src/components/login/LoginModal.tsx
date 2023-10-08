@@ -3,6 +3,7 @@ import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
+import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
@@ -11,6 +12,7 @@ import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
+import { allowedRoutesAfterLogin } from "@/types/constants";
 import { ForgotPasswordBox } from "./ForgotPasswordBox";
 import LoginBox from "./LoginBox";
 
@@ -21,6 +23,7 @@ interface LoginModalProps {
 }
 
 const LoginModal = ({ opened, open, close }: LoginModalProps) => {
+  const router = useRouter();
   const theme = useMantineTheme();
   const [type, toggle] = useToggle(["login", "forgotPassword"]);
   const [isForgotPasswordSuccessful, setIsForgotPasswordSuccessful] =
@@ -81,9 +84,10 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
 
   const handleLogin = async (values: LoginFormValues) => {
+    let successfullyLoggedIn = false;
     const res = await signIn("credentials", {
       callbackUrl: originalPath,
-      redirect: true,
+      redirect: false,
       email: values.email,
       password: values.password,
       accountType: values.accountType,
@@ -95,6 +99,8 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         color: "red",
       });
     } else {
+      // Only set redirect to true if the login is successful
+      successfullyLoggedIn = true;
       const session = await getSession();
       if (
         session &&
@@ -103,8 +109,15 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         showOverlay();
         // The middleware will force a redirect to the business dashboard here
       }
-      close();
     }
+    if (
+      successfullyLoggedIn &&
+      allowedRoutesAfterLogin.includes(originalPath)
+    ) {
+      router.push(originalPath);
+    }
+    close();
+
     const timer = setTimeout(() => {
       loginForm.reset();
     }, 800);
