@@ -9,6 +9,7 @@ interface DeleteActionButtonModalProps extends ButtonProps {
   subtitle: string;
   onDelete(): void;
   large?: boolean;
+  largeText?: string;
 }
 
 const DeleteActionButtonModal = ({
@@ -16,6 +17,7 @@ const DeleteActionButtonModal = ({
   subtitle,
   onDelete,
   large,
+  largeText,
   ...props
 }: DeleteActionButtonModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -57,7 +59,7 @@ const DeleteActionButtonModal = ({
           onClick={open}
           {...props}
         >
-          Delete
+          {largeText ?? "Delete"}
         </Button>
       ) : (
         <DeleteActionIcon onClick={open} />
