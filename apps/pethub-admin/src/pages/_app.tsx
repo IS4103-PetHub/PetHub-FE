@@ -58,7 +58,7 @@ export function App({ Component, pageProps }: AppProps) {
           withGlobalStyles
           withNormalizeCSS
           theme={{
-            fontFamily: "var(--font-inter)",
+            fontFamily: inter.style.fontFamily,
             primaryColor: "indigo",
             colorScheme,
           }}

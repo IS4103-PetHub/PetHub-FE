@@ -26,7 +26,7 @@ export const useGetAvailableTimeSlotsByCGId = (
   });
 };
 
-export const useCreateCalendarGroup = (queryClient: QueryClient) => {
+export const useCreateCalendarGroup = () => {
   return useMutation({
     mutationFn: async (payload: CalendarGroup) => {
       const { petBusinessId, ...payloadWithoutId } = payload;
@@ -67,19 +67,11 @@ export const useGetCalendarGroupById = (calendarGroupId: number) => {
   });
 };
 
-export const useDeleteCalendarGroupById = (queryClient: QueryClient) => {
+export const useDeleteCalendarGroupById = () => {
   return useMutation({
     mutationFn: async (id: number) => {
       return (await api.delete(`${CALENDAR_GROUP_API}/${id}`)).data;
     },
-    // onSuccess: (data, id) => {
-    //   queryClient.setQueryData<CalendarGroup[]>(
-    //     ["calendar-groups"],
-    //     (oldCGs = []) => {
-    //       return oldCGs.filter((cg) => cg.calendarGroupId !== id);
-    //     }
-    //   );
-    // },
   });
 };
 
