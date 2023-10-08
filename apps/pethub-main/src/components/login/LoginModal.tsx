@@ -107,7 +107,7 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
         showOverlay();
-        // The middleware will force a redirect to the business dashboard here
+        router.push("/business/dashboard");
       }
     }
     if (
