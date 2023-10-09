@@ -5,6 +5,7 @@ import { IconCheck } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
+import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import {
@@ -223,10 +224,16 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   };
 
   return (
-    <Container fluid>
-      <PageTitle title="Service Listing Management" />
-      {renderContent()}
-    </Container>
+    <>
+      <Head>
+        <title>Service Listings - Admin Portal - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid>
+        <PageTitle title="Service Listing Management" />
+        {renderContent()}
+      </Container>
+    </>
   );
 }
 
