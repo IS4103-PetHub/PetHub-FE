@@ -12,6 +12,7 @@ import {
   Center,
   Flex,
 } from "@mantine/core";
+import { Transition } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
@@ -68,6 +69,13 @@ export default function ServiceListingDetails({
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
+  const [showAddedToCart, setShowAddedToCart] = useState(false);
+
+  const slideLeftToRight = {
+    in: { transform: "translateX(0%)", opacity: 1 },
+    out: { transform: "translateX(100%)", opacity: 0 },
+    transitionProperty: "transform, opacity",
+  };
 
   useEffect(() => {
     if (
@@ -164,6 +172,10 @@ export default function ServiceListingDetails({
     }
     if (serviceListing.calendarGroupId) {
       open(); // Handle add to cart in the modal
+      setShowAddedToCart(true);
+      setTimeout(() => {
+        setShowAddedToCart(false);
+      }, 8000);
     } else {
       try {
         await addItemToCart(
@@ -181,6 +193,10 @@ export default function ServiceListingDetails({
           color: "green",
         });
         setValue(1);
+        setShowAddedToCart(true);
+        setTimeout(() => {
+          setShowAddedToCart(false);
+        }, 3000);
       } catch (error) {
         notifications.show({
           title: "Error Adding to Cart",
@@ -300,6 +316,7 @@ export default function ServiceListingDetails({
               p="lg"
               withBorder
               mt={50}
+              sx={{ position: "relative" }}
             >
               <Group position="apart">
                 <Text size="xl" weight={500}>
@@ -325,6 +342,33 @@ export default function ServiceListingDetails({
                 opened={opened}
                 onClose={close}
               />
+              <Transition
+                mounted={showAddedToCart}
+                transition={slideLeftToRight}
+                duration={3000}
+              >
+                {(styles) => (
+                  <div
+                    style={{
+                      ...styles,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: "rgba(0, 0, 0, 0.7)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "1.5rem",
+                      zIndex: 1,
+                    }}
+                  >
+                    Added to cart
+                  </div>
+                )}
+              </Transition>
             </Paper>
           </Grid.Col>
         </Grid>
