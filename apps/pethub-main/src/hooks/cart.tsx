@@ -139,6 +139,13 @@ export function useCartOperations(userId: number) {
     return cart.itemCount;
   };
 
+  const getCartSubtotal = () => {
+    return cart.cartItems.reduce(
+      (acc, item) => acc + (item.quantity || 1) * item.serviceListing.basePrice,
+      0,
+    );
+  };
+
   return {
     cart,
     addItemToCart,
@@ -149,5 +156,6 @@ export function useCartOperations(userId: number) {
     getCartItem,
     clearCart,
     getItemCount,
+    getCartSubtotal,
   };
 }

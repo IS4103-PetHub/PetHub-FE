@@ -64,7 +64,8 @@ export default function ServiceListingDetails({
   const [showFullDescription, setShowFullDescription] = useToggle();
   // Force the SL page to refetch new cart items from localstorage and display a text if it is added from the timeslot modal
   const [key, setKey] = useState(Math.random());
-  const { addItemToCart, getCartItems, cart } = useCartOperations(userId);
+  const { addItemToCart, getCartItems, getItemCount, cart } =
+    useCartOperations(userId);
   const { data: favouritedListings = [] } =
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
   const [isFavourite, setIsFavourite] = useState(false);

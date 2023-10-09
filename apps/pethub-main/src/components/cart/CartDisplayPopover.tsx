@@ -1,7 +1,8 @@
-import { Popover, Text, Button, Card, ScrollArea } from "@mantine/core";
+import { Popover, Text, Button, Card, ScrollArea, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
 import { useCartOperations } from "@/hooks/cart";
+import { formatPriceForDisplay } from "@/util";
 import CartIcon from "./CartIcon";
 import MiniCartItemCard from "./MiniCartItemCard";
 
@@ -13,7 +14,8 @@ interface CartDisplayPopoverProps {
 const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
   const router = useRouter();
   const [opened, { close, open }] = useDisclosure(false);
-  const { getCartItems, removeItemFromCart } = useCartOperations(userId);
+  const { getCartItems, removeItemFromCart, getCartSubtotal, getItemCount } =
+    useCartOperations(userId);
 
   const cartItems = getCartItems();
 
@@ -59,17 +61,24 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
               ))
           )}
         </ScrollArea.Autosize>
-        <Button
-          fullWidth
-          onClick={() => {
-            router.push("/customer/cart");
-            close();
-          }}
-          variant="gradient"
-          mt={2}
-        >
-          View my shopping cart
-        </Button>
+        <Group position="apart">
+          <Text c="dark" size="sm">
+            Subtotal (
+            {getItemCount() === 1 ? "1 item" : `${getItemCount()} items`}): $
+            {formatPriceForDisplay(getCartSubtotal())}
+          </Text>
+
+          <Button
+            onClick={() => {
+              router.push("/customer/cart");
+              close();
+            }}
+            variant="gradient"
+            mt={2}
+          >
+            View my shopping cart
+          </Button>
+        </Group>
       </Popover.Dropdown>
     </Popover>
   );
