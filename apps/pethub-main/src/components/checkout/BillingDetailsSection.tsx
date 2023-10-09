@@ -1,5 +1,13 @@
-import { Card, Grid, Text, TextInput } from "@mantine/core";
+import {
+  Card,
+  Grid,
+  Group,
+  Text,
+  TextInput,
+  useMantineTheme,
+} from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
+import { IconId } from "@tabler/icons-react";
 import React from "react";
 
 interface BillingDetailsSectionProps {
@@ -7,11 +15,16 @@ interface BillingDetailsSectionProps {
 }
 
 const BillingDetailsSection = ({ form }: BillingDetailsSectionProps) => {
+  const theme = useMantineTheme();
+
   return (
     <Card shadow="sm" radius="md" withBorder>
-      <Text weight={500} size="lg" mb="md">
-        Billing details
-      </Text>
+      <Group position="left" align="flex-start">
+        <IconId color={theme.colors.indigo[5]} />
+        <Text weight={500} size="lg" mb="md" ml={-5}>
+          Billing details
+        </Text>
+      </Group>
       {/* <form onSubmit={form.onSubmit((values) => console.log(values))}> */}
       <Grid>
         <Grid.Col span={12}>

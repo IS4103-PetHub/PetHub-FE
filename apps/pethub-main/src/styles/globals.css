@@ -16,3 +16,15 @@ a {
   justify-content: center;
   height: 80vh;
 }
+
+.gradient-hover {
+  border: 0px solid;
+  background-size: 0 100%;
+  background-repeat: no-repeat;
+  transition: 0.5s ease;
+}
+
+.gradient-hover:hover {
+  background-image: linear-gradient(to right, #15aabf, #4263eb);
+  background-size: 100% 100%;
+}

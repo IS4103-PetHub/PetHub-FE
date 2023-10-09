@@ -1,4 +1,11 @@
-import { Button, Group, Stack } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Stack,
+  Text,
+  createStyles,
+  useMantineTheme,
+} from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import {
@@ -8,25 +15,40 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import { getSession } from "next-auth/react";
+import { IconLock } from "@tabler/icons-react";
 import React from "react";
-import { getErrorMessageProps } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
 import { useStripePaymentMethod } from "@/hooks/payment";
+import { formatPriceForDisplay } from "@/util";
 import BillingDetailsSection from "./BillingDetailsSection";
 import CheckoutCardSection from "./CheckoutCardSection";
+import CheckoutItemsSection from "./CheckoutItemsSection";
 
 interface CheckoutFormProps {
   userId: number;
 }
 
 const CheckoutForm = ({ userId }: CheckoutFormProps) => {
+  const theme = useMantineTheme();
   const stripe = useStripe();
   const elements = useElements();
 
   const stripePaymentMethodMutation = useStripePaymentMethod();
 
-  const { getCartItems, getItemCount } = useCartOperations(userId);
+  const { cart } = useCartOperations(userId);
+  console.log(cart);
+
+  const amount = formatPriceForDisplay(19);
+
+  console.log(
+    cart.cartItems.map((cartItem) => {
+      return {
+        cartItemId: cartItem.cartItemId,
+        serviceListingId: cartItem.serviceListing.serviceListingId,
+        quantity: cartItem.quantity ?? 1,
+      };
+    }),
+  );
 
   const billingForm = useForm({
     initialValues: {
@@ -77,15 +99,6 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
       const cardCVC = elements.getElement(CardCvcElement);
       const cardExpiry = elements.getElement(CardExpiryElement);
 
-      cardNumber.on("change", ({ error }) => {
-        const displayError = document.getElementById("payment-errors");
-        if (error) {
-          displayError.textContent = error.message;
-        }
-      });
-
-      const cartItems = getCartItems();
-      console.log(cartItems);
       const result = await stripe.createPaymentMethod({
         type: "card",
         card: cardNumber,
@@ -106,8 +119,14 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
           payment_method_id: result.paymentMethod.id,
           userId,
           // amount:
-          // itemCount:
-          // cartItems: [{cartItemId, serviceListingId, quantity}, ...]
+          itemCount: cart.itemCount,
+          cartItems: cart.cartItems.map((cartItem) => {
+            return {
+              cartItemId: cartItem.cartItemId,
+              serviceListingId: cartItem.serviceListing.serviceListingId,
+              quantity: cartItem.quantity ?? 1,
+            };
+          }),
         },
       };
 
@@ -126,23 +145,31 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing="lg">
+        <CheckoutItemsSection cart={cart} />
         <BillingDetailsSection form={billingForm} />
         <CheckoutCardSection />
       </Stack>
       <Group position="right">
-        <Button type="submit" size="md" disabled={!stripe} mt="xl">
-          Make payment
+        <Button
+          type="submit"
+          fullWidth
+          size="lg"
+          disabled={!stripe}
+          mt="xl"
+          color="dark"
+          className="gradient-hover"
+        >
+          Pay ${amount}
         </Button>
+      </Group>
+      <Group position="center" mt="sm">
+        <IconLock color={theme.colors.gray[5]} size="1.2rem" />
+        <Text color="dimmed" size="sm" align="center" mb={-2} ml={-10}>
+          Payments are secure and encrypted via Stripe
+        </Text>
       </Group>
     </form>
   );
 };
 
 export default CheckoutForm;
-
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-  if (!session) return { props: {} };
-  const userId = session.user["userId"];
-  return { props: { userId } };
-}

@@ -1,15 +1,23 @@
 import { Container } from "@mantine/core";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js/pure";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 
 const PK = `${process.env.NEXT_PUBLIC_STRIPE_PK_TEST}`;
+loadStripe.setLoadParameters({ advancedFraudSignals: false });
 const stripePromise = loadStripe(PK);
 
-export default function Checkout() {
+interface CheckoutProps {
+  userId: number;
+}
+
+export default function Checkout({ userId }: CheckoutProps) {
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -18,12 +26,24 @@ export default function Checkout() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} mb={50}>
-        <LargeBackButton text="Back to Cart" size="sm" mb="md" />
+        <LargeBackButton
+          text="Back to Cart"
+          size="sm"
+          mb="md"
+          onClick={() => router.push("/customer/cart")}
+        />
         <PageTitle title="Checkout" mb="lg" />
         <Elements stripe={stripePromise}>
-          <CheckoutForm />
+          <CheckoutForm userId={userId} />
         </Elements>
       </Container>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+  const userId = session.user["userId"];
+  return { props: { userId } };
 }

@@ -1,11 +1,11 @@
-import { Card, Grid, Input, Text, TextInput } from "@mantine/core";
+import { Card, Grid, Group, Input, Text, useMantineTheme } from "@mantine/core";
 import {
   CardCvcElement,
   CardExpiryElement,
   CardNumberElement,
-  useElements,
 } from "@stripe/react-stripe-js";
 import { StripeCardNumberElementOptions } from "@stripe/stripe-js";
+import { IconCreditCard } from "@tabler/icons-react";
 import React from "react";
 
 const CARD_ELEMENT_OPTIONS = {
@@ -31,11 +31,16 @@ const CARD_ELEMENT_OPTIONS = {
 } as StripeCardNumberElementOptions;
 
 const CheckoutCardSection = () => {
+  const theme = useMantineTheme();
+
   return (
     <Card shadow="sm" radius="md" withBorder>
-      <Text weight={500} size="lg" mb="md">
-        Card details
-      </Text>
+      <Group position="left" align="flex-start">
+        <IconCreditCard color={theme.colors.indigo[5]} />
+        <Text weight={500} size="lg" mb="md" ml={-5}>
+          Card details
+        </Text>
+      </Group>
       <Grid columns={24}>
         <Grid.Col span={24}>
           <Input.Wrapper label="Card Number" required>
@@ -44,10 +49,6 @@ const CheckoutCardSection = () => {
               options={CARD_ELEMENT_OPTIONS}
             />
           </Input.Wrapper>
-          {/* <Text weight={500} size="sm">
-                Card Number
-              </Text> */}
-          {/* <CardNumberElement options={CARD_ELEMENT_OPTIONS} /> */}
         </Grid.Col>
 
         <Grid.Col span={3}>
@@ -57,10 +58,6 @@ const CheckoutCardSection = () => {
               options={CARD_ELEMENT_OPTIONS}
             />
           </Input.Wrapper>
-          {/* <Text weight={500} size="sm">
-            Expiry
-          </Text>
-          <CardExpiryElement options={CARD_ELEMENT_OPTIONS} /> */}
         </Grid.Col>
 
         <Grid.Col span={3}>
@@ -70,13 +67,8 @@ const CheckoutCardSection = () => {
               options={CARD_ELEMENT_OPTIONS}
             />
           </Input.Wrapper>
-          {/* <Text weight={500} size="sm">
-            CVC
-          </Text>
-          <CardCvcElement options={CARD_ELEMENT_OPTIONS} /> */}
         </Grid.Col>
       </Grid>
-      {/* <CardElement options={CARD_ELEMENT_OPTIONS} /> */}
     </Card>
   );
 };

@@ -142,7 +142,7 @@ const SelectTimeslotModal = ({
         icon: <IconCheck />,
         message: `Your appointment on ${formatISODayDateTime(
           selectedTimeslot,
-        )} has been ${isUpdating ? "confirmed" : "Added to Cart"}`,
+        )} has been ${isUpdating ? "confirmed" : "added to cart"}`,
       });
     } catch (error: any) {
       notifications.show({
