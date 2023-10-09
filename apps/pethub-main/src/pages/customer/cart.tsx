@@ -189,6 +189,8 @@ export default function Cart({ userId }: CartProps) {
   const displayCartItems = (
     <>
       {cartItems
+        .slice()
+        .reverse()
         .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1)) // Sort expired items to the back
         .map((item) => (
           <CartItemCard
@@ -270,7 +272,7 @@ export default function Cart({ userId }: CartProps) {
       </Head>
       <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
         <Group position="apart">
-          <PageTitle title={`My Cart (${getItemCount()})`} mb="lg" />
+          <PageTitle title={`My cart (${getItemCount()})`} mb="lg" />
         </Group>
         {cartItems.length === 0 ? (
           <>{emptyCartMessage}</>

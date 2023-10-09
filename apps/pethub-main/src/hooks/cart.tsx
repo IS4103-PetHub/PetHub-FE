@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "@/api/axiosConfig";
 import { Cart, CartItem } from "@/types/types";
 import useLocalStorage from "./use-local-storage";
 
@@ -20,6 +21,49 @@ export function useCartOperations(userId: number) {
     };
     setCart(userCart);
   }, [carts, userId]);
+
+  useEffect(() => {
+    // sync all SL details when it mounts
+    console.log("syncing cart with backend");
+    syncCartWithBackend();
+  }, []);
+
+  const syncCartWithBackend = async () => {
+    // Get all unique serviceListingIds from the cart
+    const serviceListingIds = Array.from(
+      new Set(
+        cart.cartItems.map((item) => item.serviceListing.serviceListingId),
+      ),
+    );
+
+    try {
+      // get SL details from backend for each unique ID, update cart with it
+      const serviceListingPromises = serviceListingIds.map((id) =>
+        api.get(`/service-listings/${id}`),
+      );
+      const serviceListingResponses = await Promise.all(serviceListingPromises);
+      const updatedListings = serviceListingResponses.map(
+        (response) => response.data,
+      );
+
+      const updatedCartItems = cart.cartItems.map((item) => {
+        const updatedListing = updatedListings.find(
+          (listing) =>
+            listing.serviceListingId === item.serviceListing.serviceListingId,
+        );
+        return {
+          ...item,
+          serviceListing: updatedListing || item.serviceListing, // Use updated listing or fallback to the old one
+        };
+      });
+      setCartForUser({
+        ...cart,
+        cartItems: updatedCartItems,
+      });
+    } catch (error) {
+      console.error("Error syncing cart with backend [hooks/cart.tsx]:", error);
+    }
+  };
 
   /* ============================================== Helper Functions ============================================== */
 

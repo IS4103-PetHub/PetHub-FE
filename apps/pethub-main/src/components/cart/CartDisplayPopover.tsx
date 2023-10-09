@@ -39,11 +39,11 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
       </Popover.Target>
       <Popover.Dropdown onMouseEnter={open} onMouseLeave={close}>
         <Text size="lg" weight={700} color="dark" mb="xs">
-          Recently added items
+          Recently added
         </Text>
         <ScrollArea.Autosize mah={300} type="auto">
           {cartItems.length === 0 ? (
-            <Text color="dark" mb="xs" align="center">
+            <Text color="dimmed" mb="xs" align="center">
               The cart is currently empty
             </Text>
           ) : (
@@ -62,10 +62,12 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
           )}
         </ScrollArea.Autosize>
         <Group position="apart">
-          <Text c="dark" size="sm">
-            Subtotal (
-            {getItemCount() === 1 ? "1 item" : `${getItemCount()} items`}): $
-            {formatPriceForDisplay(getCartSubtotal())}
+          <Text c="dark" size="md">
+            <b>
+              Subtotal (
+              {getItemCount() === 1 ? "1 item" : `${getItemCount()} items`}):
+            </b>{" "}
+            ${formatPriceForDisplay(getCartSubtotal())}
           </Text>
 
           <Button
