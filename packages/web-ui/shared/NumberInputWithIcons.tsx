@@ -13,7 +13,7 @@ interface NumberInputWithIconsProps {
   min: number;
   max: number;
   step: number;
-  reduceSize?: boolean;
+  fullWidth?: boolean;
 }
 
 function NumberInputWithIcons({
@@ -22,15 +22,15 @@ function NumberInputWithIcons({
   min,
   max,
   step,
-  reduceSize,
+  fullWidth,
   ...props
 }: NumberInputWithIconsProps) {
   const handlers = useRef<NumberInputHandlers>();
 
   return (
-    <Group spacing={5} {...props}>
+    <Group spacing={5} {...(fullWidth ? { grow: true } : null)} {...props}>
       <ActionIcon
-        size={reduceSize ? 22 : 42}
+        size={42}
         variant="default"
         onClick={() => handlers.current.decrement()}
       >
@@ -38,7 +38,6 @@ function NumberInputWithIcons({
       </ActionIcon>
 
       <NumberInput
-        {...(reduceSize ? { size: "xs" } : null)}
         hideControls
         value={value}
         onChange={(val) => setValue(val)}
@@ -46,11 +45,13 @@ function NumberInputWithIcons({
         max={max}
         min={min}
         step={step}
-        styles={{ input: { width: rem(54), textAlign: "center" } }}
+        styles={{
+          input: { width: fullWidth ? rem(65) : rem(54), textAlign: "center" },
+        }}
       />
 
       <ActionIcon
-        size={reduceSize ? 22 : 42}
+        size={42}
         variant="default"
         onClick={() => handlers.current.increment()}
       >

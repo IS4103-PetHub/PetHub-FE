@@ -62,7 +62,6 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const [cartItemCount, setCartItemCount] = useState(0);
   // Force the SL page to refetch new cart items from localstorage and display a text if it is added from the timeslot modal
   const [key, setKey] = useState(Math.random());
   const { addItemToCart, getCartItems, cart } = useCartOperations(userId);
@@ -71,8 +70,6 @@ export default function ServiceListingDetails({
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
-
-  console.log("HELLO", serviceListing.calendarGroupId);
 
   useEffect(() => {
     if (
@@ -86,17 +83,6 @@ export default function ServiceListingDetails({
       setIsFavourite(false);
     }
   }, [favouritedListings, serviceListing]);
-
-  useEffect(() => {
-    const cartItems = getCartItems();
-    const itemCount = cartItems.reduce((acc, item) => {
-      if (item.serviceListing.serviceListingId === serviceListingId) {
-        return acc + (item.quantity || 1);
-      }
-      return acc;
-    }, 0);
-    setCartItemCount(itemCount);
-  }, [key, getCartItems, cart]);
 
   const ACCORDION_VALUES = ["description", "business"];
 
@@ -195,7 +181,9 @@ export default function ServiceListingDetails({
         );
         notifications.show({
           title: "Added to cart",
-          message: `'${serviceListing.title}' added to cart.`,
+          message: `${Number(value) > 1 ? `(${value})` : ""} '${
+            serviceListing.title
+          }' added to cart.`,
           color: "green",
         });
       } catch (error) {
@@ -324,26 +312,18 @@ export default function ServiceListingDetails({
                 </Text>
               </Group>
               {!serviceListing.calendarGroupId && (
-                <Flex justify="flex-end">
-                  <NumberInputWithIcons
-                    min={1}
-                    max={10}
-                    step={1}
-                    value={value}
-                    setValue={setValue}
-                    reduceSize
-                  />
-                </Flex>
+                <NumberInputWithIcons
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={value}
+                  setValue={setValue}
+                  fullWidth
+                />
               )}
               <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
                 Add to cart
               </Button>
-              {cartItemCount !== 0 && (
-                <Text size="xs" mt="xs" c="dark" align="right" fw={600}>
-                  {cartItemCount} {cartItemCount === 1 ? "item" : "items"} in
-                  cart
-                </Text>
-              )}
               <SelectTimeslotModal
                 petOwnerId={userId}
                 serviceListing={serviceListing}
