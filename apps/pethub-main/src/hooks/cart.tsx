@@ -43,7 +43,7 @@ export function useCartOperations(userId: number) {
 
   /* ============================================== Helper Functions ============================================== */
 
-  const addItemToCart = async (item: CartItem) => {
+  const addItemToCart = async (item: CartItem, incrementBy: number = 1) => {
     if (!item.serviceListing.calendarGroupId) {
       const existingItem = cart.cartItems.find(
         (cartItem) =>
@@ -53,7 +53,7 @@ export function useCartOperations(userId: number) {
 
       // Item doesn't have a CG and already exists in cart, increment its quantity
       if (existingItem) {
-        return incrementItemQuantity(existingItem.cartItemId);
+        return incrementItemQuantity(existingItem.cartItemId, incrementBy);
       }
     }
 
@@ -67,13 +67,16 @@ export function useCartOperations(userId: number) {
     });
   };
 
-  const incrementItemQuantity = async (cartItemId: number) => {
+  const incrementItemQuantity = async (
+    cartItemId: number,
+    incrementBy: number = 1,
+  ) => {
     const itemIndex = cart.cartItems.findIndex(
       (item) => item.cartItemId === cartItemId,
     );
     if (itemIndex !== -1 && cart.cartItems[itemIndex]?.quantity) {
       const newCartItems = [...cart.cartItems];
-      newCartItems[itemIndex].quantity += 1;
+      newCartItems[itemIndex].quantity += incrementBy;
       const recalculatedCartItems = recalculateCartItemId(newCartItems);
       setCartForUser({
         ...cart,

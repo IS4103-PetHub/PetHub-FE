@@ -10,6 +10,7 @@ import {
   Box,
   Stack,
   Center,
+  Flex,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -26,6 +27,7 @@ import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
+import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
@@ -60,13 +62,17 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const [isServiceListingInCart, setIsServiceListingInCart] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
   // Force the SL page to refetch new cart items from localstorage and display a text if it is added from the timeslot modal
   const [key, setKey] = useState(Math.random());
-  const { addItemToCart, getCartItems } = useCartOperations(userId);
+  const { addItemToCart, getCartItems, cart } = useCartOperations(userId);
   const { data: favouritedListings = [] } =
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
   const [isFavourite, setIsFavourite] = useState(false);
+  const [value, setValue] = useState<number | "">(1);
+  const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
+
+  console.log("HELLO", serviceListing.calendarGroupId);
 
   useEffect(() => {
     if (
@@ -83,15 +89,14 @@ export default function ServiceListingDetails({
 
   useEffect(() => {
     const cartItems = getCartItems();
-    setIsServiceListingInCart(
-      cartItems.some(
-        (item) => item.serviceListing.serviceListingId === serviceListingId,
-      ),
-    );
-  }, [key, getCartItems]);
-
-  // for select timeslot modal
-  const [opened, { open, close }] = useDisclosure(false);
+    const itemCount = cartItems.reduce((acc, item) => {
+      if (item.serviceListing.serviceListingId === serviceListingId) {
+        return acc + (item.quantity || 1);
+      }
+      return acc;
+    }, 0);
+    setCartItemCount(itemCount);
+  }, [key, getCartItems, cart]);
 
   const ACCORDION_VALUES = ["description", "business"];
 
@@ -182,11 +187,12 @@ export default function ServiceListingDetails({
       open(); // Handle add to cart in the modal
     } else {
       try {
-        await addItemToCart({
-          serviceListing: serviceListing,
-          dateAdded: new Date(),
-          ...(serviceListing.calendarGroupId ? {} : { quantity: 1 }), // No CG = not singular, so add quantity
-        } as CartItem);
+        await addItemToCart(
+          {
+            serviceListing: serviceListing,
+          } as CartItem,
+          value as number,
+        );
         notifications.show({
           title: "Added to cart",
           message: `'${serviceListing.title}' added to cart.`,
@@ -317,21 +323,26 @@ export default function ServiceListingDetails({
                   ${formatPriceForDisplay(serviceListing.basePrice)}
                 </Text>
               </Group>
+              {!serviceListing.calendarGroupId && (
+                <Flex justify="flex-end">
+                  <NumberInputWithIcons
+                    min={1}
+                    max={10}
+                    step={1}
+                    value={value}
+                    setValue={setValue}
+                    reduceSize
+                  />
+                </Flex>
+              )}
               <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
                 Add to cart
               </Button>
-              {isServiceListingInCart && (
-                <Center>
-                  <Text
-                    size="xs"
-                    fs="italic"
-                    mt="xs"
-                    variant="gradient"
-                    gradient={{ from: "violet", to: "blue", deg: 90 }}
-                  >
-                    Item is currently already in your cart
-                  </Text>
-                </Center>
+              {cartItemCount !== 0 && (
+                <Text size="xs" mt="xs" c="dark" align="right" fw={600}>
+                  {cartItemCount} {cartItemCount === 1 ? "item" : "items"} in
+                  cart
+                </Text>
               )}
               <SelectTimeslotModal
                 petOwnerId={userId}
