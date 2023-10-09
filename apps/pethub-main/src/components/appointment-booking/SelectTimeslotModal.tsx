@@ -72,8 +72,6 @@ const SelectTimeslotModal = ({
   );
   const { addItemToCart } = useCartOperations(petOwnerId);
 
-  console.log("selected timeslot", selectedTimeslot);
-
   /* 
   service listing does not belong to calendar group, or does not have a set duration
   means this service listing is not applicable for appointment booking

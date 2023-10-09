@@ -72,6 +72,8 @@ export default function ServiceListingDetails({
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
 
+  console.log("value", value);
+
   useEffect(() => {
     if (
       favouritedListings.some(
@@ -177,8 +179,9 @@ export default function ServiceListingDetails({
         await addItemToCart(
           {
             serviceListing: serviceListing,
+            ...(serviceListing.calendarGroupId ? {} : { quantity: value }),
           } as CartItem,
-          value as number,
+          Number(value),
         );
         notifications.show({
           title: "Added to cart",
@@ -187,6 +190,7 @@ export default function ServiceListingDetails({
           }' added to cart.`,
           color: "green",
         });
+        setValue(1);
       } catch (error) {
         notifications.show({
           title: "Error Adding to Cart",

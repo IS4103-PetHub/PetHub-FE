@@ -13,6 +13,8 @@ export function useCartOperations(userId: number) {
     },
   );
 
+  console.log("cart", cart);
+
   useEffect(() => {
     const userCart = carts.find((c) => c.userId === userId) || {
       userId,
