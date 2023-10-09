@@ -129,7 +129,7 @@ export default function Cart({ userId }: CartProps) {
         }
       }
     });
-    return totalPrice + PLATFORM_FEE;
+    return totalPrice;
   };
 
   const clearAllCartItems = () => {
@@ -225,7 +225,12 @@ export default function Cart({ userId }: CartProps) {
           {calculateTotalBuyables() === 1 ? "item" : "items"})
         </Text>
         <Text size="sm" fw={500} c="dimmed">
-          ${formatPriceForDisplay(calculateTotalPrice() * 0.92)}
+          $
+          {calculateTotalPrice() === 0
+            ? "0.00"
+            : formatPriceForDisplay(
+                calculateTotalPrice() * 0.92 + PLATFORM_FEE,
+              )}
         </Text>
       </Group>
       {!hasNoCheckedItems() && (
@@ -255,7 +260,7 @@ export default function Cart({ userId }: CartProps) {
       <Group position="apart">
         <Text size="lg">Total</Text>
         <Text size="lg" fw={700}>
-          ${formatPriceForDisplay(calculateTotalPrice())}
+          ${formatPriceForDisplay(calculateTotalPrice() + PLATFORM_FEE)}
         </Text>
       </Group>
       <Button size="md" fullWidth mt="xs" onClick={checkout} variant="gradient">

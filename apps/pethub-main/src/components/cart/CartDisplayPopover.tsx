@@ -1,8 +1,10 @@
 import { Popover, Text, Button, Card, ScrollArea, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useCartOperations } from "@/hooks/cart";
 import { formatPriceForDisplay } from "@/util";
+import { useCart } from "./CartContext";
 import CartIcon from "./CartIcon";
 import MiniCartItemCard from "./MiniCartItemCard";
 
@@ -14,10 +16,9 @@ interface CartDisplayPopoverProps {
 const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
   const router = useRouter();
   const [opened, { close, open }] = useDisclosure(false);
-  const { getCartItems, removeItemFromCart, getCartSubtotal, getItemCount } =
+  const { removeItemFromCart, getCartSubtotal, getItemCount } =
     useCartOperations(userId);
-
-  const cartItems = getCartItems();
+  const { cartItems } = useCart(); // Get cart from cart context instead of cart hook
 
   return (
     <Popover

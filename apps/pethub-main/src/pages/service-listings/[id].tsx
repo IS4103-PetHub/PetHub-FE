@@ -62,8 +62,6 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  // Force the SL page to refetch new cart items from localstorage and display a text if it is added from the timeslot modal
-  const [key, setKey] = useState(Math.random());
   const { addItemToCart, getCartItems, getItemCount, cart } =
     useCartOperations(userId);
   const { data: favouritedListings = [] } =
@@ -71,8 +69,6 @@ export default function ServiceListingDetails({
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
-
-  console.log("value", value);
 
   useEffect(() => {
     if (
@@ -93,11 +89,6 @@ export default function ServiceListingDetails({
   const payload: AddRemoveFavouriteServiceListingPayload = {
     userId,
     serviceListingId,
-  };
-
-  // Todo: At the moment, even though the refreshing of key is causing the useEffect to setIsServiceListingInCart to run, the cart fetched WHEN ADDING FROM THE MODAL is not the updated one
-  const refetchCart = () => {
-    setKey(Math.random());
   };
 
   const addFavouriteMutation = useAddServiceListingToFavourites();
@@ -248,7 +239,7 @@ export default function ServiceListingDetails({
   );
 
   return (
-    <div key={key}>
+    <div>
       <Head>
         <title>{serviceListing.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -334,7 +325,6 @@ export default function ServiceListingDetails({
                 serviceListing={serviceListing}
                 opened={opened}
                 onClose={close}
-                refresh={refetchCart}
               />
             </Paper>
           </Grid.Col>

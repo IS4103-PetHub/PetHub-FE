@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import api from "@/api/axiosConfig";
+import { useCart } from "@/components/cart/CartContext";
 import { Cart, CartItem } from "@/types/types";
 import useLocalStorage from "./use-local-storage";
 
@@ -13,7 +15,9 @@ export function useCartOperations(userId: number) {
     },
   );
 
-  console.log("cart", cart);
+  const { setCartItems, setCartItemCount } = useCart();
+
+  console.log("local state", cart);
 
   useEffect(() => {
     const userCart = carts.find((c) => c.userId === userId) || {
@@ -25,8 +29,7 @@ export function useCartOperations(userId: number) {
   }, [carts, userId]);
 
   useEffect(() => {
-    // sync all SL details when it mounts
-    console.log("syncing cart with backend");
+    // sync all SL details with backend when a component using cart mounts
     syncCartWithBackend();
   }, []);
 
@@ -67,6 +70,9 @@ export function useCartOperations(userId: number) {
     }
   };
 
+  // What was I working on: Bug where add items to cart, remove from popover, click add again, it adds to the prev amount too, but if remove and go to cart nothing there
+  // I think remove hook is not updating context properly
+
   /* ============================================== Helper Functions ============================================== */
 
   // Happens every add, update or remove to ensure cartItemId is always in order and starting from 1
@@ -79,8 +85,10 @@ export function useCartOperations(userId: number) {
     const updatedCarts = carts
       .filter((c) => c.userId !== userId)
       .concat(updatedCart);
-    setCarts(updatedCarts);
-    setCart(updatedCart);
+    setCarts(updatedCarts); // Updates the local storage
+    setCart(updatedCart); // Updates the cart hook state
+    setCartItemCount(updatedCart.itemCount); // Update cart context - This is mainly for the headerbar cart size + cart popover, since pages being rendered can use the cart hooks directly
+    setCartItems(updatedCart.cartItems); // Update cart context - This is mainly for the headerbar cart size + cart popover, since pages being rendered can use the cart hooks directly
   };
 
   const calculateTotalItemCount = (cartItems: CartItem[]) => {

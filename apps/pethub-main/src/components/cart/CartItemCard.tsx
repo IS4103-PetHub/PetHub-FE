@@ -28,6 +28,7 @@ import {
 } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useCartOperations } from "@/hooks/cart";
 import { Booking, CartItemBookingSelection } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import ServiceListingTags from "../service-listing-discovery/ServiceListingTags";
@@ -62,6 +63,8 @@ const CartItemCard = ({
   const router = useRouter();
   const [value, setValue] = useState<number | "">(quantity || 1);
   const hasProcessedCheckboxDisabled = useRef(false); // Track the thing even through re-renders from other state changes
+  const { addItemToCart, getCartItems, getItemCount, cart } =
+    useCartOperations(9);
 
   // Always call the hook, but the hook should not run if any of these are null due to the enabled property
   const shouldFetch = bookingSelection && serviceListing.calendarGroupId;
@@ -212,7 +215,7 @@ const CartItemCard = ({
                   value={value}
                   setValue={handleQuantityChange}
                   min={0}
-                  max={20}
+                  max={100}
                   step={1}
                 />
               ) : (

@@ -17,8 +17,9 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useCartOperations } from "@/hooks/cart";
+import { CartProvider, useCart } from "../cart/CartContext";
 import CartDisplayPopover from "../cart/CartDisplayPopover";
 import CartButton from "../cart/CartIcon";
 import LoginModal from "../login/LoginModal";
@@ -137,17 +138,7 @@ const HeaderBar = () => {
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
 
-  const { getItemCount, cart } = useCartOperations(session?.user["userId"]);
-
-  const [cartItemCount, setCartItemCount] = useState(0);
-
-  // const newCart = JSON.parse(JSON.stringify(cart));
-  // setCart(newCart);
-
-  useEffect(() => {
-    // console.log("Cart changed:", cart);
-    setCartItemCount(getItemCount());
-  }, [cart]);
+  const { cartItemCount } = useCart(); // Get cart item count from cart context instead of cart hook
 
   const items = links.map((link) => {
     // Only logged in users can see the account tab
@@ -207,12 +198,7 @@ const HeaderBar = () => {
   });
 
   return (
-    <Header
-      height={HEADER_HEIGHT}
-      sx={{ borderBottom: 0 }}
-      mb={120}
-      key={cartItemCount}
-    >
+    <Header height={HEADER_HEIGHT} sx={{ borderBottom: 0 }} mb={120}>
       <Container className={classes.inner} fluid>
         <Group>
           <Burger
