@@ -3,9 +3,11 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Head from "next/head";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 
-const stripePromise = loadStripe("pk_test_GvF3BSyx8RSXMK5yAFhqEd3H");
+const PK = `${process.env.NEXT_PUBLIC_STRIPE_PK_TEST}`;
+const stripePromise = loadStripe(PK);
 
 export default function Checkout() {
   return (
@@ -16,6 +18,7 @@ export default function Checkout() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} mb={50}>
+        <LargeBackButton text="Back to Cart" size="sm" mb="md" />
         <PageTitle title="Checkout" mb="lg" />
         <Elements stripe={stripePromise}>
           <CheckoutForm />

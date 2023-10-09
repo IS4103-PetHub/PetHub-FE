@@ -91,6 +91,7 @@ export function getErrorMessageProps(title: string, error: any) {
     title: title,
     color: "red",
     icon: <IconX />,
+    autoClose: 5000,
     message:
       (error.response && error.response.data && error.response.data.message) ||
       error.message,

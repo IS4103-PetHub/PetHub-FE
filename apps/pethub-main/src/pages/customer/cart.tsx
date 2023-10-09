@@ -2,14 +2,12 @@ import {
   Alert,
   Button,
   Card,
-  Center,
   Checkbox,
   Container,
   Divider,
   Grid,
   Group,
   Paper,
-  Stack,
   Text,
   Transition,
   useMantineTheme,
@@ -22,12 +20,12 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
-import CartItemBadge from "@/components/cart/CartItemBadge";
 import CartItemCard from "@/components/cart/CartItemCard";
 import PlatformFeePopover from "@/components/cart/PlatformFeePopover";
 import { useCartOperations } from "@/hooks/cart";
@@ -48,6 +46,7 @@ export default function Cart({ userId }: CartProps) {
     clearCart,
     getItemCount,
   } = useCartOperations(userId);
+  const router = useRouter();
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
@@ -137,7 +136,7 @@ export default function Cart({ userId }: CartProps) {
     notifications.show({
       title: "Cart Cleared",
       color: "green",
-      message: "All items have been removed from your cart",
+      message: "All items have been removed from your cart.",
     });
   };
 
@@ -151,10 +150,14 @@ export default function Cart({ userId }: CartProps) {
       return;
     }
     notifications.show({
-      title: "Checking out cart placeholder",
-      color: "orange",
-      message: "TODO: implement checkout and book",
+      id: "checkout",
+      title: "Redirecting to Checkout...",
+      color: "blue",
+      loading: true,
+      message: "",
     });
+    router.push("/customer/checkout");
+    notifications.hide("checkout");
   }
 
   // As long as all non-expired items are checked, this will be true
