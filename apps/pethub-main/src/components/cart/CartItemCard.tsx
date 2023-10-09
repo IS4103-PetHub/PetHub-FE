@@ -63,8 +63,6 @@ const CartItemCard = ({
   const router = useRouter();
   const [value, setValue] = useState<number | "">(quantity || 1);
   const hasProcessedCheckboxDisabled = useRef(false); // Track the thing even through re-renders from other state changes
-  const { addItemToCart, getCartItems, getItemCount, cart } =
-    useCartOperations(9);
 
   // Always call the hook, but the hook should not run if any of these are null due to the enabled property
   const shouldFetch = bookingSelection && serviceListing.calendarGroupId;

@@ -62,8 +62,7 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-  const { addItemToCart, getCartItems, getItemCount, cart } =
-    useCartOperations(userId);
+  const { addItemToCart } = useCartOperations(userId);
   const { data: favouritedListings = [] } =
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
   const [isFavourite, setIsFavourite] = useState(false);

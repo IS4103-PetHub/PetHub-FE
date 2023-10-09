@@ -1,11 +1,10 @@
-import { createContext, useContext, useState } from "react";
-import { CartItem } from "@/types/types";
+import { createContext, useContext } from "react";
+import useLocalStorage from "@/hooks/use-local-storage";
+import { Cart, CartItem } from "@/types/types";
 
 type CartContextType = {
-  cartItemCount: number;
-  setCartItemCount: (count: number) => void;
-  cartItems: CartItem[];
-  setCartItems: (cartItems: CartItem[]) => void;
+  carts: Cart[];
+  setCarts: (carts: Cart[]) => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -23,18 +22,11 @@ interface CartProviderProps {
 }
 
 export const CartProvider = ({ children }: CartProviderProps) => {
-  const [cartItemCount, setCartItemCount] = useState(0);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  //   const setItemCount = (count: number) => setCartItemCount(count);
-  //   const setItems = (cartItems: CartItem[]) => setCartItems(cartItems);
-
-  console.log("cart ITEMS in CONTEXT:", cartItems);
+  const defaultCart: Cart[] = [];
+  const [carts, setCarts] = useLocalStorage<Cart[]>("carts", defaultCart);
 
   return (
-    <CartContext.Provider
-      value={{ cartItemCount, setCartItemCount, cartItems, setCartItems }}
-    >
+    <CartContext.Provider value={{ carts, setCarts }}>
       {children}
     </CartContext.Provider>
   );

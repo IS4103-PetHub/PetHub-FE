@@ -16,9 +16,11 @@ interface CartDisplayPopoverProps {
 const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
   const router = useRouter();
   const [opened, { close, open }] = useDisclosure(false);
-  const { removeItemFromCart, getCartSubtotal, getItemCount } =
+  const { removeItemFromCart, getCartSubtotal, getItemCount, getCurrentCart } =
     useCartOperations(userId);
-  const { cartItems } = useCart(); // Get cart from cart context instead of cart hook
+  // const { carts } = useCart(); // Get cart from cart context instead of cart hook
+
+  const cartItems = getCurrentCart().cartItems;
 
   return (
     <Popover

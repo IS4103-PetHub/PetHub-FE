@@ -39,12 +39,10 @@ interface CartProps {
 
 export default function Cart({ userId }: CartProps) {
   const {
-    cart,
-    addItemToCart,
+    getCurrentCart,
     removeItemFromCart,
     getCartItems,
     setItemQuantity,
-    getCartItem,
     clearCart,
     getItemCount,
   } = useCartOperations(userId);
@@ -70,7 +68,7 @@ export default function Cart({ userId }: CartProps) {
     if (cartItems.length === 0) {
       setHasNoFetchedRecords(true);
     }
-  }, [cart]);
+  }, [getCurrentCart()]);
 
   function handleItemCheckChange(cartItemId, isChecked) {
     setCheckedItems((prev) => ({

@@ -137,8 +137,7 @@ const HeaderBar = () => {
 
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
-
-  const { cartItemCount } = useCart(); // Get cart item count from cart context instead of cart hook
+  const { getItemCount } = useCartOperations(session?.user["userId"]);
 
   const items = links.map((link) => {
     // Only logged in users can see the account tab
@@ -183,7 +182,7 @@ const HeaderBar = () => {
       return (
         <Link key={link.label} href={link.link} className={classes.link}>
           <CartDisplayPopover
-            size={cartItemCount}
+            size={getItemCount()}
             userId={session.user["userId"]}
           />
         </Link>
