@@ -26,6 +26,23 @@ export const useGetAvailableTimeSlotsByCGId = (
   });
 };
 
+export const getAvailableTimeSlotsByCGIdNoCache = async (
+  cgId: number,
+  startTime: string,
+  endTime: string,
+  duration: number,
+) => {
+  if (!cgId || !startTime || !endTime || !duration) {
+    return [] as Timeslot[];
+  }
+  const params = { startTime, endTime, duration };
+  const response = await api.get(
+    `${CALENDAR_GROUP_API}/available-timeslots/${cgId}`,
+    { params },
+  );
+  return response.data as Timeslot[];
+};
+
 export const useCreateCalendarGroup = () => {
   return useMutation({
     mutationFn: async (payload: CalendarGroup) => {

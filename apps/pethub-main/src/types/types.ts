@@ -228,6 +228,7 @@ export interface CartItem {
   serviceListing: ServiceListing;
   bookingSelection?: CartItemBookingSelection;
   quantity?: number;
+  isSelected: boolean;
 }
 
 export interface CartItemBookingSelection {
@@ -244,4 +245,5 @@ export interface Cart {
   cartItems: CartItem[];
   itemCount: number;
   userId: number;
+  cartItemUserSelection: CartItem[];
 }

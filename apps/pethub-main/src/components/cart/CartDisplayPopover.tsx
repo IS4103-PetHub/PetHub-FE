@@ -18,7 +18,6 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
   const [opened, { close, open }] = useDisclosure(false);
   const { removeItemFromCart, getCartSubtotal, getItemCount, getCurrentCart } =
     useCartOperations(userId);
-  // const { carts } = useCart(); // Get cart from cart context instead of cart hook
 
   const cartItems = getCurrentCart().cartItems;
 

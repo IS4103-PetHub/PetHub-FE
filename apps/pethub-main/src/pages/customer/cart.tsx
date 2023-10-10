@@ -21,16 +21,24 @@ import {
   IconShoppingCartExclamation,
   IconX,
 } from "@tabler/icons-react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { use, useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
+import api from "@/api/axiosConfig";
 import CartItemBadge from "@/components/cart/CartItemBadge";
+import CartItemBookingAlert from "@/components/cart/CartItemBookingAlert";
 import CartItemCard from "@/components/cart/CartItemCard";
 import PlatformFeePopover from "@/components/cart/PlatformFeePopover";
+import {
+  getAvailableTimeSlotsByCGIdNoCache,
+  useGetAvailableTimeSlotsByCGId,
+} from "@/hooks/calendar-group";
 import { useCartOperations } from "@/hooks/cart";
+import { Timeslot } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface CartProps {
@@ -45,6 +53,8 @@ export default function Cart({ userId }: CartProps) {
     setItemQuantity,
     clearCart,
     getItemCount,
+    setCartItemIsSelected,
+    setAllCartItemsIsSelected,
   } = useCartOperations(userId);
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
@@ -60,7 +70,7 @@ export default function Cart({ userId }: CartProps) {
     const initialCheckedState = {};
     const initialExpiredState = {};
     updatedCartItems.forEach((item) => {
-      initialCheckedState[item.cartItemId] = true; // default is all boxes checked
+      initialCheckedState[item.cartItemId] = item.isSelected;
       initialExpiredState[item.cartItemId] = false; // default is all items not expired
     });
     setCheckedItems(initialCheckedState);
@@ -75,6 +85,7 @@ export default function Cart({ userId }: CartProps) {
       ...prev,
       [cartItemId]: isChecked,
     }));
+    setCartItemIsSelected(cartItemId, isChecked);
   }
 
   function handleAllCheckChange(isChecked) {
@@ -83,6 +94,7 @@ export default function Cart({ userId }: CartProps) {
       newState[item.cartItemId] = isChecked;
     });
     setCheckedItems(newState);
+    setAllCartItemsIsSelected(isChecked);
   }
 
   function setCardExpired(cartItemId, isExpired) {
@@ -184,31 +196,68 @@ export default function Cart({ userId }: CartProps) {
     </Transition>
   );
 
+  // function useCartTimeslot(item) {
+  //   let shouldFetch = item.bookingSelection && item.serviceListing.calendarGroupId;
+  //   return useGetAvailableTimeSlotsByCGId(
+  //     shouldFetch ? item.serviceListing.calendarGroupId : null,
+  //     shouldFetch ? item.bookingSelection.startTime : null,
+  //     shouldFetch ? item.bookingSelection.endTime : null,
+  //     shouldFetch ? item.serviceListing.duration : null
+  //   );
+  // }
+
   const displayCartItems = (
     <>
       {cartItems
         .slice()
         .reverse()
         .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1)) // Sort expired items to the back
-        .map((item) => (
-          <CartItemCard
-            key={item.cartItemId}
-            itemId={item.cartItemId}
-            serviceListing={item.serviceListing}
-            bookingSelection={item.bookingSelection}
-            checked={checkedItems[item.cartItemId] || false}
-            onCheckedChange={(isChecked) =>
-              handleItemCheckChange(item.cartItemId, isChecked)
-            }
-            quantity={item.quantity}
-            setItemQuantity={setItemQuantity}
-            removeItem={async () => await removeItemFromCart(item.cartItemId)}
-            isExpired={expiredItems[item.cartItemId] || false}
-            setCardExpired={(isExpired) =>
-              setCardExpired(item.cartItemId, isExpired)
-            }
-          />
-        ))}
+        .map((item) => {
+          /*
+            - No checking for expired bookings atm
+          */
+
+          // let shouldFetch = item.bookingSelection && item.serviceListing.calendarGroupId;
+          // let isDisabled = false;
+          // getAvailableTimeSlotsByCGIdNoCache(
+          //   shouldFetch ? item.serviceListing.calendarGroupId : null,
+          //   shouldFetch ? item.bookingSelection.startTime : null,
+          //   shouldFetch ? item.bookingSelection.endTime : null,
+          //   shouldFetch ? item.serviceListing.duration : null
+          // ).then((availTimeslots) => {
+          //   isDisabled = shouldFetch && availTimeslots.length === 0 ? true : false;
+          //   setCardExpired(item.cartItemId, isDisabled);
+          // });
+
+          let isDisabled = false; // Stub
+
+          return (
+            <CartItemCard
+              key={item.cartItemId}
+              itemId={item.cartItemId}
+              serviceListing={item.serviceListing}
+              checked={checkedItems[item.cartItemId] || false}
+              onCheckedChange={(isChecked) =>
+                handleItemCheckChange(item.cartItemId, isChecked)
+              }
+              quantity={item.quantity}
+              setItemQuantity={setItemQuantity}
+              removeItem={() => removeItemFromCart(item.cartItemId)}
+              isExpired={expiredItems[item.cartItemId] || false}
+              isDisabled={isDisabled}
+              bookingAlert={
+                isDisabled ? (
+                  <CartItemBookingAlert
+                    isValid={!isDisabled}
+                    bookingSelection={item.bookingSelection}
+                  >
+                    {}
+                  </CartItemBookingAlert>
+                ) : null
+              }
+            />
+          );
+        })}
     </>
   );
 

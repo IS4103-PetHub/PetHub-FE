@@ -182,6 +182,7 @@ export default function ServiceListingDetails({
           {
             serviceListing: serviceListing,
             ...(serviceListing.calendarGroupId ? {} : { quantity: value }),
+            isSelected: true,
           } as CartItem,
           Number(value),
         );

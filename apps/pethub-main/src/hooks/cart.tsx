@@ -6,10 +6,22 @@ import { Cart, CartItem } from "@/types/types";
 export function useCartOperations(userId: number) {
   const { carts, setCarts } = useCart();
 
+  useEffect(() => {
+    // sync all SL details with backend when a component using cart mounts
+    syncCartWithBackend();
+  }, []);
+
+  /* ============================================== Helper Functions ============================================== */
+
   const getCurrentCart = () => {
     let currentCart = carts.find((cart) => cart.userId === userId);
     if (!currentCart) {
-      currentCart = { userId, itemCount: 0, cartItems: [] };
+      currentCart = {
+        userId,
+        itemCount: 0,
+        cartItems: [],
+        cartItemUserSelection: [],
+      };
       setCarts([...carts, currentCart]);
     }
     return currentCart;
@@ -19,11 +31,6 @@ export function useCartOperations(userId: number) {
     const otherCarts = carts.filter((cart) => cart.userId !== userId);
     setCarts([...otherCarts, newCart]);
   };
-
-  useEffect(() => {
-    // sync all SL details with backend when a component using cart mounts
-    syncCartWithBackend();
-  }, []);
 
   const syncCartWithBackend = async () => {
     const currentCart = getCurrentCart();
@@ -65,8 +72,6 @@ export function useCartOperations(userId: number) {
       console.error("Error syncing cart with backend [hooks/cart.tsx]:", error);
     }
   };
-
-  /* ============================================== Helper Functions ============================================== */
 
   const recalculateCartItemId = (cartItems: CartItem[]) => {
     return cartItems.map((item, index) => ({ ...item, cartItemId: index + 1 }));
@@ -127,7 +132,6 @@ export function useCartOperations(userId: number) {
 
   const removeItemFromCart = (cartItemId: number) => {
     const currentCart = getCurrentCart();
-
     const newCartItems = currentCart.cartItems.filter(
       (item) => item.cartItemId !== cartItemId,
     );
@@ -141,11 +145,9 @@ export function useCartOperations(userId: number) {
 
   const setItemQuantity = (cartItemId: number, newQuantity: number) => {
     const currentCart = getCurrentCart();
-
     const itemIndex = currentCart.cartItems.findIndex(
       (item) => item.cartItemId === cartItemId,
     );
-
     if (itemIndex !== -1) {
       const newCartItems = [...currentCart.cartItems];
       if (newQuantity <= 0) {
@@ -160,6 +162,35 @@ export function useCartOperations(userId: number) {
         cartItems: recalculatedCartItems,
       });
     }
+  };
+
+  const setCartItemIsSelected = (cartItemId: number, isSelected: boolean) => {
+    const currentCart = getCurrentCart();
+    const itemIndex = currentCart.cartItems.findIndex(
+      (item) => item.cartItemId === cartItemId,
+    ); // find index of item IN CASE its messed up somehow
+    if (itemIndex !== -1) {
+      const newCartItems = [...currentCart.cartItems];
+      newCartItems[itemIndex].isSelected = isSelected;
+      const recalculatedCartItems = recalculateCartItemId(newCartItems);
+      setCurrentCart({
+        ...currentCart,
+        itemCount: calculateTotalItemCount(recalculatedCartItems),
+        cartItems: recalculatedCartItems,
+      });
+    }
+  };
+
+  const setAllCartItemsIsSelected = (isSelected: boolean) => {
+    const currentCart = getCurrentCart();
+    const newCartItems = [...currentCart.cartItems];
+    newCartItems.forEach((item) => (item.isSelected = isSelected));
+    const recalculatedCartItems = recalculateCartItemId(newCartItems);
+    setCurrentCart({
+      ...currentCart,
+      itemCount: calculateTotalItemCount(recalculatedCartItems),
+      cartItems: recalculatedCartItems,
+    });
   };
 
   const clearCart = () => {
@@ -208,5 +239,7 @@ export function useCartOperations(userId: number) {
     clearCart,
     getItemCount,
     getCartSubtotal,
+    setCartItemIsSelected,
+    setAllCartItemsIsSelected,
   };
 }

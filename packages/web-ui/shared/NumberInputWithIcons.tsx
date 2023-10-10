@@ -30,7 +30,7 @@ function NumberInputWithIcons({
   return (
     <Group spacing={5} {...(fullWidth ? { grow: true } : null)} {...props}>
       <ActionIcon
-        size={42}
+        size={36}
         variant="default"
         onClick={() => handlers.current.decrement()}
       >
@@ -46,12 +46,15 @@ function NumberInputWithIcons({
         min={min}
         step={step}
         styles={{
-          input: { width: fullWidth ? rem(65) : rem(54), textAlign: "center" },
+          input: {
+            width: fullWidth ? rem(74) : rem(54),
+            textAlign: "center",
+          },
         }}
       />
 
       <ActionIcon
-        size={42}
+        size={36}
         variant="default"
         onClick={() => handlers.current.increment()}
       >
