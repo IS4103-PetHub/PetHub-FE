@@ -77,7 +77,7 @@ export default function CreateCalendarGroup({
         message: `Calendar group created successfully!`,
       });
       refetchCalendarGroup();
-      router.push("/business/calendar-groups");
+      router.push("/business/appointments");
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Calendar Group", error),
@@ -95,7 +95,7 @@ export default function CreateCalendarGroup({
         <LargeBackButton
           size="sm"
           text="Back to Calendar View"
-          onClick={() => router.push("/business/calendar-groups")}
+          onClick={() => router.push("/business/appointments")}
           mb="md"
         />
         <PageTitle title="Create Calendar Group" />

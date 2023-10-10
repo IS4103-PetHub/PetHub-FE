@@ -29,12 +29,12 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
   return (
     <>
       <Head>
-        <title>Calendar Group - PetHub Business</title>
+        <title>Appointments - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
         <Group position="apart">
-          <PageTitle title="Calendar Group Management" />
+          <PageTitle title="Appointment Management" />
           <LargeCreateButton
             text="Create Calendar Group"
             onClick={() => router.push("/business/calendar-groups/create")}
