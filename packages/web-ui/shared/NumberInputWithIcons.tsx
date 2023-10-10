@@ -47,7 +47,7 @@ function NumberInputWithIcons({
         step={step}
         styles={{
           input: {
-            width: fullWidth ? rem(74) : rem(54),
+            width: fullWidth ? "100%" : rem(54),
             textAlign: "center",
           },
         }}

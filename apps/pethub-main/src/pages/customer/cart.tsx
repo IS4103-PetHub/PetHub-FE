@@ -64,6 +64,8 @@ export default function Cart({ userId }: CartProps) {
 
   const PLATFORM_FEE = 3.99; // stub value
 
+  console.log("getCartItems", getCartItems());
+
   useEffect(() => {
     const updatedCartItems = getCartItems();
     setCartItems(updatedCartItems);
@@ -195,16 +197,6 @@ export default function Cart({ userId }: CartProps) {
       )}
     </Transition>
   );
-
-  // function useCartTimeslot(item) {
-  //   let shouldFetch = item.bookingSelection && item.serviceListing.calendarGroupId;
-  //   return useGetAvailableTimeSlotsByCGId(
-  //     shouldFetch ? item.serviceListing.calendarGroupId : null,
-  //     shouldFetch ? item.bookingSelection.startTime : null,
-  //     shouldFetch ? item.bookingSelection.endTime : null,
-  //     shouldFetch ? item.serviceListing.duration : null
-  //   );
-  // }
 
   const displayCartItems = (
     <>
