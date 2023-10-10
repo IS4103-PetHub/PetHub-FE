@@ -44,7 +44,7 @@ interface CartItemCardProps {
   isExpired: boolean;
   isDisabled: boolean;
   quantity?: number;
-  bookingAlert?: React.ReactNode;
+  bookingAlert?: React.ReactNode; // This might not be needed anymore as per PH-264
 }
 
 const CartItemCard = ({
@@ -62,32 +62,6 @@ const CartItemCard = ({
   const theme = useMantineTheme();
   const router = useRouter();
   const [value, setValue] = useState<number | "">(quantity || 1);
-  // const hasProcessedCheckboxDisabled = useRef(false); // Track the thing even through re-renders from other state changes
-
-  // // Always call the hook, but the hook should not run if any of these are null due to the enabled property
-  // const shouldFetch = bookingSelection && serviceListing.calendarGroupId;
-  // const { data: availTimeslots = [], isLoading } = useGetAvailableTimeSlotsByCGId(
-  //   shouldFetch ? serviceListing.calendarGroupId : null,
-  //   shouldFetch ? bookingSelection.startTime : null,
-  //   shouldFetch ? bookingSelection.endTime : null,
-  //   shouldFetch ? serviceListing.duration : null
-  // );
-
-  // const isCheckboxDisabled = serviceListing.calendarGroupId && availTimeslots.length === 0 ? true : false;
-
-  // useEffect(() => {
-  //   // This ideally should be replaced with timeslot checking in the parent page (cart), but laze coz will have to change a lot of things for this
-  //   if (isCheckboxDisabled && !hasProcessedCheckboxDisabled.current) {
-  //     console.log("trigger block 1");
-  //     onCheckedChange(false);
-  //     setCardExpired(true);
-  //     hasProcessedCheckboxDisabled.current = true;
-  //   } else if (!isCheckboxDisabled && hasProcessedCheckboxDisabled.current) {
-  //     onCheckedChange(true);
-  //     setCardExpired(false);
-  //     hasProcessedCheckboxDisabled.current = false;
-  //   }
-  // }, [isCheckboxDisabled, onCheckedChange]);
 
   useEffect(() => {
     setValue(quantity || 1);

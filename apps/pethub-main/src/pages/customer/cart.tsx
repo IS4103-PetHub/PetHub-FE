@@ -33,10 +33,7 @@ import CartItemBadge from "@/components/cart/CartItemBadge";
 import CartItemBookingAlert from "@/components/cart/CartItemBookingAlert";
 import CartItemCard from "@/components/cart/CartItemCard";
 import PlatformFeePopover from "@/components/cart/PlatformFeePopover";
-import {
-  getAvailableTimeSlotsByCGIdNoCache,
-  useGetAvailableTimeSlotsByCGId,
-} from "@/hooks/calendar-group";
+import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import { useCartOperations } from "@/hooks/cart";
 import { Timeslot } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
@@ -59,7 +56,7 @@ export default function Cart({ userId }: CartProps) {
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
-  const [expiredItems, setExpiredItems] = useState({});
+  const [expiredItems, setExpiredItems] = useState({}); // This might not be needed anymore as per PH-264
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
   const PLATFORM_FEE = 3.99; // stub value
@@ -206,7 +203,7 @@ export default function Cart({ userId }: CartProps) {
         .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1)) // Sort expired items to the back
         .map((item) => {
           /*
-            - No checking for expired bookings atm
+            - No checking for expired bookings atm as per PH-264
           */
 
           // let shouldFetch = item.bookingSelection && item.serviceListing.calendarGroupId;

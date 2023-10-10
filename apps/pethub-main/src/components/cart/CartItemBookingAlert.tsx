@@ -8,6 +8,7 @@ interface CartItemBookingAlertProps extends AlertProps {
   bookingSelection?: CartItemBookingSelection;
 }
 
+// This might not be needed anymore as per PH-264
 const CartItemBookingAlert = ({
   isValid,
   bookingSelection,
