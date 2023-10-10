@@ -148,7 +148,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
               text="Back to Calendar View"
               onClick={() => {
                 refetchCalendarGroupByPbId();
-                router.push("/business/appointments");
+                router.push("/business/calendar-groups");
               }}
               size="sm"
               mb="md"
