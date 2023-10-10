@@ -111,7 +111,6 @@ const TimeslotCard = ({
               booking={booking}
               onUpdateBooking={onUpdateBooking}
               petOwnerId={booking.petOwnerId}
-              refresh={() => {}}
             />
           </>
         )}

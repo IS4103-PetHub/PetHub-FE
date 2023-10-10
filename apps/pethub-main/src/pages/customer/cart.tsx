@@ -21,16 +21,21 @@ import {
   IconShoppingCartExclamation,
   IconX,
 } from "@tabler/icons-react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { use, useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
+import api from "@/api/axiosConfig";
 import CartItemBadge from "@/components/cart/CartItemBadge";
+import CartItemBookingAlert from "@/components/cart/CartItemBookingAlert";
 import CartItemCard from "@/components/cart/CartItemCard";
 import PlatformFeePopover from "@/components/cart/PlatformFeePopover";
+import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import { useCartOperations } from "@/hooks/cart";
+import { Timeslot } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface CartProps {
@@ -39,22 +44,24 @@ interface CartProps {
 
 export default function Cart({ userId }: CartProps) {
   const {
-    cart,
-    addItemToCart,
+    getCurrentCart,
     removeItemFromCart,
     getCartItems,
     setItemQuantity,
-    getCartItem,
     clearCart,
     getItemCount,
+    setCartItemIsSelected,
+    setAllCartItemsIsSelected,
   } = useCartOperations(userId);
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
-  const [expiredItems, setExpiredItems] = useState({});
+  const [expiredItems, setExpiredItems] = useState({}); // This might not be needed anymore as per PH-264
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
   const PLATFORM_FEE = 3.99; // stub value
+
+  console.log("getCartItems", getCartItems());
 
   useEffect(() => {
     const updatedCartItems = getCartItems();
@@ -62,7 +69,7 @@ export default function Cart({ userId }: CartProps) {
     const initialCheckedState = {};
     const initialExpiredState = {};
     updatedCartItems.forEach((item) => {
-      initialCheckedState[item.cartItemId] = true; // default is all boxes checked
+      initialCheckedState[item.cartItemId] = item.isSelected;
       initialExpiredState[item.cartItemId] = false; // default is all items not expired
     });
     setCheckedItems(initialCheckedState);
@@ -70,13 +77,14 @@ export default function Cart({ userId }: CartProps) {
     if (cartItems.length === 0) {
       setHasNoFetchedRecords(true);
     }
-  }, [cart]);
+  }, [getCurrentCart()]);
 
   function handleItemCheckChange(cartItemId, isChecked) {
     setCheckedItems((prev) => ({
       ...prev,
       [cartItemId]: isChecked,
     }));
+    setCartItemIsSelected(cartItemId, isChecked);
   }
 
   function handleAllCheckChange(isChecked) {
@@ -85,6 +93,7 @@ export default function Cart({ userId }: CartProps) {
       newState[item.cartItemId] = isChecked;
     });
     setCheckedItems(newState);
+    setAllCartItemsIsSelected(isChecked);
   }
 
   function setCardExpired(cartItemId, isExpired) {
@@ -129,7 +138,7 @@ export default function Cart({ userId }: CartProps) {
         }
       }
     });
-    return totalPrice + PLATFORM_FEE;
+    return totalPrice;
   };
 
   const clearAllCartItems = () => {
@@ -189,26 +198,55 @@ export default function Cart({ userId }: CartProps) {
   const displayCartItems = (
     <>
       {cartItems
+        .slice()
+        .reverse()
         .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1)) // Sort expired items to the back
-        .map((item) => (
-          <CartItemCard
-            key={item.cartItemId}
-            itemId={item.cartItemId}
-            serviceListing={item.serviceListing}
-            bookingSelection={item.bookingSelection}
-            checked={checkedItems[item.cartItemId] || false}
-            onCheckedChange={(isChecked) =>
-              handleItemCheckChange(item.cartItemId, isChecked)
-            }
-            quantity={item.quantity}
-            setItemQuantity={setItemQuantity}
-            removeItem={async () => await removeItemFromCart(item.cartItemId)}
-            isExpired={expiredItems[item.cartItemId] || false}
-            setCardExpired={(isExpired) =>
-              setCardExpired(item.cartItemId, isExpired)
-            }
-          />
-        ))}
+        .map((item) => {
+          /*
+            - No checking for expired bookings atm as per PH-264
+          */
+
+          // let shouldFetch = item.bookingSelection && item.serviceListing.calendarGroupId;
+          // let isDisabled = false;
+          // getAvailableTimeSlotsByCGIdNoCache(
+          //   shouldFetch ? item.serviceListing.calendarGroupId : null,
+          //   shouldFetch ? item.bookingSelection.startTime : null,
+          //   shouldFetch ? item.bookingSelection.endTime : null,
+          //   shouldFetch ? item.serviceListing.duration : null
+          // ).then((availTimeslots) => {
+          //   isDisabled = shouldFetch && availTimeslots.length === 0 ? true : false;
+          //   setCardExpired(item.cartItemId, isDisabled);
+          // });
+
+          let isDisabled = false; // Stub
+
+          return (
+            <CartItemCard
+              key={item.cartItemId}
+              itemId={item.cartItemId}
+              serviceListing={item.serviceListing}
+              checked={checkedItems[item.cartItemId] || false}
+              onCheckedChange={(isChecked) =>
+                handleItemCheckChange(item.cartItemId, isChecked)
+              }
+              quantity={item.quantity}
+              setItemQuantity={setItemQuantity}
+              removeItem={() => removeItemFromCart(item.cartItemId)}
+              isExpired={expiredItems[item.cartItemId] || false}
+              isDisabled={isDisabled}
+              bookingAlert={
+                isDisabled ? (
+                  <CartItemBookingAlert
+                    isValid={!isDisabled}
+                    bookingSelection={item.bookingSelection}
+                  >
+                    {}
+                  </CartItemBookingAlert>
+                ) : null
+              }
+            />
+          );
+        })}
     </>
   );
 
@@ -223,7 +261,12 @@ export default function Cart({ userId }: CartProps) {
           {calculateTotalBuyables() === 1 ? "item" : "items"})
         </Text>
         <Text size="sm" fw={500} c="dimmed">
-          ${formatPriceForDisplay(calculateTotalPrice() * 0.92)}
+          $
+          {calculateTotalPrice() === 0
+            ? "0.00"
+            : formatPriceForDisplay(
+                calculateTotalPrice() * 0.92 + PLATFORM_FEE,
+              )}
         </Text>
       </Group>
       {!hasNoCheckedItems() && (
@@ -253,7 +296,7 @@ export default function Cart({ userId }: CartProps) {
       <Group position="apart">
         <Text size="lg">Total</Text>
         <Text size="lg" fw={700}>
-          ${formatPriceForDisplay(calculateTotalPrice())}
+          ${formatPriceForDisplay(calculateTotalPrice() + PLATFORM_FEE)}
         </Text>
       </Group>
       <Button size="md" fullWidth mt="xs" onClick={checkout} variant="gradient">
@@ -270,7 +313,7 @@ export default function Cart({ userId }: CartProps) {
       </Head>
       <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
         <Group position="apart">
-          <PageTitle title={`My Cart (${getItemCount()})`} mb="lg" />
+          <PageTitle title={`My cart (${getItemCount()})`} mb="lg" />
         </Group>
         {cartItems.length === 0 ? (
           <>{emptyCartMessage}</>

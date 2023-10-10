@@ -1,7 +1,10 @@
-import { Popover, Text, Button, Card, ScrollArea } from "@mantine/core";
+import { Popover, Text, Button, Card, ScrollArea, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useCartOperations } from "@/hooks/cart";
+import { formatPriceForDisplay } from "@/util";
+import { useCart } from "./CartContext";
 import CartIcon from "./CartIcon";
 import MiniCartItemCard from "./MiniCartItemCard";
 
@@ -13,9 +16,10 @@ interface CartDisplayPopoverProps {
 const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
   const router = useRouter();
   const [opened, { close, open }] = useDisclosure(false);
-  const { getCartItems, removeItemFromCart } = useCartOperations(userId);
+  const { removeItemFromCart, getCartSubtotal, getItemCount, getCurrentCart } =
+    useCartOperations(userId);
 
-  const cartItems = getCartItems();
+  const cartItems = getCurrentCart().cartItems;
 
   return (
     <Popover
@@ -37,11 +41,11 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
       </Popover.Target>
       <Popover.Dropdown onMouseEnter={open} onMouseLeave={close}>
         <Text size="lg" weight={700} color="dark" mb="xs">
-          Recently added items
+          Recently added
         </Text>
         <ScrollArea.Autosize mah={300} type="auto">
           {cartItems.length === 0 ? (
-            <Text color="dark" mb="xs" align="center">
+            <Text color="dimmed" mb="xs" align="center">
               The cart is currently empty
             </Text>
           ) : (
@@ -59,17 +63,26 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
               ))
           )}
         </ScrollArea.Autosize>
-        <Button
-          fullWidth
-          onClick={() => {
-            router.push("/customer/cart");
-            close();
-          }}
-          variant="gradient"
-          mt={2}
-        >
-          View my shopping cart
-        </Button>
+        <Group position="apart">
+          <Text c="dark" size="md">
+            <b>
+              Subtotal (
+              {getItemCount() === 1 ? "1 item" : `${getItemCount()} items`}):
+            </b>{" "}
+            ${formatPriceForDisplay(getCartSubtotal())}
+          </Text>
+
+          <Button
+            onClick={() => {
+              router.push("/customer/cart");
+              close();
+            }}
+            variant="gradient"
+            mt={2}
+          >
+            View my shopping cart
+          </Button>
+        </Group>
       </Popover.Dropdown>
     </Popover>
   );
