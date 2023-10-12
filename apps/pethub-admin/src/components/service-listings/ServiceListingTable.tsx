@@ -131,7 +131,7 @@ const ServiceListingTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumServiceListing}
+        totalRecords={totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
