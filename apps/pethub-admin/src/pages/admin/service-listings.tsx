@@ -67,7 +67,9 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
-  const [filteredTotal, setFilteredTotal] = useState<number>(0);
+  const [filteredTotal, setFilteredTotal] = useState<number>(
+    serviceListings.length,
+  );
   const [searchResults, setSearchResults] =
     useState<ServiceListing[]>(serviceListings);
 
