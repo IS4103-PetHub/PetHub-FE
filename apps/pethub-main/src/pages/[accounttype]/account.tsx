@@ -11,6 +11,8 @@ import {
   IconAlertOctagon,
   IconAddressBook,
   IconPaw,
+  IconDiscount2,
+  IconInfoCircle,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -20,6 +22,7 @@ import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
+import CustomPopover from "web-ui/shared/CustomPopover";
 import AccountInfoForm from "@/components/account/AccountInfoForm";
 import AddressInfoForm from "@/components/account/AddressInfoForm";
 import DeactivateReactivateAccountModal from "@/components/account/DeactivateReactivateAccountModal";
@@ -34,12 +37,12 @@ interface MyAccountProps {
 
 export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const theme = useMantineTheme();
-  const defaultValues = ["account"];
 
   const { data: petOwner, refetch: refetchPetOwner } =
     useGetPetOwnerByIdAndAccountType(userId, accountType);
   const { data: petBusiness, refetch: refetchPetBusiness } =
     useGetPetBusinessByIdAndAccountType(userId, accountType);
+  const defaultValues = petOwner ? ["account"] : ["account", "commission"];
 
   if (!petOwner && !petBusiness) {
     return null;
@@ -93,6 +96,36 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           multiple
           defaultValue={defaultValues}
         >
+          {petBusiness && (
+            // commission for PB
+            <Accordion.Item value="commission">
+              <Accordion.Control>
+                <Group>
+                  <IconDiscount2 color={theme.colors.indigo[5]} />
+                  <Text size="lg">Commission rule</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md" pt={0}>
+                <Text size="lg" weight={600} color={theme.primaryColor}>
+                  Default
+                </Text>
+                <Group>
+                  <Text mr={-15}>Commission rate</Text>
+                  <CustomPopover
+                    text="PetHub collects a small commission fee from transactions to
+                  help cover operational costs."
+                    width={300}
+                  >
+                    {}
+                  </CustomPopover>
+                  <Text ml={-15}>
+                    : <strong>5%</strong>
+                  </Text>
+                </Group>
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
+
           <Accordion.Item value="account">
             <Accordion.Control>
               <Group>
@@ -134,6 +167,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
             )}
 
           {petOwner && (
+            // pets for PO
             <Accordion.Item value="pets">
               <Accordion.Control>
                 <Group>

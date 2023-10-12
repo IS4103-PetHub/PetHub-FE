@@ -2,14 +2,12 @@ import {
   Alert,
   Button,
   Card,
-  Center,
   Checkbox,
   Container,
   Divider,
   Grid,
   Group,
   Paper,
-  Stack,
   Text,
   Transition,
   useMantineTheme,
@@ -21,21 +19,16 @@ import {
   IconShoppingCartExclamation,
   IconX,
 } from "@tabler/icons-react";
-import { useQueries, useQuery } from "@tanstack/react-query";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
+import CustomPopover from "web-ui/shared/CustomPopover";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
-import api from "@/api/axiosConfig";
-import CartItemBadge from "@/components/cart/CartItemBadge";
 import CartItemBookingAlert from "@/components/cart/CartItemBookingAlert";
 import CartItemCard from "@/components/cart/CartItemCard";
-import PlatformFeePopover from "@/components/cart/PlatformFeePopover";
-import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import { useCartOperations } from "@/hooks/cart";
-import { Timeslot } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface CartProps {
@@ -284,7 +277,13 @@ export default function Cart({ userId }: CartProps) {
               <Text size="sm" c="dimmed">
                 Platform fee
               </Text>
-              <PlatformFeePopover />
+              <CustomPopover
+                text="The platform fee covers operational costs to help keep PetHub up and
+          running. PetHub strives to deliver a smooth and pleasant experience
+          for all users."
+              >
+                {}
+              </CustomPopover>
             </div>
             <Text size="sm" fw={500} c="dimmed">
               ${formatPriceForDisplay(PLATFORM_FEE)}
