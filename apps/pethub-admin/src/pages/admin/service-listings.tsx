@@ -67,6 +67,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
+  const [filteredTotal, setFilteredTotal] = useState<number>(0);
 
   /*
    * Effect Hooks
@@ -86,14 +87,15 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
       );
     }
 
-    const sortedServiceListing = sortBy(
+    const sortedServiceListings = sortBy(
       filteredServiceListings,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
-      sortedServiceListing.reverse();
+      sortedServiceListings.reverse();
     }
-    const newRecords = sortedServiceListing.slice(from, to);
+    setFilteredTotal(sortedServiceListings.length);
+    const newRecords = sortedServiceListings.slice(from, to);
     setRecords(newRecords);
   }, [page, sortStatus, serviceListings, selectedPB]);
 
@@ -143,7 +145,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
         mt={-25}
         label="Filter by Pet Businesses"
         placeholder="Select Pet Businesses"
-        maxSelectedValues={3}
+        maxSelectedValues={10}
         dropdownPosition="bottom"
         clearable
         data={petBusinesses.map((petBusinesses) => petBusinesses.companyName)}
@@ -209,7 +211,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
         ) : (
           <ServiceListingTable
             records={records}
-            totalNumServiceListing={serviceListings.length}
+            totalNumServiceListing={filteredTotal}
             onDelete={handleDeleteServiceListing}
             canWrite={canWrite}
             isSearching={isSearching}
