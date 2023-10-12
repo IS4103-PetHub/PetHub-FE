@@ -68,6 +68,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     direction: "asc",
   });
   const [filteredTotal, setFilteredTotal] = useState<number>(0);
+  const [searchResults, setSearchResults] =
+    useState<ServiceListing[]>(serviceListings);
 
   /*
    * Effect Hooks
@@ -76,7 +78,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
 
-    let filteredServiceListings = serviceListings;
+    //let filteredServiceListings = isSearching ? searchResults : serviceListings;
+    let filteredServiceListings = searchResults;
 
     // Filter by selected pet businesses
     if (selectedPB.length > 0) {
@@ -97,7 +100,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     setFilteredTotal(sortedServiceListings.length);
     const newRecords = sortedServiceListings.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, serviceListings, selectedPB]);
+  }, [page, sortStatus, serviceListings, selectedPB, searchResults]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -115,7 +118,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(serviceListings);
+      //setRecords(serviceListings);
+      setSearchResults(serviceListings); // reset search results
       setPage(1);
       return;
     }
@@ -127,7 +131,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     // Search by title or category
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
-    setRecords(results);
+    setSearchResults(results);
+    //setRecords(results);
     setPage(1);
   };
 
