@@ -67,7 +67,6 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
-  const [filteredTotal, setFilteredTotal] = useState<number>(0);
   const [searchResults, setSearchResults] = useState<ServiceListing[]>([]);
 
   /*
@@ -96,14 +95,12 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     if (sortStatus.direction === "desc") {
       sortedServiceListings.reverse();
     }
-    setFilteredTotal(sortedServiceListings.length);
     const newRecords = sortedServiceListings.slice(from, to);
     setRecords(newRecords);
   }, [page, sortStatus, serviceListings, selectedPB, searchResults]);
 
   useEffect(() => {
     setSearchResults(serviceListings);
-    setFilteredTotal(serviceListings.length);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
@@ -133,7 +130,6 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
     setSearchResults(results);
-    //setRecords(results);
     setPage(1);
   };
 
@@ -217,10 +213,9 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
         ) : (
           <ServiceListingTable
             records={records}
-            totalNumServiceListing={filteredTotal}
+            totalNumServiceListing={searchResults.length}
             onDelete={handleDeleteServiceListing}
             canWrite={canWrite}
-            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}

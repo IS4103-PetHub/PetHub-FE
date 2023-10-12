@@ -15,7 +15,6 @@ interface ServiceListingTableProps {
   totalNumServiceListing: number;
   onDelete(id: number): void;
   canWrite: boolean;
-  isSearching: boolean;
   page: number;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
@@ -27,7 +26,6 @@ const ServiceListingTable = ({
   totalNumServiceListing,
   onDelete,
   canWrite,
-  isSearching,
   page,
   sortStatus,
   onSortStatusChange,
