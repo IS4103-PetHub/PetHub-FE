@@ -67,11 +67,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
-  const [filteredTotal, setFilteredTotal] = useState<number>(
-    serviceListings.length,
-  );
-  const [searchResults, setSearchResults] =
-    useState<ServiceListing[]>(serviceListings);
+  const [filteredTotal, setFilteredTotal] = useState<number>(0);
+  const [searchResults, setSearchResults] = useState<ServiceListing[]>([]);
 
   /*
    * Effect Hooks
@@ -105,6 +102,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   }, [page, sortStatus, serviceListings, selectedPB, searchResults]);
 
   useEffect(() => {
+    setSearchResults(serviceListings);
+    setFilteredTotal(serviceListings.length);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
@@ -112,7 +111,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [serviceListings]);
 
   /*
    * Search Functions
