@@ -296,7 +296,10 @@ export default function Cart({ userId }: CartProps) {
       <Group position="apart">
         <Text size="lg">Total</Text>
         <Text size="lg" fw={700}>
-          ${formatPriceForDisplay(calculateTotalPrice() + PLATFORM_FEE)}
+          $
+          {formatPriceForDisplay(
+            calculateTotalPrice() + calculateTotalPrice() !== 0 && PLATFORM_FEE,
+          )}
         </Text>
       </Group>
       <Button size="md" fullWidth mt="xs" onClick={checkout} variant="gradient">

@@ -61,7 +61,7 @@ const MiniCartItemCard = ({
           </Text>
           <Text size={14}>
             {"$" + formatPriceForDisplay(serviceListing.basePrice)}{" "}
-            {quantity && `(${quantity})`}
+            {quantity && quantity !== 1 && `(${quantity})`}
           </Text>
         </Grid.Col>
         <Grid.Col span={3}>

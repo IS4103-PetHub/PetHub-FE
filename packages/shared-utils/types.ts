@@ -83,3 +83,50 @@ export interface ServiceListing {
   calendarGroupId?: number;
   duration?: number;
 }
+
+export interface OrderItem {
+  orderItemId: number;
+  itemName: string;
+  itemPrice: number;
+  quantity: number;
+  expiryDate?: string;
+  voucherCode: string;
+  invoiceId: number;
+  invoice?: Invoice;
+  serviceListingId: number;
+  bookingBookingId?: number;
+}
+
+export interface OrderBarCounts {
+  allCount: number;
+  toBookCount: number;
+  toFulfillCount: number;
+  fulfilledCount: number;
+  expiredCount: number;
+  refundedCount: number;
+}
+
+export interface Invoice {
+  invoiceId: number;
+  totalPrice: number;
+  commissionRate: number;
+  createdAt: string;
+  paymentId: number;
+  miscCharge: number;
+  orderItems: OrderItem[];
+  petOwnerUserId: number;
+  serviceListingServiceListingId?: number;
+}
+
+export interface RefundRequest {
+  refundRequestId: number;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+  reason?: string;
+  processedAt?: string;
+  petOwnerId: number;
+  orderId: number;
+  order: Invoice;
+  petBusinessId: number;
+}

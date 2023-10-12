@@ -14,7 +14,6 @@ import {
   Center,
   Alert,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconMapPin, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
@@ -27,11 +26,7 @@ import {
   formatISODayDateTime,
 } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
-import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
-import { useCartOperations } from "@/hooks/cart";
-import { Booking, CartItemBookingSelection } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
-import ServiceListingTags from "../service-listing-discovery/ServiceListingTags";
 import CartItemBadge from "./CartItemBadge";
 
 interface CartItemCardProps {
