@@ -107,7 +107,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
               </Accordion.Control>
               <Accordion.Panel p="md" pt={0}>
                 <Text size="lg" weight={600} color={theme.primaryColor}>
-                  Default
+                  {petBusiness.commissionRule.name}
                 </Text>
                 <Group>
                   <Text mr={-15}>Commission rate</Text>
@@ -119,7 +119,10 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                     {}
                   </CustomPopover>
                   <Text ml={-15}>
-                    : <strong>5%</strong>
+                    :{" "}
+                    <strong>
+                      {petBusiness.commissionRule.commissionRate * 100}%
+                    </strong>
                   </Text>
                 </Group>
               </Accordion.Panel>
