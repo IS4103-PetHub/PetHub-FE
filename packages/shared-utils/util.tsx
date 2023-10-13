@@ -129,20 +129,20 @@ export function searchServiceListingsForPB(
 
 export function sortInvalidServiceListings(serviceListings: ServiceListing[]) {
   return serviceListings.sort((a, b) =>
-    a.requiresBooking &&
-    !(a.calendarGroupId && a.duration) &&
-    (a.lastPossibleDate ? new Date(a.lastPossibleDate) < new Date() : true)
-      ? -1
-      : 1,
+    (a.requiresBooking ? a.calendarGroupId && a.duration : true) &&
+    (a.lastPossibleDate ? new Date(a.lastPossibleDate) > new Date() : true)
+      ? 1
+      : -1,
   );
 }
 
 export function isValidServiceListing(serviceListing: ServiceListing) {
   return (
-    serviceListing.requiresBooking &&
-    !(serviceListing.calendarGroupId && serviceListing.duration) &&
+    (serviceListing.requiresBooking
+      ? serviceListing.calendarGroupId && serviceListing.duration
+      : true) &&
     (serviceListing.lastPossibleDate
-      ? new Date(serviceListing.lastPossibleDate) < new Date()
+      ? new Date(serviceListing.lastPossibleDate) > new Date()
       : true)
   );
 }

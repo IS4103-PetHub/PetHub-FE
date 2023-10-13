@@ -11,6 +11,7 @@ import {
   EMPTY_STATE_DELAY_MS,
   ServiceListing,
   TABLE_PAGE_SIZE,
+  isValidServiceListing,
   searchServiceListingsForPB,
   sortInvalidServiceListings,
 } from "shared-utils";
@@ -111,10 +112,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   useEffect(() => {
     let hasInvalidRecord = false;
     for (const record of records) {
-      if (
-        record.requiresBooking &&
-        !(record.calendarGroupId && record.duration)
-      ) {
+      if (!isValidServiceListing(record)) {
         hasInvalidRecord = true;
         break;
       }

@@ -111,7 +111,7 @@ const ServiceListTable = ({
               record.tags.map((tag, index) => (
                 <Badge
                   key={tag.tagId}
-                  color={isValidServiceListing(record) ? "red" : "blue"}
+                  color={isValidServiceListing(record) ? "blue" : "red"}
                   mr={index < record.tags.length - 1 ? 5 : 0}
                   /* Add margin right if not the last tag */
                 >
@@ -178,11 +178,10 @@ const ServiceListTable = ({
           duration,
           lastPossibleDate,
         }) =>
-          requiresBooking &&
-          !(calendarGroupId && duration) &&
-          new Date(lastPossibleDate) < new Date()
-            ? { color: "red" }
-            : undefined
+          (requiresBooking ? calendarGroupId && duration : true) &&
+          (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true)
+            ? undefined
+            : { color: "red" }
         }
       />
 
