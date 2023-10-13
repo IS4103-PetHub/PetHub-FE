@@ -2,6 +2,7 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   Address,
+  CommissionRule,
   PetBusinessTypeEnum,
 } from "shared-utils";
 
@@ -38,6 +39,7 @@ export interface PetBusiness extends User {
   businessAddresses?: Address[];
   contactNumber: string;
   websiteURL?: string;
+  commissionRule: CommissionRule;
 }
 
 export interface InternalUser extends User {

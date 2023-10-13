@@ -38,7 +38,7 @@ const DescriptionAccordionItem = ({
           <SimpleOutlineButton
             text={showFullDescription ? "View less" : "View more"}
             onClick={() => setShowFullDescription()}
-            display={description.length < 200 ? "none" : "block"}
+            display={description.length < 350 ? "none" : "block"}
           />
         </Group>
       </Accordion.Panel>

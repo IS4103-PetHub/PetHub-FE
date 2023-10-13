@@ -53,10 +53,14 @@ export default function ServiceListings() {
    */
 
   useEffect(() => {
+    if (isSearching) {
+      setRecords(sortRecords(serviceListingSortOptions, records, sortStatus));
+      return;
+    }
     setRecords(
       sortRecords(serviceListingSortOptions, serviceListings, sortStatus),
     );
-  }, [serviceListings, sortStatus]);
+  }, [serviceListings, isSearching, sortStatus]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
