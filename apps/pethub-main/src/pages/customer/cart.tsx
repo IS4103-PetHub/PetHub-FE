@@ -298,7 +298,14 @@ export default function Cart({ userId }: CartProps) {
           ${formatPriceForDisplay(calculateTotalPrice() + PLATFORM_FEE)}
         </Text>
       </Group>
-      <Button size="md" fullWidth mt="xs" onClick={checkout} variant="gradient">
+      <Button
+        size="md"
+        fullWidth
+        mt="xs"
+        onClick={checkout}
+        color="dark"
+        className="gradient-hover"
+      >
         Checkout
       </Button>
     </Paper>

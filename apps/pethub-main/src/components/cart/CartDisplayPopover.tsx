@@ -99,7 +99,8 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
               router.push("/customer/cart");
               close();
             }}
-            variant="gradient"
+            color="dark"
+            className="gradient-hover"
             mt="xs"
           >
             View shopping cart
