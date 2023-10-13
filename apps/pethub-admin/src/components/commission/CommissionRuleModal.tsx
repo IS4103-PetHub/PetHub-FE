@@ -3,36 +3,29 @@ import {
   Stack,
   TextInput,
   NumberInput,
-  Switch,
   Button,
   Group,
   Grid,
   Checkbox,
-  Accordion,
-  Text,
 } from "@mantine/core";
-import { AccordionControl } from "@mantine/core/lib/Accordion/AccordionControl/AccordionControl";
 import { isNotEmpty, useForm } from "@mantine/form";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { DataTable } from "mantine-datatable";
-import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { getErrorMessageProps } from "shared-utils";
-import LargeCreateButton from "web-ui/shared/LargeCreateButton";
-import { CommissionRule } from "@/types/types";
-import CommissionGroupAddPBModal from "./CommissionRuleAddPBModal";
+import { useCreatCommissionRule } from "@/hooks/commission-rule";
 
 interface CommissionRuleModalProps {
   opened: boolean;
   onClose(): void;
   canWrite: boolean;
-  // refetch(): void;
+  refetch(): void;
 }
 
 const CommissionRuleModal = ({
   opened,
   onClose,
   canWrite, // refetch
+  refetch,
 }: CommissionRuleModalProps) => {
   /*
    * Component State
@@ -41,7 +34,6 @@ const CommissionRuleModal = ({
   const formDefaultValues = {
     name: "",
     commissionRate: 0,
-    default: false,
   };
 
   const form = useForm({
@@ -55,21 +47,24 @@ const CommissionRuleModal = ({
   /*
    * Service Handlers
    */
+  const queryClient = useQueryClient();
+  const createCommissionRule = useCreatCommissionRule(queryClient);
   const handleAction = async (values) => {
     try {
       const payload = {
         ...values,
+        commissionRate: Number((values.commissionRate / 100).toFixed(4)),
       };
-      console.log("CREATING PAYLOAD", payload);
-      // TODO: create endpoint, refetch
+      await createCommissionRule.mutateAsync(payload);
       notifications.show({
-        message: "Commission Group Successfully Created",
+        message: "Commission Rule Successfully Created",
         color: "green",
       });
+      refetch();
       closeAndResetForm();
     } catch (error) {
       notifications.show({
-        ...getErrorMessageProps("Error Creating Pet", error),
+        ...getErrorMessageProps("Error Creating Commission Rule", error),
       });
     }
   };
@@ -88,7 +83,7 @@ const CommissionRuleModal = ({
       <Modal
         opened={opened}
         onClose={closeAndResetForm}
-        title={"Create Commission Group"}
+        title={"Create Commission Rule"}
         centered
         size="lg"
       >
@@ -98,7 +93,7 @@ const CommissionRuleModal = ({
               <TextInput
                 withAsterisk
                 label="Name"
-                placeholder="Commission Group Name"
+                placeholder="Commission Rule Name"
                 {...form.getInputProps("name")}
               />
             </Grid.Col>
@@ -111,15 +106,7 @@ const CommissionRuleModal = ({
                 {...form.getInputProps("commissionRate")}
               />
             </Grid.Col>
-            <Grid.Col span={2}>
-              <Checkbox
-                label="Default"
-                checked={form.values.default}
-                {...form.getInputProps("default")}
-              />
-            </Grid.Col>
           </Grid>
-          {/* PET BUSINESS DETAILS */}
           <Stack>
             <Group position="right" mt="sm">
               <Button

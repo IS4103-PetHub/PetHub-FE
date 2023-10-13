@@ -1,6 +1,7 @@
 import { Group, Badge } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { IconX } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -10,10 +11,9 @@ import {
   getMinTableHeight,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
+import { useDeleteCommissionRuleById } from "@/hooks/commission-rule";
 import { CommissionRule } from "@/types/types";
-import CommissionRuleModal from "./CommissionRuleModal";
 
 interface CommissionRuleTableProps {
   commissionRules: CommissionRule[];
@@ -36,7 +36,6 @@ export default function CommissionRuleTable({
   onPageChange,
   disabled,
   totalNumGroup,
-  canWrite,
 }: CommissionRuleTableProps) {
   const router = useRouter();
 
@@ -48,18 +47,27 @@ export default function CommissionRuleTable({
   /*
    * Service Handlers
    */
+  const queryClient = useQueryClient();
+  const deleteCommissionRuleMutation = useDeleteCommissionRuleById(queryClient);
   const handleDeleteCommission = async (commissionRuleId: number) => {
     try {
-      // TODO: endpoint to delete commission group and refetch
-      console.log("DELETE Commission Group");
-
+      if (commissionRuleId == 1) {
+        notifications.show({
+          title: "Error Deleting Commission Rule",
+          color: "red",
+          icon: <IconX />,
+          message: "Unable to Delete a Default Commission Rule",
+        });
+        return;
+      }
+      await deleteCommissionRuleMutation.mutateAsync(commissionRuleId);
       notifications.show({
-        message: "Service Successfully Deleted",
+        message: "Commission Rule Successfully Deleted",
         color: "green",
       });
     } catch (error) {
       notifications.show({
-        ...getErrorMessageProps("Error Deleting Service Listing", error),
+        ...getErrorMessageProps("Error Deleting Commission Rule", error),
       });
     }
   };
@@ -80,7 +88,9 @@ export default function CommissionRuleTable({
             render: (rowData) => (
               <div>
                 {rowData.name}
-                {rowData.default && <Badge color="blue">Default</Badge>}
+                {rowData.commissionRuleId == 1 && (
+                  <Badge color="blue">Default</Badge>
+                )}
               </div>
             ),
           },
@@ -90,6 +100,7 @@ export default function CommissionRuleTable({
             textAlignment: "right",
             width: "10vw",
             sortable: true,
+            render: (rowData) => (rowData.commissionRate * 100).toFixed(2),
           },
           {
             accessor: "createdAt",
@@ -134,7 +145,11 @@ export default function CommissionRuleTable({
                 />
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${group.name}?`}
-                  subtitle="The commission Rule would no longer exists"
+                  subtitle={
+                    group.petBusinesses && group.petBusinesses.length > 0
+                      ? "Are you sure you want to delete the commission rule? There are existing Pet businesses assigned to this Commission Rule. The pet businessses would be reassigned to the default rule."
+                      : "The commission rule would no longer exists."
+                  }
                   onDelete={() =>
                     handleDeleteCommission(group.commissionRuleId)
                   }

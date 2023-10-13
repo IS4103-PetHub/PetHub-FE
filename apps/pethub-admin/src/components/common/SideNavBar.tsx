@@ -104,7 +104,7 @@ const data = [
   },
   {
     link: "/admin/commission",
-    label: "Commission Group",
+    label: "Commission Rules",
     icon: IconBusinessplan,
   },
 ];

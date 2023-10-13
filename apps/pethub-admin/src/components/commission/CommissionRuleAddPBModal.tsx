@@ -2,6 +2,7 @@ import { Button, Group, Modal, Text } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DataTable } from "mantine-datatable";
 import { useEffect, useState } from "react";
 import {
@@ -11,17 +12,18 @@ import {
 } from "shared-utils";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import SearchBar from "web-ui/shared/SearchBar";
+import { useUpdateCommissionRule } from "@/hooks/commission-rule";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import { CommissionRule, PetBusiness } from "@/types/types";
 import { searchPetBusinesses } from "@/util";
 
 interface CommissionGroupAddPBModalProps {
-  // refetch(): void;
+  refetch(): void;
   commissionRule: CommissionRule;
 }
 
 const CommissionGroupAddPBModal = ({
-  // refetch,
+  refetch,
   commissionRule,
 }: CommissionGroupAddPBModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -37,23 +39,24 @@ const CommissionGroupAddPBModal = ({
     setRecords(petBusinesses?.slice(from, to) ?? []);
   }, [page, petBusinesses]);
 
-  // const addMultipleUsersToCommissionRuleMutation = useAddMultipleUsersToCommissionRule();
+  const queryClient = useQueryClient();
+  const updateCommissionRuleMutation = useUpdateCommissionRule(queryClient);
   const handleAddUsers = async () => {
-    const userIds = selectedRecords.map((record) => record.userId);
+    const petBusinessIds = selectedRecords.map((record) => record.userId);
+    petBusinessIds.push(...getCurrentCommissionPBIds());
     const payload = {
       commissionRuleId: commissionRule?.commissionRuleId,
-      userIds,
+      petBusinessIds,
     };
-    console.log("ADDING USERS", payload);
     try {
-      // await addMultipleUsersToCommissionRuleMutation.mutateAsync(payload);
+      await updateCommissionRuleMutation.mutateAsync(payload);
       notifications.show({
         title: "Group Membership Updated",
         color: "green",
         icon: <IconCheck />,
         message: `${selectedRecords.length} user(s) have been assigned to this group successfully!`,
       });
-      // refetch();
+      refetch();
       handleCloseModal();
     } catch (error: any) {
       notifications.show({
@@ -106,7 +109,7 @@ const CommissionGroupAddPBModal = ({
             Add Pet Businesses
           </Text>
         }
-        size="xl"
+        size="80%"
       >
         <SearchBar
           text="Search by user ID, name, uen and email"

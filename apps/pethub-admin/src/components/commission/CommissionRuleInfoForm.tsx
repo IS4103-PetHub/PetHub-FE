@@ -38,7 +38,7 @@ const CommissionRuleInfoForm = ({
             <TextInput
               withAsterisk
               label="Name"
-              placeholder="Commission Group Name"
+              placeholder="Commission Rule Name"
               {...form.getInputProps("name")}
             />
           </Grid.Col>
@@ -51,13 +51,6 @@ const CommissionRuleInfoForm = ({
               {...form.getInputProps("commissionRate")}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
-            <Checkbox
-              label="Default"
-              checked={form.values.default}
-              {...form.getInputProps("default")}
-            />
-          </Grid.Col>
         </Grid>
       ) : (
         <>
@@ -65,14 +58,16 @@ const CommissionRuleInfoForm = ({
             <Text weight="600">Name:</Text>
             <Text>
               {commissionRule?.name}
-              {commissionRule?.default ? <Badge>Default</Badge> : null}
+              {commissionRule?.commissionRuleId == 1 ? (
+                <Badge style={{ marginLeft: "12px" }}>Default</Badge>
+              ) : null}
             </Text>
           </Box>
           <Box>
             <Text weight="600">Commission Rate:</Text>
             <Text>
               {commissionRule?.commissionRate
-                ? `${commissionRule?.commissionRate}%`
+                ? `${(commissionRule?.commissionRate * 100).toFixed(2)}%`
                 : "-"}
             </Text>
           </Box>

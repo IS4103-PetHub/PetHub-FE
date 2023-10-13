@@ -150,8 +150,7 @@ export interface CommissionRule {
   commissionRuleId: number;
   name: string;
   commissionRate: number;
-  default: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  petBusinesses: PetBusiness[];
+  createdAt?: string;
+  updatedAt?: string;
+  petBusinesses?: PetBusiness[];
 }
