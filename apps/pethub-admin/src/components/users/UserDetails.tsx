@@ -244,10 +244,10 @@ const PetBusinessDetails = ({
           <Text>Commission Rule:</Text>
         </Grid.Col>
         <Grid.Col span={6}>
-          {/* <Text>
-            {user.commissionRule.name} ({user.commissionRule.commissionRate}%)
-          </Text> */}
-          <Text>{"Gold (5%)"}</Text>
+          <Text>
+            {user.commissionRule.name} (
+            {user.commissionRule.commissionRate * 100}%)
+          </Text>
         </Grid.Col>
       </Grid>
     </Paper>
