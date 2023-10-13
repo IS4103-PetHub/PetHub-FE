@@ -1,16 +1,33 @@
-import { Box, Container, Grid, Group, Transition } from "@mantine/core";
+import {
+  Alert,
+  Box,
+  Container,
+  Grid,
+  Group,
+  Text,
+  Transition,
+} from "@mantine/core";
+import { useToggle } from "@mantine/hooks";
+import { IconExclamationCircle } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { OrderBarCounts, OrderItemStatusEnum } from "shared-utils";
+import {
+  EMPTY_STATE_DELAY_MS,
+  OrderBarCounts,
+  OrderItem,
+  OrderItemStatusEnum,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
+import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import OrderItemCard from "@/components/order/OrderItemCard";
 import OrderStatusBar from "@/components/order/OrderTabs";
-import { ordersSortOptions } from "@/types/constants";
+import { orderItemsSortOptions } from "@/types/constants";
+import { searchOrderItemsForCustomer, sortRecords } from "@/util";
 import sampleData from "./sampleData.json";
 
 interface OrdersProps {
@@ -20,16 +37,58 @@ interface OrdersProps {
 export default function Orders({ userId }: OrdersProps) {
   const [activeTab, setActiveTab] = useState(OrderItemStatusEnum.All);
   const [sortStatus, setSortStatus] = useState<string>("recent");
+  const [isSearching, setIsSearching] = useToggle();
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
   // stub data
-  const orders = ["hello"];
   const isLoading = false;
-  const hasNoFetchedRecords = false;
   const orderItems = sampleData.items;
 
+  const [records, setRecords] = useState<any[]>(orderItems);
+
   useEffect(() => {
-    // Only display orders for the current active tab
-  }, [activeTab]);
+    if (activeTab === OrderItemStatusEnum.All) {
+      setRecords(orderItems);
+      return;
+    }
+    let filteredOrderItems;
+    if (activeTab === OrderItemStatusEnum.Fulfilled) {
+      filteredOrderItems = orderItems.filter(
+        (item) =>
+          item.status === OrderItemStatusEnum.Fulfilled ||
+          item.status === OrderItemStatusEnum.PaidOut,
+      );
+    } else {
+      filteredOrderItems = orderItems.filter(
+        (item) => item.status === activeTab,
+      );
+    }
+    setRecords(filteredOrderItems);
+  }, [activeTab, orderItems]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (orderItems.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [orderItems]);
+
+  const handleSearch = (searchStr: string) => {
+    if (searchStr.length === 0) {
+      setIsSearching(false);
+      setRecords(orderItems);
+      return;
+    }
+    setIsSearching(true);
+    const results = searchOrderItemsForCustomer(
+      orderItems as any, // remove any once we move away from mock data
+      searchStr,
+    );
+    setRecords(results);
+  };
 
   function calculateOrderBarCounts() {
     const orderBarCounts: OrderBarCounts = {
@@ -49,7 +108,8 @@ export default function Orders({ userId }: OrdersProps) {
         case OrderItemStatusEnum.PendingFulfillment:
           orderBarCounts.toFulfillCount++;
           break;
-        case OrderItemStatusEnum.Fulfilled || OrderItemStatusEnum.PaidOut: // paid out means its fulfilled
+        case OrderItemStatusEnum.Fulfilled:
+        case OrderItemStatusEnum.PaidOut: // paid out means its fulfilled
           orderBarCounts.fulfilledCount++;
           break;
         case OrderItemStatusEnum.Expired:
@@ -63,16 +123,31 @@ export default function Orders({ userId }: OrdersProps) {
     return orderBarCounts;
   }
 
+  const toBookAlert = (
+    <Alert
+      title="Booking(s) Not Scheduled"
+      color="red"
+      icon={<IconExclamationCircle size="2rem" />}
+      mb="lg"
+    >
+      <Text>
+        You have orders that require bookings to be made. Please schedule your
+        time slots for these bookings before the end of the respective validity
+        periods.
+      </Text>
+    </Alert>
+  );
+
   const searchAndSortGroup = (
     <Group position="right" align="center" mb="lg">
       <SearchBar
         size="md"
         w="55%"
         text="Search by title or order ID"
-        onSearch={() => {}}
+        onSearch={handleSearch}
       />
       <SortBySelect
-        data={ordersSortOptions}
+        data={orderItemsSortOptions}
         value={sortStatus}
         onChange={setSortStatus}
         w="35%"
@@ -80,8 +155,24 @@ export default function Orders({ userId }: OrdersProps) {
     </Group>
   );
 
+  const orderItemCards = records?.map((item) => (
+    <Grid.Col key={item.orderItemId}>
+      <OrderItemCard
+        userId={userId}
+        itemId={item.orderItemId}
+        orderId={item.invoice.paymentId}
+        price={item.itemPrice}
+        quantity={item.quantity}
+        voucherCode={item.voucherCode}
+        serviceListing={item.serviceListing}
+        booking={item.booking}
+        status={item.status}
+      />
+    </Grid.Col>
+  ));
+
   const renderContent = () => {
-    if (orders.length === 0) {
+    if (orderItems.length === 0) {
       if (isLoading) {
         return <CenterLoader />;
       }
@@ -102,7 +193,19 @@ export default function Orders({ userId }: OrdersProps) {
         </Transition>
       );
     }
+
+    return (
+      <>
+        {isSearching && records.length === 0 ? (
+          <NoSearchResultsMessage />
+        ) : (
+          <Grid>{orderItemCards}</Grid>
+        )}
+      </>
+    );
   };
+
+  const orderBarCounts = calculateOrderBarCounts();
 
   return (
     <>
@@ -112,33 +215,17 @@ export default function Orders({ userId }: OrdersProps) {
       </Head>
       <main>
         <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
+          {orderBarCounts.toBookCount !== 0 && toBookAlert}
           <Group position="apart">
             <PageTitle title={`My orders`} mb="lg" />
-            <Box>{orders.length > 0 ? searchAndSortGroup : null}</Box>
+            <Box>{orderItems.length > 0 ? searchAndSortGroup : null}</Box>
           </Group>
           <OrderStatusBar
+            activeTab={activeTab}
             setActiveTab={setActiveTab}
-            orderBarCounts={calculateOrderBarCounts()}
+            orderBarCounts={orderBarCounts}
           />
-          <Grid>
-            <Grid.Col mt="md">
-              {orderItems.map((item) => (
-                <OrderItemCard
-                  key={item.orderItemId}
-                  userId={userId}
-                  itemId={item.orderItemId}
-                  orderId={item.invoice.paymentId}
-                  price={item.itemPrice}
-                  quantity={item.quantity}
-                  voucherCode={item.voucherCode}
-                  serviceListing={item.serviceListing}
-                  booking={item.booking}
-                  status={item.status}
-                />
-              ))}
-            </Grid.Col>
-            <Grid.Col>{renderContent()}</Grid.Col>
-          </Grid>
+          {renderContent()}
         </Container>
       </main>
     </>

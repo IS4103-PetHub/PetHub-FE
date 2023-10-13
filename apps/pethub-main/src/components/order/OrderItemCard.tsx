@@ -172,7 +172,7 @@ const OrderItemCard = ({
   );
 
   return (
-    <Card withBorder mb="lg" mah={225} mih={225} radius="xs" shadow="xs">
+    <Card withBorder mah={225} mih={225} radius="xs" shadow="xs">
       <Group position="apart" mb={5} mt={-5}>
         <Center>
           <Text fw={500} mr={2} size="sm">
@@ -208,6 +208,13 @@ const OrderItemCard = ({
         sx={{
           height: "100%",
           cursor: "pointer",
+          transition: "background-color 0.3s ease",
+          "&:hover": {
+            backgroundColor:
+              theme.colorScheme === "dark"
+                ? theme.colors.dark[0]
+                : theme.colors.gray[1],
+          },
         }}
         onClick={() => router.push(`/customer/orders/${itemId}`)}
       >

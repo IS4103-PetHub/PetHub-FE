@@ -1,4 +1,4 @@
-import { Badge, Indicator, Tabs } from "@mantine/core";
+import { Badge, Indicator, Tabs, createStyles } from "@mantine/core";
 import {
   IconBrowserCheck,
   IconBulb,
@@ -11,11 +11,22 @@ import { OrderBarCounts, OrderItemStatusEnum } from "shared-utils";
 import OrderItemTabBadge from "./OrderItemTabBadge";
 
 interface OrderStatusBarProps {
+  activeTab: OrderItemStatusEnum;
   setActiveTab: (value: OrderItemStatusEnum) => void;
   orderBarCounts: OrderBarCounts;
 }
 
-function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
+const useStyles = createStyles((theme) => ({
+  inActiveTab: {
+    opacity: 0.75,
+  },
+}));
+
+function OrderStatusBar({
+  activeTab,
+  setActiveTab,
+  orderBarCounts,
+}: OrderStatusBarProps) {
   const {
     allCount,
     toBookCount,
@@ -24,16 +35,21 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
     expiredCount,
     refundedCount,
   } = orderBarCounts;
+  const { classes } = useStyles();
 
   return (
     <Tabs
       defaultValue={OrderItemStatusEnum.All}
       onTabChange={setActiveTab}
       variant="outline"
-      radius="md"
+      radius="sm"
+      mb="sm"
     >
       <Tabs.List grow position="center">
         <Tabs.Tab
+          className={
+            activeTab === OrderItemStatusEnum.All ? "" : classes.inActiveTab
+          }
           value={OrderItemStatusEnum.All}
           icon={<IconMenu2 size="1rem" color="gray" />}
           rightSection={<OrderItemTabBadge count={allCount} />}
@@ -41,6 +57,11 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
           All Orders
         </Tabs.Tab>
         <Tabs.Tab
+          className={
+            activeTab === OrderItemStatusEnum.PendingBooking
+              ? ""
+              : classes.inActiveTab
+          }
           value={OrderItemStatusEnum.PendingBooking}
           icon={<IconBulb size="1rem" color="gray" />}
           rightSection={<OrderItemTabBadge count={toBookCount} />}
@@ -48,6 +69,11 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
           To Book
         </Tabs.Tab>
         <Tabs.Tab
+          className={
+            activeTab === OrderItemStatusEnum.PendingFulfillment
+              ? ""
+              : classes.inActiveTab
+          }
           value={OrderItemStatusEnum.PendingFulfillment}
           icon={<IconCalendarEvent size="1rem" color="gray" />}
           rightSection={<OrderItemTabBadge count={toFulfillCount} />}
@@ -55,6 +81,11 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
           To Fulfill
         </Tabs.Tab>
         <Tabs.Tab
+          className={
+            activeTab === OrderItemStatusEnum.Fulfilled
+              ? ""
+              : classes.inActiveTab
+          }
           value={OrderItemStatusEnum.Fulfilled}
           icon={<IconBrowserCheck size="1rem" color="gray" />}
           rightSection={<OrderItemTabBadge count={fulfilledCount} />}
@@ -62,6 +93,9 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
           Fulfilled
         </Tabs.Tab>
         <Tabs.Tab
+          className={
+            activeTab === OrderItemStatusEnum.Expired ? "" : classes.inActiveTab
+          }
           value={OrderItemStatusEnum.Expired}
           icon={<IconClockExclamation size="1rem" color="gray" />}
           rightSection={<OrderItemTabBadge count={expiredCount} />}
@@ -69,6 +103,11 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
           Expired
         </Tabs.Tab>
         <Tabs.Tab
+          className={
+            activeTab === OrderItemStatusEnum.Refunded
+              ? ""
+              : classes.inActiveTab
+          }
           value={OrderItemStatusEnum.Refunded}
           icon={<IconCreditCard size="1rem" color="gray" />}
           rightSection={<OrderItemTabBadge count={refundedCount} />}

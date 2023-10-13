@@ -3,6 +3,7 @@ import { sortBy } from "lodash";
 import {
   CalendarGroup,
   DayOfWeekEnum,
+  OrderItem,
   Recurrence,
   RecurrencePatternEnum,
   ScheduleSettings,
@@ -53,6 +54,23 @@ export function searchServiceListingsForCustomer(
       serviceListing.petBusiness?.companyName
         .toLowerCase()
         .includes(searchStr.toLowerCase()),
+  );
+}
+
+export function searchOrderItemsForCustomer(
+  orderItems: OrderItem[],
+  searchStr: string,
+) {
+  const search = searchStr.toLowerCase();
+
+  return orderItems.filter(
+    (orderItem: OrderItem) =>
+      orderItem.itemName?.toLowerCase().includes(search) ||
+      orderItem.invoiceId?.toString().includes(search) ||
+      orderItem.serviceListing?.petBusiness?.companyName
+        ?.toLowerCase()
+        .includes(search) ||
+      orderItem.serviceListing?.title.toLowerCase().includes(search),
   );
 }
 

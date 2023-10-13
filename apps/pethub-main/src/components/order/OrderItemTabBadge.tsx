@@ -8,12 +8,12 @@ interface OrderItemTabBadgeProps extends BadgeProps {
 const OrderItemTabBadge = ({ count, ...props }: OrderItemTabBadgeProps) => {
   return (
     <Badge
-      w={16}
+      miw={16}
       h={16}
       sx={{ pointerEvents: "none" }}
       variant="filled"
       size="xs"
-      p={0}
+      p={1}
     >
       {count}
     </Badge>

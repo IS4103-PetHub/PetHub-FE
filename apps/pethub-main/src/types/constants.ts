@@ -50,7 +50,7 @@ export const bookingsSortOptions = [
   },
 ];
 
-export const ordersSortOptions = [
+export const orderItemsSortOptions = [
   {
     value: "recent",
     label: "Most recent",

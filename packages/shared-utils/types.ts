@@ -83,7 +83,6 @@ export interface ServiceListing {
   calendarGroupId?: number;
   duration?: number;
 }
-
 export interface OrderItem {
   orderItemId: number;
   itemName: string;
@@ -94,6 +93,7 @@ export interface OrderItem {
   invoiceId: number;
   invoice?: Invoice;
   serviceListingId: number;
+  serviceListing: ServiceListing;
   bookingBookingId?: number;
 }
 
