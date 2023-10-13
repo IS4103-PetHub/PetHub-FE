@@ -26,3 +26,4 @@ export * from "./shared/LargeViewButton";
 export * from "./shared/TimeSelect";
 export * from "./shared/UpdateActionButtonModal";
 export * from "./shared/NumberInputWithIcons";
+export * from "./shared/CustomPopover";

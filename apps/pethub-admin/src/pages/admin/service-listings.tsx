@@ -67,6 +67,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<ServiceListing[]>([]);
 
   /*
    * Effect Hooks
@@ -75,7 +76,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
 
-    let filteredServiceListings = serviceListings;
+    //let filteredServiceListings = isSearching ? searchResults : serviceListings;
+    let filteredServiceListings = searchResults;
 
     // Filter by selected pet businesses
     if (selectedPB.length > 0) {
@@ -86,18 +88,19 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
       );
     }
 
-    const sortedServiceListing = sortBy(
+    const sortedServiceListings = sortBy(
       filteredServiceListings,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
-      sortedServiceListing.reverse();
+      sortedServiceListings.reverse();
     }
-    const newRecords = sortedServiceListing.slice(from, to);
+    const newRecords = sortedServiceListings.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, serviceListings, selectedPB]);
+  }, [page, sortStatus, serviceListings, selectedPB, searchResults]);
 
   useEffect(() => {
+    setSearchResults(serviceListings);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
@@ -105,7 +108,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [serviceListings]);
 
   /*
    * Search Functions
@@ -113,7 +116,8 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(serviceListings);
+      //setRecords(serviceListings);
+      setSearchResults(serviceListings); // reset search results
       setPage(1);
       return;
     }
@@ -125,7 +129,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
     // Search by title or category
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -143,7 +147,7 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
         mt={-25}
         label="Filter by Pet Businesses"
         placeholder="Select Pet Businesses"
-        maxSelectedValues={3}
+        maxSelectedValues={10}
         dropdownPosition="bottom"
         clearable
         data={petBusinesses.map((petBusinesses) => petBusinesses.companyName)}
@@ -209,10 +213,9 @@ export default function ServiceListings({ permissions }: ServiceListingsProps) {
         ) : (
           <ServiceListingTable
             records={records}
-            totalNumServiceListing={serviceListings.length}
+            totalNumServiceListing={searchResults.length}
             onDelete={handleDeleteServiceListing}
             canWrite={canWrite}
-            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}

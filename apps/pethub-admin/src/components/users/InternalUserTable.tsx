@@ -40,6 +40,7 @@ export default function InternalUserTable({
     columnAccessor: "userId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<InternalUser[]>([]);
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<InternalUser[]>(internalUsers);
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
@@ -69,10 +70,8 @@ export default function InternalUserTable({
     // Compute pagination slice indices based on the current page
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-
-    // Sort internalUsers based on the current sort status
     const sortedInternalUsers = sortBy(
-      internalUsers,
+      searchResults,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
@@ -81,9 +80,10 @@ export default function InternalUserTable({
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedInternalUsers.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, internalUsers, hasNoFetchedRecords]);
+  }, [page, sortStatus, internalUsers, hasNoFetchedRecords, searchResults]);
 
   useEffect(() => {
+    setSearchResults(internalUsers);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (internalUsers.length === 0) {
@@ -91,7 +91,7 @@ export default function InternalUserTable({
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [internalUsers]);
 
   if (isError) {
     return ErrorAlert("Internal Users");
@@ -100,14 +100,14 @@ export default function InternalUserTable({
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(internalUsers);
+      setSearchResults(internalUsers); // reset search results
       setPage(1);
       return;
     }
     // search by id or first name or last name or email
     setIsSearching(true);
     const results = searchInternalUsers(internalUsers, searchStr);
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -224,7 +224,7 @@ export default function InternalUserTable({
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={isSearching ? records.length : internalUsers?.length}
+            totalRecords={searchResults.length}
             recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}

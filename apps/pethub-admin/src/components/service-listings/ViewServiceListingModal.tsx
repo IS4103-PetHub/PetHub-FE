@@ -87,7 +87,7 @@ const ViewServiceListingModal = ({
       </Text>
       <Group
         mt="md"
-        display={serviceListing.description?.length < 200 ? "none" : "block"}
+        display={serviceListing.description?.length < 350 ? "none" : "block"}
       >
         <Group position="right">
           <Button

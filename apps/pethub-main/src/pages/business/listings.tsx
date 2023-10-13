@@ -56,6 +56,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<ServiceListing[]>([]);
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const { data: tags } = useGetAllTags();
   const [petBusiness, setPetBusiness] = useState(null);
@@ -89,17 +90,18 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
     const sortedServiceListing = sortBy(
-      serviceListings,
+      searchResults,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
       sortedServiceListing.reverse();
     }
     const newRecords = sortedServiceListing.slice(from, to);
-    setRecords(sortInvalidServiceListings(newRecords));
-  }, [page, sortStatus, serviceListings]);
+    setRecords(newRecords);
+  }, [page, sortStatus, serviceListings, searchResults]);
 
   useEffect(() => {
+    setSearchResults(serviceListings);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
@@ -107,7 +109,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [serviceListings]);
 
   useEffect(() => {
     let hasInvalidRecord = false;
@@ -126,7 +128,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(sortInvalidServiceListings(serviceListings));
+      setSearchResults(serviceListings);
       setPage(1);
       return;
     }
@@ -134,7 +136,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     // Search by title, category, tag
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
-    setRecords(sortInvalidServiceListings(results));
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -171,11 +173,10 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
         ) : (
           <ServiceListTable
             records={records}
-            totalNumServiceListing={serviceListings.length}
+            totalNumServiceListing={searchResults.length}
             userId={userId}
             refetch={refetchServiceListings}
             page={page}
-            isSearching={isSearching}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}

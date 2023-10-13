@@ -334,7 +334,14 @@ export default function ServiceListingDetails({
                   fullWidth
                 />
               )}
-              <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
+              <Button
+                size="md"
+                fullWidth
+                mt="xs"
+                onClick={handleClickBuyNow}
+                color="dark"
+                className="gradient-hover"
+              >
                 Add to cart
               </Button>
               <SelectTimeslotModal

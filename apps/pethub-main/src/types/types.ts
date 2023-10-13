@@ -1,4 +1,3 @@
-import { NumberInputStylesNames } from "@mantine/core";
 import {
   AccountStatusEnum,
   AccountTypeEnum,
@@ -8,6 +7,7 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   GenderEnum,
+  CommissionRule,
 } from "shared-utils";
 import { PetTypeEnum } from "./constants";
 
@@ -59,6 +59,7 @@ export interface PetBusiness extends User {
   businessAddresses?: Address[];
   businessEmail?: string;
   petBusinessApplication: PetBusinessApplication;
+  commissionRule: CommissionRule;
 }
 
 export interface PetOwner extends User {

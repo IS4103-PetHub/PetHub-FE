@@ -1,21 +1,30 @@
-import { Popover, Text, ActionIcon, useMantineTheme } from "@mantine/core";
+import {
+  Popover,
+  Text,
+  ActionIcon,
+  useMantineTheme,
+  PopoverProps,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconInfoCircle } from "@tabler/icons-react";
-import { useRouter } from "next/router";
 
-const PlatformFeePopover = () => {
-  const router = useRouter();
+interface CustomPopoverProps extends PopoverProps {
+  text: string;
+}
+
+const CustomPopover = ({ text, ...props }: CustomPopoverProps) => {
   const theme = useMantineTheme();
   const [opened, { close, open }] = useDisclosure(false);
 
   return (
     <Popover
-      width={400}
+      width={350}
       position="bottom"
       withArrow
       shadow="md"
       opened={opened}
       offset={0}
+      {...props}
     >
       <Popover.Target>
         <ActionIcon onMouseEnter={open} onMouseLeave={close} variant="subtle">
@@ -27,13 +36,11 @@ const PlatformFeePopover = () => {
         sx={{ backgroundColor: theme.colors.dark[6] }}
       >
         <Text size="xs" align="center" c="white">
-          The platform fee covers operational costs to help keep PetHub up and
-          running. PetHub strives to deliver a smooth and pleasant experience
-          for all users.
+          {text}
         </Text>
       </Popover.Dropdown>
     </Popover>
   );
 };
 
-export default PlatformFeePopover;
+export default CustomPopover;
