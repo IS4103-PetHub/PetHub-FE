@@ -6,90 +6,49 @@ import {
   Button,
   Group,
   Box,
-  Badge,
   Checkbox,
   Grid,
   Image,
-  Stack,
   Center,
-  Alert,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconMapPin, IconTrash } from "@tabler/icons-react";
-import dayjs from "dayjs";
+import { IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  ServiceListing,
-  convertMinsToDurationString,
-  formatISODayDateTime,
-} from "shared-utils";
+import React, { useEffect, useState } from "react";
+import { ServiceListing, convertMinsToDurationString } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
-import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
-import { Booking, CartItemBookingSelection } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
-import ServiceListingTags from "../service-listing-discovery/ServiceListingTags";
 import CartItemBadge from "./CartItemBadge";
 
 interface CartItemCardProps {
   itemId: number;
   serviceListing: ServiceListing;
-  bookingSelection: CartItemBookingSelection;
   checked: boolean;
   onCheckedChange: (checked: any) => void;
   setItemQuantity: (cartItemId: number, quantity: number) => void;
   removeItem: () => void;
   isExpired: boolean;
-  setCardExpired: (isExpired: boolean) => void;
+  isDisabled: boolean;
   quantity?: number;
+  bookingAlert?: React.ReactNode; // This might not be needed anymore as per PH-264
 }
 
 const CartItemCard = ({
   itemId,
   serviceListing,
-  bookingSelection,
   checked,
   onCheckedChange,
   setItemQuantity,
   removeItem,
   quantity,
   isExpired,
-  setCardExpired,
+  isDisabled,
+  bookingAlert,
 }: CartItemCardProps) => {
-  const theme = useMantineTheme();
   const router = useRouter();
+  const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(quantity || 1);
-  const hasProcessedCheckboxDisabled = useRef(false); // Track the thing even through re-renders from other state changes
-
-  // Always call the hook, but the hook should not run if any of these are null due to the enabled property
-  const shouldFetch = bookingSelection && serviceListing.calendarGroupId;
-  const { data: availTimeslots = [], isLoading } =
-    useGetAvailableTimeSlotsByCGId(
-      shouldFetch ? serviceListing.calendarGroupId : null,
-      shouldFetch ? bookingSelection.startTime : null,
-      shouldFetch ? bookingSelection.endTime : null,
-      shouldFetch ? serviceListing.duration : null,
-    );
-
-  const isCheckboxDisabled =
-    serviceListing.calendarGroupId && availTimeslots.length === 0
-      ? true
-      : false;
-
-  useEffect(() => {
-    // This ideally should be replaced with timeslot checking in the parent page (cart), but laze coz will have to change a lot of things for this
-    if (isCheckboxDisabled && !hasProcessedCheckboxDisabled.current) {
-      onCheckedChange(false);
-      setCardExpired(true);
-      hasProcessedCheckboxDisabled.current = true;
-    } else if (!isCheckboxDisabled && hasProcessedCheckboxDisabled.current) {
-      onCheckedChange(true);
-      setCardExpired(false);
-      hasProcessedCheckboxDisabled.current = false;
-    }
-  }, [isCheckboxDisabled, onCheckedChange]);
 
   useEffect(() => {
     setValue(quantity || 1);
@@ -113,8 +72,8 @@ const CartItemCard = ({
     <Card
       withBorder
       mb="lg"
-      mah={280}
-      mih={280}
+      mih={220}
+      mah={220}
       sx={{
         backgroundColor: isExpired
           ? theme.colors.gray[3]
@@ -128,12 +87,8 @@ const CartItemCard = ({
         <Center>
           <Checkbox
             mr="md"
-            checked={
-              !serviceListing.calendarGroupId
-                ? checked
-                : checked && availTimeslots.length > 0
-            }
-            disabled={isCheckboxDisabled}
+            checked={checked}
+            disabled={isDisabled}
             onChange={(event) => onCheckedChange(event.currentTarget.checked)}
           />
           {serviceListing.calendarGroupId && (
@@ -187,23 +142,24 @@ const CartItemCard = ({
             />
           )}
         </Grid.Col>
-        <Grid.Col span={15}>
-          <Box>
+        <Grid.Col span={15} mt="xs">
+          <Box ml={5}>
             <Link href={`/service-listings/${serviceListing.serviceListingId}`}>
-              <Text fw={600} size={18}>
+              <Text fw={600} size="lg">
                 {serviceListing.title}
               </Text>
             </Link>
-            <CartItemBadge
-              text={serviceListing.petBusiness?.companyName}
-              type="PETBUSINESS"
-              variant=""
-              square={true}
-              size="md"
-              mb="xs"
-              ml={-10}
-            />
-            <Text size={12} mb="xs" lineClamp={2}>
+            <Link href={`/pet-businesses/${serviceListing.petBusinessId}`}>
+              <CartItemBadge
+                text={serviceListing.petBusiness?.companyName}
+                type="PETBUSINESS"
+                variant="light"
+                square={true}
+                size="md"
+                mb="xs"
+              />
+            </Link>
+            <Text size="xs" mb="xs" color="dimmed" lineClamp={2} w="90%">
               {serviceListing.description}
             </Text>
             <Box>
@@ -211,44 +167,12 @@ const CartItemCard = ({
                 <NumberInputWithIcons
                   value={value}
                   setValue={handleQuantityChange}
-                  min={0}
-                  max={20}
+                  min={1}
+                  max={100}
                   step={1}
                 />
               ) : (
-                <Alert
-                  variant="light"
-                  color={availTimeslots.length > 0 ? "blue" : "red"}
-                  title={
-                    availTimeslots.length > 0
-                      ? "Booking selection"
-                      : "Selected time slot unavailable"
-                  }
-                  radius="md"
-                  mih={80}
-                  mah={80}
-                  w="100%"
-                >
-                  {availTimeslots.length > 0 ? (
-                    <Text size="xs">
-                      <b>Start: </b>
-                      {formatISODayDateTime(bookingSelection?.startTime)}
-                      <b style={{ marginLeft: "8px" }}>End: </b>
-                      {formatISODayDateTime(bookingSelection?.endTime)}
-                      {bookingSelection?.petName && (
-                        <>
-                          <b style={{ marginLeft: "8px" }}>Pet:</b>{" "}
-                          {bookingSelection?.petName}
-                        </>
-                      )}
-                    </Text>
-                  ) : (
-                    <Text>
-                      Please remove this item and re-attempt time slot
-                      selection.
-                    </Text>
-                  )}
-                </Alert>
+                bookingAlert
               )}
             </Box>
           </Box>

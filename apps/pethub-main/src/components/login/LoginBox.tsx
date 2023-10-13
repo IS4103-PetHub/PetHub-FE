@@ -77,7 +77,14 @@ const LoginBox = ({ loginForm, changeBoxToggle, handleLogin }) => {
         >
           Forgot your password?
         </Anchor>
-        <Button mt="xs" type="submit" fullWidth mb="xs">
+        <Button
+          mt="xs"
+          type="submit"
+          fullWidth
+          mb="xs"
+          color="dark"
+          className="gradient-hover"
+        >
           Login
         </Button>
       </form>

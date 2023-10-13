@@ -89,6 +89,7 @@ const TimeSelect = ({
           handleTimeChange(value, minute, ampm);
         }}
         placeholder="Hour"
+        searchable
       />
       <Select
         label=" "

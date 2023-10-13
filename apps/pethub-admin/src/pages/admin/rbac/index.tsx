@@ -57,12 +57,13 @@ export default function Rbac({ permissions }: RbacProps) {
     columnAccessor: "groupId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<UserGroup[]>([]);
 
   useEffect(() => {
     // Recompute records whenever the current page or sort status changes
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    const sortedUserGroups = sortBy(userGroups, sortStatus.columnAccessor);
+    const sortedUserGroups = sortBy(searchResults, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedUserGroups.reverse();
     }
@@ -70,9 +71,10 @@ export default function Rbac({ permissions }: RbacProps) {
     const newRecords = sortedUserGroups.slice(from, to);
     // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, userGroups]);
+  }, [page, sortStatus, userGroups, searchResults]);
 
   useEffect(() => {
+    setSearchResults(userGroups);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (userGroups.length === 0) {
@@ -80,7 +82,7 @@ export default function Rbac({ permissions }: RbacProps) {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [userGroups]);
 
   const deleteUserGroupMutation = useDeleteUserGroup(queryClient);
   const handleDeleteUserGroup = async (id: number) => {
@@ -102,7 +104,7 @@ export default function Rbac({ permissions }: RbacProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(userGroups);
+      setSearchResults(userGroups); // reset search results
       setPage(1);
       return;
     }
@@ -115,7 +117,7 @@ export default function Rbac({ permissions }: RbacProps) {
           searchStr.includes(userGroup.groupId.toString()) &&
           searchStr.length <= userGroup.groupId.toString().length),
     );
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -161,9 +163,8 @@ export default function Rbac({ permissions }: RbacProps) {
         ) : (
           <UserGroupsTable
             records={records}
-            totalNumUserGroups={userGroups.length}
+            totalNumUserGroups={searchResults.length}
             onDelete={handleDeleteUserGroup}
-            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}

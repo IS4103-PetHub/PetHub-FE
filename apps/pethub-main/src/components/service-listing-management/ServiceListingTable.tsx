@@ -27,7 +27,6 @@ interface ServiceListTableProps {
   userId: number;
   refetch(): void;
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
@@ -42,7 +41,6 @@ const ServiceListTable = ({
   userId,
   refetch,
   page,
-  isSearching,
   sortStatus,
   onSortStatusChange,
   onPageChange,
@@ -167,7 +165,7 @@ const ServiceListTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumServiceListing}
+        totalRecords={totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}

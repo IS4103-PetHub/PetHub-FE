@@ -1,11 +1,4 @@
-import {
-  Button,
-  Group,
-  Stack,
-  Text,
-  createStyles,
-  useMantineTheme,
-} from "@mantine/core";
+import { Button, Group, Stack, Text, useMantineTheme } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import {
@@ -35,7 +28,8 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
 
   const stripePaymentMethodMutation = useStripePaymentMethod();
 
-  const { cart } = useCartOperations(userId);
+  const { getCurrentCart } = useCartOperations(userId);
+  const cart = getCurrentCart();
   console.log(cart);
 
   const amount = formatPriceForDisplay(19);

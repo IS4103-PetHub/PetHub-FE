@@ -83,3 +83,13 @@ export interface ServiceListing {
   calendarGroupId?: number;
   duration?: number;
 }
+
+export interface CommissionRule {
+  commissionRuleId: number;
+  name: string;
+  commissionRate: number;
+  default: boolean;
+  createdAt: string;
+  updatedAt: string;
+  petBusinesses: any[];
+}

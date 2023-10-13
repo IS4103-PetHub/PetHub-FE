@@ -25,6 +25,6 @@ a {
 }
 
 .gradient-hover:hover {
-  background-image: linear-gradient(to right, #15aabf, #4263eb);
+  background-image: linear-gradient(to left, #15aabf, #4263eb);
   background-size: 100% 100%;
 }

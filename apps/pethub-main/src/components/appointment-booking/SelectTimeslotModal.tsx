@@ -43,7 +43,6 @@ interface SelectTimeslotModalProps {
   serviceListing: ServiceListing;
   opened: boolean;
   onClose(): void;
-  refresh(): void;
   // optional, only for updating
   isUpdating?: boolean;
   booking?: Booking;
@@ -55,7 +54,6 @@ const SelectTimeslotModal = ({
   serviceListing,
   opened,
   onClose,
-  refresh,
   isUpdating,
   booking,
   onUpdateBooking,
@@ -134,7 +132,6 @@ const SelectTimeslotModal = ({
           serviceListing: serviceListing,
           bookingSelection: bookingSelection,
         } as CartItem);
-        refresh(); // Force the SL page to refetch new cart items from localstorage and display a text if it is added
       }
       notifications.show({
         title: `Appointment ${isUpdating ? "Rescheduled" : "Added to Cart"}`,

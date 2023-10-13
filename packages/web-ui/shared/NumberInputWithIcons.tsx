@@ -13,6 +13,7 @@ interface NumberInputWithIconsProps {
   min: number;
   max: number;
   step: number;
+  fullWidth?: boolean;
 }
 
 function NumberInputWithIcons({
@@ -21,14 +22,15 @@ function NumberInputWithIcons({
   min,
   max,
   step,
+  fullWidth,
   ...props
 }: NumberInputWithIconsProps) {
   const handlers = useRef<NumberInputHandlers>();
 
   return (
-    <Group spacing={5} {...props}>
+    <Group spacing={5} {...(fullWidth ? { grow: true } : null)} {...props}>
       <ActionIcon
-        size={42}
+        size={36}
         variant="default"
         onClick={() => handlers.current.decrement()}
       >
@@ -43,11 +45,16 @@ function NumberInputWithIcons({
         max={max}
         min={min}
         step={step}
-        styles={{ input: { width: rem(54), textAlign: "center" } }}
+        styles={{
+          input: {
+            width: fullWidth ? "100%" : rem(54),
+            textAlign: "center",
+          },
+        }}
       />
 
       <ActionIcon
-        size={42}
+        size={36}
         variant="default"
         onClick={() => handlers.current.increment()}
       >

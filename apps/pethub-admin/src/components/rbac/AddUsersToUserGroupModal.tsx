@@ -31,6 +31,7 @@ const AddUsersToUserGroupModal = ({
   const [selectedRecords, setSelectedRecords] = useState<InternalUser[]>([]);
   const [records, setRecords] = useState<InternalUser[]>([]);
   const [page, setPage] = useState<number>(1);
+  const [searchResults, setSearchResults] = useState<InternalUser[]>([]);
 
   const handleCloseModal = () => {
     // reset the table
@@ -44,8 +45,12 @@ const AddUsersToUserGroupModal = ({
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    setRecords(internalUsers?.slice(from, to) ?? []);
-  }, [page, internalUsers]);
+    setRecords(searchResults?.slice(from, to) ?? []);
+  }, [page, internalUsers, searchResults]);
+
+  useEffect(() => {
+    setSearchResults(internalUsers);
+  }, [internalUsers]);
 
   function getCurrentMembershipUserIds() {
     if (userGroup && userGroup.userGroupMemberships) {
@@ -80,14 +85,14 @@ const AddUsersToUserGroupModal = ({
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(internalUsers);
+      setSearchResults(internalUsers); // reset search results
       setPage(1);
       return;
     }
     // search by id or first name or last name or email
     setIsSearching(true);
     const results = searchInternalUsers(internalUsers, searchStr);
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -148,7 +153,7 @@ const AddUsersToUserGroupModal = ({
             !getCurrentMembershipUserIds().includes(record.userId)
           }
           //pagination
-          totalRecords={isSearching ? records.length : internalUsers?.length}
+          totalRecords={searchResults.length}
           recordsPerPage={TABLE_PAGE_SIZE}
           page={page}
           onPageChange={(p) => setPage(p)}

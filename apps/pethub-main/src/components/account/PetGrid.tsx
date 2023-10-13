@@ -131,7 +131,8 @@ const PetGrid = ({ userId }: PetGridProps) => {
         );
       }
       return (
-        <Box h={400} sx={{ verticalAlign: "center" }}>
+        //overflowY hidden is to hide random double scrollbar
+        <Box h={400} sx={{ verticalAlign: "center", overflowY: "hidden" }}>
           <Center h="100%" w="100%">
             <Transition
               mounted={hasNoFetchedRecords}
