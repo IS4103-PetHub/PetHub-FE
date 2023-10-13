@@ -57,11 +57,9 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
         <Tabs.Tab
           value={OrderItemStatusEnum.Fulfilled}
           icon={<IconBrowserCheck size="1rem" color="gray" />}
-          // rightSection={<OrderItemTabBadge count={fulfilledCount} />}
+          rightSection={<OrderItemTabBadge count={fulfilledCount} />}
         >
-          <Indicator label={2} size={16} p={5}>
-            Fulfilled
-          </Indicator>
+          Fulfilled
         </Tabs.Tab>
         <Tabs.Tab
           value={OrderItemStatusEnum.Expired}

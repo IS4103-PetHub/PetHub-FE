@@ -207,7 +207,9 @@ const OrderItemCard = ({
         columns={24}
         sx={{
           height: "100%",
+          cursor: "pointer",
         }}
+        onClick={() => router.push(`/customer/orders/${itemId}`)}
       >
         <Grid.Col span={4}>
           {serviceListing?.attachmentURLs?.length > 0 ? (
@@ -256,7 +258,7 @@ const OrderItemCard = ({
         >
           <Text size="sm" c="dark" fw={500}>
             ${formatPriceForDisplay(price)}{" "}
-            {quantity && quantity !== 1 && "(" + quantity + ")"}
+            {quantity && quantity !== 1 && `x ${quantity}`}
           </Text>
         </Grid.Col>
       </Grid>

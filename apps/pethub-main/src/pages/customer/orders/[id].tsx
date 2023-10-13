@@ -29,7 +29,7 @@ export default function OrderDetails({ userId }: OrderDetailsProps) {
         <title>{order.id} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+      <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
         <Group position="apart">
           <PageTitle title={`Order xxx`} mb="lg" />
         </Group>

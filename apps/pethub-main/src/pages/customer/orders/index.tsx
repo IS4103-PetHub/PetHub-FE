@@ -1,22 +1,13 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Group,
-  MultiSelect,
-  Transition,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import { Box, Container, Grid, Group, Transition } from "@mantine/core";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OrderBarCounts, OrderItemStatusEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
-import api from "@/api/axiosConfig";
 import OrderItemCard from "@/components/order/OrderItemCard";
 import OrderStatusBar from "@/components/order/OrderTabs";
 import { ordersSortOptions } from "@/types/constants";
@@ -36,7 +27,9 @@ export default function Orders({ userId }: OrdersProps) {
   const hasNoFetchedRecords = false;
   const orderItems = sampleData.items;
 
-  // ------------------ Placeholder - Change to a function that returns the count of each status ------------------ //
+  useEffect(() => {
+    // Only display orders for the current active tab
+  }, [activeTab]);
 
   function calculateOrderBarCounts() {
     const orderBarCounts: OrderBarCounts = {
@@ -65,12 +58,10 @@ export default function Orders({ userId }: OrdersProps) {
         case OrderItemStatusEnum.Refunded:
           orderBarCounts.refundedCount++;
           break;
-        // Note: We don't need a case for 'All' or 'PaidOut' as they're not counted in 'OrderBarCounts'
       }
     });
     return orderBarCounts;
   }
-  // ------------------ Placeholder - Change to a function that returns the count of each status ------------------ //
 
   const searchAndSortGroup = (
     <Group position="right" align="center" mb="lg">
