@@ -226,21 +226,28 @@ const PetBusinessDetails = ({
           <Text>Business Type:</Text>
         </Grid.Col>
         <Grid.Col span={6}>
-          <Text>{user.businessType || "-"}</Text>
+          <Text>
+            {user.businessType
+              ? formatStringToLetterCase(user.businessType)
+              : "-"}
+          </Text>
         </Grid.Col>
-
-        {/* <Grid.Col span={6}>
-          <Text>Business Description:</Text>
-        </Grid.Col>
-        <Grid.Col span={6}>
-          <Text>{user.businessDescription || "-"}</Text>
-        </Grid.Col> */}
 
         <Grid.Col span={6}>
           <Text>Website:</Text>
         </Grid.Col>
         <Grid.Col span={6}>
           <Text>{user.websiteURL || "-"}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
+          <Text>Commission Rule:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>
+            {user.commissionRule.name} (
+            {user.commissionRule.commissionRate * 100}%)
+          </Text>
         </Grid.Col>
       </Grid>
     </Paper>

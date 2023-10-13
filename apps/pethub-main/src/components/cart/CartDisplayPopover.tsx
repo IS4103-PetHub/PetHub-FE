@@ -1,7 +1,19 @@
-import { Popover, Text, Button, Card, ScrollArea, Group } from "@mantine/core";
+import {
+  Popover,
+  Text,
+  Button,
+  Card,
+  ScrollArea,
+  Group,
+  useMantineTheme,
+  Box,
+  Center,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { IconMoodSad } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import { useCartOperations } from "@/hooks/cart";
 import { formatPriceForDisplay } from "@/util";
 import { useCart } from "./CartContext";
@@ -14,6 +26,7 @@ interface CartDisplayPopoverProps {
 }
 
 const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
+  const theme = useMantineTheme();
   const router = useRouter();
   const [opened, { close, open }] = useDisclosure(false);
   const { removeItemFromCart, getCartSubtotal, getItemCount, getCurrentCart } =
@@ -45,9 +58,18 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
         </Text>
         <ScrollArea.Autosize mah={300} type="auto">
           {cartItems.length === 0 ? (
-            <Text color="dimmed" mb="xs" align="center">
-              The cart is currently empty
-            </Text>
+            <Box>
+              <Center>
+                <IconMoodSad
+                  size={50}
+                  color={theme.colors.gray[4]}
+                  strokeWidth="1.5"
+                />
+              </Center>
+              <Text color="dimmed" mb="xs" align="center">
+                Your cart is empty
+              </Text>
+            </Box>
           ) : (
             cartItems
               .slice()
@@ -63,8 +85,8 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
               ))
           )}
         </ScrollArea.Autosize>
-        <Group position="apart">
-          <Text c="dark" size="md">
+        <Group position="apart" align="flex-end">
+          <Text c="dark" size="md" mb={5}>
             <b>
               Subtotal (
               {getItemCount() === 1 ? "1 item" : `${getItemCount()} items`}):
@@ -77,10 +99,11 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
               router.push("/customer/cart");
               close();
             }}
-            variant="gradient"
-            mt={2}
+            color="dark"
+            className="gradient-hover"
+            mt="xs"
           >
-            View my shopping cart
+            View shopping cart
           </Button>
         </Group>
       </Popover.Dropdown>
