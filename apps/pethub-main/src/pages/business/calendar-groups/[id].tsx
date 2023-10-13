@@ -1,8 +1,7 @@
-import { Center, Container, Group } from "@mantine/core";
+import { Center, Container, Group, LoadingOverlay } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { IconCheck } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -12,7 +11,6 @@ import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
-import UpdateActionButtonModal from "web-ui/shared/UpdateActionButtonModal";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
 import {
   useDeleteCalendarGroupById,
@@ -32,9 +30,9 @@ interface ViewCalendarGroupProps {
 
 export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [isEditingDisabled, setIsEditingDisabled] = useState(true);
   const [key, setKey] = useState(Math.random());
+  const [isLoading, setIsLoading] = useState(false);
   const [initialValues, setInitialValues] = useState<CalendarGroup>({
     calendarGroupId: null,
     name: "",
@@ -90,7 +88,9 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
   const updateCalendarGroupMutation = useUpdateCalendarGroup();
   const handleUpdateCalendarGroup = async (payload: CalendarGroup) => {
     try {
+      setIsLoading(true);
       await updateCalendarGroupMutation.mutateAsync(payload);
+      setIsLoading(false);
       notifications.show({
         title: "Calendar Group Updated",
         color: "green",
@@ -100,25 +100,29 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
       toggleEdit();
       refetchCalendarGroup();
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps("Error Updating Calendar Group", error),
       });
     }
   };
 
-  const deleteCalendarGroupMutation = useDeleteCalendarGroupById(queryClient);
+  const deleteCalendarGroupMutation = useDeleteCalendarGroupById();
   const handleDeleteCalendarGroup = async (id: number) => {
     try {
+      setIsLoading(true);
       await deleteCalendarGroupMutation.mutateAsync(id);
+      setIsLoading(false);
       notifications.show({
         title: "Calendar Group Deleted",
         color: "green",
         icon: <IconCheck />,
-        message: `Calendar group deleted successfully!`,
+        message: `Calendar group deleted successfully! Emails regarding the refund process have been sent out to affected customers (if any).`,
       });
       refetchCalendarGroupByPbId();
-      router.push("/business/calendar-groups");
+      router.push("/business/appointments");
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps("Error Deleting Calendar Group", error),
       });
@@ -136,58 +140,65 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt="xl" mb="xl">
-        <LargeBackButton
-          text="Back to Calendar View"
-          onClick={() => {
-            refetchCalendarGroupByPbId();
-            router.push("/business/calendar-groups");
-          }}
-          size="sm"
-          mb="md"
-        />
-        <Group position="apart">
-          <PageTitle
-            title={
-              isEditingDisabled
-                ? "View Calendar Group"
-                : "Update Calendar Group"
-            }
-          />
-
-          {isEditingDisabled && (
-            <Center>
-              <LargeEditButton
-                text="Edit"
-                onClick={toggleEdit}
-                makeSmallerATeenyBit
-                color="gray"
-              />
-              &nbsp;
-              <DeleteActionButtonModal
-                title="Delete Calendar Group"
-                subtitle="Are you sure you want to delete this Calendar Group?"
-                onDelete={async () =>
-                  handleDeleteCalendarGroup(form.values.calendarGroupId)
+        {isLoading ? (
+          <LoadingOverlay visible={isLoading} overlayBlur={1} />
+        ) : (
+          <>
+            <LargeBackButton
+              text="Back to Calendar View"
+              onClick={() => {
+                refetchCalendarGroupByPbId();
+                router.push("/business/calendar-groups");
+              }}
+              size="sm"
+              mb="md"
+            />
+            <Group position="apart">
+              <PageTitle
+                title={
+                  isEditingDisabled
+                    ? "View Calendar Group"
+                    : "Update Calendar Group"
                 }
-                large
               />
-              &nbsp;
-            </Center>
-          )}
-        </Group>
 
-        <Group mt="xs">
-          <CalendarGroupForm
-            key={key}
-            form={form}
-            userId={userId}
-            isEditingDisabled={isEditingDisabled}
-            forView={true}
-            toggleEdit={toggleEdit}
-            cancelEdit={cancelEdit}
-            submit={handleUpdateCalendarGroup}
-          />
-        </Group>
+              {isEditingDisabled && (
+                <Group>
+                  <LargeEditButton
+                    text="Edit"
+                    onClick={toggleEdit}
+                    size="sm"
+                    variant="light"
+                    sx={{ border: "1.5px  solid" }}
+                  />
+                  <DeleteActionButtonModal
+                    title="Delete Calendar Group"
+                    subtitle="Are you sure you want to delete this Calendar Group?"
+                    onDelete={async () =>
+                      handleDeleteCalendarGroup(form.values.calendarGroupId)
+                    }
+                    large
+                    variant="light"
+                    sx={{ border: "1.5px  solid" }}
+                  />
+                </Group>
+              )}
+            </Group>
+
+            <Group mt="xs">
+              <CalendarGroupForm
+                key={key}
+                form={form}
+                userId={userId}
+                isEditingDisabled={isEditingDisabled}
+                forView={true}
+                toggleEdit={toggleEdit}
+                cancelEdit={cancelEdit}
+                submit={handleUpdateCalendarGroup}
+              />
+            </Group>
+          </>
+        )}
       </Container>
     </>
   );

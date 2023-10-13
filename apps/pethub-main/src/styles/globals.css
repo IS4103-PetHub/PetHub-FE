@@ -1,11 +1,8 @@
-html {
-  font-family: var(--font-inter);
-}
-
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  font-family: var(--font-inter);
 }
 
 a {

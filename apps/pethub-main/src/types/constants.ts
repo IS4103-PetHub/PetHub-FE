@@ -94,3 +94,5 @@ export const serviceListingSideBarCategories = [
   { icon: IconList, value: "", label: "All" },
   ...landingPageCategories,
 ];
+
+export const allowedRoutesAfterLogin = ["/customer/appointments"];

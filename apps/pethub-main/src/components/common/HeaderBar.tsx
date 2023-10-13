@@ -8,6 +8,7 @@ import {
   Button,
   Burger,
   rem,
+  Text,
   Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -16,7 +17,13 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { LoginModal } from "../login/LoginModal";
+import { useContext, useEffect, useState } from "react";
+import { useCartOperations } from "@/hooks/cart";
+import { CartProvider, useCart } from "../cart/CartContext";
+import CartDisplayPopover from "../cart/CartDisplayPopover";
+import CartButton from "../cart/CartIcon";
+import LoginModal from "../login/LoginModal";
+
 const HEADER_HEIGHT = rem(80);
 
 const useStyles = createStyles((theme) => ({
@@ -102,7 +109,6 @@ const links: {
     label: "Help",
     links: undefined,
   },
-
   {
     link: "/customer/account",
     label: "My account",
@@ -117,6 +123,11 @@ const links: {
       },
     ],
   },
+  {
+    link: "/customer/cart",
+    label: "Cart",
+    links: undefined,
+  },
 ];
 
 const HeaderBar = () => {
@@ -126,10 +137,11 @@ const HeaderBar = () => {
 
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
   const { data: session, status } = useSession();
+  const { getItemCount } = useCartOperations(session?.user["userId"]);
 
   const items = links.map((link) => {
     // Only logged in users can see the account tab
-    if (link.label === "My account") {
+    if (link.label === "My account" || link.label === "Cart") {
       if (!session) {
         return null;
       }
@@ -137,7 +149,9 @@ const HeaderBar = () => {
 
     const menuItems = link.links?.map((item) => (
       <Menu.Item key={item.link}>
-        <Link href={item.link}>{item.label}</Link>
+        <Link href={item.link}>
+          <Text>{item.label}</Text>
+        </Link>
       </Menu.Item>
     ));
 
@@ -152,7 +166,9 @@ const HeaderBar = () => {
           <Menu.Target>
             <Link href={link.link} className={classes.link}>
               <Center>
-                <span className={classes.linkLabel}>{link.label}</span>
+                <span className={classes.linkLabel}>
+                  <Text>{link.label}</Text>
+                </span>
                 <IconChevronDown size={rem(12)} stroke={1.5} />
               </Center>
             </Link>
@@ -162,9 +178,20 @@ const HeaderBar = () => {
       );
     }
 
+    if (link.label === "Cart") {
+      return (
+        <Link key={link.label} href={link.link} className={classes.link}>
+          <CartDisplayPopover
+            size={getItemCount()}
+            userId={session.user["userId"]}
+          />
+        </Link>
+      );
+    }
+
     return (
       <Link key={link.label} href={link.link} className={classes.link}>
-        {link.label}
+        <Text>{link.label}</Text>
       </Link>
     );
   });

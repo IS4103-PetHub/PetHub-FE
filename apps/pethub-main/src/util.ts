@@ -382,6 +382,11 @@ export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
   const CGCopy: CalendarGroup = JSON.parse(JSON.stringify(calendarGroup)); // deep copy
 
   for (const setting of CGCopy.scheduleSettings) {
+    // // Make sure that the start date is after today to appease BE validation
+    // if (dayjs(setting.recurrence.startDate).isBefore(dayjs().add(1, "day"), "day")) {
+    //   setting.recurrence.startDate = dayjs().add(1, "day").format("YYYY-MM-DD");
+    // }
+
     // Remove the time gibberish behind the date
     setting.recurrence.startDate = dayjs(setting.recurrence.startDate).format(
       "YYYY-MM-DD",

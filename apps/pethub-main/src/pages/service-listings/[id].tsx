@@ -9,7 +9,10 @@ import {
   useMantineTheme,
   Box,
   Stack,
+  Center,
+  Flex,
 } from "@mantine/core";
+import { Transition } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
@@ -25,6 +28,7 @@ import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
+import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
@@ -35,12 +39,16 @@ import ServiceCategoryBadge from "@/components/service-listing-discovery/Service
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
+import { useCartOperations } from "@/hooks/cart";
 import {
   useAddServiceListingToFavourites,
   useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
-import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
+import {
+  AddRemoveFavouriteServiceListingPayload,
+  CartItem,
+} from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {
@@ -55,11 +63,19 @@ export default function ServiceListingDetails({
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-
+  const { addItemToCart } = useCartOperations(userId);
   const { data: favouritedListings = [] } =
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
-
   const [isFavourite, setIsFavourite] = useState(false);
+  const [value, setValue] = useState<number | "">(1);
+  const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
+  const [showAddedToCart, setShowAddedToCart] = useState(false);
+
+  const slideLeftToRight = {
+    in: { transform: "translateX(0%)", opacity: 1 },
+    out: { transform: "translateX(100%)", opacity: 0 },
+    transitionProperty: "transform, opacity",
+  };
 
   useEffect(() => {
     if (
@@ -73,8 +89,6 @@ export default function ServiceListingDetails({
       setIsFavourite(false);
     }
   }, [favouritedListings, serviceListing]);
-  // for select timeslot modal
-  const [opened, { open, close }] = useDisclosure(false);
 
   const ACCORDION_VALUES = ["description", "business"];
 
@@ -154,9 +168,44 @@ export default function ServiceListingDetails({
         message: "Please log in to buy!",
         color: "red",
       });
+      return;
     }
-    // display select timeslot modal
-    open();
+    if (serviceListing.calendarGroupId) {
+      open(); // Handle add to cart in the modal
+      setShowAddedToCart(true);
+      setTimeout(() => {
+        setShowAddedToCart(false);
+      }, 8000);
+    } else {
+      try {
+        await addItemToCart(
+          {
+            serviceListing: serviceListing,
+            ...(serviceListing.calendarGroupId ? {} : { quantity: value }),
+            isSelected: true,
+          } as CartItem,
+          Number(value),
+        );
+        notifications.show({
+          title: "Added to cart",
+          message: `${Number(value) > 1 ? `(${value})` : ""} '${
+            serviceListing.title
+          }' added to cart.`,
+          color: "green",
+        });
+        setValue(1);
+        setShowAddedToCart(true);
+        setTimeout(() => {
+          setShowAddedToCart(false);
+        }, 3000);
+      } catch (error) {
+        notifications.show({
+          title: "Error Adding to Cart",
+          message: "Please try again later.",
+          color: "red",
+        });
+      }
+    }
   };
 
   const businessSection = (
@@ -206,7 +255,7 @@ export default function ServiceListingDetails({
   );
 
   return (
-    <>
+    <div>
       <Head>
         <title>{serviceListing.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -268,27 +317,64 @@ export default function ServiceListingDetails({
               p="lg"
               withBorder
               mt={50}
+              sx={{ position: "relative" }}
             >
               <Group position="apart">
                 <Text size="xl" weight={500}>
                   ${formatPriceForDisplay(serviceListing.basePrice)}
                 </Text>
               </Group>
+              {!serviceListing.calendarGroupId && (
+                <NumberInputWithIcons
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={value}
+                  setValue={setValue}
+                  fullWidth
+                />
+              )}
               <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
-                Buy now
+                Add to cart
               </Button>
-
               <SelectTimeslotModal
                 petOwnerId={userId}
                 serviceListing={serviceListing}
                 opened={opened}
                 onClose={close}
               />
+              <Transition
+                mounted={showAddedToCart}
+                transition={slideLeftToRight}
+                duration={3000}
+              >
+                {(styles) => (
+                  <div
+                    style={{
+                      ...styles,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: "rgba(0, 0, 0, 0.7)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "1.5rem",
+                      zIndex: 1,
+                    }}
+                  >
+                    Added to cart
+                  </div>
+                )}
+              </Transition>
             </Paper>
           </Grid.Col>
         </Grid>
       </Container>
-    </>
+    </div>
   );
 }
 
