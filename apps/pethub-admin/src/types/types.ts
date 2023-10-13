@@ -2,7 +2,6 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   Address,
-  CommissionRule,
   PetBusinessTypeEnum,
 } from "shared-utils";
 
