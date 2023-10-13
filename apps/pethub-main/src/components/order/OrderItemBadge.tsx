@@ -9,7 +9,8 @@ const OrderItemBadge = ({ text, ...props }: OrderItemBadgeProps) => {
   const colourMap = new Map([
     ["PENDING_BOOKING", "indigo"],
     ["PENDING_FULFILLMENT", "violet"],
-    ["FULFILLED", "green"],
+    ["FULFILLED", "green"], // Paid out is the same as fulfilled
+    ["PAID_OUT", "green"],
     ["REFUNDED", "orange"],
     ["EXPIRED", "red"],
   ]);
@@ -18,6 +19,7 @@ const OrderItemBadge = ({ text, ...props }: OrderItemBadgeProps) => {
     ["PENDING_BOOKING", "To Book"],
     ["PENDING_FULFILLMENT", "To Fulfill"],
     ["FULFILLED", "Fulfilled"],
+    ["PAID_OUT", "Fulfilled"], // Paid out is the same as fulfilled
     ["REFUNDED", "Refunded"],
     ["EXPIRED", "Expired"],
   ]);
@@ -26,12 +28,10 @@ const OrderItemBadge = ({ text, ...props }: OrderItemBadgeProps) => {
     <Badge
       color={colourMap.has(text) ? colourMap.get(text) : "gray"}
       radius="xs"
+      sx={{ fontWeight: 800 }}
     >
       {textMap.has(text) ? textMap.get(text) : "STATUS_NOT_FOUND"}
     </Badge>
-    // <Text c={colourMap.has(text) ? colourMap.get(text) : "gray"} fw={600} size="sm">
-    //   {textMap.has(text) ? textMap.get(text) : "STATUS_NOT_FOUND"}
-    // </Text>
   );
 };
 

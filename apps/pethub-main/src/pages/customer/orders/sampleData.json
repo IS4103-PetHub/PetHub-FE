@@ -9,12 +9,35 @@
       "orderItemId": 1,
       "itemName": "Professional Pet Grooming",
       "itemPrice": 40,
-      "duration": 60,
-      "quantity": 2,
+      "quantity": 1,
       "voucherCode": "PH945683",
       "status": "PENDING_BOOKING",
-      "petBusiness": {
-        "companyName": "John's Company"
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "Dog Training Session",
+        "description": "Dog Training Session provides expert dog training to teach your pet new tricks. Our dedicated trainers are skilled in working with dogs of all breeds and ages. Whether your dog needs basic obedience training or advanced trick training, we have a program that suits their needs. Our training sessions are designed to be fun and engaging for your pet while ensuring they learn valuable skills. We use positive reinforcement techniques to encourage good behavior and strengthen the bond between you and your furry friend. With Dog Training Session, you'll have a well-behaved and happy dog in no time. Join our training classes and watch your pet's confidence and abilities grow!",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": 4,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {},
+      "invoice": {
+        "paymentId": "PH-123154"
       }
     },
     {
@@ -25,32 +48,128 @@
       "quantity": 1,
       "voucherCode": "PH945683",
       "status": "PENDING_FULFILLMENT",
-      "petBusiness": {
-        "companyName": "John's Company"
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "Dog Training Session",
+        "description": "Dog Training Session provides expert dog training to teach your pet new tricks. Our dedicated trainers are skilled in working with dogs of all breeds and ages. Whether your dog needs basic obedience training or advanced trick training, we have a program that suits their needs. Our training sessions are designed to be fun and engaging for your pet while ensuring they learn valuable skills. We use positive reinforcement techniques to encourage good behavior and strengthen the bond between you and your furry friend. With Dog Training Session, you'll have a well-behaved and happy dog in no time. Join our training classes and watch your pet's confidence and abilities grow!",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": 4,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {
+        "bookingId": 21,
+        "invoiceId": null,
+        "transactionId": null,
+        "petOwnerId": 11,
+        "dateCreated": "2023-10-12T02:53:27.415Z",
+        "lastUpdated": null,
+        "startTime": "2023-10-19T04:00:00.000Z",
+        "endTime": "2023-10-19T06:00:00.000Z",
+        "serviceListingId": 9,
+        "timeSlotId": 144,
+        "petId": 3
+      },
+      "invoice": {
+        "paymentId": "PH-123154"
       }
     },
     {
       "orderItemId": 3,
       "itemName": "Adopt a Pet Today",
-      "itemPrice": 0,
+      "itemPrice": 9.99,
+      "duration": 60,
+      "quantity": 100,
+      "status": "FULFILLED",
+      "voucherCode": "PH945683",
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "White chew toy",
+        "description": "This white chew toy contains calcium and other good stuff like protein.",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": null,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {},
+      "invoice": {
+        "paymentId": "PH-123154"
+      }
+    },
+    {
+      "orderItemId": 4,
+      "itemName": "Routine Pet Health Checkup",
+      "itemPrice": 75,
       "duration": 60,
       "quantity": 1,
-      "status": "FULFILLED",
+      "status": "PAID_OUT",
       "voucherCode": "PH945683",
-      "petBusiness": {
-        "companyName": "PetStore123"
-      }
-    },
-    {
-      "orderItemId": 4,
-      "itemName": "Routine Pet Health Checkup",
-      "itemPrice": 75,
-      "duration": 60,
-      "quantity": 4,
-      "status": "FULFILLED",
-      "voucherCode": "PH945683",
-      "petBusiness": {
-        "companyName": "John's Company"
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "Jumping jacks for dogs",
+        "description": "Dog Training Session provides expert dog training to teach your pet new tricks. Our dedicated trainers are skilled in working with dogs of all breeds and ages. Whether your dog needs basic obedience training or advanced trick training, we have a program that suits their needs. Our training sessions are designed to be fun and engaging for your pet while ensuring they learn valuable skills. We use positive reinforcement techniques to encourage good behavior and strengthen the bond between you and your furry friend. With Dog Training Session, you'll have a well-behaved and happy dog in no time. Join our training classes and watch your pet's confidence and abilities grow!",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": 4,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {
+        "bookingId": 21,
+        "invoiceId": null,
+        "transactionId": null,
+        "petOwnerId": 11,
+        "dateCreated": "2023-10-12T02:53:27.415Z",
+        "lastUpdated": null,
+        "startTime": "2023-10-19T04:00:00.000Z",
+        "endTime": "2023-10-19T06:00:00.000Z",
+        "serviceListingId": 9,
+        "timeSlotId": 144,
+        "petId": 3
+      },
+      "invoice": {
+        "paymentId": "PH-123154"
       }
     },
     {
@@ -58,11 +177,47 @@
       "itemName": "Reliable Pet Sitting Service",
       "itemPrice": 50.5,
       "duration": 60,
-      "quantity": 3,
+      "quantity": 1,
       "status": "REFUNDED",
       "voucherCode": "PH945683",
-      "petBusiness": {
-        "companyName": "Susan's Animal Store"
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "Dog Training Session",
+        "description": "Dog Training Session provides expert dog training to teach your pet new tricks. Our dedicated trainers are skilled in working with dogs of all breeds and ages. Whether your dog needs basic obedience training or advanced trick training, we have a program that suits their needs. Our training sessions are designed to be fun and engaging for your pet while ensuring they learn valuable skills. We use positive reinforcement techniques to encourage good behavior and strengthen the bond between you and your furry friend. With Dog Training Session, you'll have a well-behaved and happy dog in no time. Join our training classes and watch your pet's confidence and abilities grow!",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": 4,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {
+        "bookingId": 21,
+        "invoiceId": null,
+        "transactionId": null,
+        "petOwnerId": 11,
+        "dateCreated": "2023-10-12T02:53:27.415Z",
+        "lastUpdated": null,
+        "startTime": "2023-10-19T04:00:00.000Z",
+        "endTime": "2023-10-19T06:00:00.000Z",
+        "serviceListingId": 9,
+        "timeSlotId": 144,
+        "petId": 3
+      },
+      "invoice": {
+        "paymentId": "PH-123154"
       }
     },
     {
@@ -70,11 +225,47 @@
       "itemName": "Routine Pet Health Checkup",
       "itemPrice": 75,
       "duration": 60,
-      "quantity": 4,
+      "quantity": 1,
       "status": "EXPIRED",
       "voucherCode": "PH945683",
-      "petBusiness": {
-        "companyName": "John's Company"
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "Dog Training Session",
+        "description": "Dog Training Session provides expert dog training to teach your pet new tricks. Our dedicated trainers are skilled in working with dogs of all breeds and ages. Whether your dog needs basic obedience training or advanced trick training, we have a program that suits their needs. Our training sessions are designed to be fun and engaging for your pet while ensuring they learn valuable skills. We use positive reinforcement techniques to encourage good behavior and strengthen the bond between you and your furry friend. With Dog Training Session, you'll have a well-behaved and happy dog in no time. Join our training classes and watch your pet's confidence and abilities grow!",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": 4,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {
+        "bookingId": 21,
+        "invoiceId": null,
+        "transactionId": null,
+        "petOwnerId": 11,
+        "dateCreated": "2023-10-12T02:53:27.415Z",
+        "lastUpdated": null,
+        "startTime": "2023-10-19T04:00:00.000Z",
+        "endTime": "2023-10-19T06:00:00.000Z",
+        "serviceListingId": 9,
+        "timeSlotId": 144,
+        "petId": 3
+      },
+      "invoice": {
+        "paymentId": "PH-123154"
       }
     },
     {
@@ -82,11 +273,47 @@
       "itemName": "Reliable Pet Sitting Service",
       "itemPrice": 50.5,
       "duration": 60,
-      "quantity": 3,
+      "quantity": 1,
       "status": "EXPIRED",
       "voucherCode": "PH945683",
-      "petBusiness": {
-        "companyName": "Susan's Animal Store"
+      "serviceListing": {
+        "serviceListingId": 2,
+        "title": "Dog Training Session",
+        "description": "Dog Training Session provides expert dog training to teach your pet new tricks. Our dedicated trainers are skilled in working with dogs of all breeds and ages. Whether your dog needs basic obedience training or advanced trick training, we have a program that suits their needs. Our training sessions are designed to be fun and engaging for your pet while ensuring they learn valuable skills. We use positive reinforcement techniques to encourage good behavior and strengthen the bond between you and your furry friend. With Dog Training Session, you'll have a well-behaved and happy dog in no time. Join our training classes and watch your pet's confidence and abilities grow!",
+        "basePrice": 60,
+        "dateCreated": "2023-10-12T02:53:27.250Z",
+        "lastUpdated": null,
+        "duration": 60,
+        "category": "PET_BOARDING",
+        "petBusinessId": 1,
+        "calendarGroupId": 3,
+        "petBusiness": {
+          "companyName": "John's Company",
+          "userId": 1
+        },
+        "attachmentKeys": [
+          "uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1"
+        ],
+        "attachmentURLs": [
+          "https://pethub-data-lake-default.s3.ap-southeast-1.amazonaws.com/uploads/service-listing/img/77b6344d-eb63-4d91-8749-aab43ba9c874-dog_grooming_1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA3X6HC7JLMRAUOW66%2F20231012%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20231012T025326Z&X-Amz-Expires=604800&X-Amz-Signature=a6d4c9554f21b0f70ee12e356168926b65a9ee075bd656ae0749a1c4a8d1ef9d&X-Amz-SignedHeaders=host&x-id=GetObject"
+        ],
+        "lastPossibleDate": "2023-10-25T02:53:27.250Z"
+      },
+      "booking": {
+        "bookingId": 21,
+        "invoiceId": null,
+        "transactionId": null,
+        "petOwnerId": 11,
+        "dateCreated": "2023-10-12T02:53:27.415Z",
+        "lastUpdated": null,
+        "startTime": "2023-10-19T04:00:00.000Z",
+        "endTime": "2023-10-19T06:00:00.000Z",
+        "serviceListingId": 9,
+        "timeSlotId": 144,
+        "petId": 3
+      },
+      "invoice": {
+        "paymentId": "PH-123154"
       }
     }
   ],

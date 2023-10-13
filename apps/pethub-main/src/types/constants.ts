@@ -53,7 +53,7 @@ export const bookingsSortOptions = [
 export const ordersSortOptions = [
   {
     value: "recent",
-    label: "Recently created",
+    label: "Most recent",
     attribute: "dateCreated",
     direction: "desc",
   },

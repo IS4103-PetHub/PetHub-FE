@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import Head from "next/head";
+import { getSession } from "next-auth/react";
 import { useState } from "react";
 import { OrderBarCounts, OrderItemStatusEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -15,12 +16,17 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
+import api from "@/api/axiosConfig";
 import OrderItemCard from "@/components/order/OrderItemCard";
 import OrderStatusBar from "@/components/order/OrderTabs";
 import { ordersSortOptions } from "@/types/constants";
 import sampleData from "./sampleData.json";
 
-export default function Orders() {
+interface OrdersProps {
+  userId: number;
+}
+
+export default function Orders({ userId }: OrdersProps) {
   const [activeTab, setActiveTab] = useState(OrderItemStatusEnum.All);
   const [sortStatus, setSortStatus] = useState<string>("recent");
 
@@ -31,29 +37,54 @@ export default function Orders() {
   const orderItems = sampleData.items;
 
   // ------------------ Placeholder - Change to a function that returns the count of each status ------------------ //
-  const orderBarCountsPlaceholder: OrderBarCounts = {
-    allCount: 20,
-    toBookCount: 3,
-    toFulfillCount: 4,
-    fulfilledCount: 3,
-    expiredCount: 5,
-    refundedCount: 5,
-  };
+
+  function calculateOrderBarCounts() {
+    const orderBarCounts: OrderBarCounts = {
+      allCount: 0,
+      toBookCount: 0,
+      toFulfillCount: 0,
+      fulfilledCount: 0,
+      expiredCount: 0,
+      refundedCount: 0,
+    };
+    orderItems.forEach((item) => {
+      orderBarCounts.allCount++;
+      switch (item.status) {
+        case OrderItemStatusEnum.PendingBooking:
+          orderBarCounts.toBookCount++;
+          break;
+        case OrderItemStatusEnum.PendingFulfillment:
+          orderBarCounts.toFulfillCount++;
+          break;
+        case OrderItemStatusEnum.Fulfilled || OrderItemStatusEnum.PaidOut: // paid out means its fulfilled
+          orderBarCounts.fulfilledCount++;
+          break;
+        case OrderItemStatusEnum.Expired:
+          orderBarCounts.expiredCount++;
+          break;
+        case OrderItemStatusEnum.Refunded:
+          orderBarCounts.refundedCount++;
+          break;
+        // Note: We don't need a case for 'All' or 'PaidOut' as they're not counted in 'OrderBarCounts'
+      }
+    });
+    return orderBarCounts;
+  }
   // ------------------ Placeholder - Change to a function that returns the count of each status ------------------ //
 
   const searchAndSortGroup = (
     <Group position="right" align="center" mb="lg">
       <SearchBar
         size="md"
-        w="50%"
-        text="Search by item name"
+        w="55%"
+        text="Search by title or order ID"
         onSearch={() => {}}
       />
       <SortBySelect
         data={ordersSortOptions}
         value={sortStatus}
         onChange={setSortStatus}
-        w="40%"
+        w="35%"
       />
     </Group>
   );
@@ -96,19 +127,21 @@ export default function Orders() {
           </Group>
           <OrderStatusBar
             setActiveTab={setActiveTab}
-            orderBarCounts={orderBarCountsPlaceholder}
+            orderBarCounts={calculateOrderBarCounts()}
           />
           <Grid>
             <Grid.Col mt="md">
               {orderItems.map((item) => (
                 <OrderItemCard
                   key={item.orderItemId}
+                  userId={userId}
                   itemId={item.orderItemId}
-                  title={item.itemName}
+                  orderId={item.invoice.paymentId}
                   price={item.itemPrice}
                   quantity={item.quantity}
                   voucherCode={item.voucherCode}
-                  companyName={item.petBusiness.companyName}
+                  serviceListing={item.serviceListing}
+                  booking={item.booking}
                   status={item.status}
                 />
               ))}
@@ -119,4 +152,12 @@ export default function Orders() {
       </main>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) return null;
+  const userId = session.user["userId"];
+
+  return { props: { userId } };
 }

@@ -1,4 +1,4 @@
-import { Badge, Tabs } from "@mantine/core";
+import { Badge, Indicator, Tabs } from "@mantine/core";
 import {
   IconBrowserCheck,
   IconBulb,
@@ -57,9 +57,11 @@ function OrderStatusBar({ setActiveTab, orderBarCounts }: OrderStatusBarProps) {
         <Tabs.Tab
           value={OrderItemStatusEnum.Fulfilled}
           icon={<IconBrowserCheck size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={fulfilledCount} />}
+          // rightSection={<OrderItemTabBadge count={fulfilledCount} />}
         >
-          Fulfilled
+          <Indicator label={2} size={16} p={5}>
+            Fulfilled
+          </Indicator>
         </Tabs.Tab>
         <Tabs.Tab
           value={OrderItemStatusEnum.Expired}
