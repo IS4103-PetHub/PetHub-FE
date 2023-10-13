@@ -25,7 +25,6 @@ const BillingDetailsSection = ({ form }: BillingDetailsSectionProps) => {
           Billing details
         </Text>
       </Group>
-      {/* <form onSubmit={form.onSubmit((values) => console.log(values))}> */}
       <Grid>
         <Grid.Col span={12}>
           <TextInput
@@ -75,7 +74,6 @@ const BillingDetailsSection = ({ form }: BillingDetailsSectionProps) => {
           />
         </Grid.Col>
       </Grid>
-      {/* </form> */}
     </Card>
   );
 };

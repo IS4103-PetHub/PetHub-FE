@@ -7,6 +7,7 @@ import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
+import { CheckoutSummary } from "@/types/types";
 
 const PK = `${process.env.NEXT_PUBLIC_STRIPE_PK_TEST}`;
 loadStripe.setLoadParameters({ advancedFraudSignals: false });
@@ -14,9 +15,10 @@ const stripePromise = loadStripe(PK);
 
 interface CheckoutProps {
   userId: number;
+  checkoutSummary: CheckoutSummary;
 }
 
-export default function Checkout({ userId }: CheckoutProps) {
+export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
   const router = useRouter();
   return (
     <>
@@ -34,7 +36,7 @@ export default function Checkout({ userId }: CheckoutProps) {
         />
         <PageTitle title="Checkout" mb="lg" />
         <Elements stripe={stripePromise}>
-          <CheckoutForm userId={userId} />
+          <CheckoutForm userId={userId} checkoutSummary={checkoutSummary} />
         </Elements>
       </Container>
     </>
@@ -42,8 +44,6 @@ export default function Checkout({ userId }: CheckoutProps) {
 }
 
 export async function getServerSideProps(context) {
-  const session = await getSession(context);
-  if (!session) return { props: {} };
-  const userId = session.user["userId"];
-  return { props: { userId } };
+  const checkoutSummary = context.query;
+  return { props: { checkoutSummary } };
 }

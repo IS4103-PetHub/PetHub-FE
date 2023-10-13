@@ -12,6 +12,7 @@ import { IconLock } from "@tabler/icons-react";
 import React from "react";
 import { useCartOperations } from "@/hooks/cart";
 import { useStripePaymentMethod } from "@/hooks/payment";
+import { CartItem, CheckoutSummary } from "@/types/types";
 import { formatPriceForDisplay } from "@/util";
 import BillingDetailsSection from "./BillingDetailsSection";
 import CheckoutCardSection from "./CheckoutCardSection";
@@ -19,30 +20,31 @@ import CheckoutItemsSection from "./CheckoutItemsSection";
 
 interface CheckoutFormProps {
   userId: number;
+  checkoutSummary: CheckoutSummary;
 }
 
-const CheckoutForm = ({ userId }: CheckoutFormProps) => {
+const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
   const theme = useMantineTheme();
   const stripe = useStripe();
   const elements = useElements();
 
   const stripePaymentMethodMutation = useStripePaymentMethod();
 
-  const { getCurrentCart } = useCartOperations(userId);
-  const cart = getCurrentCart();
-  console.log(cart);
+  const { getSelectedCartItems } = useCartOperations(userId);
+  const cartItems: CartItem[] = getSelectedCartItems();
+  console.log(cartItems);
 
-  const amount = formatPriceForDisplay(19);
+  const amount = formatPriceForDisplay(checkoutSummary.total);
 
-  console.log(
-    cart.cartItems.map((cartItem) => {
-      return {
-        cartItemId: cartItem.cartItemId,
-        serviceListingId: cartItem.serviceListing.serviceListingId,
-        quantity: cartItem.quantity ?? 1,
-      };
-    }),
-  );
+  // console.log(
+  //   cart.cartItems.map((cartItem) => {
+  //     return {
+  //       cartItemId: cartItem.cartItemId,
+  //       serviceListingId: cartItem.serviceListing.serviceListingId,
+  //       quantity: cartItem.quantity ?? 1,
+  //     };
+  //   }),
+  // );
 
   const billingForm = useForm({
     initialValues: {
@@ -90,8 +92,8 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
     try {
       const billingDetails = billingForm.getTransformedValues();
       const cardNumber = elements.getElement(CardNumberElement);
-      const cardCVC = elements.getElement(CardCvcElement);
-      const cardExpiry = elements.getElement(CardExpiryElement);
+      // const cardCVC = elements.getElement(CardCvcElement);
+      // const cardExpiry = elements.getElement(CardExpiryElement);
 
       const result = await stripe.createPaymentMethod({
         type: "card",
@@ -105,7 +107,7 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
         },
       });
 
-      console.log(result);
+      // console.log(result);
       const payload = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -113,8 +115,8 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
           payment_method_id: result.paymentMethod.id,
           userId,
           // amount:
-          itemCount: cart.itemCount,
-          cartItems: cart.cartItems.map((cartItem) => {
+          itemCount: checkoutSummary.itemCount,
+          cartItems: cartItems.map((cartItem) => {
             return {
               cartItemId: cartItem.cartItemId,
               serviceListingId: cartItem.serviceListing.serviceListingId,
@@ -139,7 +141,10 @@ const CheckoutForm = ({ userId }: CheckoutFormProps) => {
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing="lg">
-        <CheckoutItemsSection cart={cart} />
+        <CheckoutItemsSection
+          cartItems={cartItems}
+          checkoutSummary={checkoutSummary}
+        />
         <BillingDetailsSection form={billingForm} />
         <CheckoutCardSection />
       </Stack>

@@ -20,7 +20,6 @@ export function useCartOperations(userId: number) {
         userId,
         itemCount: 0,
         cartItems: [],
-        cartItemUserSelection: [],
       };
       setCarts([...carts, currentCart]);
     }
@@ -226,6 +225,10 @@ export function useCartOperations(userId: number) {
     );
   };
 
+  const getSelectedCartItems = () => {
+    return getCurrentCart().cartItems.filter((item) => item.isSelected);
+  };
+
   /* ============================================== Getters ============================================== */
 
   return {
@@ -241,5 +244,6 @@ export function useCartOperations(userId: number) {
     getCartSubtotal,
     setCartItemIsSelected,
     setAllCartItemsIsSelected,
+    getSelectedCartItems,
   };
 }
