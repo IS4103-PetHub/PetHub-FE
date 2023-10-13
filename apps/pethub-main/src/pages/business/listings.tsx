@@ -97,7 +97,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       sortedServiceListing.reverse();
     }
     const newRecords = sortedServiceListing.slice(from, to);
-    setRecords(newRecords);
+    setRecords(sortInvalidServiceListings(newRecords));
   }, [page, sortStatus, serviceListings, searchResults]);
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setSearchResults(serviceListings);
+      setSearchResults(sortInvalidServiceListings(serviceListings));
       setPage(1);
       return;
     }
@@ -136,7 +136,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     // Search by title, category, tag
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
-    setSearchResults(results);
+    setSearchResults(sortInvalidServiceListings(results));
     setPage(1);
   };
 
