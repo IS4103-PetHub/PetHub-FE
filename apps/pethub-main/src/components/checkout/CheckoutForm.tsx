@@ -7,7 +7,8 @@ import {
   useElements,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import { IconLock } from "@tabler/icons-react";
+import { IconCheck, IconLock } from "@tabler/icons-react";
+import { Router, useRouter } from "next/router";
 import React from "react";
 import { formatNumber2Decimals, getErrorMessageProps } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
@@ -24,6 +25,7 @@ interface CheckoutFormProps {
 
 const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
   const theme = useMantineTheme();
+  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
   const stripePaymentMethodMutation = useStripePaymentMethod();
@@ -84,30 +86,36 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
           name: billingDetails.name,
           email: billingDetails.email,
           phone: billingDetails.phone,
-          address: billingDetails.address,
+          address: {
+            ...billingDetails.address,
+            city: "Singapore",
+            country: "SG",
+          },
         },
       });
 
-      // console.log(result);
       const payload = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: {
-          payment_method_id: result.paymentMethod.id,
-          userId,
-          totalPrice: Number(checkoutSummary.total),
-          cartItems: cartItems.map((cartItem) => {
-            return {
-              serviceListingId: cartItem.serviceListing.serviceListingId,
-              quantity: cartItem.quantity ?? 1,
-            };
-          }),
-        },
+        paymentMethodId: result.paymentMethod.id,
+        totalPrice: Number(checkoutSummary.total),
+        userId,
+        cartItems: cartItems.map((cartItem) => {
+          return {
+            serviceListingId: cartItem.serviceListing.serviceListingId,
+            quantity: cartItem.quantity ?? 1,
+          };
+        }),
       };
-      console.log(payload);
-      const res = await stripePaymentMethodMutation.mutateAsync(payload);
-      console.log(res);
+      const response = await stripePaymentMethodMutation.mutateAsync(payload);
+      // console.log(res);
       setIsPaying(false);
+      // redirect to success message
+      router.push(
+        {
+          pathname: "/customer/checkout/success",
+          query: { invoiceId: response.invoiceId },
+        },
+        "/customer/checkout/success",
+      );
     } catch (error: any) {
       if (error instanceof TypeError) {
         notifications.show({
