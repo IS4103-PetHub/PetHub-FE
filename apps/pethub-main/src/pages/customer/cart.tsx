@@ -139,16 +139,8 @@ export default function Cart({ userId }: CartProps) {
 
   function calculatePlatformFee() {
     return Math.round(calculateTotalPrice() * PLATFORM_FEE_PERCENT * 100) / 100;
-    // return Number(
-    //   Math.round(
-    //     parseFloat(calculateTotalPrice() * PLATFORM_FEE_PERCENT + "e" + 2)
-    //   ) +
-    //     "e-" +
-    //     2
-    // );
   }
 
-  console.log(calculatePlatformFee());
   const clearAllCartItems = () => {
     clearCart();
     notifications.show({

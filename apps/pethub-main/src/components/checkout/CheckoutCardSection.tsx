@@ -4,31 +4,44 @@ import {
   CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import { StripeCardNumberElementOptions } from "@stripe/stripe-js";
+import {
+  StripeCardCvcElementOptions,
+  StripeCardExpiryElementOptions,
+  StripeCardNumberElementOptions,
+} from "@stripe/stripe-js";
 import { IconCreditCard } from "@tabler/icons-react";
 import React from "react";
 
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      color: "#32325d",
-      fontFamily: "var(--font-inter)",
-      fontSmoothing: "antialiased",
-      fontSize: "16px",
-      lineHeight: "32px",
-      "::placeholder": {
-        color: "#aab7c4",
-      },
-    },
-    invalid: {
-      color: "#fa755a",
-      iconColor: "#fa755a",
+const elementStyle = {
+  base: {
+    color: "#32325d",
+    fontFamily: "var(--font-inter)",
+    fontSmoothing: "antialiased",
+    fontSize: "16px",
+    lineHeight: "32px",
+    "::placeholder": {
+      color: "#aab7c4",
     },
   },
+  invalid: {
+    color: "#fa755a",
+    iconColor: "#fa755a",
+  },
+};
 
+const CARD_NUMBER_ELEMENT_OPTIONS = {
+  style: elementStyle,
   showIcon: true,
   iconStyle: "solid",
 } as StripeCardNumberElementOptions;
+
+const CSV_ELEMENT_OPTIONS = {
+  style: elementStyle,
+} as StripeCardCvcElementOptions;
+
+const EXPIRY_ELEMENT_OPTIONS = {
+  style: elementStyle,
+} as StripeCardExpiryElementOptions;
 
 const CheckoutCardSection = () => {
   const theme = useMantineTheme();
@@ -46,7 +59,7 @@ const CheckoutCardSection = () => {
           <Input.Wrapper label="Card Number" required>
             <Input<any>
               component={CardNumberElement}
-              options={CARD_ELEMENT_OPTIONS}
+              options={CARD_NUMBER_ELEMENT_OPTIONS}
             />
           </Input.Wrapper>
         </Grid.Col>
@@ -55,7 +68,7 @@ const CheckoutCardSection = () => {
           <Input.Wrapper label="Expiry" required>
             <Input<any>
               component={CardExpiryElement}
-              options={CARD_ELEMENT_OPTIONS}
+              options={CSV_ELEMENT_OPTIONS}
             />
           </Input.Wrapper>
         </Grid.Col>
@@ -64,7 +77,7 @@ const CheckoutCardSection = () => {
           <Input.Wrapper label="CVC" required>
             <Input<any>
               component={CardCvcElement}
-              options={CARD_ELEMENT_OPTIONS}
+              options={EXPIRY_ELEMENT_OPTIONS}
             />
           </Input.Wrapper>
         </Grid.Col>

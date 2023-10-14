@@ -1,5 +1,6 @@
 import { Button, Group, Stack, Text, useMantineTheme } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   useStripe,
@@ -8,7 +9,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { IconLock } from "@tabler/icons-react";
 import React from "react";
-import { formatNumber2Decimals } from "shared-utils";
+import { formatNumber2Decimals, getErrorMessageProps } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
 import { useStripePaymentMethod } from "@/hooks/payment";
 import { CartItem, CheckoutSummary } from "@/types/types";
@@ -25,24 +26,14 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
   const theme = useMantineTheme();
   const stripe = useStripe();
   const elements = useElements();
-
   const stripePaymentMethodMutation = useStripePaymentMethod();
+
+  const [isPaying, setIsPaying] = useToggle();
 
   const { getSelectedCartItems } = useCartOperations(userId);
   const cartItems: CartItem[] = getSelectedCartItems();
-  console.log(cartItems);
 
   const amount = formatNumber2Decimals(checkoutSummary.total);
-
-  // console.log(
-  //   cart.cartItems.map((cartItem) => {
-  //     return {
-  //       cartItemId: cartItem.cartItemId,
-  //       serviceListingId: cartItem.serviceListing.serviceListingId,
-  //       quantity: cartItem.quantity ?? 1,
-  //     };
-  //   }),
-  // );
 
   const billingForm = useForm({
     initialValues: {
@@ -71,33 +62,25 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
     },
   });
 
-  const handleSubmit = async (event) => {
-    const isValid = billingForm.validate();
-    if (!isValid) {
-      return;
-    }
-    // console.log(billingDetails);
-    // We don't want to let default form submission happen here,
-    // which would refresh the page.
+  const handleSubmit = async (event: any) => {
+    // We don't want to let default form submission happen here which would refresh the page.
     event.preventDefault();
 
-    if (!stripe || !elements) {
-      // Stripe.js hasn't yet loaded.
-      // Make sure to disable form submission until Stripe.js has loaded.
+    const { hasErrors } = billingForm.validate();
+
+    if (hasErrors || !stripe || !elements) {
       return;
     }
 
     try {
+      setIsPaying(true);
       const billingDetails = billingForm.getTransformedValues();
       const cardNumber = elements.getElement(CardNumberElement);
-      // const cardCVC = elements.getElement(CardCvcElement);
-      // const cardExpiry = elements.getElement(CardExpiryElement);
 
       const result = await stripe.createPaymentMethod({
         type: "card",
         card: cardNumber,
         billing_details: {
-          // Include any additional collected billing details.
           name: billingDetails.name,
           email: billingDetails.email,
           phone: billingDetails.phone,
@@ -112,7 +95,7 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         body: {
           payment_method_id: result.paymentMethod.id,
           userId,
-          totalPrice: checkoutSummary.total,
+          totalPrice: Number(checkoutSummary.total),
           cartItems: cartItems.map((cartItem) => {
             return {
               serviceListingId: cartItem.serviceListing.serviceListingId,
@@ -121,16 +104,25 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
           }),
         },
       };
-
-      // await stripePaymentMethodMutation.mutateAsync(payload);
+      console.log(payload);
+      const res = await stripePaymentMethodMutation.mutateAsync(payload);
+      console.log(res);
+      setIsPaying(false);
     } catch (error: any) {
-      notifications.show({
-        title: "Error Checking Out",
-        color: "red",
-        message:
-          "Please check that you have entered your billing and card details correctly!",
-        autoClose: 5000,
-      });
+      if (error instanceof TypeError) {
+        notifications.show({
+          title: "Error Checking Out",
+          color: "red",
+          message:
+            "Please check that you have entered your billing and card details correctly!",
+          autoClose: 5000,
+        });
+      } else {
+        setIsPaying(false);
+        notifications.show({
+          ...getErrorMessageProps("Error Checking Out", error),
+        });
+      }
     }
   };
 
@@ -149,10 +141,11 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
           type="submit"
           fullWidth
           size="lg"
-          disabled={!stripe}
+          disabled={!stripe || !elements}
           mt="xl"
           color="dark"
           className="gradient-hover"
+          loading={isPaying}
         >
           Pay ${amount}
         </Button>

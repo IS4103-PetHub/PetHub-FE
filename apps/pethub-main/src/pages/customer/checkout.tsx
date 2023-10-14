@@ -9,8 +9,7 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 import { CheckoutSummary } from "@/types/types";
 
-const PK = `${process.env.NEXT_PUBLIC_STRIPE_PK_TEST}`;
-loadStripe.setLoadParameters({ advancedFraudSignals: false });
+const PK: string = `${process.env.NEXT_PUBLIC_STRIPE_PK_TEST}`;
 const stripePromise = loadStripe(PK);
 
 interface CheckoutProps {
