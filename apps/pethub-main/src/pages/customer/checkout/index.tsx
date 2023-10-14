@@ -35,7 +35,7 @@ export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Alert icon={<IconInfoCircle />} color="orange">
-        Please complete the checkout without refreshing the page.
+        Please complete the checkout process without refreshing this page.
       </Alert>
       <Container mt={50} mb={50}>
         <LargeBackButton
