@@ -212,9 +212,9 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
               icon={<IconAlertCircle />}
               w="100%"
             >
-              Service Listing highlighted in RED are `invalid` and requires
-              actions. <br />
-              Please ensure that every service listing that requires bookings
+              Service Listings highlighted in RED are `invalid` and requires
+              action. <br />
+              Please ensure that every service listing that requires a booking
               has an allocated Calendar Group, valid duration and last possible
               date
             </Alert>
