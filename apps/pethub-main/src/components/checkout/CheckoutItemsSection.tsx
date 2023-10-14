@@ -52,7 +52,7 @@ const CheckoutItemsSection = ({
               <Text size="sm" color="gray">
                 Qty: {cartItem.quantity ?? 1}
               </Text>
-              {cartItem.quantity && (
+              {cartItem.quantity && cartItem.quantity > 1 && (
                 <Text size={13} color="gray">
                   ${formatNumber2Decimals(cartItem.serviceListing.basePrice)}{" "}
                   each

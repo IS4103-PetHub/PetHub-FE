@@ -19,6 +19,9 @@ interface CheckoutProps {
 
 export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
   const router = useRouter();
+
+  if (!checkoutSummary) {
+  }
   return (
     <>
       <Head>

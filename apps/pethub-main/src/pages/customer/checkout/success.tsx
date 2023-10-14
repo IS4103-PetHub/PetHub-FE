@@ -72,7 +72,7 @@ export default function CheckoutSuccessful({
               size="md"
               color="dark"
               variant="default"
-              onClick={() => router.push("/service-listings?category=")}
+              onClick={() => router.push("/customer/orders")}
             >
               View my orders
             </Button>

@@ -32,7 +32,8 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
 
   const [isPaying, setIsPaying] = useToggle();
 
-  const { getSelectedCartItems } = useCartOperations(userId);
+  const { getSelectedCartItems, removeSelectedCartItems } =
+    useCartOperations(userId);
   const cartItems: CartItem[] = getSelectedCartItems();
 
   const amount = formatNumber2Decimals(checkoutSummary.total);
@@ -106,8 +107,11 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         }),
       };
       const response = await stripePaymentMethodMutation.mutateAsync(payload);
-      // console.log(res);
+
+      // remove checkouted items from cart
+      removeSelectedCartItems();
       setIsPaying(false);
+
       // redirect to success message
       router.push(
         {
