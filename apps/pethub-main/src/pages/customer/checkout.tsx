@@ -45,5 +45,10 @@ export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
 
 export async function getServerSideProps(context) {
   const checkoutSummary = context.query;
-  return { props: { checkoutSummary } };
+  const session = await getSession(context);
+
+  if (!session) return { props: { checkoutSummary } };
+
+  const userId = session.user["userId"];
+  return { props: { userId, checkoutSummary } };
 }

@@ -13,9 +13,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconMoodSad } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { formatNumber2Decimals } from "shared-utils";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import { useCartOperations } from "@/hooks/cart";
-import { formatPriceForDisplay } from "@/util";
 import { useCart } from "./CartContext";
 import CartIcon from "./CartIcon";
 import MiniCartItemCard from "./MiniCartItemCard";
@@ -91,7 +91,7 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
               Subtotal (
               {getItemCount() === 1 ? "1 item" : `${getItemCount()} items`}):
             </b>{" "}
-            ${formatPriceForDisplay(getCartSubtotal())}
+            ${formatNumber2Decimals(getCartSubtotal())}
           </Text>
 
           <Button

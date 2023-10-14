@@ -1,4 +1,6 @@
 import {
+  Badge,
+  Box,
   Card,
   Divider,
   Group,
@@ -8,10 +10,10 @@ import {
 } from "@mantine/core";
 import { IconShoppingCart } from "@tabler/icons-react";
 import React from "react";
+import { formatNumber2Decimals } from "shared-utils";
 import CustomPopover from "web-ui/shared/CustomPopover";
-import { PLATFORM_FEE, PLATFORM_FEE_MESSAGE } from "@/types/constants";
+import { PLATFORM_FEE_MESSAGE } from "@/types/constants";
 import { CartItem, CheckoutSummary } from "@/types/types";
-import { formatPriceForDisplay } from "@/util";
 
 interface CheckoutItemsSectionProps {
   cartItems: CartItem[];
@@ -33,15 +35,34 @@ const CheckoutItemsSection = ({
       </Group>
       <Stack spacing={2}>
         {cartItems.map((cartItem) => (
-          <Group position="apart" key={cartItem.cartItemId}>
-            <Text size="sm">{cartItem.serviceListing.title}</Text>
-            <Text size="sm">
-              ${formatPriceForDisplay(cartItem.serviceListing.basePrice)}
-            </Text>
-          </Group>
+          <Box mb="xs" key={cartItem.cartItemId}>
+            <Group position="apart">
+              <Text size="sm">{cartItem.serviceListing.title}</Text>
+
+              <Text size="sm" weight={500}>
+                $
+                {formatNumber2Decimals(
+                  cartItem.quantity
+                    ? cartItem.serviceListing.basePrice * cartItem.quantity
+                    : cartItem.serviceListing.basePrice,
+                )}{" "}
+              </Text>
+            </Group>
+            <Group position="apart">
+              <Text size="sm" color="gray">
+                Qty: {cartItem.quantity ?? 1}
+              </Text>
+              {cartItem.quantity && (
+                <Text size={13} color="gray">
+                  ${formatNumber2Decimals(cartItem.serviceListing.basePrice)}{" "}
+                  each
+                </Text>
+              )}
+            </Group>
+          </Box>
         ))}
       </Stack>
-      <Divider mt="xs" mb="xs" />
+      <Divider mb="xs" />
       <Stack spacing={2}>
         <Group position="apart">
           <Text color="dimmed" size="sm">
@@ -49,13 +70,13 @@ const CheckoutItemsSection = ({
             {Number(checkoutSummary.itemCount) === 1 ? "item" : "items"})
           </Text>
           <Text color="dimmed" size="sm">
-            ${formatPriceForDisplay(checkoutSummary.subtotal)}
+            ${formatNumber2Decimals(checkoutSummary.subtotal)}
           </Text>
         </Group>
         <Group position="apart">
           <Text color="dimmed" size="sm">{`GST (8%)`}</Text>
           <Text color="dimmed" size="sm">
-            ${formatPriceForDisplay(checkoutSummary.gst)}
+            ${formatNumber2Decimals(checkoutSummary.gst)}
           </Text>
         </Group>
         <Group position="apart">
@@ -66,14 +87,14 @@ const CheckoutItemsSection = ({
             <CustomPopover text={PLATFORM_FEE_MESSAGE}>{}</CustomPopover>
           </div>
           <Text color="dimmed" size="sm">
-            ${formatPriceForDisplay(PLATFORM_FEE)}
+            ${formatNumber2Decimals(checkoutSummary.platformFee)}
           </Text>
         </Group>
         <Divider mt="xs" mb="xs" />
         <Group position="apart">
           <Text size="md">Total</Text>
           <Text weight={600} size="lg">
-            ${formatPriceForDisplay(checkoutSummary.total)}
+            ${formatNumber2Decimals(checkoutSummary.total)}
           </Text>
         </Group>
       </Stack>

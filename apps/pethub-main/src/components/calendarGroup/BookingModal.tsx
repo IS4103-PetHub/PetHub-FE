@@ -15,7 +15,12 @@ import { useForm } from "@mantine/form";
 import { IconClipboardList } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
-import { Address, Tag, formatStringToLetterCase } from "shared-utils";
+import {
+  Address,
+  Tag,
+  formatNumber2Decimals,
+  formatStringToLetterCase,
+} from "shared-utils";
 import { Booking } from "@/types/types";
 
 interface BookingModalProps {
@@ -195,9 +200,9 @@ const BookingModal = ({
                         return isNaN(floatValue) ? "" : floatValue.toString();
                       }}
                       formatter={(value) => {
-                        const formattedValue = parseFloat(
-                          value.replace(/\$\s?/, ""),
-                        ).toFixed(2);
+                        const formattedValue = formatNumber2Decimals(
+                          parseFloat(value.replace(/\$\s?/, "")),
+                        );
                         return `$ ${formattedValue}`;
                       }}
                       {...form.getInputProps("basePrice")}

@@ -23,6 +23,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CustomPopover from "web-ui/shared/CustomPopover";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
@@ -32,10 +33,9 @@ import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
 import {
   GST_PERCENT,
-  PLATFORM_FEE,
+  PLATFORM_FEE_PERCENT,
   PLATFORM_FEE_MESSAGE,
 } from "@/types/constants";
-import { formatPriceForDisplay } from "@/util";
 
 interface CartProps {
   userId: number;
@@ -137,6 +137,18 @@ export default function Cart({ userId }: CartProps) {
     return totalPrice;
   };
 
+  function calculatePlatformFee() {
+    return Math.round(calculateTotalPrice() * PLATFORM_FEE_PERCENT * 100) / 100;
+    // return Number(
+    //   Math.round(
+    //     parseFloat(calculateTotalPrice() * PLATFORM_FEE_PERCENT + "e" + 2)
+    //   ) +
+    //     "e-" +
+    //     2
+    // );
+  }
+
+  console.log(calculatePlatformFee());
   const clearAllCartItems = () => {
     clearCart();
     notifications.show({
@@ -164,14 +176,16 @@ export default function Cart({ userId }: CartProps) {
     });
 
     // redirect to checkout page with checkout items information
+    const platformFee = calculatePlatformFee();
     router.push(
       {
         pathname: "/customer/checkout",
         query: {
           itemCount: calculateTotalBuyables(),
-          subtotal: calculateTotalPrice() * (1 - GST_PERCENT) + PLATFORM_FEE,
+          subtotal: calculateTotalPrice() * (1 - GST_PERCENT),
           gst: calculateTotalPrice() * GST_PERCENT,
-          total: calculateTotalPrice() + PLATFORM_FEE,
+          platformFee,
+          total: calculateTotalPrice() + platformFee,
         },
       },
       "/customer/checkout",
@@ -277,9 +291,7 @@ export default function Cart({ userId }: CartProps) {
           $
           {calculateTotalPrice() === 0
             ? "0.00"
-            : formatPriceForDisplay(
-                calculateTotalPrice() * (1 - GST_PERCENT) + PLATFORM_FEE,
-              )}
+            : formatNumber2Decimals(calculateTotalPrice() * (1 - GST_PERCENT))}
         </Text>
       </Group>
       {!hasNoCheckedItems() && (
@@ -289,7 +301,7 @@ export default function Cart({ userId }: CartProps) {
               {`GST (${GST_PERCENT * 100}%)`}
             </Text>
             <Text size="sm" fw={500} c="dimmed">
-              ${formatPriceForDisplay(calculateTotalPrice() * GST_PERCENT)}
+              ${formatNumber2Decimals(calculateTotalPrice() * GST_PERCENT)}
             </Text>
           </Group>
           <Group position="apart" mb="xs">
@@ -300,7 +312,7 @@ export default function Cart({ userId }: CartProps) {
               <CustomPopover text={PLATFORM_FEE_MESSAGE}>{}</CustomPopover>
             </div>
             <Text size="sm" fw={500} c="dimmed">
-              ${formatPriceForDisplay(PLATFORM_FEE)}
+              ${formatNumber2Decimals(calculatePlatformFee())}
             </Text>
           </Group>
         </>
@@ -309,7 +321,10 @@ export default function Cart({ userId }: CartProps) {
       <Group position="apart">
         <Text size="lg">Total</Text>
         <Text size="lg" fw={700}>
-          ${formatPriceForDisplay(calculateTotalPrice() + PLATFORM_FEE)}
+          $
+          {formatNumber2Decimals(
+            calculateTotalPrice() + calculatePlatformFee(),
+          )}
         </Text>
       </Group>
       <Button

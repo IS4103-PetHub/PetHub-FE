@@ -252,5 +252,6 @@ export interface CheckoutSummary {
   itemCount: number;
   subtotal: number;
   gst: number;
+  platformFee: number;
   total: number;
 }

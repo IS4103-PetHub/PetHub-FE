@@ -4,16 +4,14 @@ import { notifications } from "@mantine/notifications";
 import {
   useStripe,
   useElements,
-  CardCvcElement,
-  CardExpiryElement,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import { IconLock } from "@tabler/icons-react";
 import React from "react";
+import { formatNumber2Decimals } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
 import { useStripePaymentMethod } from "@/hooks/payment";
 import { CartItem, CheckoutSummary } from "@/types/types";
-import { formatPriceForDisplay } from "@/util";
 import BillingDetailsSection from "./BillingDetailsSection";
 import CheckoutCardSection from "./CheckoutCardSection";
 import CheckoutItemsSection from "./CheckoutItemsSection";
@@ -34,7 +32,7 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
   const cartItems: CartItem[] = getSelectedCartItems();
   console.log(cartItems);
 
-  const amount = formatPriceForDisplay(checkoutSummary.total);
+  const amount = formatNumber2Decimals(checkoutSummary.total);
 
   // console.log(
   //   cart.cartItems.map((cartItem) => {
@@ -114,11 +112,9 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         body: {
           payment_method_id: result.paymentMethod.id,
           userId,
-          // amount:
-          itemCount: checkoutSummary.itemCount,
+          totalPrice: checkoutSummary.total,
           cartItems: cartItems.map((cartItem) => {
             return {
-              cartItemId: cartItem.cartItemId,
               serviceListingId: cartItem.serviceListing.serviceListingId,
               quantity: cartItem.quantity ?? 1,
             };
