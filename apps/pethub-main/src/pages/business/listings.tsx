@@ -210,6 +210,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
               color="red"
               title="Urgent Action Required"
               icon={<IconAlertCircle />}
+              w="100%"
             >
               Service Listing highlighted in RED are `invalid` and requires
               actions. <br />
