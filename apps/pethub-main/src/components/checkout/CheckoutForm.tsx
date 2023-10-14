@@ -80,6 +80,15 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
       const billingDetails = billingForm.getTransformedValues();
       const cardNumber = elements.getElement(CardNumberElement);
 
+      notifications.show({
+        id: "payment",
+        title: "Processing Payment...",
+        color: "blue",
+        loading: isPaying,
+        message:
+          "Please do not refresh the page or press Back as we process your payment.",
+      });
+
       const result = await stripe.createPaymentMethod({
         type: "card",
         card: cardNumber,
@@ -108,6 +117,7 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
       };
       const response = await stripePaymentMethodMutation.mutateAsync(payload);
 
+      notifications.hide("payment");
       // remove checkouted items from cart
       removeSelectedCartItems();
       setIsPaying(false);

@@ -1,6 +1,7 @@
-import { Container } from "@mantine/core";
+import { Alert, Container } from "@mantine/core";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js/pure";
+import { IconInfoCircle } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -20,8 +21,12 @@ interface CheckoutProps {
 export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
   const router = useRouter();
 
-  if (!checkoutSummary) {
+  // in case user refreshes the page, the checkout will not work anymore, redirect them back to cart
+  if (!checkoutSummary || JSON.stringify(checkoutSummary) === "{}") {
+    router.push("/customer/cart");
+    return null;
   }
+
   return (
     <>
       <Head>
@@ -29,6 +34,9 @@ export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
         <meta name="description" content="PetHub Main Website" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+      <Alert icon={<IconInfoCircle />} color="orange">
+        Please complete the checkout without refreshing the page.
+      </Alert>
       <Container mt={50} mb={50}>
         <LargeBackButton
           text="Back to Cart"
