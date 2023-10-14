@@ -2,7 +2,7 @@ import { Card, Group, Image, Text, createStyles, Box } from "@mantine/core";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
-import { formatPriceForDisplay } from "@/util";
+import { formatNumber2Decimals } from "shared-utils";
 import FavouriteButton from "../favourites/FavouriteButton";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
 import ServiceListingTags from "./ServiceListingTags";
@@ -122,7 +122,7 @@ const ServiceListingCard = ({
           {serviceListing.petBusiness?.companyName}
         </Text>
         <Text size="md" weight={500}>
-          ${formatPriceForDisplay(serviceListing.basePrice)}
+          ${formatNumber2Decimals(serviceListing.basePrice)}
         </Text>
       </Group>
     </Card>

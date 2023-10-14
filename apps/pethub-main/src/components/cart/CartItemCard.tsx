@@ -17,8 +17,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ServiceListing, convertMinsToDurationString } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
-import { formatPriceForDisplay } from "@/util";
 import CartItemBadge from "./CartItemBadge";
 
 interface CartItemCardProps {
@@ -189,7 +189,7 @@ const CartItemCard = ({
           {!serviceListing.calendarGroupId && (
             <CartItemBadge
               fullWidth
-              text={`Unit $${formatPriceForDisplay(serviceListing.basePrice)}`}
+              text={`Unit $${formatNumber2Decimals(serviceListing.basePrice)}`}
               type="UNITPRICE"
               variant="outline"
               square={true}
@@ -198,7 +198,7 @@ const CartItemCard = ({
           )}
           <CartItemBadge
             fullWidth
-            text={`Total $${formatPriceForDisplay(
+            text={`Total $${formatNumber2Decimals(
               quantity
                 ? serviceListing.basePrice * quantity
                 : serviceListing.basePrice,

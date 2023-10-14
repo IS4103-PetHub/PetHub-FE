@@ -246,5 +246,12 @@ export interface Cart {
   cartItems: CartItem[];
   itemCount: number;
   userId: number;
-  cartItemUserSelection: CartItem[];
+}
+
+export interface CheckoutSummary {
+  itemCount: number;
+  subtotal: number;
+  gst: number;
+  platformFee: number;
+  total: number;
 }

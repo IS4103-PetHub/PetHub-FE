@@ -25,6 +25,7 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   Tag,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
@@ -363,9 +364,9 @@ const ServiceListingModal = ({
               return isNaN(floatValue) ? "" : floatValue.toString();
             }}
             formatter={(value) => {
-              const formattedValue = parseFloat(
-                value.replace(/\$\s?/, ""),
-              ).toFixed(2);
+              const formattedValue = formatNumber2Decimals(
+                parseFloat(value.replace(/\$\s?/, "")),
+              );
               return `$ ${formattedValue}`;
             }}
             {...serviceListingForm.getInputProps("basePrice")}

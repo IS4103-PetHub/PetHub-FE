@@ -20,7 +20,6 @@ export function useCartOperations(userId: number) {
         userId,
         itemCount: 0,
         cartItems: [],
-        cartItemUserSelection: [],
       };
       setCarts([...carts, currentCart]);
     }
@@ -143,6 +142,19 @@ export function useCartOperations(userId: number) {
     });
   };
 
+  const removeSelectedCartItems = () => {
+    const currentCart = getCurrentCart();
+    const newCartItems = currentCart.cartItems.filter(
+      (item) => !item.isSelected,
+    );
+    const recalculatedCartItems = recalculateCartItemId(newCartItems);
+    setCurrentCart({
+      ...currentCart,
+      itemCount: calculateTotalItemCount(recalculatedCartItems),
+      cartItems: recalculatedCartItems,
+    });
+  };
+
   const setItemQuantity = (cartItemId: number, newQuantity: number) => {
     const currentCart = getCurrentCart();
     const itemIndex = currentCart.cartItems.findIndex(
@@ -226,6 +238,10 @@ export function useCartOperations(userId: number) {
     );
   };
 
+  const getSelectedCartItems = () => {
+    return getCurrentCart().cartItems.filter((item) => item.isSelected);
+  };
+
   /* ============================================== Getters ============================================== */
 
   return {
@@ -234,6 +250,7 @@ export function useCartOperations(userId: number) {
     incrementItemQuantity,
     setItemQuantity,
     removeItemFromCart,
+    removeSelectedCartItems,
     getCartItems,
     getCartItem,
     clearCart,
@@ -241,5 +258,6 @@ export function useCartOperations(userId: number) {
     getCartSubtotal,
     setCartItemIsSelected,
     setAllCartItemsIsSelected,
+    getSelectedCartItems,
   };
 }

@@ -39,10 +39,6 @@ export function validateWebsiteURL(url: string) {
   return !/^https?:\/\/.+\..+$/.test(url);
 }
 
-export function formatPriceForDisplay(num: number) {
-  return (Math.round(num * 100) / 100).toFixed(2);
-}
-
 export function searchServiceListingsForCustomer(
   serviceListings: ServiceListing[],
   searchStr: string,

@@ -14,11 +14,11 @@ import {
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import { TABLE_PAGE_SIZE } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
@@ -123,7 +123,7 @@ const ServiceListTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return formatPriceForDisplay(record.basePrice);
+              return formatNumber2Decimals(record.basePrice);
             },
           },
           {
