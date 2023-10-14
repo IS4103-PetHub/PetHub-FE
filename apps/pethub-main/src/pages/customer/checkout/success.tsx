@@ -6,8 +6,6 @@ import {
   Container,
   Group,
   Text,
-  createStyles,
-  getStylesRef,
   useMantineTheme,
 } from "@mantine/core";
 import { IconChevronsRight, IconCircleCheck } from "@tabler/icons-react";
@@ -23,7 +21,6 @@ export default function CheckoutSuccessful({
 }: CheckoutSuccessfulProps) {
   const theme = useMantineTheme();
   const router = useRouter();
-  console.log(invoiceId);
 
   // can only view this page after checkout
   if (!invoiceId) {
