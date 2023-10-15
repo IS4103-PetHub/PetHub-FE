@@ -88,6 +88,7 @@ const OrderItemStepper = ({
     [OrderItemStatusEnum.PendingBooking, "Ordered"],
     [OrderItemStatusEnum.PendingFulfillment, "Ordered"],
     [OrderItemStatusEnum.Fulfilled, "Fulfilled"],
+    [OrderItemStatusEnum.PaidOut, "Fulfilled"],
     [OrderItemStatusEnum.Expired, "Expired"],
     [OrderItemStatusEnum.Refunded, "Refunded"],
   ]);
