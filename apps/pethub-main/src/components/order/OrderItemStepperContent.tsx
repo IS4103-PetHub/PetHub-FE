@@ -172,12 +172,12 @@ const OrderItemStepperContent = ({
           </Grid.Col>
           <Grid.Col span={2} />
           <Grid.Col span={4}>
-            <Stack>
-              <Text size="xs">
+            <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
+              <Text size="sm">
                 <b>Start: </b>
                 {formatISODayDateTime(orderItem?.booking?.startTime)}
               </Text>
-              <Text size="xs">
+              <Text size="sm">
                 <b>End: </b>
                 {formatISODayDateTime(orderItem?.booking?.endTime)}
               </Text>
@@ -218,6 +218,36 @@ const OrderItemStepperContent = ({
           <Grid.Col span={6} />
           <Grid.Col span={2} />
           <Grid.Col span={4}>
+            <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
+              <Text size="sm">
+                <b>Start: </b>
+                {formatISODayDateTime(orderItem?.booking?.startTime)}
+              </Text>
+              <Text size="sm">
+                <b>End: </b>
+                {formatISODayDateTime(orderItem?.booking?.endTime)}
+              </Text>
+            </Stack>
+          </Grid.Col>
+        </>
+      )}
+    </>
+  );
+
+  const expiredOrRefundedGroup = (
+    <>
+      {buyAgainColumn}
+
+      {invoiceColumn}
+
+      {orderItem.serviceListing.requiresBooking && (
+        <>
+          <Grid.Col>
+            <Divider />
+          </Grid.Col>
+          <Grid.Col span={6} />
+          <Grid.Col span={2} />
+          <Grid.Col span={4}>
             <Stack>
               <Text size="xs">
                 <b>Start: </b>
@@ -247,6 +277,13 @@ const OrderItemStepperContent = ({
       orderItem.status === OrderItemStatusEnum.PaidOut
     ) {
       return fulfilledGroup;
+    }
+
+    if (
+      orderItem.status === OrderItemStatusEnum.Expired ||
+      orderItem.status === OrderItemStatusEnum.Refunded
+    ) {
+      return expiredOrRefundedGroup;
     }
   }
 

@@ -1,5 +1,5 @@
 import { Badge, Stepper } from "@mantine/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { OrderItem, OrderItemStatusEnum } from "shared-utils";
 import OrderItemStepperContent from "./OrderItemStepperContent";
 
@@ -10,28 +10,36 @@ interface OrderItemStepperProps {
   numberOfSteps: number;
 }
 
-const OrderItemStepper = ({
+const OrderItemStepper: React.FC<OrderItemStepperProps> = ({
   active,
   setActive,
   orderItem,
   numberOfSteps,
-  ...props
-}: OrderItemStepperProps) => {
+}) => {
+  const activeStepIndexRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (activeStepIndexRef.current !== null) {
+      setActive(activeStepIndexRef.current);
+    }
+  }, [activeStepIndexRef.current]);
+
   const STEPPER_PROPS = {
     active: active,
     size: "md",
     color: "indigo",
     radius: "xl",
+    // styles API override for stepper
     styles: {
+      // override stepper to have icon at the top, props only allow left and right
       step: {
-        // We want icon to be positioned at the top, props only allow left and right sad
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
       },
+      // center text
       stepBody: {
-        // Text must be aligned and spaced properly
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -39,9 +47,14 @@ const OrderItemStepper = ({
         marginTop: "1rem",
         marginRight: "0.5rem",
       },
+      // push separator up to be beside stepper icon
       separator: {
-        // make the line thing longer and move it in line with the icon, not the container
-        transform: numberOfSteps === 4 ? "scaleX(2.5)" : "scaleX(1.5)",
+        transform:
+          numberOfSteps === 4
+            ? "scaleX(2.5)"
+            : numberOfSteps === 3
+            ? "scaleX(1.5)"
+            : null,
         transformOrigin: "center center",
         position: "relative",
         top: "-30px",
@@ -49,48 +62,14 @@ const OrderItemStepper = ({
     },
   };
 
-  console.log("number of steps", numberOfSteps);
-
-  // Step up is for bigger stepper groups (with 4 steps)
-  function getStepText(type: string, stepUp: boolean) {
-    const index = stepUp ? active : active - 1;
-
-    const steps = {
-      Ordered: {
-        label: "Ordered",
-        description: "Order has been made",
-      },
-      Booked: {
-        // The step for Booked is always the 2nd step no matter the step group
-        label: index <= 1 ? "Not Booked" : "Booked",
-        description: index <= 1 ? "Booking not made" : "Booking has been made",
-      },
-      Fulfilled: {
-        // The step for Fulfilled is the 3rd step for happyBookingStepperGroup and refundedStepperGroup, and the 2nd step for happyNoBookingStepperGroup
-        label: index <= 2 ? "Not Fulfilled" : "Fulfilled",
-        description:
-          index <= 2 ? "Pending order fulfillment" : "Order has been fulfilled",
-      },
-      Rated: {
-        // The step for Rated is the 4th step for happyBookingStepperGroup and the 3rd step for happyNoBookingStepperGroup
-        label: index <= 3 ? "Not Rated" : "Rated",
-        description:
-          index <= 3 ? "Pending order rating" : "Order has been rated",
-      },
-      Expired: {
-        label: "Expired",
-        description: "Order has expired",
-      },
-    };
-
-    return steps[type] || {};
-  }
-
+  // These are the possible stepper steps for each flow
   const stepGroups = {
     happyBooking: ["Ordered", "Booked", "Fulfilled", "Rated"],
     happyNoBooking: ["Ordered", "Fulfilled", "Rated"],
-    expired: ["Ordered", "Booked", "Expired"],
-    refunded: ["Ordered", "Booked", "Fulfilled", "Refunded"],
+    expiredBooking: ["Ordered", "Booked", "Expired"],
+    expiredNoBooking: ["Ordered", "Expired"],
+    refundedBooking: ["Ordered", "Booked", "Fulfilled", "Refunded"],
+    refundedNoBooking: ["Ordered", "Fulfilled", "Refunded"],
   };
 
   const mapStatusToStepGroupStep = new Map([
@@ -101,6 +80,61 @@ const OrderItemStepper = ({
     [OrderItemStatusEnum.Refunded, "Refunded"],
   ]);
 
+  // Get the appropriate text for a stepper step based on the step group and current index
+  function getStepText(type: string, stepIndex: number) {
+    const isBookingStep = stepGroups.happyBooking.includes(type);
+    const bookingStepNumber = isBookingStep ? 2 : -1;
+
+    const isFulfilledStep =
+      stepGroups.happyBooking.includes(type) ||
+      stepGroups.happyNoBooking.includes(type);
+    const fulfilledStepNumber = isFulfilledStep
+      ? numberOfSteps === 4
+        ? 3
+        : 2
+      : -1;
+
+    const isRatedStep =
+      stepGroups.happyBooking.includes(type) ||
+      stepGroups.happyNoBooking.includes(type);
+    const ratedStepNumber = isRatedStep ? (numberOfSteps === 4 ? 4 : 3) : -1;
+
+    const steps = {
+      Ordered: {
+        label: "Ordered",
+        description: "Order has been made",
+      },
+      Booked: {
+        label: stepIndex < bookingStepNumber ? "Not Booked" : "Booked",
+        description:
+          stepIndex < bookingStepNumber
+            ? "Booking not made"
+            : "Booking has been made",
+      },
+      Fulfilled: {
+        label: stepIndex < fulfilledStepNumber ? "Not Fulfilled" : "Fulfilled",
+        description:
+          stepIndex < fulfilledStepNumber
+            ? "Pending order fulfillment"
+            : "Order has been fulfilled",
+      },
+      Rated: {
+        label: stepIndex < ratedStepNumber ? "Not Rated" : "Rated",
+        description:
+          stepIndex < ratedStepNumber
+            ? "Pending order rating"
+            : "Order has been rated",
+      },
+      Expired: {
+        label: "Expired",
+        description: "Order has expired",
+      },
+    };
+
+    return steps[type] || {};
+  }
+
+  // Render the stepper steps based on the step group
   function renderSteps(group: string[]) {
     let mappedStatusToStepGroupStep = mapStatusToStepGroupStep.get(
       orderItem.status,
@@ -110,60 +144,53 @@ const OrderItemStepper = ({
       orderItem.status === OrderItemStatusEnum.PendingFulfillment &&
       orderItem.serviceListing.requiresBooking
     ) {
-      // If the orderItem is PendingFulfillment and requiresBooking, then we want to override it from the 'Ordered' step to the 'Booked' step
       mappedStatusToStepGroupStep = "Booked";
     }
-    const activeStepIndex = group.findIndex(
-      (step) => step === mappedStatusToStepGroupStep,
-    );
-    setActive(activeStepIndex + 1);
-    return group.map((stepType, idx) => {
-      return (
-        // If the length of the group is 4, then we are rendering the bigger stepper group, so we need to step up the index
-        <Stepper.Step key={idx} {...getStepText(stepType, group.length === 4)}>
-          <OrderItemStepperContent orderItem={orderItem} />
-        </Stepper.Step>
-      );
-    });
+    activeStepIndexRef.current =
+      group.findIndex((step) => step === mappedStatusToStepGroupStep) + 1;
+
+    return group.map((stepType, idx) => (
+      <Stepper.Step
+        key={idx}
+        {...getStepText(stepType, activeStepIndexRef.current)}
+      >
+        <OrderItemStepperContent orderItem={orderItem} />
+      </Stepper.Step>
+    ));
   }
 
   function renderContent() {
-    if (
-      orderItem.status === OrderItemStatusEnum.Fulfilled ||
-      orderItem.status === OrderItemStatusEnum.PendingBooking ||
-      (orderItem.status === OrderItemStatusEnum.PendingFulfillment &&
-        orderItem.serviceListing.requiresBooking)
-    ) {
-      return (
+    const contentMap = {
+      [OrderItemStatusEnum.PaidOut]: orderItem.serviceListing.requiresBooking
+        ? stepGroups.happyBooking
+        : stepGroups.happyNoBooking,
+      [OrderItemStatusEnum.PendingFulfillment]: orderItem.serviceListing
+        .requiresBooking
+        ? stepGroups.happyBooking
+        : stepGroups.happyNoBooking,
+      [OrderItemStatusEnum.Fulfilled]: orderItem.serviceListing.requiresBooking
+        ? stepGroups.happyBooking
+        : stepGroups.happyNoBooking,
+      [OrderItemStatusEnum.PendingBooking]: orderItem.serviceListing
+        .requiresBooking
+        ? stepGroups.happyBooking
+        : stepGroups.happyNoBooking,
+      [OrderItemStatusEnum.Expired]: orderItem.booking
+        ? stepGroups.expiredBooking
+        : stepGroups.expiredNoBooking,
+      [OrderItemStatusEnum.Refunded]: orderItem.booking
+        ? stepGroups.refundedBooking
+        : stepGroups.refundedNoBooking,
+    };
+
+    const groupToRender = contentMap[orderItem.status];
+    return (
+      groupToRender && (
         <Stepper {...(STEPPER_PROPS as any)}>
-          {renderSteps(stepGroups.happyBooking)}
+          {renderSteps(groupToRender)}
         </Stepper>
-      );
-    }
-    if (
-      orderItem.status === OrderItemStatusEnum.PendingFulfillment &&
-      !orderItem.serviceListing.requiresBooking
-    ) {
-      return (
-        <Stepper {...(STEPPER_PROPS as any)}>
-          {renderSteps(stepGroups.happyNoBooking)}
-        </Stepper>
-      );
-    }
-    if (orderItem.status === OrderItemStatusEnum.Expired) {
-      return (
-        <Stepper {...(STEPPER_PROPS as any)}>
-          {renderSteps(stepGroups.expired)}
-        </Stepper>
-      );
-    }
-    if (orderItem.status === OrderItemStatusEnum.Refunded) {
-      return (
-        <Stepper {...(STEPPER_PROPS as any)}>
-          {renderSteps(stepGroups.refunded)}
-        </Stepper>
-      );
-    }
+      )
+    );
   }
 
   return <>{renderContent()}</>;

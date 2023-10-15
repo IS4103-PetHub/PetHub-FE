@@ -13,6 +13,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { IconChevronLeft } from "@tabler/icons-react";
+import { set } from "lodash";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -40,8 +41,6 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const prevStep = () =>
     setActiveStep((current) => (current > 0 ? current - 1 : current));
 
-  console.log("ORDERITEM", orderItem);
-
   const OPEN_FOREVER = ["header", "stepper", "content", "footer"];
 
   const ACCORDION_ITEM_PROPS = {
@@ -65,14 +64,27 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
 
   function setStepperCount() {
     if (
+      orderItem.status === OrderItemStatusEnum.PaidOut ||
+      orderItem.status === OrderItemStatusEnum.PendingFulfillment ||
       orderItem.status === OrderItemStatusEnum.Fulfilled ||
-      orderItem.status === OrderItemStatusEnum.PendingBooking ||
-      (orderItem.status === OrderItemStatusEnum.PendingFulfillment &&
-        orderItem.serviceListing.requiresBooking) ||
-      orderItem.status === OrderItemStatusEnum.Refunded
+      orderItem.status === OrderItemStatusEnum.PendingBooking
     ) {
-      setNumberOfSteps(4); // The above statuses have 4 steps, see OrderItemStepper for clarification
-    } else {
+      if (orderItem.serviceListing.requiresBooking) {
+        setNumberOfSteps(4);
+      } else {
+        setNumberOfSteps(3);
+      }
+    }
+    if (orderItem.status === OrderItemStatusEnum.Expired) {
+      if (orderItem.booking) {
+        setNumberOfSteps(3);
+      }
+      setNumberOfSteps(2);
+    }
+    if (orderItem.status === OrderItemStatusEnum.Refunded) {
+      if (orderItem.booking) {
+        setNumberOfSteps(4);
+      }
       setNumberOfSteps(3);
     }
   }
