@@ -38,6 +38,7 @@ export interface PetBusiness extends User {
   businessAddresses?: Address[];
   contactNumber: string;
   websiteURL?: string;
+  commissionRule: CommissionRule;
 }
 
 export interface InternalUser extends User {
@@ -144,4 +145,13 @@ export interface ApprovePetBusinessApplicationPayload {
 export interface RejectPetBusinessApplicationPayload {
   petBusinessApplicationId: Number;
   remark: String;
+}
+
+export interface CommissionRule {
+  commissionRuleId: number;
+  name: string;
+  commissionRate: number;
+  createdAt?: string;
+  updatedAt?: string;
+  petBusinesses?: PetBusiness[];
 }

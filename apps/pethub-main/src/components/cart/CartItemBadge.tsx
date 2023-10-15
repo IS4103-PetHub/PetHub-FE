@@ -17,7 +17,7 @@ const CartItemBadge = ({
     ["UNITPRICE", "dark"],
     ["TOTALPRICE", "dark"],
     ["DURATION", "blue"],
-    ["PETBUSINESS", "dark"],
+    ["PETBUSINESS", "indigo"],
   ]);
 
   const additionalProps = square ? { radius: "xs" } : {};

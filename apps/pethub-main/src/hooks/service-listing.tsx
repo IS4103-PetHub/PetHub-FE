@@ -19,8 +19,18 @@ export const useCreateServiceListing = () => {
       formData.append("petBusinessId", payload.petBusinessId.toString());
       formData.append("category", payload.category);
       formData.append("basePrice", payload.basePrice.toString());
-      formData.append("calendarGroupId", payload.calendarGroupId.toString());
-      formData.append("duration", payload.duration.toString());
+      if (payload.calendarGroupId)
+        formData.append("calendarGroupId", payload.calendarGroupId.toString());
+      if (payload.duration)
+        formData.append("duration", payload.duration.toString());
+      if (payload.defaultExpiryDays)
+        formData.append(
+          "defaultExpiryDays",
+          payload.defaultExpiryDays.toString(),
+        );
+      if (payload.lastPossibleDate)
+        formData.append("lastPossibleDate", payload.lastPossibleDate);
+      formData.append("requiresBooking", payload.requiresBooking.toString());
       payload.tagIds.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());
       });
@@ -112,11 +122,21 @@ export const useUpdateServiceListing = () => {
       formData.append("description", payloadWithoutId.description);
       formData.append("category", payloadWithoutId.category);
       formData.append("basePrice", payloadWithoutId.basePrice.toString());
-      formData.append(
-        "calendarGroupId",
-        payloadWithoutId.calendarGroupId.toString(),
-      );
-      formData.append("duration", payload.duration.toString());
+      if (payload.calendarGroupId)
+        formData.append(
+          "calendarGroupId",
+          payloadWithoutId.calendarGroupId.toString(),
+        );
+      if (payload.duration)
+        formData.append("duration", payload.duration.toString());
+      formData.append("requiresBooking", payload.requiresBooking.toString());
+      if (payload.defaultExpiryDays)
+        formData.append(
+          "defaultExpiryDays",
+          payload.defaultExpiryDays.toString(),
+        );
+      if (payload.lastPossibleDate)
+        formData.append("lastPossibleDate", payload.lastPossibleDate);
       // Append tagIds as an array
       payloadWithoutId.tagIds.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());

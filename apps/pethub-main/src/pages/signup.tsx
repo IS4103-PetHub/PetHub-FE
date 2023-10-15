@@ -332,7 +332,14 @@ export default function SignUp() {
                 />
               </Grid.Col>
             </Grid>
-            <Button type="submit" fullWidth leftIcon={<IconPlus size="1rem" />}>
+            <Button
+              type="submit"
+              size="md"
+              fullWidth
+              leftIcon={<IconPlus size="1rem" />}
+              color="dark"
+              className="gradient-hover"
+            >
               Create account
             </Button>
           </form>

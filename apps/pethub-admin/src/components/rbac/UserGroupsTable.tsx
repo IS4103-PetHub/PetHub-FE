@@ -11,7 +11,6 @@ interface UserGroupsTableProps {
   records: UserGroup[];
   totalNumUserGroups: number;
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
   onSortStatusChange: any;
@@ -23,7 +22,6 @@ const UserGroupsTable = ({
   records,
   totalNumUserGroups,
   page,
-  isSearching,
   sortStatus,
   onDelete,
   onSortStatusChange,
@@ -90,7 +88,7 @@ const UserGroupsTable = ({
       sortStatus={sortStatus}
       onSortStatusChange={onSortStatusChange}
       //pagination
-      totalRecords={isSearching ? records.length : totalNumUserGroups}
+      totalRecords={totalNumUserGroups}
       recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
       onPageChange={(p) => onPageChange(p)}

@@ -360,6 +360,7 @@ export async function getServerSideProps(context) {
     businessAddresses: data.businessAddresses,
     businessEmail: data.businessEmail,
     petBusinessApplication: data.petBusinessApplication,
+    commissionRule: data.commissionRule,
   };
   return { props: { petBusiness } };
 }

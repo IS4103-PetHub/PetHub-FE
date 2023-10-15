@@ -1,9 +1,9 @@
-import { Group, Badge } from "@mantine/core";
+import { Group, Badge, Text, Alert } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Address,
   CalendarGroup,
@@ -11,14 +11,15 @@ import {
   Tag,
   getErrorMessageProps,
   getMinTableHeight,
+  isValidServiceListing,
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import { TABLE_PAGE_SIZE } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
@@ -27,7 +28,6 @@ interface ServiceListTableProps {
   userId: number;
   refetch(): void;
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
@@ -42,7 +42,6 @@ const ServiceListTable = ({
   userId,
   refetch,
   page,
-  isSearching,
   sortStatus,
   onSortStatusChange,
   onPageChange,
@@ -110,7 +109,7 @@ const ServiceListTable = ({
               record.tags.map((tag, index) => (
                 <Badge
                   key={tag.tagId}
-                  color="blue"
+                  color={isValidServiceListing(record) ? "blue" : "red"}
                   mr={index < record.tags.length - 1 ? 5 : 0}
                   /* Add margin right if not the last tag */
                 >
@@ -125,7 +124,7 @@ const ServiceListTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return formatPriceForDisplay(record.basePrice);
+              return formatNumber2Decimals(record.basePrice);
             },
           },
           {
@@ -167,10 +166,21 @@ const ServiceListTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumServiceListing}
+        totalRecords={totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
+        rowStyle={({
+          requiresBooking,
+          calendarGroupId,
+          duration,
+          lastPossibleDate,
+        }) =>
+          (requiresBooking ? calendarGroupId && duration : true) &&
+          (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true)
+            ? undefined
+            : { color: "red" }
+        }
       />
 
       {/* View */}

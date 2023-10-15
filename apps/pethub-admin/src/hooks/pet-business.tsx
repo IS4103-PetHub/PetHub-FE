@@ -20,6 +20,7 @@ export const useGetAllPetBusinesses = () => {
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
         lastUpdated: data.user.lastUpdated,
+        commissionRule: data.commissionRule,
       }));
       return petBusinesses;
     },

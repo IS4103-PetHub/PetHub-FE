@@ -82,4 +82,18 @@ export interface ServiceListing {
   CalendarGroup?: CalendarGroup;
   calendarGroupId?: number;
   duration?: number;
+
+  requiresBooking: boolean;
+  lastPossibleDate?: string;
+  defaultExpiryDays: number;
+}
+
+export interface CommissionRule {
+  commissionRuleId: number;
+  name: string;
+  commissionRate: number;
+  default: boolean;
+  createdAt: string;
+  updatedAt: string;
+  petBusinesses: any[];
 }

@@ -4,6 +4,7 @@ import React from "react";
 import {
   ServiceListing,
   TABLE_PAGE_SIZE,
+  formatNumber2Decimals,
   getMinTableHeight,
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
@@ -15,7 +16,6 @@ interface ServiceListingTableProps {
   totalNumServiceListing: number;
   onDelete(id: number): void;
   canWrite: boolean;
-  isSearching: boolean;
   page: number;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
@@ -27,7 +27,6 @@ const ServiceListingTable = ({
   totalNumServiceListing,
   onDelete,
   canWrite,
-  isSearching,
   page,
   sortStatus,
   onSortStatusChange,
@@ -84,7 +83,7 @@ const ServiceListingTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return `${record.basePrice.toFixed(2)}`;
+              return `${formatNumber2Decimals(record.basePrice)}`;
             },
           },
           {
@@ -131,7 +130,7 @@ const ServiceListingTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumServiceListing}
+        totalRecords={totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}

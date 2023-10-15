@@ -1,5 +1,6 @@
-import { Container, Group, Transition } from "@mantine/core";
+import { Alert, Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
@@ -10,7 +11,9 @@ import {
   EMPTY_STATE_DELAY_MS,
   ServiceListing,
   TABLE_PAGE_SIZE,
+  isValidServiceListing,
   searchServiceListingsForPB,
+  sortInvalidServiceListings,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -53,6 +56,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     columnAccessor: "serviceListingId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<ServiceListing[]>([]);
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const { data: tags } = useGetAllTags();
   const [petBusiness, setPetBusiness] = useState(null);
@@ -60,6 +64,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     userId,
     accountType,
   );
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (petBusinessData) {
@@ -85,17 +90,18 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
     const sortedServiceListing = sortBy(
-      serviceListings,
+      searchResults,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
       sortedServiceListing.reverse();
     }
     const newRecords = sortedServiceListing.slice(from, to);
-    setRecords(newRecords);
-  }, [page, sortStatus, serviceListings]);
+    setRecords(sortInvalidServiceListings(newRecords));
+  }, [page, sortStatus, serviceListings, searchResults]);
 
   useEffect(() => {
+    setSearchResults(serviceListings);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (serviceListings.length === 0) {
@@ -103,7 +109,18 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [serviceListings]);
+
+  useEffect(() => {
+    let hasInvalidRecord = false;
+    for (const record of records) {
+      if (!isValidServiceListing(record)) {
+        hasInvalidRecord = true;
+        break;
+      }
+    }
+    setHasError(hasInvalidRecord);
+  }, [records]);
 
   /*
    * Search Functions
@@ -111,7 +128,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(serviceListings);
+      setSearchResults(sortInvalidServiceListings(serviceListings));
       setPage(1);
       return;
     }
@@ -119,7 +136,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     // Search by title, category, tag
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
-    setRecords(results);
+    setSearchResults(sortInvalidServiceListings(results));
     setPage(1);
   };
 
@@ -156,11 +173,10 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
         ) : (
           <ServiceListTable
             records={records}
-            totalNumServiceListing={serviceListings.length}
+            totalNumServiceListing={searchResults.length}
             userId={userId}
             refetch={refetchServiceListings}
             page={page}
-            isSearching={isSearching}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
@@ -189,6 +205,20 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
         </Group>
 
         <Group mt="xs">
+          {hasError && (
+            <Alert
+              color="red"
+              title="Urgent Action Required"
+              icon={<IconAlertCircle />}
+              w="100%"
+            >
+              Service Listings highlighted in RED are `invalid` and requires
+              action. <br />
+              Please ensure that every service listing that requires a booking
+              has an allocated Calendar Group, valid duration and last possible
+              date
+            </Alert>
+          )}
           <ServiceListingModal
             opened={isCreateServiceModalOpen}
             onClose={closeCreateServiceModal}

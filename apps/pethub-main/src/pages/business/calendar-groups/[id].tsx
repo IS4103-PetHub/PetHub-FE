@@ -120,7 +120,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         message: `Calendar group deleted successfully! Emails regarding the refund process have been sent out to affected customers (if any).`,
       });
       refetchCalendarGroupByPbId();
-      router.push("/business/calendar-groups");
+      router.push("/business/appointments");
     } catch (error: any) {
       setIsLoading(false);
       notifications.show({
@@ -163,14 +163,14 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
               />
 
               {isEditingDisabled && (
-                <Center>
+                <Group>
                   <LargeEditButton
                     text="Edit"
                     onClick={toggleEdit}
-                    makeSmallerATeenyBit
-                    color="gray"
+                    size="sm"
+                    variant="light"
+                    sx={{ border: "1.5px  solid" }}
                   />
-                  &nbsp;
                   <DeleteActionButtonModal
                     title="Delete Calendar Group"
                     subtitle="Are you sure you want to delete this Calendar Group?"
@@ -178,9 +178,10 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
                       handleDeleteCalendarGroup(form.values.calendarGroupId)
                     }
                     large
+                    variant="light"
+                    sx={{ border: "1.5px  solid" }}
                   />
-                  &nbsp;
-                </Center>
+                </Group>
               )}
             </Group>
 

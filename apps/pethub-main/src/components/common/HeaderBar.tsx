@@ -17,11 +17,8 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { useContext, useEffect, useState } from "react";
 import { useCartOperations } from "@/hooks/cart";
-import { CartProvider, useCart } from "../cart/CartContext";
 import CartDisplayPopover from "../cart/CartDisplayPopover";
-import CartButton from "../cart/CartIcon";
 import LoginModal from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
