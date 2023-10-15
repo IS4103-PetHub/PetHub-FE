@@ -56,6 +56,19 @@ const OrderItemStepperContent = ({
     router.push("/customer/cart");
   }
 
+  function viewInvoiceHandler() {
+    if (orderItem.attachmentURL) {
+      window.open(orderItem.attachmentURL, "_blank"); // _blank === New tab
+    } else {
+      notifications.show({
+        title: "Error Viewing Invoice",
+        color: "red",
+        message:
+          "Invoice URL was not found. Please contact PetHub customer support for further clarification",
+      });
+    }
+  }
+
   const invoiceColumn = (
     <>
       <Grid.Col>
@@ -63,7 +76,12 @@ const OrderItemStepperContent = ({
       </Grid.Col>
       <Grid.Col span={8} />
       <Grid.Col span={4}>
-        <Button fullWidth variant="light" sx={{ border: "1px solid #e0e0e0" }}>
+        <Button
+          fullWidth
+          variant="light"
+          sx={{ border: "1px solid #e0e0e0" }}
+          onClick={viewInvoiceHandler}
+        >
           View Invoice
         </Button>
       </Grid.Col>
