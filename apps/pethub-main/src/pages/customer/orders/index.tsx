@@ -8,6 +8,7 @@ import {
   Transition,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -40,6 +41,11 @@ export default function Orders({ userId }: OrdersProps) {
   const [isSearching, setIsSearching] = useToggle();
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
+  // States for infinite scroll and fake loading flag
+  const [page, setPage] = useState(1);
+
+  const PAGE_SIZE = 5;
+
   const {
     data: orderItems = [],
     isLoading,
@@ -47,9 +53,32 @@ export default function Orders({ userId }: OrdersProps) {
   } = useGetorderItemsByPetOwnerId(userId);
   const [records, setRecords] = useState<OrderItem[]>(orderItems);
 
+  function resetRecordsSliced() {
+    setRecords(getFilteredAndSortedRecords().slice(0, page * PAGE_SIZE));
+  }
+
+  // Reset infinite scroll to page 1 when I change tab
   useEffect(() => {
-    setRecords(getFilteredAndSortedRecords());
-  }, [orderItems, activeTab, sortStatus]);
+    setPage(1);
+  }, [activeTab]);
+
+  useEffect(() => {
+    // The reason we slice the array is because we want to display the records in batches for infinite scrolling
+    resetRecordsSliced();
+  }, [orderItems, activeTab, sortStatus, page]);
+
+  // Scroll listeners for infinite scrolling, hooks into window scroll event
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [records, orderItems, activeTab, sortStatus, isSearching]);
+
+  const setSortStatusWithReset = (status: string) => {
+    setPage(1); // reset page when sorting
+    setSortStatus(status);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -61,19 +90,36 @@ export default function Orders({ userId }: OrdersProps) {
     return () => clearTimeout(timer);
   }, [orderItems]);
 
+  // Display more records when user scrolls to bottom of page
+  const handleScroll = () => {
+    if (isSearching) return; // DO NOT TRIGGER if user is searching
+    if (
+      window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 100 && // 100px before the bottom of the page
+      records.length < getFilteredAndSortedRecords().length // until not all records displayed yet
+    ) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
   const handleSearch = (searchStr: string) => {
+    setPage(1);
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(getFilteredAndSortedRecords()); // reset records if search cleared
+      resetRecordsSliced(); // Reset to sliced records upon emptied search bar
       return;
     }
     setIsSearching(true);
-    const results = searchOrderItemsForCustomer(records, searchStr);
+    const filteredAndSortedRecords = getFilteredAndSortedRecords();
+    const results = searchOrderItemsForCustomer(
+      filteredAndSortedRecords,
+      searchStr,
+    );
     setRecords(results);
   };
 
   function getFilteredAndSortedRecords() {
-    // filter based on activeTab
+    // filter orderItems based on activeTab
     let filteredOrderItems = orderItems;
     if (activeTab !== OrderItemStatusEnum.All) {
       if (activeTab === OrderItemStatusEnum.Fulfilled) {
@@ -151,11 +197,18 @@ export default function Orders({ userId }: OrdersProps) {
       <SortBySelect
         data={orderItemsSortOptions}
         value={sortStatus}
-        onChange={setSortStatus}
+        onChange={setSortStatusWithReset}
         w="35%"
       />
     </Group>
   );
+
+  // const searchAndSortGroup = (
+  //   <Group position="right" align="center" mb="lg">
+  //     <SearchBar size="md" w="55%" text="Search for an order item here" onSearch={handleSearch} />
+  //     <SortBySelect data={orderItemsSortOptions} value={sortStatus} onChange={setSortStatus} w="35%" />
+  //   </Group>
+  // );
 
   const orderItemCards = records?.map((item) => (
     <Grid.Col key={item.orderItemId}>
