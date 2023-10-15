@@ -121,6 +121,9 @@ export interface CreateServiceListingPayload {
   addressIds: number[];
   calendarGroupId: number;
   duration: number;
+  requiresBooking: boolean;
+  defaultExpiryDays: number;
+  lastPossibleDate: string;
 }
 
 export interface UpdateServiceListingPayload {
@@ -135,6 +138,9 @@ export interface UpdateServiceListingPayload {
   addressIds: number[];
   calendarGroupId: number;
   duration: number;
+  requiresBooking: boolean;
+  defaultExpiryDays: number;
+  lastPossibleDate: string;
 }
 
 /*

@@ -1,5 +1,6 @@
-import { Container, Group, Transition } from "@mantine/core";
+import { Alert, Container, Group, Transition } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
@@ -10,7 +11,9 @@ import {
   EMPTY_STATE_DELAY_MS,
   ServiceListing,
   TABLE_PAGE_SIZE,
+  isValidServiceListing,
   searchServiceListingsForPB,
+  sortInvalidServiceListings,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -61,6 +64,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     userId,
     accountType,
   );
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (petBusinessData) {
@@ -93,7 +97,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
       sortedServiceListing.reverse();
     }
     const newRecords = sortedServiceListing.slice(from, to);
-    setRecords(newRecords);
+    setRecords(sortInvalidServiceListings(newRecords));
   }, [page, sortStatus, serviceListings, searchResults]);
 
   useEffect(() => {
@@ -107,13 +111,24 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     return () => clearTimeout(timer);
   }, [serviceListings]);
 
+  useEffect(() => {
+    let hasInvalidRecord = false;
+    for (const record of records) {
+      if (!isValidServiceListing(record)) {
+        hasInvalidRecord = true;
+        break;
+      }
+    }
+    setHasError(hasInvalidRecord);
+  }, [records]);
+
   /*
    * Search Functions
    */
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setSearchResults(serviceListings);
+      setSearchResults(sortInvalidServiceListings(serviceListings));
       setPage(1);
       return;
     }
@@ -121,7 +136,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     // Search by title, category, tag
     setIsSearching(true);
     const results = searchServiceListingsForPB(serviceListings, searchStr);
-    setSearchResults(results);
+    setSearchResults(sortInvalidServiceListings(results));
     setPage(1);
   };
 
@@ -190,6 +205,20 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
         </Group>
 
         <Group mt="xs">
+          {hasError && (
+            <Alert
+              color="red"
+              title="Urgent Action Required"
+              icon={<IconAlertCircle />}
+              w="100%"
+            >
+              Service Listings highlighted in RED are `invalid` and requires
+              action. <br />
+              Please ensure that every service listing that requires a booking
+              has an allocated Calendar Group, valid duration and last possible
+              date
+            </Alert>
+          )}
           <ServiceListingModal
             opened={isCreateServiceModalOpen}
             onClose={closeCreateServiceModal}
