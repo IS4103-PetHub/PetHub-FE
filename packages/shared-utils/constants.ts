@@ -72,3 +72,5 @@ export enum RefundStatusEnum {
   Rejected = "REJECTED",
   Cancelled = "CANCELLED",
 }
+
+export const MISC_CHARGE_PCT = 0.07;

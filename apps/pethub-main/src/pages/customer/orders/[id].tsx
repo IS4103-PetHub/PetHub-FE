@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Badge,
   Box,
   Button,
   Center,
@@ -7,22 +8,36 @@ import {
   Divider,
   Grid,
   Group,
+  Image,
   Paper,
   Text,
   rem,
   useMantineTheme,
 } from "@mantine/core";
-import { IconChevronLeft } from "@tabler/icons-react";
+import {
+  IconBrandStripe,
+  IconBuildingStore,
+  IconChevronLeft,
+} from "@tabler/icons-react";
 import { set } from "lodash";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { OrderItem, OrderItemStatusEnum } from "shared-utils";
+import {
+  OrderItem,
+  OrderItemStatusEnum,
+  convertMinsToDurationString,
+  formatISODayDateTime,
+} from "shared-utils";
+import { MISC_CHARGE_PCT } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
+import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
+import { formatPriceForDisplay } from "@/util";
 
 interface OrderDetailsProps {
   userId: number;
@@ -40,6 +55,9 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
     );
   const prevStep = () =>
     setActiveStep((current) => (current > 0 ? current - 1 : current));
+
+  const PLATFORM_FEE =
+    Math.round(orderItem.itemPrice * MISC_CHARGE_PCT * 100) / 100;
 
   const OPEN_FOREVER = ["header", "stepper", "content", "footer"];
 
@@ -156,8 +174,97 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const orderItemDetailsAccordionItem = (
     <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS}>
       <Box m="lg">
-        <Grid>
-          <Grid.Col span={8}>Shop info and order description</Grid.Col>
+        <Group position="apart" mb={5} mt={-5}>
+          <Center>
+            <Text fw={500} mr={2} size="sm">
+              {orderItem.serviceListing?.petBusiness?.companyName}
+            </Text>
+            <Button
+              size="xs"
+              variant="subtle"
+              leftIcon={
+                <IconBuildingStore
+                  size="1rem"
+                  style={{ marginRight: "-5px" }}
+                />
+              }
+              onClick={() =>
+                router.push(
+                  "/pet-businesses/" + orderItem.serviceListing?.petBusinessId,
+                )
+              }
+            >
+              Visit Shop
+            </Button>
+          </Center>
+          <Center>
+            <Box>
+              <Badge
+                radius="xl"
+                c="dark"
+                sx={{ fontWeight: 600 }}
+                variant="dot"
+              >
+                Ordered on: {formatISODayDateTime(orderItem.invoice.createdAt)}
+              </Badge>
+            </Box>
+          </Center>
+        </Group>
+        <Grid columns={24}>
+          <Grid.Col span={4} mih={125}>
+            {orderItem.serviceListing?.attachmentURLs?.length > 0 ? (
+              <Image
+                radius="md"
+                src={orderItem.serviceListing.attachmentURLs[0]}
+                fit="contain"
+                w="auto"
+                alt="Cart Item Photo"
+              />
+            ) : (
+              <Image
+                radius="md"
+                src="/pethub-placeholder.png"
+                fit="contain"
+                w="auto"
+                alt="Cart Item Photo"
+              />
+            )}
+          </Grid.Col>
+
+          <Grid.Col span={16}>
+            <Box>
+              <Link href={`/service-listings/${orderItem.serviceListingId}`}>
+                <Text fw={600} size={16}>
+                  {orderItem.serviceListing.title}
+                </Text>
+              </Link>
+              <Text lineClamp={2} size="xs">
+                {orderItem.serviceListing.description}
+              </Text>
+              {orderItem.serviceListing.duration && (
+                <Badge variant="dot" radius="xs">
+                  Duration:{" "}
+                  {convertMinsToDurationString(
+                    orderItem.serviceListing.duration,
+                  )}
+                </Badge>
+              )}
+            </Box>
+          </Grid.Col>
+
+          <Grid.Col
+            span={4}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "flex-end",
+            }}
+          >
+            <Text size="sm" fw={500} color="dimmed">
+              ${formatPriceForDisplay(orderItem.itemPrice)}
+            </Text>
+          </Grid.Col>
         </Grid>
       </Box>
     </Accordion.Item>
@@ -167,30 +274,84 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
     <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS}>
       <Box m="lg">
         <Grid>
-          <Grid.Col span={8} {...FLEX_END_PROPS}>
-            pos 1
+          <Grid.Col span={9} {...FLEX_END_PROPS}>
+            <Text size="sm">Subtotal</Text>
+            <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={4} {...FLEX_END_PROPS}>
-            text 1
+          <Grid.Col span={3} {...FLEX_END_PROPS}>
+            <Text size="sm" fw={500}>
+              ${formatPriceForDisplay(orderItem.itemPrice)}
+            </Text>
           </Grid.Col>
+
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={8} {...FLEX_END_PROPS}>
-            pos 2
+          <Grid.Col span={9} {...FLEX_END_PROPS}>
+            <Text size="sm">Platform Fee</Text>
+            <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={4} {...FLEX_END_PROPS}>
-            text 2
+          <Grid.Col span={3} {...FLEX_END_PROPS}>
+            <Text size="sm" fw={500}>
+              ${formatPriceForDisplay(PLATFORM_FEE)}
+            </Text>
           </Grid.Col>
+
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={8} {...FLEX_END_PROPS}>
-            pos 3
+          <Grid.Col span={9} {...FLEX_END_PROPS}>
+            <Text size="sm">Order Item Total</Text>
+            <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={4} {...FLEX_END_PROPS}>
-            text 3
+          <Grid.Col span={3} {...FLEX_END_PROPS}>
+            <Text size="md" fw={600}>
+              ${formatPriceForDisplay(orderItem.itemPrice + PLATFORM_FEE)}
+            </Text>
           </Grid.Col>
+
+          <Grid.Col>
+            <Divider />
+          </Grid.Col>
+          <Grid.Col span={9} {...FLEX_END_PROPS}>
+            <Text size="sm">Payment Method</Text>
+            <Divider orientation="vertical" ml="xl" />
+          </Grid.Col>
+          <Grid.Col span={3} {...FLEX_END_PROPS}>
+            <IconBrandStripe size="1rem" style={{ marginTop: "3px" }} />
+            &nbsp;
+            <Text size="sm" fw={500}>
+              Stripe
+            </Text>
+          </Grid.Col>
+
+          <Grid.Col>
+            <Divider />
+          </Grid.Col>
+          <Grid.Col span={9} {...FLEX_END_PROPS}>
+            <Text size="sm">Payment ID</Text>
+            <Divider orientation="vertical" ml="xl" />
+          </Grid.Col>
+          <Grid.Col span={3} {...FLEX_END_PROPS}>
+            <Text size="sm" fw={500}>
+              {orderItem.invoice?.paymentId.split("-").slice(0, 2).join("-")}{" "}
+              {/* The first 2 sections of the payment ID */}
+            </Text>
+          </Grid.Col>
+
+          <Grid.Col>
+            <Divider />
+          </Grid.Col>
+          <Grid.Col span={9} {...FLEX_END_PROPS}>
+            <Text size="sm">Invoice ID</Text>
+            <Divider orientation="vertical" ml="xl" />
+          </Grid.Col>
+          <Grid.Col span={3} {...FLEX_END_PROPS}>
+            <Text size="sm" fw={500}>
+              {orderItem.invoiceId}
+            </Text>
+          </Grid.Col>
+
           <Grid.Col>
             <Divider />
           </Grid.Col>
@@ -198,6 +359,8 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
       </Box>
     </Accordion.Item>
   );
+
+  console.log("item", orderItem);
 
   return (
     <div>

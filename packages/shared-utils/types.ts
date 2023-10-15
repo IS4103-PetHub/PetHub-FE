@@ -133,7 +133,7 @@ export interface Invoice {
   totalPrice: number;
   commissionRate: number;
   createdAt: string;
-  paymentId: number;
+  paymentId: string;
   miscCharge: number;
   orderItems: OrderItem[];
   petOwnerUserId: number;
