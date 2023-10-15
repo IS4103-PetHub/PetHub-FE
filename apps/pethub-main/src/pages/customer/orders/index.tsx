@@ -203,13 +203,6 @@ export default function Orders({ userId }: OrdersProps) {
     </Group>
   );
 
-  // const searchAndSortGroup = (
-  //   <Group position="right" align="center" mb="lg">
-  //     <SearchBar size="md" w="55%" text="Search for an order item here" onSearch={handleSearch} />
-  //     <SortBySelect data={orderItemsSortOptions} value={sortStatus} onChange={setSortStatus} w="35%" />
-  //   </Group>
-  // );
-
   const orderItemCards = records?.map((item) => (
     <Grid.Col key={item.orderItemId}>
       <OrderItemCard
