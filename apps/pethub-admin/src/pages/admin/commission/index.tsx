@@ -94,7 +94,7 @@ export default function Commission({ permissions }: CommissionProps) {
     const results = commissionRules.filter((rule: CommissionRule) =>
       rule.name.toLowerCase().includes(searchStr.toLowerCase()),
     );
-    setSearchResults(commissionRules);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -132,13 +132,12 @@ export default function Commission({ permissions }: CommissionProps) {
         ) : (
           <CommissionRuleTable
             commissionRules={records}
-            isSearching={isSearching}
+            totalNumGroup={searchResults.length}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
             disabled={!canWrite}
-            totalNumGroup={searchResults.length}
             canWrite={canWrite}
           />
         )}

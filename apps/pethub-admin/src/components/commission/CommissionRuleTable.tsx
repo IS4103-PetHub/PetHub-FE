@@ -18,7 +18,6 @@ import { CommissionRule } from "@/types/types";
 interface CommissionRuleTableProps {
   commissionRules: CommissionRule[];
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
@@ -30,7 +29,6 @@ interface CommissionRuleTableProps {
 export default function CommissionRuleTable({
   commissionRules,
   page,
-  isSearching,
   sortStatus,
   onSortStatusChange,
   onPageChange,
@@ -167,7 +165,7 @@ export default function CommissionRuleTable({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? commissionRules.length : totalNumGroup}
+        totalRecords={totalNumGroup}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
