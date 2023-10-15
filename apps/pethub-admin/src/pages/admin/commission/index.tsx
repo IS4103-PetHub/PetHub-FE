@@ -61,12 +61,15 @@ export default function Commission({ permissions }: CommissionProps) {
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    const sortedTags = sortBy(searchResults, sortStatus.columnAccessor);
+    const sortedCommissionRule = sortBy(
+      searchResults,
+      sortStatus.columnAccessor,
+    );
     if (sortStatus.direction === "desc") {
-      sortedTags.reverse();
+      sortedCommissionRule.reverse();
     }
     // Slice the sorted array to get the records for the current page
-    const newRecords = sortedTags.slice(from, to);
+    const newRecords = sortedCommissionRule.slice(from, to);
     // Update the records state
     setRecords(newRecords);
   }, [page, sortStatus, commissionRules, searchResults]);
@@ -80,7 +83,7 @@ export default function Commission({ permissions }: CommissionProps) {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [commissionRules]);
 
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
