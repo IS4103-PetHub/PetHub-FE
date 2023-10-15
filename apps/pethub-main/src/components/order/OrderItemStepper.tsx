@@ -4,18 +4,21 @@ import { OrderItem, OrderItemStatusEnum } from "shared-utils";
 import OrderItemStepperContent from "./OrderItemStepperContent";
 
 interface OrderItemStepperProps {
+  userId: number;
   active: number;
   setActive: (current: number) => void;
   orderItem: OrderItem;
   numberOfSteps: number;
 }
 
-const OrderItemStepper: React.FC<OrderItemStepperProps> = ({
+const OrderItemStepper = ({
+  userId,
   active,
   setActive,
   orderItem,
   numberOfSteps,
-}) => {
+  ...props
+}: OrderItemStepperProps) => {
   const activeStepIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -154,7 +157,7 @@ const OrderItemStepper: React.FC<OrderItemStepperProps> = ({
         key={idx}
         {...getStepText(stepType, activeStepIndexRef.current)}
       >
-        <OrderItemStepperContent orderItem={orderItem} />
+        <OrderItemStepperContent orderItem={orderItem} userId={userId} />
       </Stepper.Step>
     ));
   }

@@ -8,23 +8,54 @@ import {
   Stack,
   Stepper,
   Text,
+  useMantineTheme,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IconCopy } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
   formatISODayDateTime,
 } from "shared-utils";
+import { useCartOperations } from "@/hooks/cart";
+import { CartItem } from "@/types/types";
 
 interface OrderItemStepperContentProps {
+  userId: number;
   orderItem: OrderItem;
 }
 
 const OrderItemStepperContent = ({
+  userId,
   orderItem,
   ...props
 }: OrderItemStepperContentProps) => {
+  const theme = useMantineTheme();
+  const router = useRouter();
+  const { addItemToCart } = useCartOperations(userId);
+
+  function triggerNotImplementedNotification() {
+    notifications.show({
+      title: "Not Implemented",
+      color: "orange",
+      message: "This function is not implemented yet",
+    });
+  }
+
+  async function buyAgainHandler() {
+    await addItemToCart(
+      {
+        serviceListing: orderItem.serviceListing,
+        ...(orderItem.serviceListing.calendarGroupId ? {} : { quantity: 1 }),
+        isSelected: true,
+      } as CartItem,
+      1,
+    );
+    router.push("/customer/cart");
+  }
+
   const invoiceColumn = (
     <>
       <Grid.Col>
@@ -52,7 +83,9 @@ const OrderItemStepperContent = ({
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
-        <Button fullWidth>Buy Again</Button>
+        <Button fullWidth onClick={buyAgainHandler}>
+          Buy Again
+        </Button>
       </Grid.Col>
     </>
   );
@@ -70,7 +103,11 @@ const OrderItemStepperContent = ({
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
-        <Button fullWidth variant="filled">
+        <Button
+          fullWidth
+          variant="filled"
+          onClick={triggerNotImplementedNotification}
+        >
           Book Now
         </Button>
       </Grid.Col>
@@ -87,8 +124,9 @@ const OrderItemStepperContent = ({
         <Button
           fullWidth
           color="red"
-          variant="outline"
+          variant="light"
           sx={{ border: "1px solid #e0e0e0" }}
+          onClick={triggerNotImplementedNotification}
         >
           Refund
         </Button>
@@ -128,15 +166,22 @@ const OrderItemStepperContent = ({
       <Grid.Col>
         <Divider />
       </Grid.Col>
-      <Grid.Col span={8}>
+      <Grid.Col span={7}>
         <Text size="xs">
           🐾 Loved our products for your furry friend? We&apos;d be purr-fectly
           delighted if you could <strong>leave us a paw-sitive review</strong>!
           Your feedback helps other pets find their new favorites. 🐾
         </Text>
       </Grid.Col>
+      <Grid.Col span={1} />
       <Grid.Col span={4}>
-        <Button fullWidth variant="light" color="orange">
+        <Button
+          fullWidth
+          variant="light"
+          color="orange"
+          sx={{ border: "1px solid #e0e0e0" }}
+          onClick={triggerNotImplementedNotification}
+        >
           Review
         </Button>
       </Grid.Col>

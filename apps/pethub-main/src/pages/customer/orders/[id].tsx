@@ -162,6 +162,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
     <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS}>
       <Box m="lg" mt={30}>
         <OrderItemStepper
+          userId={userId}
           active={activeStep}
           setActive={setActiveStep}
           orderItem={orderItem}
@@ -334,8 +335,8 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={3} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
-              {orderItem.invoice?.paymentId.split("-").slice(0, 2).join("-")}{" "}
               {/* The first 2 sections of the payment ID */}
+              {orderItem.invoice?.paymentId.split("-").slice(0, 2).join("-")}
             </Text>
           </Grid.Col>
 
@@ -359,8 +360,6 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
       </Box>
     </Accordion.Item>
   );
-
-  console.log("item", orderItem);
 
   return (
     <div>
