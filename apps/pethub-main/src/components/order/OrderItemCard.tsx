@@ -237,11 +237,9 @@ const OrderItemCard = ({
         </Grid.Col>
         <Grid.Col span={16}>
           <Box>
-            <Link href={`/service-listings/${serviceListing.serviceListingId}`}>
-              <Text fw={600} size={16}>
-                {serviceListing.title}
-              </Text>
-            </Link>
+            <Text fw={600} size={16}>
+              {serviceListing.title}
+            </Text>
             <Text lineClamp={2} size="xs">
               {serviceListing.description}
             </Text>

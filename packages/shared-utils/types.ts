@@ -103,7 +103,17 @@ export interface OrderItem {
   invoice?: Invoice;
   serviceListingId: number;
   serviceListing: ServiceListing;
-  bookingBookingId?: number;
+  bookingId?: number;
+  booking?: {
+    bookingId: number;
+    dateCreated: string;
+    lastUpdated: string;
+    startTime: string;
+    endTime: string;
+    petOwnerId: number;
+    petId: number;
+    timeSlotId: number;
+  };
   attachmentKey: string;
   attachmentURL: string;
   paymentId?: string;
