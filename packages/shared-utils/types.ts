@@ -1,4 +1,8 @@
-import { RecurrencePatternEnum, ServiceCategoryEnum } from "./constants";
+import {
+  OrderItemStatusEnum,
+  RecurrencePatternEnum,
+  ServiceCategoryEnum,
+} from "./constants";
 
 export interface ChangePasswordPayload {
   email: string;
@@ -82,12 +86,17 @@ export interface ServiceListing {
   CalendarGroup?: CalendarGroup;
   calendarGroupId?: number;
   duration?: number;
+  // New fields from new flow
+  defaultExpiryDays: number;
+  lastPossibleDate?: string;
+  requiresBooking: boolean;
 }
 export interface OrderItem {
   orderItemId: number;
   itemName: string;
   itemPrice: number;
   quantity: number;
+  status: OrderItemStatusEnum;
   expiryDate?: string;
   voucherCode: string;
   invoiceId: number;
@@ -95,6 +104,9 @@ export interface OrderItem {
   serviceListingId: number;
   serviceListing: ServiceListing;
   bookingBookingId?: number;
+  attachmentKey: string;
+  attachmentURL: string;
+  paymentId?: string;
 }
 
 export interface OrderBarCounts {
@@ -116,6 +128,8 @@ export interface Invoice {
   orderItems: OrderItem[];
   petOwnerUserId: number;
   serviceListingServiceListingId?: number;
+  attachmentKey: string;
+  attachmentURL: string;
 }
 
 export interface RefundRequest {

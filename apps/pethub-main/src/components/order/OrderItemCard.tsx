@@ -28,6 +28,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Invoice,
   OrderItemStatusEnum,
   ServiceListing,
   convertMinsToDurationString,
@@ -42,25 +43,27 @@ import OrderItemPopover from "./OrderItemPopover";
 
 interface OrderItemCardProps {
   userId: number;
-  itemId: number;
-  orderId: string;
+  orderItemId: number;
+  invoiceId: number;
+  paymentId: string;
   price: number;
-  quantity: number;
+  expiryDate: string;
   voucherCode: string;
-  serviceListing: any; // change to ServiceListing after we move away from mock data
-  booking: any; // change to Booking after we move away from mock data
+  serviceListing: ServiceListing;
+  // booking: any; // change to Booking after we move away from mock data
   status: string;
 }
 
 const OrderItemCard = ({
   userId,
-  itemId,
-  orderId,
+  orderItemId,
+  invoiceId,
+  paymentId,
+  expiryDate,
   price,
-  quantity,
   voucherCode,
   serviceListing,
-  booking,
+  // booking,
   status,
 }: OrderItemCardProps) => {
   const theme = useMantineTheme();
@@ -69,16 +72,13 @@ const OrderItemCard = ({
 
   // Not accurate, test it again after we move away from mock data
   async function buyAgainHandler() {
-    const quantityToRebuy = quantity ? quantity : 1;
     await addItemToCart(
       {
         serviceListing: serviceListing,
-        ...(serviceListing.calendarGroupId
-          ? {}
-          : { quantity: quantityToRebuy }),
+        ...(serviceListing.calendarGroupId ? {} : { quantity: 1 }),
         isSelected: true,
       } as CartItem,
-      Number(quantityToRebuy),
+      1,
     );
     router.push("/customer/cart");
   }
@@ -95,7 +95,7 @@ const OrderItemCard = ({
           </Button>
           <OrderItemPopover
             text={`Make your booking and redeem your voucher before the end of the validity period on ${formatISODayDateTime(
-              serviceListing.lastPossibleDate,
+              expiryDate,
             )}`}
           />
         </>
@@ -104,7 +104,7 @@ const OrderItemCard = ({
         <>
           <OrderItemPopover
             text={`Redeem your voucher before the end of the validity period on ${formatISODayDateTime(
-              serviceListing.lastPossibleDate,
+              expiryDate,
             )}`}
           />
           <Center>
@@ -156,7 +156,7 @@ const OrderItemCard = ({
         <>
           <Text size="xs" fw={500} color="red">
             You did not redeem your voucher before the end of the validity
-            period on {formatISODayDateTime(serviceListing.lastPossibleDate)}
+            period on {formatISODayDateTime(expiryDate)}
           </Text>
         </>
       )}
@@ -185,9 +185,7 @@ const OrderItemCard = ({
               <IconBuildingStore size="1rem" style={{ marginRight: "-5px" }} />
             }
             onClick={() =>
-              router.push(
-                "/pet-businesses/" + serviceListing?.petBusiness?.userId,
-              )
+              router.push("/pet-businesses/" + serviceListing?.petBusinessId)
             }
           >
             Visit Shop
@@ -195,8 +193,8 @@ const OrderItemCard = ({
         </Center>
         <Center>
           <Box>
-            <Badge mr="md" radius="xs" c="dark" sx={{ fontWeight: 600 }}>
-              Order ID: {orderId}
+            <Badge mr="md" radius="xl" c="dark" sx={{ fontWeight: 600 }}>
+              Item ID: {orderItemId}
             </Badge>
             <OrderItemBadge text={status} />
           </Box>
@@ -216,9 +214,9 @@ const OrderItemCard = ({
                 : theme.colors.gray[1],
           },
         }}
-        onClick={() => router.push(`/customer/orders/${itemId}`)}
+        onClick={() => router.push(`/customer/orders/${orderItemId}`)}
       >
-        <Grid.Col span={4}>
+        <Grid.Col span={4} mih={125}>
           {serviceListing?.attachmentURLs?.length > 0 ? (
             <Image
               radius="md"
@@ -247,7 +245,7 @@ const OrderItemCard = ({
             <Text lineClamp={2} size="xs">
               {serviceListing.description}
             </Text>
-            {serviceListing.calendarGroupId && (
+            {serviceListing.duration && (
               <Badge variant="dot" radius="xs">
                 Duration: {convertMinsToDurationString(serviceListing.duration)}
               </Badge>
@@ -264,8 +262,7 @@ const OrderItemCard = ({
           }}
         >
           <Text size="sm" c="dark" fw={500}>
-            ${formatPriceForDisplay(price)}{" "}
-            {quantity && quantity !== 1 && `x ${quantity}`}
+            ${formatPriceForDisplay(price)}
           </Text>
         </Grid.Col>
       </Grid>
@@ -294,7 +291,7 @@ const OrderItemCard = ({
             </Text>
             &nbsp;
             <Text c="dark" fw={600} size="xl">
-              ${formatPriceForDisplay(quantity ? quantity * price : price)}
+              ${formatPriceForDisplay(price)}
             </Text>
           </Center>
         </Grid.Col>

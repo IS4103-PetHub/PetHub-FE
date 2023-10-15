@@ -61,8 +61,6 @@ export default function Cart({ userId }: CartProps) {
 
   const PLATFORM_FEE = 3.99; // stub value
 
-  console.log("getCartItems", getCartItems());
-
   useEffect(() => {
     const updatedCartItems = getCartItems();
     setCartItems(updatedCartItems);

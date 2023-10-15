@@ -201,6 +201,19 @@ export function useCartOperations(userId: number) {
     });
   };
 
+  const removeSelectedCartItems = () => {
+    const currentCart = getCurrentCart();
+    const newCartItems = currentCart.cartItems.filter(
+      (item) => !item.isSelected,
+    );
+    const recalculatedCartItems = recalculateCartItemId(newCartItems);
+    setCurrentCart({
+      ...currentCart,
+      itemCount: calculateTotalItemCount(recalculatedCartItems),
+      cartItems: recalculatedCartItems,
+    });
+  };
+
   /* ============================================== Settters ============================================= */
 
   /* ============================================== Getters ============================================== */
@@ -226,6 +239,10 @@ export function useCartOperations(userId: number) {
     );
   };
 
+  const getSelectedCartItems = () => {
+    return getCurrentCart().cartItems.filter((item) => item.isSelected);
+  };
+
   /* ============================================== Getters ============================================== */
 
   return {
@@ -241,5 +258,7 @@ export function useCartOperations(userId: number) {
     getCartSubtotal,
     setCartItemIsSelected,
     setAllCartItemsIsSelected,
+    getSelectedCartItems,
+    removeSelectedCartItems,
   };
 }

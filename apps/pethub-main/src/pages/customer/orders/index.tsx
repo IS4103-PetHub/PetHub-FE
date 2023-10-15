@@ -26,9 +26,9 @@ import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import OrderItemCard from "@/components/order/OrderItemCard";
 import OrderStatusBar from "@/components/order/OrderTabs";
+import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
 import { orderItemsSortOptions } from "@/types/constants";
 import { searchOrderItemsForCustomer, sortRecords } from "@/util";
-import sampleData from "./sampleData.json";
 
 interface OrdersProps {
   userId: number;
@@ -40,11 +40,32 @@ export default function Orders({ userId }: OrdersProps) {
   const [isSearching, setIsSearching] = useToggle();
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
-  // stub data
-  const isLoading = false;
-  const orderItems = sampleData.items;
+  const {
+    data: orderItems = [],
+    isLoading,
+    refetch,
+  } = useGetorderItemsByPetOwnerId(userId);
+  const [records, setRecords] = useState<OrderItem[]>(orderItems);
 
-  const [records, setRecords] = useState<any[]>(orderItems);
+  useEffect(() => {
+    // handle sort
+    const newRecords = sortRecords(
+      orderItemsSortOptions,
+      orderItems,
+      sortStatus,
+    );
+    setRecords(newRecords);
+  }, [orderItems, sortStatus]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (orderItems.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [orderItems]);
 
   useEffect(() => {
     if (activeTab === OrderItemStatusEnum.All) {
@@ -66,16 +87,6 @@ export default function Orders({ userId }: OrdersProps) {
     setRecords(filteredOrderItems);
   }, [activeTab, orderItems]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // display empty state message if no records fetched after some time
-      if (orderItems.length === 0) {
-        setHasNoFetchedRecords(true);
-      }
-    }, EMPTY_STATE_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, [orderItems]);
-
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
@@ -84,7 +95,7 @@ export default function Orders({ userId }: OrdersProps) {
     }
     setIsSearching(true);
     const results = searchOrderItemsForCustomer(
-      orderItems as any, // remove any once we move away from mock data
+      orderItems as OrderItem[],
       searchStr,
     );
     setRecords(results);
@@ -143,7 +154,7 @@ export default function Orders({ userId }: OrdersProps) {
       <SearchBar
         size="md"
         w="55%"
-        text="Search by title or order ID"
+        text="Search for an order item here"
         onSearch={handleSearch}
       />
       <SortBySelect
@@ -159,13 +170,13 @@ export default function Orders({ userId }: OrdersProps) {
     <Grid.Col key={item.orderItemId}>
       <OrderItemCard
         userId={userId}
-        itemId={item.orderItemId}
-        orderId={item.invoice.paymentId}
+        orderItemId={item.orderItemId}
+        invoiceId={item.invoiceId}
+        paymentId={item.paymentId}
+        expiryDate={item.expiryDate}
         price={item.itemPrice}
-        quantity={item.quantity}
         voucherCode={item.voucherCode}
         serviceListing={item.serviceListing}
-        booking={item.booking}
         status={item.status}
       />
     </Grid.Col>
