@@ -50,7 +50,6 @@ interface OrderItemCardProps {
   expiryDate: string;
   voucherCode: string;
   serviceListing: ServiceListing;
-  // booking: any; // change to Booking after we move away from mock data
   status: string;
 }
 
@@ -63,7 +62,6 @@ const OrderItemCard = ({
   price,
   voucherCode,
   serviceListing,
-  // booking,
   status,
 }: OrderItemCardProps) => {
   const theme = useMantineTheme();

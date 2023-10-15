@@ -1,4 +1,13 @@
 import { Badge, Stepper } from "@mantine/core";
+import {
+  IconBrowserCheck,
+  IconBulb,
+  IconCalendarEvent,
+  IconClockExclamation,
+  IconCreditCard,
+  IconMenu2,
+  IconStar,
+} from "@tabler/icons-react";
 import React, { useEffect, useRef } from "react";
 import { OrderItem, OrderItemStatusEnum } from "shared-utils";
 import OrderItemStepperContent from "./OrderItemStepperContent";
@@ -25,7 +34,7 @@ const OrderItemStepper = ({
     if (activeStepIndexRef.current !== null) {
       setActive(activeStepIndexRef.current);
     }
-  }, [activeStepIndexRef.current]);
+  }, [setActive, activeStepIndexRef.current]);
 
   const STEPPER_PROPS = {
     active: active,
@@ -81,6 +90,16 @@ const OrderItemStepper = ({
     [OrderItemStatusEnum.Fulfilled, "Fulfilled"],
     [OrderItemStatusEnum.Expired, "Expired"],
     [OrderItemStatusEnum.Refunded, "Refunded"],
+  ]);
+
+  // Apparently JSX elements in a map need a unique key or husky will be mad
+  const mapStepTypeToIcon = new Map([
+    ["Ordered", null], // This will never be displayed anyways
+    ["Booked", <IconBulb key="IconBulb" />],
+    ["Fulfilled", <IconBrowserCheck key="IconBrowserCheck" />],
+    ["Rated", <IconStar key="IconStar" />],
+    ["Expired", <IconClockExclamation key="IconClockExclamation" />],
+    ["Refunded", <IconCreditCard key="IconCreditCard" />],
   ]);
 
   // Get the appropriate text for a stepper step based on the step group and current index
@@ -156,6 +175,7 @@ const OrderItemStepper = ({
       <Stepper.Step
         key={idx}
         {...getStepText(stepType, activeStepIndexRef.current)}
+        icon={mapStepTypeToIcon.get(stepType)}
       >
         <OrderItemStepperContent orderItem={orderItem} userId={userId} />
       </Stepper.Step>
