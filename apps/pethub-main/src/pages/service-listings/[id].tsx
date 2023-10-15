@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { ServiceListing } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
@@ -49,7 +50,6 @@ import {
   AddRemoveFavouriteServiceListingPayload,
   CartItem,
 } from "@/types/types";
-import { formatPriceForDisplay } from "@/util";
 
 interface ServiceListingDetailsProps {
   userId: number;
@@ -321,7 +321,7 @@ export default function ServiceListingDetails({
             >
               <Group position="apart">
                 <Text size="xl" weight={500}>
-                  ${formatPriceForDisplay(serviceListing.basePrice)}
+                  ${formatNumber2Decimals(serviceListing.basePrice)}
                 </Text>
               </Group>
               {!serviceListing.calendarGroupId && (

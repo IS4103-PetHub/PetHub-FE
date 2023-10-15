@@ -4,6 +4,7 @@ import React from "react";
 import {
   ServiceListing,
   TABLE_PAGE_SIZE,
+  formatNumber2Decimals,
   getMinTableHeight,
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
@@ -82,7 +83,7 @@ const ServiceListingTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return `${record.basePrice.toFixed(2)}`;
+              return `${formatNumber2Decimals(record.basePrice)}`;
             },
           },
           {

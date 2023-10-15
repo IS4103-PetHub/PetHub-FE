@@ -109,7 +109,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                 <Text size="lg" weight={600} color={theme.primaryColor}>
                   {petBusiness.commissionRule.name}
                 </Text>
-                <Group>
+                <Group ml={-6}>
                   <CustomPopover
                     text="PetHub collects a small commission fee from transactions to
                   help cover operational costs."
@@ -117,9 +117,8 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                   >
                     {}
                   </CustomPopover>
-                  <Text ml={-15}>Commission rate</Text>
-                  <Text>
-                    :{" "}
+                  <Text ml={-15}>
+                    Commission rate:{" "}
                     <strong>
                       {petBusiness.commissionRule.commissionRate * 100}%
                     </strong>

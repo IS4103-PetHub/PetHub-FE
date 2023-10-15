@@ -20,8 +20,10 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CustomPopover from "web-ui/shared/CustomPopover";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
@@ -29,7 +31,11 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import CartItemBookingAlert from "@/components/cart/CartItemBookingAlert";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
-import { formatPriceForDisplay } from "@/util";
+import {
+  GST_PERCENT,
+  PLATFORM_FEE_PERCENT,
+  PLATFORM_FEE_MESSAGE,
+} from "@/types/constants";
 
 interface CartProps {
   userId: number;
@@ -46,15 +52,12 @@ export default function Cart({ userId }: CartProps) {
     setCartItemIsSelected,
     setAllCartItemsIsSelected,
   } = useCartOperations(userId);
+  const router = useRouter();
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [expiredItems, setExpiredItems] = useState({}); // This might not be needed anymore as per PH-264
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
-
-  const PLATFORM_FEE = 3.99; // stub value
-
-  console.log("getCartItems", getCartItems());
 
   useEffect(() => {
     const updatedCartItems = getCartItems();
@@ -134,12 +137,16 @@ export default function Cart({ userId }: CartProps) {
     return totalPrice;
   };
 
+  function calculatePlatformFee() {
+    return Math.round(calculateTotalPrice() * PLATFORM_FEE_PERCENT * 100) / 100;
+  }
+
   const clearAllCartItems = () => {
     clearCart();
     notifications.show({
       title: "Cart Cleared",
       color: "green",
-      message: "All items have been removed from your cart",
+      message: "All items have been removed from your cart.",
     });
   };
 
@@ -153,10 +160,29 @@ export default function Cart({ userId }: CartProps) {
       return;
     }
     notifications.show({
-      title: "Checking out cart placeholder",
-      color: "orange",
-      message: "TODO: implement checkout and book",
+      id: "checkout",
+      title: "Redirecting to Checkout...",
+      color: "blue",
+      loading: true,
+      message: "",
     });
+
+    // redirect to checkout page with checkout items information
+    const platformFee = calculatePlatformFee();
+    router.push(
+      {
+        pathname: "/customer/checkout",
+        query: {
+          itemCount: calculateTotalBuyables(),
+          subtotal: calculateTotalPrice() * (1 - GST_PERCENT),
+          gst: calculateTotalPrice() * GST_PERCENT,
+          platformFee,
+          total: calculateTotalPrice() + platformFee,
+        },
+      },
+      "/customer/checkout",
+    );
+    notifications.hide("checkout");
   }
 
   // As long as all non-expired items are checked, this will be true
@@ -257,19 +283,17 @@ export default function Cart({ userId }: CartProps) {
           $
           {calculateTotalPrice() === 0
             ? "0.00"
-            : formatPriceForDisplay(
-                calculateTotalPrice() * 0.92 + PLATFORM_FEE,
-              )}
+            : formatNumber2Decimals(calculateTotalPrice() * (1 - GST_PERCENT))}
         </Text>
       </Group>
       {!hasNoCheckedItems() && (
         <>
           <Group position="apart" mb="xs">
             <Text size="sm" c="dimmed">
-              GST (8%)
+              {`GST (${GST_PERCENT * 100}%)`}
             </Text>
             <Text size="sm" fw={500} c="dimmed">
-              ${formatPriceForDisplay(calculateTotalPrice() * 0.08)}
+              ${formatNumber2Decimals(calculateTotalPrice() * GST_PERCENT)}
             </Text>
           </Group>
           <Group position="apart" mb="xs">
@@ -277,16 +301,10 @@ export default function Cart({ userId }: CartProps) {
               <Text size="sm" c="dimmed">
                 Platform fee
               </Text>
-              <CustomPopover
-                text="The platform fee covers operational costs to help keep PetHub up and
-          running. PetHub strives to deliver a smooth and pleasant experience
-          for all users."
-              >
-                {}
-              </CustomPopover>
+              <CustomPopover text={PLATFORM_FEE_MESSAGE}>{}</CustomPopover>
             </div>
             <Text size="sm" fw={500} c="dimmed">
-              ${formatPriceForDisplay(PLATFORM_FEE)}
+              ${formatNumber2Decimals(calculatePlatformFee())}
             </Text>
           </Group>
         </>
@@ -295,7 +313,10 @@ export default function Cart({ userId }: CartProps) {
       <Group position="apart">
         <Text size="lg">Total</Text>
         <Text size="lg" fw={700}>
-          ${formatPriceForDisplay(calculateTotalPrice() + PLATFORM_FEE)}
+          $
+          {formatNumber2Decimals(
+            calculateTotalPrice() + calculatePlatformFee(),
+          )}
         </Text>
       </Group>
       <Button
@@ -317,7 +338,7 @@ export default function Cart({ userId }: CartProps) {
         <title>My Cart - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+      <Container mt={50} size="75vw" sx={{ overflow: "hidden" }}>
         <Group position="apart">
           <PageTitle title={`My cart (${getItemCount()})`} mb="lg" />
         </Group>
