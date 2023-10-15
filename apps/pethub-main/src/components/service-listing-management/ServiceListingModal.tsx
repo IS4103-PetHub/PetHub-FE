@@ -444,8 +444,9 @@ const ServiceListingModal = ({
           <Checkbox
             disabled={isViewing}
             label="Requires Booking"
-            defaultChecked={serviceListingForm.values.requiresBooking}
-            {...serviceListingForm.getInputProps("requiresBooking")}
+            {...serviceListingForm.getInputProps("requiresBooking", {
+              type: "checkbox",
+            })}
           />
 
           {serviceListingForm.values.requiresBooking && (
