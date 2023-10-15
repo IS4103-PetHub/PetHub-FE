@@ -68,6 +68,21 @@ export default function Orders({ userId }: OrdersProps) {
   }, [orderItems]);
 
   useEffect(() => {
+    filterRecordsByActiveTab();
+  }, [activeTab, orderItems]);
+
+  const handleSearch = (searchStr: string) => {
+    if (searchStr.length === 0) {
+      setIsSearching(false);
+      filterRecordsByActiveTab(); // reset records if search cleared
+      return;
+    }
+    setIsSearching(true);
+    const results = searchOrderItemsForCustomer(records, searchStr);
+    setRecords(results);
+  };
+
+  function filterRecordsByActiveTab() {
     if (activeTab === OrderItemStatusEnum.All) {
       setRecords(orderItems);
       return;
@@ -85,21 +100,7 @@ export default function Orders({ userId }: OrdersProps) {
       );
     }
     setRecords(filteredOrderItems);
-  }, [activeTab, orderItems]);
-
-  const handleSearch = (searchStr: string) => {
-    if (searchStr.length === 0) {
-      setIsSearching(false);
-      setRecords(orderItems);
-      return;
-    }
-    setIsSearching(true);
-    const results = searchOrderItemsForCustomer(
-      orderItems as OrderItem[],
-      searchStr,
-    );
-    setRecords(results);
-  };
+  }
 
   function calculateOrderBarCounts() {
     const orderBarCounts: OrderBarCounts = {

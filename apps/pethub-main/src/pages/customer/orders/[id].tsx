@@ -73,6 +73,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
     sx: {
       display: "flex",
       justifyContent: "flex-end",
+      marginBottom: "-4px",
     },
   };
 
@@ -272,7 +273,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   );
 
   const orderItemPaymentDetailsAccordionItem = (
-    <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS}>
+    <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS} mb={50}>
       <Box m="lg">
         <Grid>
           <Grid.Col span={9} {...FLEX_END_PROPS}>
@@ -351,10 +352,6 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
             <Text size="sm" fw={500}>
               {orderItem.invoiceId}
             </Text>
-          </Grid.Col>
-
-          <Grid.Col>
-            <Divider />
           </Grid.Col>
         </Grid>
       </Box>
