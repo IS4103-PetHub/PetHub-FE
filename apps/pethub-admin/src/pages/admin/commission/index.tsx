@@ -17,6 +17,7 @@ import CommissionRuleModal from "@/components/commission/CommissionRuleModal";
 import CommissionRuleTable from "@/components/commission/CommissionRuleTable";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import { useGetAllCommissionRules } from "@/hooks/commission-rule";
+import { PermissionsCodeEnum } from "@/types/constants";
 import { CommissionRule, Permission } from "@/types/types";
 
 interface CommissionProps {
@@ -28,11 +29,13 @@ export default function Commission({ permissions }: CommissionProps) {
    *   Permissions
    */
   // TODO: permissions
-  // const permissionCodes = permissions.map((permission) => permission.code);
-  // const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteCommissionGroups);
-  // const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadCommissionGroups);
-  const canWrite = true;
-  const canRead = true;
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WriteCommissionRules,
+  );
+  const canRead = permissionCodes.includes(
+    PermissionsCodeEnum.ReadCommissionRules,
+  );
 
   const {
     data: commissionRules = [],
@@ -52,12 +55,13 @@ export default function Commission({ permissions }: CommissionProps) {
     columnAccessor: "commissionRuleId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<CommissionRule[]>([]);
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    const sortedTags = sortBy(commissionRules, sortStatus.columnAccessor);
+    const sortedTags = sortBy(searchResults, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedTags.reverse();
     }
@@ -65,9 +69,10 @@ export default function Commission({ permissions }: CommissionProps) {
     const newRecords = sortedTags.slice(from, to);
     // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, commissionRules]);
+  }, [page, sortStatus, commissionRules, searchResults]);
 
   useEffect(() => {
+    setSearchResults(commissionRules);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (commissionRules.length === 0) {
@@ -80,7 +85,7 @@ export default function Commission({ permissions }: CommissionProps) {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(commissionRules);
+      setSearchResults(commissionRules);
       setPage(1);
       return;
     }
@@ -89,7 +94,7 @@ export default function Commission({ permissions }: CommissionProps) {
     const results = commissionRules.filter((rule: CommissionRule) =>
       rule.name.toLowerCase().includes(searchStr.toLowerCase()),
     );
-    setRecords(results);
+    setSearchResults(commissionRules);
     setPage(1);
   };
 
@@ -133,7 +138,7 @@ export default function Commission({ permissions }: CommissionProps) {
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
             disabled={!canWrite}
-            totalNumGroup={commissionRules.length}
+            totalNumGroup={searchResults.length}
             canWrite={canWrite}
           />
         )}
