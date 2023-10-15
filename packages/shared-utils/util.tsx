@@ -60,6 +60,11 @@ export function formatISODayDateTime(dateString: string) {
   return dayjs(dateString).format("ddd D/M/YYYY h:mma");
 }
 
+export function formatISODateTimeShort(dateString: string) {
+  // e.g. 14-09-2023 21:10
+  return dayjs(dateString).format("DD-MM-YYYY HH:mm");
+}
+
 export function convertMinsToDurationString(mins: number) {
   const minutes = mins % 60;
   const hours = Math.floor(mins / 60);

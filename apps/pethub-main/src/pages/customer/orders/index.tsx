@@ -48,14 +48,8 @@ export default function Orders({ userId }: OrdersProps) {
   const [records, setRecords] = useState<OrderItem[]>(orderItems);
 
   useEffect(() => {
-    // handle sort
-    const newRecords = sortRecords(
-      orderItemsSortOptions,
-      orderItems,
-      sortStatus,
-    );
-    setRecords(newRecords);
-  }, [orderItems, sortStatus]);
+    setRecords(getFilteredAndSortedRecords());
+  }, [orderItems, activeTab, sortStatus]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -67,14 +61,10 @@ export default function Orders({ userId }: OrdersProps) {
     return () => clearTimeout(timer);
   }, [orderItems]);
 
-  useEffect(() => {
-    filterRecordsByActiveTab();
-  }, [activeTab, orderItems]);
-
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      filterRecordsByActiveTab(); // reset records if search cleared
+      setRecords(getFilteredAndSortedRecords()); // reset records if search cleared
       return;
     }
     setIsSearching(true);
@@ -82,24 +72,24 @@ export default function Orders({ userId }: OrdersProps) {
     setRecords(results);
   };
 
-  function filterRecordsByActiveTab() {
-    if (activeTab === OrderItemStatusEnum.All) {
-      setRecords(orderItems);
-      return;
+  function getFilteredAndSortedRecords() {
+    // filter based on activeTab
+    let filteredOrderItems = orderItems;
+    if (activeTab !== OrderItemStatusEnum.All) {
+      if (activeTab === OrderItemStatusEnum.Fulfilled) {
+        filteredOrderItems = orderItems.filter(
+          (item) =>
+            item.status === OrderItemStatusEnum.Fulfilled ||
+            item.status === OrderItemStatusEnum.PaidOut,
+        );
+      } else {
+        filteredOrderItems = orderItems.filter(
+          (item) => item.status === activeTab,
+        );
+      }
     }
-    let filteredOrderItems;
-    if (activeTab === OrderItemStatusEnum.Fulfilled) {
-      filteredOrderItems = orderItems.filter(
-        (item) =>
-          item.status === OrderItemStatusEnum.Fulfilled ||
-          item.status === OrderItemStatusEnum.PaidOut,
-      );
-    } else {
-      filteredOrderItems = orderItems.filter(
-        (item) => item.status === activeTab,
-      );
-    }
-    setRecords(filteredOrderItems);
+    // then sort
+    return sortRecords(orderItemsSortOptions, filteredOrderItems, sortStatus);
   }
 
   function calculateOrderBarCounts() {
@@ -179,6 +169,7 @@ export default function Orders({ userId }: OrdersProps) {
         voucherCode={item.voucherCode}
         serviceListing={item.serviceListing}
         status={item.status}
+        createdAt={item.createdAt}
       />
     </Grid.Col>
   ));

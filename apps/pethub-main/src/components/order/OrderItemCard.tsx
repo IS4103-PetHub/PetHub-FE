@@ -32,6 +32,9 @@ import {
   OrderItemStatusEnum,
   ServiceListing,
   convertMinsToDurationString,
+  formatISODateLong,
+  formatISODateOnly,
+  formatISODateTimeShort,
   formatISODayDateTime,
 } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
@@ -51,6 +54,7 @@ interface OrderItemCardProps {
   voucherCode: string;
   serviceListing: ServiceListing;
   status: string;
+  createdAt: string;
 }
 
 const OrderItemCard = ({
@@ -63,6 +67,7 @@ const OrderItemCard = ({
   voucherCode,
   serviceListing,
   status,
+  createdAt,
 }: OrderItemCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -190,6 +195,9 @@ const OrderItemCard = ({
           </Button>
         </Center>
         <Center>
+          <Text size="xs" mr="md" fw={500} mt={3}>
+            {formatISODateTimeShort(createdAt)}
+          </Text>
           <Box>
             <Badge mr="md" radius="xl" c="dark" sx={{ fontWeight: 600 }}>
               Item ID: {orderItemId}

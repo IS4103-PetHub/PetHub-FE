@@ -117,6 +117,7 @@ export interface OrderItem {
   attachmentKey: string;
   attachmentURL: string;
   paymentId?: string;
+  createdAt?: string;
 }
 
 export interface OrderBarCounts {
