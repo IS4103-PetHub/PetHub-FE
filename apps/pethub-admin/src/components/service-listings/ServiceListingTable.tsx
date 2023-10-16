@@ -104,7 +104,7 @@ const ServiceListingTable = ({
                   }}
                   serviceListing={record}
                 />
-                {canWrite ? (
+                {canWrite && (
                   <DeleteActionButtonModal
                     title={`Are you sure you want to delete ${record.title}?`}
                     subtitle="Pet Owners would no longer be able to view this service listing."
@@ -115,7 +115,7 @@ const ServiceListingTable = ({
                       }
                     }}
                   />
-                ) : null}
+                )}
               </Group>
             ),
           },

@@ -233,15 +233,15 @@ const SelectTimeslotModal = ({
         </Text>
         <Divider mb="lg" />
 
-        {isLoading ? (
+        {isLoading && (
           <Box h={200} sx={{ verticalAlign: "center" }}>
             <Center h="100%" w="100%">
               <Loader opacity={0.5} />
             </Center>
           </Box>
-        ) : null}
+        )}
 
-        {selectedDate ? (
+        {selectedDate && (
           <>
             <Group mb="md">
               <Text size="lg" weight={500}>
@@ -261,7 +261,7 @@ const SelectTimeslotModal = ({
               </Chip.Group>
             </Group>
           </>
-        ) : null}
+        )}
       </Grid.Col>
     </Grid>
   );
@@ -321,12 +321,12 @@ const SelectTimeslotModal = ({
           onClick={() => setShowConfirmation(false)}
         />
         <Group position="right">
-          {selectedTimeslot && !showConfirmation ? (
+          {selectedTimeslot && !showConfirmation && (
             <Text>
               <strong>Selected: </strong>
               {formatISODayDateTime(selectedTimeslot)}
             </Text>
-          ) : null}
+          )}
           <Button
             size="md"
             color="gray"

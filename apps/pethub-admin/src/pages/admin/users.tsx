@@ -43,54 +43,54 @@ function AccountTabs({
   return (
     <Tabs defaultValue={getDefaultTab()} mt="md">
       <Tabs.List>
-        {canReadInternalUsers ? (
+        {canReadInternalUsers && (
           <Tabs.Tab
             value={AccountTypeEnum.InternalUser}
             icon={<IconUserCog size="1rem" color="gray" />}
           >
             Internal User
           </Tabs.Tab>
-        ) : null}
+        )}
 
-        {canReadPetBusinesses ? (
+        {canReadPetBusinesses && (
           <Tabs.Tab
             value={AccountTypeEnum.PetBusiness}
             icon={<IconBuildingStore size="1rem" color="gray" />}
           >
             Pet Business
           </Tabs.Tab>
-        ) : null}
+        )}
 
-        {canReadPetOwners ? (
+        {canReadPetOwners && (
           <Tabs.Tab
             value={AccountTypeEnum.PetOwner}
             icon={<IconPaw size="1rem" color="gray" />}
           >
             Pet Owner
           </Tabs.Tab>
-        ) : null}
+        )}
       </Tabs.List>
 
-      {canReadInternalUsers ? (
+      {canReadInternalUsers && (
         <Tabs.Panel value={AccountTypeEnum.InternalUser} pt="xs">
           <InternalUserTable
             sessionUserId={sessionUserId}
             disabled={!canWriteInternalUsers}
           />
         </Tabs.Panel>
-      ) : null}
+      )}
 
-      {canReadPetBusinesses ? (
+      {canReadPetBusinesses && (
         <Tabs.Panel value={AccountTypeEnum.PetBusiness} pt="xs">
           <PetBusinessTable />
         </Tabs.Panel>
-      ) : null}
+      )}
 
-      {canReadPetOwners ? (
+      {canReadPetOwners && (
         <Tabs.Panel value={AccountTypeEnum.PetOwner} pt="xs">
           <PetOwnerTable />
         </Tabs.Panel>
-      ) : null}
+      )}
     </Tabs>
   );
 }

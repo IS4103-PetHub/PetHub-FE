@@ -247,9 +247,9 @@ export default function ServiceListingDetails({
         </Stack>
 
         {/*if there are addresses*/}
-        {serviceListing.addresses.length > 0 ? (
+        {serviceListing.addresses.length > 0 && (
           <BusinessLocationsGroup addresses={serviceListing.addresses} />
-        ) : null}
+        )}
       </Accordion.Panel>
     </Accordion.Item>
   );
