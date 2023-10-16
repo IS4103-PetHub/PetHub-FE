@@ -267,6 +267,7 @@ const SelectTimeslotModal = ({
           : "Please confirm your selected timeslot and select a pet (optional)."}
       </Text>
       <TimeslotCard
+        orderItemId={orderItemId}
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
