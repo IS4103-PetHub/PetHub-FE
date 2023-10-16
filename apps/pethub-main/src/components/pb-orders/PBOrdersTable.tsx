@@ -1,20 +1,20 @@
 import { ActionIcon, Group, useMantineTheme } from "@mantine/core";
 import { IconFileDownload } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import {
+  OrderItem,
   TABLE_PAGE_SIZE,
   formatStringToLetterCase,
   getMinTableHeight,
 } from "shared-utils";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { OrderItem } from "@/types/types";
-import { formatPriceForDisplay } from "@/util";
 
 interface PBOrdersTableProps {
   records: OrderItem[];
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
@@ -24,14 +24,13 @@ interface PBOrdersTableProps {
 const PBOrdersTable = ({
   records,
   page,
-  isSearching,
   sortStatus,
   onSortStatusChange,
   onPageChange,
   totalNumRecords,
 }: PBOrdersTableProps) => {
+  const router = useRouter();
   const theme = useMantineTheme();
-  const [selectedOrder, setSelectedOrder] = useState(null);
 
   return (
     <>
@@ -43,37 +42,53 @@ const PBOrdersTable = ({
             accessor: "orderItemId",
             title: "ID",
             textAlignment: "left",
+            sortable: true,
           },
           // item name
           {
             accessor: "itemName",
             title: "Name",
             textAlignment: "left",
+            sortable: true,
           },
-          // item price
           {
             accessor: "itemPrice",
             title: "Price ($)",
             textAlignment: "right",
             render: (record) => {
-              return formatPriceForDisplay(record.itemPrice);
+              return `$ ${record.itemPrice.toFixed(2)}`;
             },
+            sortable: true,
           },
-          // expiryDate
           {
-            accessor: "expiryDate",
-            title: "Expiry Date",
+            accessor: "createdAt",
+            title: "Date Created",
             textAlignment: "left",
+            render: (record) => {
+              return record.invoice
+                ? dayjs(record.invoice.createdAt).format("YYYY-MM-DD")
+                : "-";
+            },
+            sortable: true,
+          },
+          {
+            accessor: "bookingDate",
+            title: "Appointment Date",
+            textAlignment: "left",
+            render: (record) => {
+              return record.booking
+                ? dayjs(record.booking.startTime).format("YYYY-MM-DD")
+                : "-";
+            },
+            sortable: true,
           },
           // status
           {
-            accessor: "orderItemStatus",
+            accessor: "status",
             title: "Status",
             textAlignment: "left",
-            render: (record) =>
-              formatStringToLetterCase(record.orderItemStatus),
+            render: (record) => formatStringToLetterCase(record.status),
           },
-          // actions (view details, maybe view invoice)
           {
             accessor: "actions",
             title: "Actions",
@@ -82,8 +97,7 @@ const PBOrdersTable = ({
               <Group position="right">
                 <ViewActionButton
                   onClick={function (): void {
-                    setSelectedOrder(order);
-                    console.log("OPENIGN VIEW", order.orderItemId);
+                    router.push(`${router.asPath}/${order.orderItemId}`);
                   }}
                 />
                 <ActionIcon
@@ -93,8 +107,7 @@ const PBOrdersTable = ({
                   variant={theme.colorScheme === "light" ? "outline" : "light"}
                   sx={{ border: "1.5px solid" }}
                   onClick={function (): void {
-                    setSelectedOrder(order);
-                    console.log("DOWNLOADING INVOICE", order.orderItemId);
+                    window.open(order.attachmentURL, "_blank");
                   }}
                 >
                   <IconFileDownload size={"1.25rem"} />
@@ -113,7 +126,7 @@ const PBOrdersTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumRecords}
+        totalRecords={totalNumRecords}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}

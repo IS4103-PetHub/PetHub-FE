@@ -1,4 +1,8 @@
-import { RecurrencePatternEnum, ServiceCategoryEnum } from "./constants";
+import {
+  OrderItemStatusEnum,
+  RecurrencePatternEnum,
+  ServiceCategoryEnum,
+} from "./constants";
 
 export interface ChangePasswordPayload {
   email: string;
@@ -23,7 +27,7 @@ export interface Tag {
 }
 
 export interface Address {
-  addressId?: string;
+  addressId?: number;
   addressName: string;
   line1: string;
   line2: string;
@@ -96,4 +100,72 @@ export interface CommissionRule {
   createdAt: string;
   updatedAt: string;
   petBusinesses: any[];
+}
+
+export interface OrderItem {
+  orderItemId: number;
+  itemName: string;
+  itemPrice: number;
+  status: OrderItemStatusEnum;
+  expiryDate?: string;
+  voucherCode: string;
+  invoiceId: number;
+  invoice?: {
+    paymentId: string;
+    createdAt: string;
+  };
+  serviceListingId: number;
+  serviceListing: ServiceListing;
+  bookingId?: number;
+  booking?: {
+    bookingId: number;
+    dateCreated: string;
+    lastUpdated: string;
+    startTime: string;
+    endTime: string;
+    petOwnerId: number;
+    petId: number;
+    timeSlotId: number;
+    serviceListingId?: number;
+    orderItemId?: number;
+  };
+  attachmentKey: string;
+  attachmentURL: string;
+  commissionRate: number;
+}
+
+export interface OrderBarCounts {
+  allCount: number;
+  toBookCount: number;
+  toFulfillCount: number;
+  fulfilledCount: number;
+  expiredCount: number;
+  refundedCount: number;
+}
+
+export interface Invoice {
+  invoiceId: number;
+  totalPrice: number;
+  commissionRate: number;
+  createdAt: string;
+  paymentId: string;
+  miscCharge: number;
+  orderItems: OrderItem[];
+  petOwnerUserId: number;
+  serviceListingServiceListingId?: number;
+  attachmentKey: string;
+  attachmentURL: string;
+}
+
+export interface RefundRequest {
+  refundRequestId: number;
+  createdAt: string;
+  updatedAt: string;
+  status: string;
+  reason?: string;
+  processedAt?: string;
+  petOwnerId: number;
+  orderId: number;
+  order: Invoice;
+  petBusinessId: number;
 }

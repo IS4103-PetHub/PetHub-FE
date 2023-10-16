@@ -7,7 +7,6 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   GenderEnum,
-  OrderItemStatus,
   CommissionRule,
 } from "shared-utils";
 import { PetTypeEnum } from "./constants";
@@ -224,6 +223,7 @@ export interface Booking {
   // not yet implemented
   invoiceId?: number;
   transactionId?: number;
+  orderItemId?: number;
 }
 
 export interface AddRemoveFavouriteServiceListingPayload {
@@ -254,34 +254,4 @@ export interface Cart {
   itemCount: number;
   userId: number;
   cartItemUserSelection: CartItem[];
-}
-
-export interface Invoice {
-  invoiceId: number;
-  commissionRate: number;
-  totalPrice: number;
-  miscCharge: number;
-  createdAt: string;
-
-  // paymentId: number;
-  // orderItems: OrderItem;
-}
-
-export interface OrderItem {
-  orderItemId: number;
-  itemName: string;
-  itemPrice: number;
-  quantity: number;
-  expiryDate: string;
-  voucherCode: string;
-  orderItemStatus: OrderItemStatus;
-
-  invoiceId?: number;
-  invoice?: Invoice;
-
-  serviceListingId?: number;
-  serviceListing?: ServiceListing;
-
-  bookingId?: number;
-  booking?: Booking;
 }

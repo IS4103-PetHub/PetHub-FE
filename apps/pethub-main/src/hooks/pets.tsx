@@ -14,6 +14,15 @@ export const useGetPetsByPetOwnerId = (userId: number) => {
   });
 };
 
+export const useGetPetByPetId = (petId: number) => {
+  return useQuery({
+    queryFn: async () => {
+      const data = await api.get(`${PETS_API}/${petId}`);
+      return data.data as Pet;
+    },
+  });
+};
+
 export const useCreatePet = () => {
   return useMutation({
     mutationFn: async (payload: PetPayload) => {
