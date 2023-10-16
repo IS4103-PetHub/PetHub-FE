@@ -49,6 +49,9 @@ export default function ApplicationsTable({
   const router = useRouter();
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [isSearching, setIsSearching] = useToggle();
+  const [searchResults, setSearchResults] = useState<PetBusinessApplication[]>(
+    [],
+  );
 
   // Filter the applications by the applicationStatus, unless it's 'All'
   const filterApplications = (applications: PetBusinessApplication[]) => {
@@ -83,14 +86,21 @@ export default function ApplicationsTable({
   useEffect(() => {
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE;
-    const filteredApplications = filterApplications(petBusinessApplications);
+    const filteredApplications = filterApplications(searchResults);
     const sortedPetBusinessApplications =
       sortApplications(filteredApplications);
     const newRecords = sortedPetBusinessApplications.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, petBusinessApplications, applicationStatus]);
+  }, [
+    page,
+    sortStatus,
+    petBusinessApplications,
+    applicationStatus,
+    searchResults,
+  ]);
 
   useEffect(() => {
+    setSearchResults(petBusinessApplications);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petBusinessApplications.length === 0) {
@@ -98,7 +108,7 @@ export default function ApplicationsTable({
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [petBusinessApplications]);
 
   if (isError) {
     return errorAlert("Error fetching Pet Business Applications");
@@ -108,14 +118,14 @@ export default function ApplicationsTable({
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(petBusinessApplications);
+      setSearchResults(petBusinessApplications);
       setPage(1);
       return;
     }
 
     setIsSearching(true);
-    const results = searchPBApplications(records, searchStr);
-    setRecords(results);
+    const results = searchPBApplications(petBusinessApplications, searchStr);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -239,9 +249,7 @@ export default function ApplicationsTable({
                 },
               ]}
               onSortStatusChange={setSortStatus}
-              totalRecords={
-                petBusinessApplications ? petBusinessApplications.length : 0
-              }
+              totalRecords={searchResults ? searchResults.length : 0}
               recordsPerPage={PAGE_SIZE}
               page={page}
               onPageChange={(p) => setPage(p)}

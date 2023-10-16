@@ -1,4 +1,3 @@
-import { NumberInputStylesNames } from "@mantine/core";
 import {
   AccountStatusEnum,
   AccountTypeEnum,
@@ -8,6 +7,7 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   GenderEnum,
+  CommissionRule,
 } from "shared-utils";
 import { PetTypeEnum } from "./constants";
 
@@ -59,6 +59,7 @@ export interface PetBusiness extends User {
   businessAddresses?: Address[];
   businessEmail?: string;
   petBusinessApplication: PetBusinessApplication;
+  commissionRule: CommissionRule;
 }
 
 export interface PetOwner extends User {
@@ -120,6 +121,9 @@ export interface CreateServiceListingPayload {
   addressIds: number[];
   calendarGroupId: number;
   duration: number;
+  requiresBooking: boolean;
+  defaultExpiryDays: number;
+  lastPossibleDate: string;
 }
 
 export interface UpdateServiceListingPayload {
@@ -134,6 +138,9 @@ export interface UpdateServiceListingPayload {
   addressIds: number[];
   calendarGroupId: number;
   duration: number;
+  requiresBooking: boolean;
+  defaultExpiryDays: number;
+  lastPossibleDate: string;
 }
 
 /*
@@ -245,5 +252,12 @@ export interface Cart {
   cartItems: CartItem[];
   itemCount: number;
   userId: number;
-  cartItemUserSelection: CartItem[];
+}
+
+export interface CheckoutSummary {
+  itemCount: number;
+  subtotal: number;
+  gst: number;
+  platformFee: number;
+  total: number;
 }

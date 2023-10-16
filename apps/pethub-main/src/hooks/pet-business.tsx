@@ -47,6 +47,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         businessAddresses: data.businessAddresses,
         businessEmail: data.businessEmail,
         petBusinessApplication: data.petBusinessApplication,
+        commissionRule: data.commissionRule,
       };
       return petBusiness as PetBusiness;
     },

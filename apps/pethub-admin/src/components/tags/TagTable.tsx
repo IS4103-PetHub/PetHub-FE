@@ -9,7 +9,6 @@ interface TagTableProps {
   tags: Tag[];
   totalNumTags: number;
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
   onUpdate(payload: UpdateTagPayload): void;
@@ -22,7 +21,6 @@ const TagTable = ({
   tags,
   totalNumTags,
   page,
-  isSearching,
   sortStatus,
   onDelete,
   onUpdate,
@@ -103,7 +101,7 @@ const TagTable = ({
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? tags.length : totalNumTags}
+        totalRecords={totalNumTags}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}

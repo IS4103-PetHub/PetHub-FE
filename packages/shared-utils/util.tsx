@@ -96,6 +96,7 @@ export function getErrorMessageProps(title: string, error: any) {
     title: title,
     color: "red",
     icon: <IconX />,
+    autoClose: 5000,
     message:
       (error.response && error.response.data && error.response.data.message) ||
       error.message,
@@ -112,6 +113,15 @@ export function formatStringToLetterCase(enumString: string) {
 export const formatEnumValueToLowerCase = (value: string) => {
   return value.replace(/_/g, " ").toLowerCase();
 };
+
+export function formatNumber2Decimals(num: number) {
+  const precision = 2;
+  // use this instead of toFixed() alone to avoid rounding errors e.g. 1.005 should round to 1.01 not 1.00
+  // returns a formatted string
+  return Number(
+    Math.round(parseFloat(num + "e" + precision)) + "e-" + precision,
+  ).toFixed(precision);
+}
 
 export function searchServiceListingsForPB(
   serviceListings: ServiceListing[],
@@ -130,4 +140,24 @@ export function searchServiceListingsForPB(
       formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
     );
   });
+}
+
+export function sortInvalidServiceListings(serviceListings: ServiceListing[]) {
+  return serviceListings.sort((a, b) =>
+    (a.requiresBooking ? a.calendarGroupId && a.duration : true) &&
+    (a.lastPossibleDate ? new Date(a.lastPossibleDate) > new Date() : true)
+      ? 1
+      : -1,
+  );
+}
+
+export function isValidServiceListing(serviceListing: ServiceListing) {
+  return (
+    (serviceListing.requiresBooking
+      ? serviceListing.calendarGroupId && serviceListing.duration
+      : true) &&
+    (serviceListing.lastPossibleDate
+      ? new Date(serviceListing.lastPossibleDate) > new Date()
+      : true)
+  );
 }

@@ -15,7 +15,11 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
-import { ServiceListing, formatStringToLetterCase } from "shared-utils";
+import {
+  ServiceListing,
+  formatNumber2Decimals,
+  formatStringToLetterCase,
+} from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 
@@ -87,7 +91,7 @@ const ViewServiceListingModal = ({
       </Text>
       <Group
         mt="md"
-        display={serviceListing.description?.length < 200 ? "none" : "block"}
+        display={serviceListing.description?.length < 350 ? "none" : "block"}
       >
         <Group position="right">
           <Button
@@ -168,7 +172,7 @@ const ViewServiceListingModal = ({
                 <Text fw={700}>Price:</Text>
               </Grid.Col>
               <Grid.Col span={9}>
-                <Text>${serviceListing.basePrice.toFixed(2)}</Text>
+                <Text>${formatNumber2Decimals(serviceListing.basePrice)}</Text>
               </Grid.Col>
 
               <Grid.Col span={3}>

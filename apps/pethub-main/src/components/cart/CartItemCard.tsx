@@ -6,27 +6,19 @@ import {
   Button,
   Group,
   Box,
-  Badge,
   Checkbox,
   Grid,
   Image,
-  Stack,
   Center,
-  Alert,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconMapPin, IconTrash } from "@tabler/icons-react";
-import dayjs from "dayjs";
+import { IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  ServiceListing,
-  convertMinsToDurationString,
-  formatISODayDateTime,
-} from "shared-utils";
+import React, { useEffect, useState } from "react";
+import { ServiceListing, convertMinsToDurationString } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
-import { formatPriceForDisplay } from "@/util";
 import CartItemBadge from "./CartItemBadge";
 
 interface CartItemCardProps {
@@ -54,8 +46,8 @@ const CartItemCard = ({
   isDisabled,
   bookingAlert,
 }: CartItemCardProps) => {
-  const theme = useMantineTheme();
   const router = useRouter();
+  const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(quantity || 1);
 
   useEffect(() => {
@@ -80,8 +72,8 @@ const CartItemCard = ({
     <Card
       withBorder
       mb="lg"
-      mah={240}
-      mih={240}
+      mih={220}
+      mah={220}
       sx={{
         backgroundColor: isExpired
           ? theme.colors.gray[3]
@@ -150,23 +142,24 @@ const CartItemCard = ({
             />
           )}
         </Grid.Col>
-        <Grid.Col span={15}>
-          <Box>
+        <Grid.Col span={15} mt="xs">
+          <Box ml={5}>
             <Link href={`/service-listings/${serviceListing.serviceListingId}`}>
-              <Text fw={600} size={18}>
+              <Text fw={600} size="lg">
                 {serviceListing.title}
               </Text>
             </Link>
-            <CartItemBadge
-              text={serviceListing.petBusiness?.companyName}
-              type="PETBUSINESS"
-              variant=""
-              square={true}
-              size="md"
-              mb="xs"
-              ml={-10}
-            />
-            <Text size={12} mb="xs" lineClamp={2}>
+            <Link href={`/pet-businesses/${serviceListing.petBusinessId}`}>
+              <CartItemBadge
+                text={serviceListing.petBusiness?.companyName}
+                type="PETBUSINESS"
+                variant="light"
+                square={true}
+                size="md"
+                mb="xs"
+              />
+            </Link>
+            <Text size="xs" mb="xs" color="dimmed" lineClamp={2} w="90%">
               {serviceListing.description}
             </Text>
             <Box>
@@ -196,7 +189,7 @@ const CartItemCard = ({
           {!serviceListing.calendarGroupId && (
             <CartItemBadge
               fullWidth
-              text={`Unit $${formatPriceForDisplay(serviceListing.basePrice)}`}
+              text={`Unit $${formatNumber2Decimals(serviceListing.basePrice)}`}
               type="UNITPRICE"
               variant="outline"
               square={true}
@@ -205,7 +198,7 @@ const CartItemCard = ({
           )}
           <CartItemBadge
             fullWidth
-            text={`Total $${formatPriceForDisplay(
+            text={`Total $${formatNumber2Decimals(
               quantity
                 ? serviceListing.basePrice * quantity
                 : serviceListing.basePrice,

@@ -2,7 +2,7 @@ import { Card, Grid, Image, Alert, Text, Button } from "@mantine/core";
 
 import { useRouter } from "next/router";
 import { ServiceListing, convertMinsToDurationString } from "shared-utils";
-import { formatPriceForDisplay } from "@/util";
+import { formatNumber2Decimals } from "shared-utils";
 import CartItemBadge from "./CartItemBadge";
 
 interface MiniCartItemCardProps {
@@ -60,7 +60,7 @@ const MiniCartItemCard = ({
             {serviceListing.title} &nbsp;
           </Text>
           <Text size={14}>
-            {"$" + formatPriceForDisplay(serviceListing.basePrice)}{" "}
+            {"$" + formatNumber2Decimals(serviceListing.basePrice)}
             {quantity && quantity !== 1 && `(${quantity})`}
           </Text>
         </Grid.Col>

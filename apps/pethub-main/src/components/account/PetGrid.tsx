@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
   GenderEnum,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
@@ -131,7 +132,8 @@ const PetGrid = ({ userId }: PetGridProps) => {
         );
       }
       return (
-        <Box h={400} sx={{ verticalAlign: "center" }}>
+        //overflowY hidden is to hide random double scrollbar
+        <Box h={400} sx={{ verticalAlign: "center", overflowY: "hidden" }}>
           <Center h="100%" w="100%">
             <Transition
               mounted={hasNoFetchedRecords}
@@ -225,7 +227,7 @@ const PetGrid = ({ userId }: PetGridProps) => {
                     </Text>
                     <Text>
                       {pet.petWeight !== null && pet.petWeight !== undefined
-                        ? `Weight: ${pet.petWeight.toFixed(2)} kg`
+                        ? `Weight: ${formatNumber2Decimals(pet.petWeight)} kg`
                         : ""}
                     </Text>
                     <Text>

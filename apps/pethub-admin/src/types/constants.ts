@@ -26,4 +26,6 @@ export const enum PermissionsCodeEnum {
   ReadPBApplications = "READ_PET_BUSINESS_APPLICATIONS",
   WriteServiceListings = "WRITE_SERVICE_LISTINGS",
   ReadServiceListings = "READ_SERVICE_LISTINGS",
+  WriteCommissionRules = "WRITE_COMMISSION_RULES",
+  ReadCommissionRules = "READ_COMMISSION_RULES",
 }
