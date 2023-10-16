@@ -14,6 +14,7 @@ import {
   rem,
   useMantineTheme,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconBrandStripe,
   IconBuildingStore,
@@ -39,6 +40,7 @@ import api from "@/api/axiosConfig";
 import OrderItemStepperContent from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
+import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
 
 interface OrderDetailsProps {
   userId: number;
@@ -50,8 +52,12 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(1);
   const [numberOfSteps, setNumberOfSteps] = useState(0);
-  // const nextStep = () => setActiveStep((current) => (current < numberOfSteps ? current + 1 : current));
-  // const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
+  // used to refresh data on the index page upon return
+  const {
+    data: orderItems = [],
+    isLoading,
+    refetch,
+  } = useGetorderItemsByPetOwnerId(userId);
 
   const PLATFORM_FEE =
     Math.round(orderItem.itemPrice * MISC_CHARGE_PCT * 100) / 100;
@@ -79,8 +85,6 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
       marginBottom: "-4px",
     },
   };
-
-  console.log("order item", orderItem);
 
   useEffect(() => {
     setStepperCount();
@@ -141,7 +145,10 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           }
           ml={-15}
           c="dimmed"
-          onClick={() => router.push("/customer/orders")}
+          onClick={() => {
+            router.push("/customer/orders");
+            refetch();
+          }}
         >
           Back
         </Button>

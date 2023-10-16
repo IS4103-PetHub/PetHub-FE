@@ -6,7 +6,7 @@ const ORDER_ITEMS_API = "/order-items";
 
 export const useGetorderItemsByPetOwnerId = (petOwnerId: number) => {
   return useQuery({
-    queryKey: ["orderItems", { petOwnerId: petOwnerId }],
+    queryKey: ["order-items"],
     queryFn: async () => {
       const response = await api.get(
         `${ORDER_ITEMS_API}/pet-owners/${petOwnerId}`,

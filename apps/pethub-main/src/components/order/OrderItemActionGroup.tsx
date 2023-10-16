@@ -10,6 +10,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCopy } from "@tabler/icons-react";
 import dayjs from "dayjs";
@@ -24,6 +25,7 @@ import {
 } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
 import { CartItem } from "@/types/types";
+import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 
 interface OrderItemStepperContentProps {
   userId: number;
@@ -38,6 +40,7 @@ const OrderItemStepperContent = ({
   const theme = useMantineTheme();
   const router = useRouter();
   const { addItemToCart } = useCartOperations(userId);
+  const [opened, { open, close }] = useDisclosure(false);
 
   function triggerNotImplementedNotification() {
     notifications.show({
@@ -62,6 +65,10 @@ const OrderItemStepperContent = ({
       message: "Item has been added to cart",
     });
     router.push("/customer/cart");
+  }
+
+  function bookNowHandler() {
+    open();
   }
 
   function viewInvoiceHandler() {
@@ -159,11 +166,7 @@ const OrderItemStepperContent = ({
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
-        <Button
-          fullWidth
-          variant="filled"
-          onClick={triggerNotImplementedNotification}
-        >
+        <Button fullWidth variant="filled" onClick={bookNowHandler}>
           {orderItem.booking ? "Reschedule" : "Book now"}
         </Button>
       </Grid.Col>
@@ -359,7 +362,18 @@ const OrderItemStepperContent = ({
     }
   }
 
-  return <Grid mt="xl">{renderContent()}</Grid>;
+  return (
+    <Grid mt="xl">
+      {renderContent()}
+      <SelectTimeslotModal
+        petOwnerId={userId}
+        orderItemId={orderItem.orderItemId}
+        serviceListing={orderItem.serviceListing}
+        opened={opened}
+        onClose={close}
+      />
+    </Grid>
+  );
 };
 
 export default OrderItemStepperContent;

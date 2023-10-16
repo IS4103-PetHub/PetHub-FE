@@ -40,6 +40,7 @@ export default function Orders({ userId }: OrdersProps) {
   const [sortStatus, setSortStatus] = useState<string>("recent");
   const [isSearching, setIsSearching] = useToggle();
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+  const [orderBarCounts, setOrderBarCounts] = useState<OrderBarCounts>();
 
   // States for infinite scroll and fake loading flag
   const [page, setPage] = useState(1);
@@ -65,6 +66,7 @@ export default function Orders({ userId }: OrdersProps) {
   useEffect(() => {
     // The reason we slice the array is because we want to display the records in batches for infinite scrolling
     resetRecordsSliced();
+    setOrderBarCounts(calculateOrderBarCounts());
   }, [orderItems, activeTab, sortStatus, page]);
 
   // Scroll listeners for infinite scrolling, hooks into window scroll event
@@ -147,7 +149,7 @@ export default function Orders({ userId }: OrdersProps) {
       expiredCount: 0,
       refundedCount: 0,
     };
-    orderItems.forEach((item) => {
+    orderItems?.forEach((item) => {
       orderBarCounts.allCount++;
       switch (item.status) {
         case OrderItemStatusEnum.PendingBooking:
@@ -254,8 +256,6 @@ export default function Orders({ userId }: OrdersProps) {
     );
   };
 
-  const orderBarCounts = calculateOrderBarCounts();
-
   return (
     <>
       <Head>
@@ -264,7 +264,7 @@ export default function Orders({ userId }: OrdersProps) {
       </Head>
       <main>
         <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
-          {orderBarCounts.toBookCount !== 0 && toBookAlert}
+          {orderBarCounts?.toBookCount !== 0 && toBookAlert}
           <Group position="apart">
             <PageTitle title={`My orders`} mb="lg" />
             <Box>{orderItems.length > 0 ? searchAndSortGroup : null}</Box>
@@ -272,7 +272,7 @@ export default function Orders({ userId }: OrdersProps) {
           <OrderStatusBar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            orderBarCounts={orderBarCounts}
+            orderBarCounts={orderBarCounts && orderBarCounts}
           />
           {renderContent()}
         </Container>

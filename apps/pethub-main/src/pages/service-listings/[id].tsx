@@ -344,12 +344,6 @@ export default function ServiceListingDetails({
               >
                 Add to cart
               </Button>
-              <SelectTimeslotModal
-                petOwnerId={userId}
-                serviceListing={serviceListing}
-                opened={opened}
-                onClose={close}
-              />
               <Transition
                 mounted={showAddedToCart}
                 transition={slideLeftToRight}

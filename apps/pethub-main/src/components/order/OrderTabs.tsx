@@ -27,6 +27,12 @@ function OrderStatusBar({
   setActiveTab,
   orderBarCounts,
 }: OrderStatusBarProps) {
+  const { classes } = useStyles();
+
+  if (!orderBarCounts) {
+    return null;
+  }
+
   const {
     allCount,
     toBookCount,
@@ -35,7 +41,6 @@ function OrderStatusBar({
     expiredCount,
     refundedCount,
   } = orderBarCounts;
-  const { classes } = useStyles();
 
   return (
     <Tabs

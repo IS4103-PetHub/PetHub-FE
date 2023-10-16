@@ -15,6 +15,7 @@ import {
   Center,
   Alert,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconBuildingStore,
@@ -41,6 +42,7 @@ import { formatNumber2Decimals } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useCartOperations } from "@/hooks/cart";
 import { Booking, CartItem } from "@/types/types";
+import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 import OrderItemBadge from "./OrderItemBadge";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -71,6 +73,7 @@ const OrderItemCard = ({
 }: OrderItemCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
+  const [opened, { open, close }] = useDisclosure(false);
   const { addItemToCart } = useCartOperations(userId);
 
   function triggerNotImplementedNotification() {
@@ -98,6 +101,10 @@ const OrderItemCard = ({
     router.push("/customer/cart");
   }
 
+  function bookNowHandler() {
+    open();
+  }
+
   const orderItemFooterGroup = (
     <>
       {status === OrderItemStatusEnum.PendingBooking && (
@@ -112,7 +119,14 @@ const OrderItemCard = ({
           >
             Cancel
           </Button>
-          <Button color="indigo" variant="filled" miw={90} size="xs" mr={-10}>
+          <Button
+            color="indigo"
+            variant="filled"
+            miw={90}
+            size="xs"
+            mr={-10}
+            onClick={bookNowHandler}
+          >
             Book now
           </Button>
           <OrderItemPopover
@@ -326,6 +340,13 @@ const OrderItemCard = ({
           </Center>
         </Grid.Col>
       </Grid>
+      <SelectTimeslotModal
+        petOwnerId={userId}
+        orderItemId={orderItemId}
+        serviceListing={serviceListing}
+        opened={opened}
+        onClose={close}
+      />
     </Card>
   );
 };
