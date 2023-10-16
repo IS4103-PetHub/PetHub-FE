@@ -254,14 +254,14 @@ export default function Cart({ userId }: CartProps) {
               isExpired={expiredItems[item.cartItemId] || false}
               isDisabled={isDisabled}
               bookingAlert={
-                isDisabled ? (
+                isDisabled && (
                   <CartItemBookingAlert
                     isValid={!isDisabled}
                     bookingSelection={item.bookingSelection}
                   >
                     {}
                   </CartItemBookingAlert>
-                ) : null
+                )
               }
             />
           );

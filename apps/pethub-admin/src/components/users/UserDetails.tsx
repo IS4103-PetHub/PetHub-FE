@@ -528,7 +528,7 @@ const UserDetails = ({
   return (
     <>
       {UserDetailsComponent}
-      {disabled ? null : (
+      {!disabled && (
         <>
           <DeleteAccountModal
             closeDeleteModal={closeDelete}
