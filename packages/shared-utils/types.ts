@@ -95,7 +95,6 @@ export interface OrderItem {
   orderItemId: number;
   itemName: string;
   itemPrice: number;
-  quantity: number;
   status: OrderItemStatusEnum;
   expiryDate?: string;
   voucherCode: string;
@@ -103,6 +102,8 @@ export interface OrderItem {
   invoice?: Invoice;
   serviceListingId: number;
   serviceListing: ServiceListing;
+  addresses: Address[];
+  tags: Tag[];
   bookingId?: number;
   booking?: {
     bookingId: number;
@@ -113,11 +114,14 @@ export interface OrderItem {
     petOwnerId: number;
     petId: number;
     timeSlotId: number;
+    serviceListingId?: number;
+    orderItemId?: number;
   };
   attachmentKey: string;
   attachmentURL: string;
   paymentId?: string;
   createdAt?: string;
+  commissionRate: number;
 }
 
 export interface OrderBarCounts {

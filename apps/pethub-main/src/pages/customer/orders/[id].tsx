@@ -32,12 +32,13 @@ import {
   formatISODayDateTime,
 } from "shared-utils";
 import { MISC_CHARGE_PCT } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
+import OrderItemStepperContent from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
-import { formatPriceForDisplay } from "@/util";
 
 interface OrderDetailsProps {
   userId: number;
@@ -49,17 +50,19 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(1);
   const [numberOfSteps, setNumberOfSteps] = useState(0);
-  const nextStep = () =>
-    setActiveStep((current) =>
-      current < numberOfSteps ? current + 1 : current,
-    );
-  const prevStep = () =>
-    setActiveStep((current) => (current > 0 ? current - 1 : current));
+  // const nextStep = () => setActiveStep((current) => (current < numberOfSteps ? current + 1 : current));
+  // const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
 
   const PLATFORM_FEE =
     Math.round(orderItem.itemPrice * MISC_CHARGE_PCT * 100) / 100;
 
-  const OPEN_FOREVER = ["header", "stepper", "content", "footer"];
+  const OPEN_FOREVER = [
+    "header",
+    "stepper",
+    "actionGroup",
+    "content",
+    "footer",
+  ];
 
   const ACCORDION_ITEM_PROPS = {
     mb: 5,
@@ -76,6 +79,8 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
       marginBottom: "-4px",
     },
   };
+
+  console.log("order item", orderItem);
 
   useEffect(() => {
     setStepperCount();
@@ -95,13 +100,13 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
       }
     }
     if (orderItem.status === OrderItemStatusEnum.Expired) {
-      if (orderItem.booking) {
+      if (orderItem.serviceListing.requiresBooking) {
         setNumberOfSteps(3);
       }
       setNumberOfSteps(2);
     }
     if (orderItem.status === OrderItemStatusEnum.Refunded) {
-      if (orderItem.booking) {
+      if (orderItem.serviceListing.requiresBooking) {
         setNumberOfSteps(4);
       }
       setNumberOfSteps(3);
@@ -136,7 +141,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           }
           ml={-15}
           c="dimmed"
-          onClick={() => router.back()}
+          onClick={() => router.push("/customer/orders")}
         >
           Back
         </Button>
@@ -169,6 +174,14 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           orderItem={orderItem}
           numberOfSteps={numberOfSteps}
         />
+      </Box>
+    </Accordion.Item>
+  );
+
+  const actionGroupAccordionItem = (
+    <Accordion.Item value="actionGroup" {...ACCORDION_ITEM_PROPS}>
+      <Box m="lg">
+        <OrderItemStepperContent orderItem={orderItem} userId={userId} />
       </Box>
     </Accordion.Item>
   );
@@ -264,7 +277,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
             }}
           >
             <Text size="sm" fw={500} color="dimmed">
-              ${formatPriceForDisplay(orderItem.itemPrice)}
+              ${formatNumber2Decimals(orderItem.itemPrice)}
             </Text>
           </Grid.Col>
         </Grid>
@@ -282,7 +295,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={3} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
-              ${formatPriceForDisplay(orderItem.itemPrice)}
+              ${formatNumber2Decimals(orderItem.itemPrice)}
             </Text>
           </Grid.Col>
 
@@ -295,7 +308,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={3} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
-              ${formatPriceForDisplay(PLATFORM_FEE)}
+              ${formatNumber2Decimals(PLATFORM_FEE)}
             </Text>
           </Grid.Col>
 
@@ -308,7 +321,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={3} {...FLEX_END_PROPS}>
             <Text size="md" fw={600}>
-              ${formatPriceForDisplay(orderItem.itemPrice + PLATFORM_FEE)}
+              ${formatNumber2Decimals(orderItem.itemPrice + PLATFORM_FEE)}
             </Text>
           </Grid.Col>
 
@@ -374,6 +387,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
         >
           {headerAccordionItem}
           {stepperAccordionItem}
+          {actionGroupAccordionItem}
           {orderItemDetailsAccordionItem}
           {orderItemPaymentDetailsAccordionItem}
         </Accordion>

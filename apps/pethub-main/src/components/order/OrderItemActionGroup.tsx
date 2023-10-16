@@ -40,7 +40,7 @@ const OrderItemStepperContent = ({
     notifications.show({
       title: "Not Implemented",
       color: "orange",
-      message: "This function is not implemented yet",
+      message: "This function will be implemented in SR4",
     });
   }
 
@@ -214,27 +214,31 @@ const OrderItemStepperContent = ({
   const displayBookingColumn = (text?: string) => {
     return (
       <>
-        <Grid.Col>
-          <Divider />
-        </Grid.Col>
-        <Grid.Col span={6}>
-          <Text size="xs" color="dimmed">
-            {text}
-          </Text>
-        </Grid.Col>
-        <Grid.Col span={2} />
-        <Grid.Col span={4}>
-          <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
-            <Text size="sm">
-              <b>Start: </b>
-              {formatISODayDateTime(orderItem?.booking?.startTime)}
-            </Text>
-            <Text size="sm">
-              <b>End: </b>
-              {formatISODayDateTime(orderItem?.booking?.endTime)}
-            </Text>
-          </Stack>
-        </Grid.Col>
+        {orderItem.booking && (
+          <>
+            <Grid.Col>
+              <Divider />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Text size="xs" color="dimmed">
+                {text}
+              </Text>
+            </Grid.Col>
+            <Grid.Col span={2} />
+            <Grid.Col span={4}>
+              <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
+                <Text size="sm">
+                  <b>Start: </b>
+                  {formatISODayDateTime(orderItem.booking.startTime)}
+                </Text>
+                <Text size="sm">
+                  <b>End: </b>
+                  {formatISODayDateTime(orderItem.booking.endTime)}
+                </Text>
+              </Stack>
+            </Grid.Col>
+          </>
+        )}
       </>
     );
   };
@@ -245,6 +249,9 @@ const OrderItemStepperContent = ({
       {refundColumn}
       {invoiceColumn}
       {voucherColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
     </>
   );
 
@@ -257,6 +264,9 @@ const OrderItemStepperContent = ({
         displayBookingColumn(
           "You have scheduled a booking for this item on the timing displayed here. Please present the voucher code to the establishment to complete your purchase.",
         )}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
     </>
   );
 
@@ -266,6 +276,9 @@ const OrderItemStepperContent = ({
       {reviewColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
     </>
   );
 
@@ -274,6 +287,9 @@ const OrderItemStepperContent = ({
       {buyAgainColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
     </>
   );
 

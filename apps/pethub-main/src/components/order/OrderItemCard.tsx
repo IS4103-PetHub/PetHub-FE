@@ -37,10 +37,10 @@ import {
   formatISODateTimeShort,
   formatISODayDateTime,
 } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useCartOperations } from "@/hooks/cart";
 import { Booking, CartItem } from "@/types/types";
-import { formatPriceForDisplay } from "@/util";
 import OrderItemBadge from "./OrderItemBadge";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -73,7 +73,14 @@ const OrderItemCard = ({
   const router = useRouter();
   const { addItemToCart } = useCartOperations(userId);
 
-  // Not accurate, test it again after we move away from mock data
+  function triggerNotImplementedNotification() {
+    notifications.show({
+      title: "Not Implemented",
+      color: "orange",
+      message: "This function will be implemented in SR4",
+    });
+  }
+
   async function buyAgainHandler() {
     await addItemToCart(
       {
@@ -95,7 +102,14 @@ const OrderItemCard = ({
     <>
       {status === OrderItemStatusEnum.PendingBooking && (
         <>
-          <Button color="red" variant="light" size="xs" miw={90} mr={-5}>
+          <Button
+            color="red"
+            variant="light"
+            size="xs"
+            miw={90}
+            mr={-5}
+            onClick={triggerNotImplementedNotification}
+          >
             Cancel
           </Button>
           <Button color="indigo" variant="filled" miw={90} size="xs" mr={-10}>
@@ -146,7 +160,14 @@ const OrderItemCard = ({
       {(status === OrderItemStatusEnum.Fulfilled ||
         status === OrderItemStatusEnum.PaidOut) && (
         <>
-          <Button color="indigo" variant="light" size="xs" miw={90} mr={-5}>
+          <Button
+            color="indigo"
+            variant="light"
+            size="xs"
+            miw={90}
+            mr={-5}
+            onClick={triggerNotImplementedNotification}
+          >
             Review
           </Button>
           <Button
@@ -171,7 +192,7 @@ const OrderItemCard = ({
       {status === OrderItemStatusEnum.Refunded && (
         <>
           <Text size="xs" fw={500} color="orange">
-            The amount of ${formatPriceForDisplay(price)} has been refunded to
+            The amount of ${formatNumber2Decimals(price)} has been refunded to
             your original payment method
           </Text>
         </>
@@ -271,7 +292,7 @@ const OrderItemCard = ({
           }}
         >
           <Text size="sm" c="dark" fw={500}>
-            ${formatPriceForDisplay(price)}
+            ${formatNumber2Decimals(price)}
           </Text>
         </Grid.Col>
       </Grid>
@@ -300,7 +321,7 @@ const OrderItemCard = ({
             </Text>
             &nbsp;
             <Text c="dark" fw={600} size="xl">
-              ${formatPriceForDisplay(price)}
+              ${formatNumber2Decimals(price)}
             </Text>
           </Center>
         </Grid.Col>

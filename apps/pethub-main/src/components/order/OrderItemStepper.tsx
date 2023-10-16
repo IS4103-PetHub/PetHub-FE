@@ -3,6 +3,7 @@ import {
   IconBrowserCheck,
   IconBulb,
   IconCalendarEvent,
+  IconClipboardCheck,
   IconClockExclamation,
   IconCreditCard,
   IconMenu2,
@@ -10,7 +11,6 @@ import {
 } from "@tabler/icons-react";
 import React, { useEffect, useRef } from "react";
 import { OrderItem, OrderItemStatusEnum } from "shared-utils";
-import OrderItemStepperContent from "./OrderItemStepperContent";
 
 interface OrderItemStepperProps {
   userId: number;
@@ -84,6 +84,7 @@ const OrderItemStepper = ({
     refundedNoBooking: ["Ordered", "Fulfilled", "Refunded"],
   };
 
+  // These are the steps that should be active depending on the status of the order item
   const mapStatusToStepGroupStep = new Map([
     [OrderItemStatusEnum.PendingBooking, "Ordered"],
     [OrderItemStatusEnum.PendingFulfillment, "Ordered"],
@@ -95,7 +96,7 @@ const OrderItemStepper = ({
 
   // Apparently JSX elements in a map need a unique key or husky will be mad
   const mapStepTypeToIcon = new Map([
-    ["Ordered", null], // This will never be displayed anyways
+    ["Ordered", <IconClipboardCheck key="IconClipboardCheck" />],
     ["Booked", <IconBulb key="IconBulb" />],
     ["Fulfilled", <IconBrowserCheck key="IconBrowserCheck" />],
     ["Rated", <IconStar key="IconStar" />],
@@ -152,9 +153,58 @@ const OrderItemStepper = ({
         label: "Expired",
         description: "Order has expired",
       },
+      Refunded: {
+        label: "Refunded",
+        description: "Order has been refunded",
+      },
     };
 
     return steps[type] || {};
+  }
+
+  function getStepDetails(
+    stepType: string,
+    orderItem: OrderItem,
+    group: string[],
+  ) {
+    let icon = mapStepTypeToIcon.get(stepType); // default icon
+    let stepDetails = getStepText(stepType, activeStepIndexRef.current);
+
+    // console.log("stepType", stepType);
+    // console.log("booking", !orderItem.booking);
+    // console.log("group", group);
+    // console.log("included", group === stepGroups.expiredBooking);
+
+    // Override step color and text if the order item is not booked
+    if (
+      stepType === "Booked" &&
+      !orderItem.booking &&
+      (group === stepGroups.expiredBooking ||
+        group === stepGroups.refundedBooking)
+    ) {
+      stepDetails = {
+        color: "red",
+        label: "Not Booked",
+        description: "Booking not made",
+      };
+    }
+
+    // RIGHT NOW THERE IS NO WAY TO CHECK IF AN ORDER IS FULFILLED, IT WILL ALWAYS SAY NOT FULFILLED (thats what the `true` represents below)
+    if (
+      stepType === "Fulfilled" &&
+      true &&
+      (group === stepGroups.refundedNoBooking ||
+        group === stepGroups.refundedBooking)
+    ) {
+      console.log("TRIGGERED");
+      stepDetails = {
+        color: "red",
+        label: "Not fulfilled",
+        description: "Order not fulfilled",
+      };
+    }
+
+    return { icon, ...stepDetails };
   }
 
   // Render the stepper steps based on the step group
@@ -162,6 +212,8 @@ const OrderItemStepper = ({
     let mappedStatusToStepGroupStep = mapStatusToStepGroupStep.get(
       orderItem.status,
     );
+
+    // If the order item is pending fulfillment and requires booking, override the step to booked
     if (
       mappedStatusToStepGroupStep === "Ordered" &&
       orderItem.status === OrderItemStatusEnum.PendingFulfillment &&
@@ -169,18 +221,28 @@ const OrderItemStepper = ({
     ) {
       mappedStatusToStepGroupStep = "Booked";
     }
+
     activeStepIndexRef.current =
       group.findIndex((step) => step === mappedStatusToStepGroupStep) + 1;
 
-    return group.map((stepType, idx) => (
-      <Stepper.Step
-        key={idx}
-        {...getStepText(stepType, activeStepIndexRef.current)}
-        icon={mapStepTypeToIcon.get(stepType)}
-      >
-        <OrderItemStepperContent orderItem={orderItem} userId={userId} />
-      </Stepper.Step>
-    ));
+    return group.map((stepType, idx) => {
+      const { icon, label, description, color } = getStepDetails(
+        stepType,
+        orderItem,
+        group,
+      );
+
+      return (
+        <Stepper.Step
+          key={idx}
+          label={label}
+          description={description}
+          icon={icon}
+          completedIcon={icon}
+          color={color}
+        />
+      );
+    });
   }
 
   function renderContent() {
@@ -199,10 +261,10 @@ const OrderItemStepper = ({
         .requiresBooking
         ? stepGroups.happyBooking
         : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.Expired]: orderItem.booking
+      [OrderItemStatusEnum.Expired]: orderItem.serviceListing.requiresBooking
         ? stepGroups.expiredBooking
         : stepGroups.expiredNoBooking,
-      [OrderItemStatusEnum.Refunded]: orderItem.booking
+      [OrderItemStatusEnum.Refunded]: orderItem.serviceListing.requiresBooking
         ? stepGroups.refundedBooking
         : stepGroups.refundedNoBooking,
     };
