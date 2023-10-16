@@ -17,6 +17,7 @@ import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
@@ -28,11 +29,10 @@ import {
   getErrorMessageProps,
 } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
-import { useUpdateBooking } from "@/hooks/booking";
+import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
-import { useCartOperations } from "@/hooks/cart";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { Booking, CartItem, CartItemBookingSelection } from "@/types/types";
+import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
 
 const CALENDAR_SPAN = 4;
@@ -41,6 +41,7 @@ const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 interface SelectTimeslotModalProps {
   petOwnerId: number;
   serviceListing: ServiceListing;
+  orderItemId?: number;
   opened: boolean;
   onClose(): void;
   // optional, only for updating
@@ -53,6 +54,7 @@ interface SelectTimeslotModalProps {
 const SelectTimeslotModal = ({
   petOwnerId,
   serviceListing,
+  orderItemId,
   opened,
   onClose,
   isUpdating,
@@ -60,6 +62,7 @@ const SelectTimeslotModal = ({
   onUpdateBooking,
   viewOnly,
 }: SelectTimeslotModalProps) => {
+  const router = useRouter();
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [selectedMonth, setSelectedMonth] = useState<Date>(
     dayjs(new Date()).startOf("month").toDate(),
@@ -70,7 +73,6 @@ const SelectTimeslotModal = ({
   const [selectedPetId, setSelectedPetId] = useState<string>(
     booking ? booking.petId?.toString() : "",
   );
-  const { addItemToCart } = useCartOperations(petOwnerId);
 
   const { data: availTimeslots = [], isLoading } =
     useGetAvailableTimeSlotsByCGId(
@@ -82,9 +84,10 @@ const SelectTimeslotModal = ({
 
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
 
+  const createBookingMutation = useCreateBooking();
   const updateBookingMutation = useUpdateBooking();
 
-  async function scheduleOrUpdateBooking() {
+  async function createOrUpdateBooking() {
     const session = await getSession();
     if (!session) {
       notifications.show({
@@ -94,51 +97,52 @@ const SelectTimeslotModal = ({
       });
       return;
     }
+    if (!orderItemId) {
+      notifications.show({
+        title: "System Error",
+        message: "No OrderItemID provided",
+        color: "red",
+      });
+    }
     try {
+      let payload;
       const startTime = selectedTimeslot;
       const endTime = dayjs(selectedTimeslot)
         .add(serviceListing.duration, "minutes")
         .toISOString();
 
       if (isUpdating) {
-        let payload;
         payload = { bookingId: booking.bookingId, startTime, endTime };
         await updateBookingMutation.mutateAsync(payload);
         // refetch user bookings
         onUpdateBooking();
       } else {
-        let bookingSelection: CartItemBookingSelection = {
+        payload = {
+          petOwnerId: session.user["userId"],
           calendarGroupId: serviceListing.calendarGroupId,
-          serviceListingId: serviceListing.serviceListingId,
+          orderItemId: orderItemId,
           startTime,
           endTime,
         };
         // append petId if there is a pet selected
         if (selectedPetId) {
-          bookingSelection = {
-            ...bookingSelection,
-            petId: parseInt(selectedPetId),
-            petName: pets.find((pet) => pet.petId === parseInt(selectedPetId))
-              .petName,
-          };
+          payload = { ...payload, petId: parseInt(selectedPetId) };
         }
-        addItemToCart({
-          serviceListing: serviceListing,
-          bookingSelection: bookingSelection,
-        } as CartItem);
+        await createBookingMutation.mutateAsync(payload);
       }
       notifications.show({
-        title: `Appointment ${isUpdating ? "Rescheduled" : "Added to Cart"}`,
+        title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
         color: "green",
         icon: <IconCheck />,
         message: `Your appointment on ${formatISODayDateTime(
           selectedTimeslot,
-        )} has been ${isUpdating ? "confirmed" : "added to cart"}`,
+        )} has been confirmed!`,
       });
+      router.push(`/customer/orders/${orderItemId}`);
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(
-          `Error ${isUpdating ? "Updating" : "Adding"} Appointment`,
+          `Error ${isUpdating ? "Updating" : "Creating"} Appointment`,
           error,
         ),
       });
@@ -162,7 +166,7 @@ const SelectTimeslotModal = ({
       setShowConfirmation();
       return;
     }
-    scheduleOrUpdateBooking();
+    createOrUpdateBooking();
     handleClose();
   }
 
@@ -270,6 +274,7 @@ const SelectTimeslotModal = ({
           : "Please confirm your selected timeslot and select a pet (optional)."}
       </Text>
       <TimeslotCard
+        orderItemId={orderItemId}
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
@@ -313,39 +318,37 @@ const SelectTimeslotModal = ({
     >
       {showConfirmation ? confirmation : selectTimeslotsGrid}
 
-      {!viewOnly && (
-        <Group position={showConfirmation ? "apart" : "right"}>
-          <LargeBackButton
-            text="Back"
-            variant="light"
-            display={showConfirmation ? "inline" : "none"}
-            onClick={() => setShowConfirmation(false)}
-          />
-          <Group position="right">
-            {selectedTimeslot && !showConfirmation && (
-              <Text>
-                <strong>Selected: </strong>
-                {formatISODayDateTime(selectedTimeslot)}
-              </Text>
-            )}
-            <Button
-              size="md"
-              color="gray"
-              variant="default"
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="md"
-              disabled={!selectedTimeslot}
-              onClick={handleClickButton}
-            >
-              {showConfirmation ? "Confirm and add to cart" : "Next"}
-            </Button>
-          </Group>
+      <Group position={showConfirmation ? "apart" : "right"}>
+        <LargeBackButton
+          text="Back"
+          variant="light"
+          display={showConfirmation ? "inline" : "none"}
+          onClick={() => setShowConfirmation(false)}
+        />
+        <Group position="right">
+          {selectedTimeslot && !showConfirmation ? (
+            <Text>
+              <strong>Selected: </strong>
+              {formatISODayDateTime(selectedTimeslot)}
+            </Text>
+          ) : null}
+          <Button
+            size="md"
+            color="gray"
+            variant="default"
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="md"
+            disabled={!selectedTimeslot}
+            onClick={handleClickButton}
+          >
+            {showConfirmation ? "Confirm" : "Next"}
+          </Button>
         </Group>
-      )}
+      </Group>
     </Modal>
   );
 };

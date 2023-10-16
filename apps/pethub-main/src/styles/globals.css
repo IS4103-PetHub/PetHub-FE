@@ -1,8 +1,12 @@
-html,
+html {
+  overflow-y: scroll;
+}
+
 body {
   max-width: 100vw;
   overflow-x: hidden;
   font-family: var(--font-inter);
+  /* overflow-y: scroll; */
 }
 
 a {

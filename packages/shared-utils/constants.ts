@@ -55,3 +55,20 @@ export enum RecurrencePatternEnum {
   Daily = "DAILY",
   Weekly = "WEEKLY",
 }
+
+export enum OrderItemStatusEnum {
+  All = "ALL",
+  PendingBooking = "PENDING_BOOKING",
+  PendingFulfillment = "PENDING_FULFILLMENT",
+  Fulfilled = "FULFILLED",
+  PaidOut = "PAID_OUT",
+  Refunded = "REFUNDED",
+  Expired = "EXPIRED",
+}
+
+export enum RefundStatusEnum {
+  Pending = "PENDING",
+  Approved = "APPROVED",
+  Rejected = "REJECTED",
+  Cancelled = "CANCELLED",
+}
