@@ -170,11 +170,6 @@ const OrderItemStepper = ({
     let icon = mapStepTypeToIcon.get(stepType); // default icon
     let stepDetails = getStepText(stepType, activeStepIndexRef.current);
 
-    // console.log("stepType", stepType);
-    // console.log("booking", !orderItem.booking);
-    // console.log("group", group);
-    // console.log("included", group === stepGroups.expiredBooking);
-
     // Override step color and text if the order item is not booked
     if (
       stepType === "Booked" &&
@@ -196,7 +191,6 @@ const OrderItemStepper = ({
       (group === stepGroups.refundedNoBooking ||
         group === stepGroups.refundedBooking)
     ) {
-      console.log("TRIGGERED");
       stepDetails = {
         color: "red",
         label: "Not fulfilled",

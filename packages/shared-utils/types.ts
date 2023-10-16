@@ -99,7 +99,10 @@ export interface OrderItem {
   expiryDate?: string;
   voucherCode: string;
   invoiceId: number;
-  invoice?: Invoice;
+  invoice: {
+    paymentId: string;
+    createdAt: string;
+  };
   serviceListingId: number;
   serviceListing: ServiceListing;
   addresses: Address[];
@@ -119,8 +122,6 @@ export interface OrderItem {
   };
   attachmentKey: string;
   attachmentURL: string;
-  paymentId?: string;
-  createdAt?: string;
   commissionRate: number;
 }
 

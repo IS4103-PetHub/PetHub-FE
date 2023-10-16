@@ -12,11 +12,13 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCopy } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
+  formatISODateTimeShort,
   formatISODayDateTime,
 } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
@@ -74,6 +76,16 @@ const OrderItemStepperContent = ({
     }
   }
 
+  // ================================= FAKE REFUND STUFF ================================= //
+  // Add 3 days from expiry date for now 2359
+  const fakeRefundDate = formatISODateTimeShort(
+    dayjs(orderItem.expiryDate).add(3, "day").endOf("day").toISOString(),
+  );
+  const eligibleForRefund = dayjs().isBefore(
+    dayjs(orderItem.expiryDate).add(7, "day").endOf("day"),
+  );
+  // ================================= FAKE REFUND STUFF ================================= //
+
   const invoiceColumn = (
     <>
       <Grid.Col>
@@ -119,10 +131,18 @@ const OrderItemStepperContent = ({
         <Divider />
       </Grid.Col>
       <Grid.Col span={6}>
-        <Text size="xs">
-          Make your booking and redeem your voucher before the end of the
-          validity period on <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
-        </Text>
+        {orderItem.booking ? (
+          <Text size="xs">
+            You are eligible to reschedule until before the end of the validity
+            period on <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
+          </Text>
+        ) : (
+          <Text size="xs">
+            Make your booking and redeem your voucher before the end of the
+            validity period on{" "}
+            <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
+          </Text>
+        )}
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
@@ -131,27 +151,7 @@ const OrderItemStepperContent = ({
           variant="filled"
           onClick={triggerNotImplementedNotification}
         >
-          Book Now
-        </Button>
-      </Grid.Col>
-    </>
-  );
-
-  const refundColumn = (
-    <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
-      <Grid.Col span={8} />
-      <Grid.Col span={4}>
-        <Button
-          fullWidth
-          color="red"
-          variant="light"
-          sx={{ border: "1px solid #e0e0e0" }}
-          onClick={triggerNotImplementedNotification}
-        >
-          Refund
+          {orderItem.booking ? "Reschedule" : "Book now"}
         </Button>
       </Grid.Col>
     </>
@@ -211,6 +211,34 @@ const OrderItemStepperContent = ({
     </>
   );
 
+  const refundColumn = (
+    <>
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
+      <Grid.Col span={6}>
+        <Text size="xs" color="dimmed">
+          {eligibleForRefund
+            ? `You are eligible to request for a refund until ${fakeRefundDate}.`
+            : `You are no longer eligible for a refund as the last refund date ${fakeRefundDate} has passed.`}
+        </Text>
+      </Grid.Col>
+      <Grid.Col span={2} />
+      <Grid.Col span={4}>
+        <Button
+          fullWidth
+          color="red"
+          variant="light"
+          sx={{ border: "1px solid #e0e0e0" }}
+          onClick={triggerNotImplementedNotification}
+          disabled={eligibleForRefund ? false : true}
+        >
+          Refund
+        </Button>
+      </Grid.Col>
+    </>
+  );
+
   const displayBookingColumn = (text?: string) => {
     return (
       <>
@@ -258,6 +286,7 @@ const OrderItemStepperContent = ({
   const pendingFulfillmentGroup = (
     <>
       {orderItem.serviceListing.requiresBooking && bookNowColumn}
+      {refundColumn}
       {invoiceColumn}
       {voucherColumn}
       {orderItem.serviceListing.requiresBooking &&
@@ -270,9 +299,12 @@ const OrderItemStepperContent = ({
     </>
   );
 
+  console.log("");
+
   const fulfilledGroup = (
     <>
       {buyAgainColumn}
+      {refundColumn}
       {reviewColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
