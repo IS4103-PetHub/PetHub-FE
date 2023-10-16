@@ -41,7 +41,7 @@ const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 interface SelectTimeslotModalProps {
   petOwnerId: number;
   serviceListing: ServiceListing;
-  orderItemId;
+  orderItemId?: number;
   opened: boolean;
   onClose(): void;
   // optional, only for updating
@@ -96,6 +96,13 @@ const SelectTimeslotModal = ({
         color: "red",
       });
       return;
+    }
+    if (!orderItemId) {
+      notifications.show({
+        title: "System Error",
+        message: "No OrderItemID provided",
+        color: "red",
+      });
     }
     try {
       let payload;

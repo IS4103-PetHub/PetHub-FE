@@ -26,7 +26,7 @@ interface TimeslotCardProps {
   startTime: string;
   // optional as endTime can be computed
   endTime?: string;
-  orderItemId: number;
+  orderItemId?: number;
   // optional, only for updating appointment
   disabled?: boolean;
   booking?: Booking;
@@ -106,7 +106,6 @@ const TimeslotCard = ({
           <>
             <Button onClick={open}>Reschedule</Button>
             <SelectTimeslotModal
-              orderItemId={orderItemId}
               serviceListing={serviceListing}
               opened={opened}
               onClose={close}
