@@ -32,7 +32,6 @@ import {
   convertMinsToDurationString,
   formatISODayDateTime,
 } from "shared-utils";
-import { MISC_CHARGE_PCT } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
@@ -41,6 +40,7 @@ import OrderItemStepperContent from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
 import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
+import { PLATFORM_FEE_PERCENT } from "@/types/constants";
 
 interface OrderDetailsProps {
   userId: number;
@@ -60,7 +60,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   } = useGetorderItemsByPetOwnerId(userId);
 
   const PLATFORM_FEE =
-    Math.round(orderItem.itemPrice * MISC_CHARGE_PCT * 100) / 100;
+    Math.round(orderItem.itemPrice * PLATFORM_FEE_PERCENT * 100) / 100;
 
   const OPEN_FOREVER = [
     "header",
@@ -77,6 +77,9 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
     pt: 5,
     pb: 5,
   };
+
+  const ORDER_ITEM_DETAILS_GRID_LEFT = 9;
+  const ORDER_ITEM_DETAILS_GRID_RIGHT = 3;
 
   const FLEX_END_PROPS = {
     sx: {
@@ -296,11 +299,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
     <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS} mb={50}>
       <Box m="lg">
         <Grid>
-          <Grid.Col span={9} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_LEFT} {...FLEX_END_PROPS}>
             <Text size="sm">Subtotal</Text>
             <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={3} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
               ${formatNumber2Decimals(orderItem.itemPrice)}
             </Text>
@@ -309,11 +312,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={9} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_LEFT} {...FLEX_END_PROPS}>
             <Text size="sm">Platform Fee</Text>
             <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={3} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
               ${formatNumber2Decimals(PLATFORM_FEE)}
             </Text>
@@ -322,11 +325,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={9} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_LEFT} {...FLEX_END_PROPS}>
             <Text size="sm">Order Item Total</Text>
             <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={3} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="md" fw={600}>
               ${formatNumber2Decimals(orderItem.itemPrice + PLATFORM_FEE)}
             </Text>
@@ -335,11 +338,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={9} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_LEFT} {...FLEX_END_PROPS}>
             <Text size="sm">Payment Method</Text>
             <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={3} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <IconBrandStripe size="1rem" style={{ marginTop: "3px" }} />
             &nbsp;
             <Text size="sm" fw={500}>
@@ -350,11 +353,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={9} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_LEFT} {...FLEX_END_PROPS}>
             <Text size="sm">Payment ID</Text>
             <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={3} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
               {/* The first 2 sections of the payment ID */}
               {orderItem.invoice?.paymentId.split("-").slice(0, 2).join("-")}
@@ -364,11 +367,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           <Grid.Col>
             <Divider />
           </Grid.Col>
-          <Grid.Col span={9} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_LEFT} {...FLEX_END_PROPS}>
             <Text size="sm">Invoice ID</Text>
             <Divider orientation="vertical" ml="xl" />
           </Grid.Col>
-          <Grid.Col span={3} {...FLEX_END_PROPS}>
+          <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
               {orderItem.invoiceId}
             </Text>
@@ -381,7 +384,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   return (
     <div>
       <Head>
-        <title>{orderItem.orderItemId} - PetHub</title>
+        <title>View Order Details - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
