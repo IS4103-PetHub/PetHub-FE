@@ -234,7 +234,7 @@ export interface CartItem {
   cartItemId?: number; // Added to cart order, basically corresponds to date added
   serviceListing: ServiceListing;
   bookingSelection?: CartItemBookingSelection;
-  quantity?: number;
+  quantity: number;
   isSelected: boolean;
 }
 

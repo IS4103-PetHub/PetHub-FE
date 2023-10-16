@@ -111,7 +111,7 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         cartItems: cartItems.map((cartItem) => {
           return {
             serviceListingId: cartItem.serviceListing.serviceListingId,
-            quantity: cartItem.quantity ?? 1,
+            quantity: cartItem.quantity,
           };
         }),
       };

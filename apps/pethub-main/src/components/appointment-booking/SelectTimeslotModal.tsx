@@ -28,7 +28,7 @@ import {
   getErrorMessageProps,
 } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
-import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
+import { useUpdateBooking } from "@/hooks/booking";
 import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
 import { useCartOperations } from "@/hooks/cart";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
@@ -47,6 +47,7 @@ interface SelectTimeslotModalProps {
   isUpdating?: boolean;
   booking?: Booking;
   onUpdateBooking?(): void;
+  viewOnly?: boolean;
 }
 
 const SelectTimeslotModal = ({
@@ -57,6 +58,7 @@ const SelectTimeslotModal = ({
   isUpdating,
   booking,
   onUpdateBooking,
+  viewOnly,
 }: SelectTimeslotModalProps) => {
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [selectedMonth, setSelectedMonth] = useState<Date>(
@@ -70,13 +72,6 @@ const SelectTimeslotModal = ({
   );
   const { addItemToCart } = useCartOperations(petOwnerId);
 
-  /* 
-  service listing does not belong to calendar group, or does not have a set duration
-  means this service listing is not applicable for appointment booking
-  */
-  const notApplicableForAppointment =
-    !serviceListing.calendarGroupId || !serviceListing.duration;
-
   const { data: availTimeslots = [], isLoading } =
     useGetAvailableTimeSlotsByCGId(
       serviceListing.calendarGroupId,
@@ -87,7 +82,6 @@ const SelectTimeslotModal = ({
 
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
 
-  /* const createBookingMutation = useCreateBooking(); // Moved to checkout cart page */
   const updateBookingMutation = useUpdateBooking();
 
   async function scheduleOrUpdateBooking() {
@@ -151,7 +145,7 @@ const SelectTimeslotModal = ({
     }
   }
 
-  if (notApplicableForAppointment) {
+  if (!serviceListing.requiresBooking) {
     return null;
   }
 
@@ -179,6 +173,8 @@ const SelectTimeslotModal = ({
       maxLevel="year"
       minDate={new Date()}
       // exclude dates without any available time slots that is later than the system time
+      maxDate={dayjs(new Date()).add(3, "months").toDate()}
+      // only can see slots and book max 3 months in advanced
       excludeDate={(date) =>
         !availTimeslots.some(
           (data) =>
@@ -303,7 +299,11 @@ const SelectTimeslotModal = ({
       onClose={handleClose}
       title={
         <Text size="1.5rem" weight={600}>
-          {showConfirmation ? "Confirm timeslot" : "Select timeslot"}
+          {viewOnly
+            ? "Available timeslots"
+            : showConfirmation
+            ? "Confirm timeslot"
+            : "Select timeslot"}
         </Text>
       }
       size="70vw"
@@ -313,37 +313,39 @@ const SelectTimeslotModal = ({
     >
       {showConfirmation ? confirmation : selectTimeslotsGrid}
 
-      <Group position={showConfirmation ? "apart" : "right"}>
-        <LargeBackButton
-          text="Back"
-          variant="light"
-          display={showConfirmation ? "inline" : "none"}
-          onClick={() => setShowConfirmation(false)}
-        />
-        <Group position="right">
-          {selectedTimeslot && !showConfirmation && (
-            <Text>
-              <strong>Selected: </strong>
-              {formatISODayDateTime(selectedTimeslot)}
-            </Text>
-          )}
-          <Button
-            size="md"
-            color="gray"
-            variant="default"
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="md"
-            disabled={!selectedTimeslot}
-            onClick={handleClickButton}
-          >
-            {showConfirmation ? "Confirm and add to cart" : "Next"}
-          </Button>
+      {!viewOnly && (
+        <Group position={showConfirmation ? "apart" : "right"}>
+          <LargeBackButton
+            text="Back"
+            variant="light"
+            display={showConfirmation ? "inline" : "none"}
+            onClick={() => setShowConfirmation(false)}
+          />
+          <Group position="right">
+            {selectedTimeslot && !showConfirmation && (
+              <Text>
+                <strong>Selected: </strong>
+                {formatISODayDateTime(selectedTimeslot)}
+              </Text>
+            )}
+            <Button
+              size="md"
+              color="gray"
+              variant="default"
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="md"
+              disabled={!selectedTimeslot}
+              onClick={handleClickButton}
+            >
+              {showConfirmation ? "Confirm and add to cart" : "Next"}
+            </Button>
+          </Group>
         </Group>
-      </Group>
+      )}
     </Modal>
   );
 };

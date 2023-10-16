@@ -1,15 +1,21 @@
-import { Card, Grid, Image, Alert, Text, Button } from "@mantine/core";
+import {
+  Card,
+  Grid,
+  Image,
+  Text,
+  Button,
+  useMantineTheme,
+} from "@mantine/core";
 
 import { useRouter } from "next/router";
-import { ServiceListing, convertMinsToDurationString } from "shared-utils";
+import { ServiceListing } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
-import CartItemBadge from "./CartItemBadge";
 
 interface MiniCartItemCardProps {
   serviceListing: ServiceListing;
   closePopup: () => void;
   removeItem: () => void;
-  quantity?: number;
+  quantity: number;
 }
 
 const MiniCartItemCard = ({
@@ -19,6 +25,7 @@ const MiniCartItemCard = ({
   quantity,
 }: MiniCartItemCardProps) => {
   const router = useRouter();
+  const theme = useMantineTheme();
 
   const handleCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault(); // We dont want the cart page link on headerbar to trigger
@@ -28,11 +35,12 @@ const MiniCartItemCard = ({
   return (
     <Card
       withBorder
-      mb={4}
-      radius="sm"
+      mb="xs"
+      radius="md"
       shadow="xs"
       mah={90}
       mih={90}
+      sx={{ backgroundColor: theme.colors.gray[0] }}
       onClick={handleCardClick}
     >
       <Grid columns={24}>
@@ -55,19 +63,21 @@ const MiniCartItemCard = ({
             />
           )}
         </Grid.Col>
-        <Grid.Col span={14}>
+        <Grid.Col span={15}>
           <Text fw={600} size={14} lineClamp={2}>
             {serviceListing.title} &nbsp;
           </Text>
           <Text size={14}>
-            {"$" + formatNumber2Decimals(serviceListing.basePrice)}{" "}
-            {quantity && `(${quantity})`}
+            {"$" + formatNumber2Decimals(serviceListing.basePrice)} ({quantity})
           </Text>
         </Grid.Col>
-        <Grid.Col span={3}>
+        <Grid.Col span={2}>
           <Button
             color="red"
+            compact
             variant="light"
+            sx={{ border: "1px solid" }}
+            mr={0}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();

@@ -41,6 +41,7 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
       withArrow
       shadow="md"
       opened={opened}
+      radius="sm"
     >
       <Popover.Target>
         <Button

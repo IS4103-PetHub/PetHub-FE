@@ -42,17 +42,15 @@ const CheckoutItemsSection = ({
               <Text size="sm" weight={500}>
                 $
                 {formatNumber2Decimals(
-                  cartItem.quantity
-                    ? cartItem.serviceListing.basePrice * cartItem.quantity
-                    : cartItem.serviceListing.basePrice,
+                  cartItem.serviceListing.basePrice * cartItem.quantity,
                 )}{" "}
               </Text>
             </Group>
             <Group position="apart">
               <Text size="sm" color="gray">
-                Qty: {cartItem.quantity ?? 1}
+                Qty: {cartItem.quantity}
               </Text>
-              {cartItem.quantity && cartItem.quantity > 1 && (
+              {cartItem.quantity > 1 && (
                 <Text size={13} color="gray">
                   ${formatNumber2Decimals(cartItem.serviceListing.basePrice)}{" "}
                   each

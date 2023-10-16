@@ -85,7 +85,7 @@ const TimeslotCard = ({
               <Group>
                 <IconMapPin
                   size="1.25rem"
-                  color={isPastAppointment ? "gray" : theme.colors.indigo[6]}
+                  color={isPastAppointment ? "gray" : theme.colors.indigo[5]}
                 />
                 <Text
                   ml={-10}

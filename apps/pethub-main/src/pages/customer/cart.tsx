@@ -16,6 +16,7 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconAlertCircle,
+  IconInfoCircle,
   IconShoppingCartExclamation,
   IconX,
 } from "@tabler/icons-react";
@@ -127,11 +128,7 @@ export default function Cart({ userId }: CartProps) {
     cartItems.forEach((item) => {
       if (!expiredItems[item.cartItemId] && checkedItems[item.cartItemId]) {
         // Check if item is not expired and is checked
-        if (item.quantity) {
-          totalPrice += item.quantity * item.serviceListing.basePrice;
-        } else {
-          totalPrice += item.serviceListing.basePrice;
-        }
+        totalPrice += item.quantity * item.serviceListing.basePrice;
       }
     });
     return totalPrice;
@@ -253,16 +250,6 @@ export default function Cart({ userId }: CartProps) {
               removeItem={() => removeItemFromCart(item.cartItemId)}
               isExpired={expiredItems[item.cartItemId] || false}
               isDisabled={isDisabled}
-              bookingAlert={
-                isDisabled && (
-                  <CartItemBookingAlert
-                    isValid={!isDisabled}
-                    bookingSelection={item.bookingSelection}
-                  >
-                    {}
-                  </CartItemBookingAlert>
-                )
-              }
             />
           );
         })}
@@ -310,9 +297,9 @@ export default function Cart({ userId }: CartProps) {
         </>
       )}
       <Divider mb="xs" />
-      <Group position="apart">
+      <Group position="apart" align="flex-end">
         <Text size="lg">Total</Text>
-        <Text size="lg" fw={700}>
+        <Text size="xl" fw={600}>
           $
           {formatNumber2Decimals(
             calculateTotalPrice() + calculatePlatformFee(),
@@ -348,11 +335,11 @@ export default function Cart({ userId }: CartProps) {
           <Grid gutter="xl">
             <Grid.Col span={9}>
               <Alert
-                icon={<IconAlertCircle size="1rem" />}
+                icon={<IconInfoCircle size="1rem" />}
                 variant="light"
                 color={"indigo"}
                 title={
-                  "Checkout now to make your bookings and receive your redemption vouchers!"
+                  "Checkout now to receive your voucher codes and make your bookings (if applicable)!"
                 }
                 radius="md"
                 pb={0}
@@ -365,7 +352,7 @@ export default function Cart({ userId }: CartProps) {
                 withBorder
                 mb="lg"
                 sx={{ backgroundColor: theme.colors.gray[0] }}
-                radius="lg"
+                radius="md"
               >
                 <Group position="apart">
                   <Checkbox

@@ -30,8 +30,7 @@ interface CartItemCardProps {
   removeItem: () => void;
   isExpired: boolean;
   isDisabled: boolean;
-  quantity?: number;
-  bookingAlert?: React.ReactNode; // This might not be needed anymore as per PH-264
+  quantity: number;
 }
 
 const CartItemCard = ({
@@ -44,9 +43,7 @@ const CartItemCard = ({
   quantity,
   isExpired,
   isDisabled,
-  bookingAlert,
 }: CartItemCardProps) => {
-  const router = useRouter();
   const theme = useMantineTheme();
   const [value, setValue] = useState<number | "">(quantity || 1);
 
@@ -73,14 +70,14 @@ const CartItemCard = ({
       withBorder
       mb="lg"
       mih={220}
-      mah={220}
+      mah={250}
       sx={{
         backgroundColor: isExpired
           ? theme.colors.gray[3]
           : theme.colors.gray[0],
         opacity: isExpired ? 0.7 : 1,
       }}
-      radius="lg"
+      radius="md"
       shadow="sm"
     >
       <Group position="apart" mb="xs">
@@ -163,17 +160,13 @@ const CartItemCard = ({
               {serviceListing.description}
             </Text>
             <Box>
-              {!serviceListing.calendarGroupId ? (
-                <NumberInputWithIcons
-                  value={value}
-                  setValue={handleQuantityChange}
-                  min={1}
-                  max={100}
-                  step={1}
-                />
-              ) : (
-                bookingAlert
-              )}
+              <NumberInputWithIcons
+                value={value}
+                setValue={handleQuantityChange}
+                min={1}
+                max={100}
+                step={1}
+              />
             </Box>
           </Box>
         </Grid.Col>
@@ -186,28 +179,19 @@ const CartItemCard = ({
             alignItems: "flex-end",
           }}
         >
-          {!serviceListing.calendarGroupId && (
-            <CartItemBadge
-              fullWidth
-              text={`Unit $${formatNumber2Decimals(serviceListing.basePrice)}`}
-              type="UNITPRICE"
-              variant="outline"
-              square={true}
-              size="lg"
-            />
-          )}
-          <CartItemBadge
-            fullWidth
-            text={`Total $${formatNumber2Decimals(
+          <Text fw={600} size="lg" mr={5}>
+            $
+            {formatNumber2Decimals(
               quantity
                 ? serviceListing.basePrice * quantity
                 : serviceListing.basePrice,
-            )}`}
-            type="TOTALPRICE"
-            variant="outline"
-            square={true}
-            size="lg"
-          />
+            )}
+          </Text>
+          {quantity > 1 && (
+            <Text color="dimmed" size="sm" mr={5} mt={-2} mb={2}>
+              ${formatNumber2Decimals(serviceListing.basePrice)} each
+            </Text>
+          )}
         </Grid.Col>
       </Grid>
     </Card>
