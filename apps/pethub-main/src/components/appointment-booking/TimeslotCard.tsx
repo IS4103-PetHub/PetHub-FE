@@ -26,6 +26,7 @@ interface TimeslotCardProps {
   startTime: string;
   // optional as endTime can be computed
   endTime?: string;
+  orderItemId?: number;
   // optional, only for updating appointment
   disabled?: boolean;
   booking?: Booking;
@@ -37,6 +38,7 @@ const TimeslotCard = ({
   startTime,
   endTime,
   disabled,
+  orderItemId,
   booking,
   onUpdateBooking,
 }: TimeslotCardProps) => {
@@ -66,7 +68,7 @@ const TimeslotCard = ({
     <Card withBorder mb="lg" sx={{ backgroundColor: theme.colors.gray[0] }}>
       <Group position="apart">
         <Box>
-          {disabled ? null : (
+          {!disabled && (
             <Badge
               mb={5}
               variant={isPastAppointment ? "light" : "dot"}
@@ -85,7 +87,7 @@ const TimeslotCard = ({
               <Group>
                 <IconMapPin
                   size="1.25rem"
-                  color={isPastAppointment ? "gray" : theme.colors.indigo[6]}
+                  color={isPastAppointment ? "gray" : theme.colors.indigo[5]}
                 />
                 <Text
                   ml={-10}
@@ -100,7 +102,7 @@ const TimeslotCard = ({
           )}
         </Box>
 
-        {disabled || isPastAppointment ? null : (
+        {!disabled && isPastAppointment && (
           <>
             <Button onClick={open}>Reschedule</Button>
             <SelectTimeslotModal
@@ -115,7 +117,7 @@ const TimeslotCard = ({
           </>
         )}
       </Group>
-      {serviceListing.addresses?.length > 0 ? (
+      {serviceListing.addresses?.length > 0 && (
         <Text color="dimmed" size="sm">
           {serviceListing.addresses.map((address) => (
             <div key={address.addressId} style={{ display: "inline" }}>
@@ -124,13 +126,13 @@ const TimeslotCard = ({
             </div>
           ))}
         </Text>
-      ) : null}
+      )}
       <Divider mt="xs" mb="xs" />
-      {!disabled && booking && booking.pet ? (
+      {!disabled && booking && booking.pet && (
         <Text color={appointmentTextColor}>
           <strong>Pet: </strong> {booking.pet?.petName}
         </Text>
-      ) : null}
+      )}
       <Text color={appointmentTextColor}>
         <strong>Duration: </strong>
         {convertMinsToDurationString(serviceListing.duration)}

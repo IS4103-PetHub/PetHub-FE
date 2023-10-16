@@ -133,13 +133,13 @@ export default function PetBusinessApplicationDetails({
 
   const actionButtonGroup = (
     <Center>
-      {applicationStatus === BusinessApplicationStatusEnum.Pending ? (
+      {applicationStatus === BusinessApplicationStatusEnum.Pending && (
         <>
           <RejectButton />
           &nbsp;
           <ApproveButton />
         </>
-      ) : null}
+      )}
     </Center>
   );
 

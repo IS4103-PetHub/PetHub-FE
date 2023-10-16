@@ -80,6 +80,7 @@ const TimeSelect = ({
       <Select
         label={label || " "}
         disabled={disabled}
+        searchable
         w={80}
         mr={-10}
         data={hours}
@@ -89,11 +90,11 @@ const TimeSelect = ({
           handleTimeChange(value, minute, ampm);
         }}
         placeholder="Hour"
-        searchable
       />
       <Select
         label=" "
         disabled={disabled}
+        searchable
         w={80}
         mr={-10}
         data={minutes}
@@ -107,6 +108,7 @@ const TimeSelect = ({
       <Select
         label=" "
         disabled={disabled}
+        searchable
         w={80}
         data={["AM", "PM"]}
         value={ampm}

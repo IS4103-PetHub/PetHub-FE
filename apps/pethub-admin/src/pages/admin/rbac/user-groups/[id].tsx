@@ -186,14 +186,14 @@ export default function UserGroupDetails({
             <PageTitle title="User Group Details" />
             <Badge size="lg">Group Id: {groupId}</Badge>
           </Group>
-          {canWrite ? (
+          {canWrite && (
             <DeleteActionButtonModal
               title={`Are you sure you want to delete ${userGroup?.name}?`}
               subtitle="Any users currently assigned to this user group will be unassigned."
               onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
               large
             />
-          ) : null}
+          )}
         </Group>
 
         <Accordion
@@ -260,20 +260,20 @@ export default function UserGroupDetails({
               </Group>
             </Accordion.Control>
             <Accordion.Panel mb="xs">
-              {canWrite ? (
+              {canWrite && (
                 <AddUsersToUserGroupModal
                   userGroup={userGroup}
                   refetch={refetch}
                 />
-              ) : null}
+              )}
               {userGroup?.userGroupMemberships &&
-              userGroup.userGroupMemberships.length > 0 ? (
-                <MembershipsTable
-                  userGroup={userGroup}
-                  refetch={refetch}
-                  disabled={!canWrite}
-                />
-              ) : null}
+                userGroup.userGroupMemberships.length > 0 && (
+                  <MembershipsTable
+                    userGroup={userGroup}
+                    refetch={refetch}
+                    disabled={!canWrite}
+                  />
+                )}
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

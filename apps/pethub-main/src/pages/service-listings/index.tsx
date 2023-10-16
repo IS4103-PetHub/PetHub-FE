@@ -192,7 +192,7 @@ export default function ServiceListings() {
                       : formatStringToLetterCase(activeCategory)
                   }
                 />
-                {serviceListings.length > 0 ? searchAndSortGroup : null}
+                {serviceListings.length > 0 && searchAndSortGroup}
               </Box>
               {renderContent()}
             </Grid.Col>

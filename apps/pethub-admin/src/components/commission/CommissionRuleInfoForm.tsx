@@ -58,9 +58,9 @@ const CommissionRuleInfoForm = ({
             <Text weight="600">Name:</Text>
             <Text>
               {commissionRule?.name}
-              {commissionRule?.commissionRuleId == 1 ? (
+              {commissionRule?.commissionRuleId == 1 && (
                 <Badge style={{ marginLeft: "12px" }}>Default</Badge>
-              ) : null}
+              )}
             </Text>
           </Box>
           <Box>
@@ -73,7 +73,7 @@ const CommissionRuleInfoForm = ({
           </Box>
         </>
       )}
-      {disabled ? null : (
+      {!disabled && (
         <EditCancelSaveButtons
           isEditing={isEditing}
           onClickCancel={onCancel}

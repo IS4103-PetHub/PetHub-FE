@@ -50,6 +50,21 @@ export const bookingsSortOptions = [
   },
 ];
 
+export const orderItemsSortOptions = [
+  {
+    value: "recent",
+    label: "Most recent",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+];
+
 export enum PetTypeEnum {
   Dog = "DOG",
   Cat = "CAT",
