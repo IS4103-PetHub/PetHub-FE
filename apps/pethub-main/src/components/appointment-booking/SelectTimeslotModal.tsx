@@ -48,6 +48,7 @@ interface SelectTimeslotModalProps {
   isUpdating?: boolean;
   booking?: Booking;
   onUpdateBooking?(): void;
+  viewOnly?: boolean;
 }
 
 const SelectTimeslotModal = ({
@@ -59,6 +60,7 @@ const SelectTimeslotModal = ({
   isUpdating,
   booking,
   onUpdateBooking,
+  viewOnly,
 }: SelectTimeslotModalProps) => {
   const router = useRouter();
   const isTablet = useMediaQuery("(max-width: 100em)");
@@ -71,13 +73,6 @@ const SelectTimeslotModal = ({
   const [selectedPetId, setSelectedPetId] = useState<string>(
     booking ? booking.petId?.toString() : "",
   );
-
-  /* 
-  service listing does not belong to calendar group, or does not have a set duration
-  means this service listing is not applicable for appointment booking
-  */
-  const notApplicableForAppointment =
-    !serviceListing.calendarGroupId || !serviceListing.duration;
 
   const { data: availTimeslots = [], isLoading } =
     useGetAvailableTimeSlotsByCGId(
@@ -147,7 +142,7 @@ const SelectTimeslotModal = ({
     }
   }
 
-  if (notApplicableForAppointment) {
+  if (!serviceListing.requiresBooking) {
     return null;
   }
 
@@ -175,6 +170,8 @@ const SelectTimeslotModal = ({
       maxLevel="year"
       minDate={new Date()}
       // exclude dates without any available time slots that is later than the system time
+      maxDate={dayjs(new Date()).add(3, "months").toDate()}
+      // only can see slots and book max 3 months in advanced
       excludeDate={(date) =>
         !availTimeslots.some(
           (data) =>
@@ -229,15 +226,15 @@ const SelectTimeslotModal = ({
         </Text>
         <Divider mb="lg" />
 
-        {isLoading ? (
+        {isLoading && (
           <Box h={200} sx={{ verticalAlign: "center" }}>
             <Center h="100%" w="100%">
               <Loader opacity={0.5} />
             </Center>
           </Box>
-        ) : null}
+        )}
 
-        {selectedDate ? (
+        {selectedDate && (
           <>
             <Group mb="md">
               <Text size="lg" weight={500}>
@@ -257,7 +254,7 @@ const SelectTimeslotModal = ({
               </Chip.Group>
             </Group>
           </>
-        ) : null}
+        )}
       </Grid.Col>
     </Grid>
   );
@@ -299,7 +296,11 @@ const SelectTimeslotModal = ({
       onClose={handleClose}
       title={
         <Text size="1.5rem" weight={600}>
-          {showConfirmation ? "Confirm timeslot" : "Select timeslot"}
+          {viewOnly
+            ? "Available timeslots"
+            : showConfirmation
+            ? "Confirm timeslot"
+            : "Select timeslot"}
         </Text>
       }
       size="70vw"

@@ -41,11 +41,11 @@ const SadDimmedMessage = ({
           {title}
         </Text>
 
-        {subtitle ? (
+        {subtitle && (
           <Text size="md" color="dimmed" align="center">
             {subtitle}
           </Text>
-        ) : null}
+        )}
       </Box>
     </Container>
   );

@@ -51,7 +51,7 @@ const UserGroupInfoForm = ({
         </>
       )}
 
-      {disabled ? null : (
+      {!disabled && (
         <EditCancelSaveButtons
           isEditing={isEditing}
           onClickCancel={onCancel}

@@ -249,7 +249,7 @@ export default function InternalUserTable({
     <>
       <Group mb="xl" position="apart">
         <PageTitle title="Internal Users" />
-        {disabled ? null : (
+        {!disabled && (
           <Button
             size="md"
             leftIcon={<IconUserPlus />}

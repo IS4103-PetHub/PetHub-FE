@@ -158,12 +158,12 @@ export default function Commission({ permissions }: CommissionProps) {
         <Container fluid>
           <Group position="apart">
             <PageTitle title="Commission Rule" />
-            {canWrite ? (
+            {canWrite && (
               <LargeCreateButton
                 text="Create Commission Rule"
                 onClick={openCreate}
               />
-            ) : null}
+            )}
           </Group>
           {renderContent()}
         </Container>

@@ -137,7 +137,7 @@ const ViewServiceListingModal = ({
                   Service Listing Details
                 </Text>
               </div>
-              {canWrite ? (
+              {canWrite && (
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${serviceListing.title}?`}
                   subtitle="Pet Owners would no longer be able to view this service listing."
@@ -145,7 +145,7 @@ const ViewServiceListingModal = ({
                     onDelete();
                   }}
                 />
-              ) : null}
+              )}
             </Group>
             <Divider />
             <Grid gutter="md" style={{ marginTop: "20px" }}>

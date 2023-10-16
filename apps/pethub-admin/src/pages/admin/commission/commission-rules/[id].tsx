@@ -161,7 +161,7 @@ export default function CommissionRuleDetails({
             <PageTitle title="Commission Rule Details" />
             <Badge size="lg">Rule Id: {ruleId}</Badge>
           </Group>
-          {canWrite ? (
+          {canWrite && (
             <DeleteActionButtonModal
               title={`Are you sure you want to delete ${commissionRule?.name}?`}
               subtitle={
@@ -174,7 +174,7 @@ export default function CommissionRuleDetails({
               }
               large
             />
-          ) : null}
+          )}
         </Group>
       </Container>
       <Accordion
@@ -212,12 +212,12 @@ export default function CommissionRuleDetails({
             </Group>
           </Accordion.Control>
           <Accordion.Panel mb="xs">
-            {canWrite ? (
+            {canWrite && (
               <CommissionGroupAddPBModal
                 commissionRule={commissionRule}
                 refetch={refetch}
               />
-            ) : null}
+            )}
 
             <CommissionRulePetBusinessesTable
               commissionRule={commissionRule}

@@ -263,7 +263,7 @@ export default function PetBusinessDetails({
           <Group>
             <Text weight={500}>{petBusiness.companyName}</Text>
             {/*display visit website button only if PB has website url*/}
-            {petBusiness.websiteURL ? (
+            {petBusiness.websiteURL && (
               <Link href={petBusiness.websiteURL}>
                 <Button
                   compact
@@ -274,7 +274,7 @@ export default function PetBusinessDetails({
                   Visit website
                 </Button>
               </Link>
-            ) : null}
+            )}
           </Group>
           <Text color="dimmed" size="sm">
             UEN: {petBusiness.uen}
@@ -290,9 +290,9 @@ export default function PetBusinessDetails({
         </Stack>
 
         {/*if there are addresses*/}
-        {petBusiness.businessAddresses.length > 0 ? (
+        {petBusiness.businessAddresses.length > 0 && (
           <BusinessLocationsGroup addresses={petBusiness.businessAddresses} />
-        ) : null}
+        )}
       </Accordion.Panel>
     </Accordion.Item>
   );
