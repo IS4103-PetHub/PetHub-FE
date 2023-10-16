@@ -340,25 +340,23 @@ const OrderItemStepperContent = ({
   );
 
   function renderContent() {
-    if (orderItem.status === OrderItemStatusEnum.PendingBooking) {
-      return pendingBookingGroup;
-    }
-    if (orderItem.status === OrderItemStatusEnum.PendingFulfillment) {
-      return pendingFulfillmentGroup;
-    }
+    switch (orderItem.status) {
+      case OrderItemStatusEnum.PendingBooking:
+        return pendingBookingGroup;
 
-    if (
-      orderItem.status === OrderItemStatusEnum.Fulfilled ||
-      orderItem.status === OrderItemStatusEnum.PaidOut
-    ) {
-      return fulfilledGroup;
-    }
+      case OrderItemStatusEnum.PendingFulfillment:
+        return pendingFulfillmentGroup;
 
-    if (
-      orderItem.status === OrderItemStatusEnum.Expired ||
-      orderItem.status === OrderItemStatusEnum.Refunded
-    ) {
-      return expiredAndRefundedGroup;
+      case OrderItemStatusEnum.Fulfilled:
+      case OrderItemStatusEnum.PaidOut:
+        return fulfilledGroup;
+
+      case OrderItemStatusEnum.Expired:
+      case OrderItemStatusEnum.Refunded:
+        return expiredAndRefundedGroup;
+
+      default:
+        return null;
     }
   }
 

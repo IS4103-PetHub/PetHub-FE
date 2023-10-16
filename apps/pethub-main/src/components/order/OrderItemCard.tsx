@@ -119,14 +119,7 @@ const OrderItemCard = ({
           >
             Cancel
           </Button>
-          <Button
-            color="indigo"
-            variant="filled"
-            miw={90}
-            size="xs"
-            mr={-10}
-            onClick={bookNowHandler}
-          >
+          <Button miw={90} size="xs" mr={-10} onClick={bookNowHandler}>
             Book now
           </Button>
           <OrderItemPopover
@@ -175,7 +168,6 @@ const OrderItemCard = ({
         status === OrderItemStatusEnum.PaidOut) && (
         <>
           <Button
-            color="indigo"
             variant="light"
             size="xs"
             miw={90}
@@ -184,13 +176,7 @@ const OrderItemCard = ({
           >
             Review
           </Button>
-          <Button
-            color="indigo"
-            variant="filled"
-            size="xs"
-            miw={90}
-            onClick={buyAgainHandler}
-          >
+          <Button size="xs" miw={90} onClick={buyAgainHandler}>
             Buy again
           </Button>
         </>
