@@ -83,6 +83,11 @@ const OrderItemCard = ({
       } as CartItem,
       1,
     );
+    notifications.show({
+      title: "Added to cart",
+      color: "green",
+      message: "Item has been added to cart",
+    });
     router.push("/customer/cart");
   }
 
