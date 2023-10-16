@@ -354,13 +354,6 @@ export default function ServiceListingDetails({
                 >
                   View timeslots
                 </Button>
-                <SelectTimeslotModal
-                  petOwnerId={userId}
-                  serviceListing={serviceListing}
-                  opened={opened}
-                  onClose={close}
-                  viewOnly
-                />
               </Paper>
             )}
           </Grid.Col>
