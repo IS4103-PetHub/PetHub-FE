@@ -9,10 +9,11 @@ import {
   TextInput,
   Textarea,
   useMantineTheme,
+  Button,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
-import { IconClipboardList } from "@tabler/icons-react";
+import { IconClipboardList, IconGiftCard } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
 import {
@@ -58,6 +59,7 @@ const BookingModal = ({
         )
       : [],
     basePrice: booking ? booking.serviceListing.basePrice : 0,
+    voucherCode: "",
 
     // user details
     petOwnerName: booking
@@ -258,6 +260,40 @@ const BookingModal = ({
                       }
                       {...form.getInputProps("tags")}
                     />
+                  </Grid.Col>
+                </Grid>
+              </Accordion.Panel>
+            </Accordion.Item>
+
+            <Accordion.Item value="Claim Voucher">
+              <Accordion.Control>
+                <Group>
+                  <IconGiftCard color={theme.colors.indigo[5]} />{" "}
+                  <Text size="lg">Claim Voucher</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <Grid>
+                  <Grid.Col span={12}>
+                    <TextInput
+                      label="Voucher Code"
+                      placeholder="Enter customer's code"
+                      maxLength={6}
+                      {...form.getInputProps("voucherCode")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={12}>
+                    <Button
+                      color="primary"
+                      onClick={() => {
+                        const voucherCode = form.values.voucherCode;
+                        if (voucherCode && voucherCode.length === 6) {
+                        } else {
+                        }
+                      }}
+                    >
+                      Claim
+                    </Button>
                   </Grid.Col>
                 </Grid>
               </Accordion.Panel>
