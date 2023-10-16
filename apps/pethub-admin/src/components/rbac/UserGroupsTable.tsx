@@ -62,7 +62,7 @@ const UserGroupsTable = ({
                   router.push(`${router.asPath}/user-groups/${group.groupId}`)
                 }
               />
-              {disabled ? null : (
+              {!disabled && (
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${group.name}?`}
                   subtitle="Any users currently assigned to this user group will be unassigned."

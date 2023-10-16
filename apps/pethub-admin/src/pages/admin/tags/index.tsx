@@ -214,9 +214,7 @@ export default function Tags({ permissions }: TagsProps) {
       <Container fluid>
         <Group position="apart" mb="xl">
           <PageTitle title="Tag Management" />
-          {canWrite ? (
-            <CreateTagButtonModal onCreate={handleCreateTag} />
-          ) : null}
+          {canWrite && <CreateTagButtonModal onCreate={handleCreateTag} />}
         </Group>
 
         {renderContent()}

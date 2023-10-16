@@ -162,19 +162,19 @@ export default function ApplicationDetails({
           </Accordion.Panel>
         </Accordion.Item>
 
-        {disabled ||
-        applicationStatus !== BusinessApplicationStatusEnum.Pending ? null : (
-          <Accordion.Item value="action">
-            <Accordion.Control
-              icon={<IconAddressBook size={rem(20)} color="blue" />}
-            >
-              Action
-            </Accordion.Control>
-            <Accordion.Panel mr="xl" ml="md">
-              {actionButtonGroup}
-            </Accordion.Panel>
-          </Accordion.Item>
-        )}
+        {!disabled &&
+          applicationStatus === BusinessApplicationStatusEnum.Pending && (
+            <Accordion.Item value="action">
+              <Accordion.Control
+                icon={<IconAddressBook size={rem(20)} color="blue" />}
+              >
+                Action
+              </Accordion.Control>
+              <Accordion.Panel mr="xl" ml="md">
+                {actionButtonGroup}
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
       </Accordion>
     </Container>
   );

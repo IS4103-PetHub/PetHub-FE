@@ -34,7 +34,7 @@ const useStyles = createStyles((theme) => ({
 
   icon: {
     ref: getStylesRef("icon"),
-    color: theme.colors.indigo[6],
+    color: theme.colors.indigo[5],
     margin: "5px 0px",
   },
 }));

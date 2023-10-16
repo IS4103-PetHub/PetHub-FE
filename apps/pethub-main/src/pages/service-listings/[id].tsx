@@ -9,10 +9,7 @@ import {
   useMantineTheme,
   Box,
   Stack,
-  Center,
-  Flex,
 } from "@mantine/core";
-import { Transition } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
@@ -21,6 +18,8 @@ import {
   IconPhone,
   IconCheck,
   IconX,
+  IconClock12,
+  IconClock,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -69,13 +68,6 @@ export default function ServiceListingDetails({
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
-  const [showAddedToCart, setShowAddedToCart] = useState(false);
-
-  const slideLeftToRight = {
-    in: { transform: "translateX(0%)", opacity: 1 },
-    out: { transform: "translateX(100%)", opacity: 0 },
-    transitionProperty: "transform, opacity",
-  };
 
   useEffect(() => {
     if (
@@ -160,51 +152,40 @@ export default function ServiceListingDetails({
     }
   };
 
-  const handleClickBuyNow = async () => {
+  const handleClickAddToCart = async () => {
     const session = await getSession();
     if (!session) {
       notifications.show({
         title: "Login Required",
-        message: "Please log in to buy!",
+        message: "Please log in to add to cart!",
         color: "red",
       });
       return;
     }
-    if (serviceListing.calendarGroupId) {
-      open(); // Handle add to cart in the modal
-      setShowAddedToCart(true);
-      setTimeout(() => {
-        setShowAddedToCart(false);
-      }, 8000);
-    } else {
-      try {
-        await addItemToCart(
-          {
-            serviceListing: serviceListing,
-            ...(serviceListing.calendarGroupId ? {} : { quantity: value }),
-            isSelected: true,
-          } as CartItem,
-          Number(value),
-        );
-        notifications.show({
-          title: "Added to cart",
-          message: `${Number(value) > 1 ? `(${value})` : ""} '${
-            serviceListing.title
-          }' added to cart.`,
-          color: "green",
-        });
-        setValue(1);
-        setShowAddedToCart(true);
-        setTimeout(() => {
-          setShowAddedToCart(false);
-        }, 3000);
-      } catch (error) {
-        notifications.show({
-          title: "Error Adding to Cart",
-          message: "Please try again later.",
-          color: "red",
-        });
-      }
+
+    try {
+      await addItemToCart(
+        {
+          serviceListing: serviceListing,
+          ...{ quantity: value },
+          isSelected: true,
+        } as CartItem,
+        Number(value),
+      );
+      notifications.show({
+        title: "Added to cart",
+        message: `${Number(value) > 1 ? `${value}` : ""} '${
+          serviceListing.title
+        }' added to cart.`,
+        color: "green",
+      });
+      setValue(1);
+    } catch (error) {
+      notifications.show({
+        title: "Error Adding to Cart",
+        message: "Please try again later.",
+        color: "red",
+      });
     }
   };
 
@@ -247,9 +228,9 @@ export default function ServiceListingDetails({
         </Stack>
 
         {/*if there are addresses*/}
-        {serviceListing.addresses.length > 0 ? (
+        {serviceListing.addresses.length > 0 && (
           <BusinessLocationsGroup addresses={serviceListing.addresses} />
-        ) : null}
+        )}
       </Accordion.Panel>
     </Accordion.Item>
   );
@@ -319,65 +300,69 @@ export default function ServiceListingDetails({
               mt={50}
               sx={{ position: "relative" }}
             >
-              <Group position="apart">
-                <Text size="xl" weight={500}>
-                  ${formatNumber2Decimals(serviceListing.basePrice)}
-                </Text>
-              </Group>
-              {!serviceListing.calendarGroupId && (
-                <NumberInputWithIcons
-                  min={1}
-                  max={10}
-                  step={1}
-                  value={value}
-                  setValue={setValue}
-                  fullWidth
-                />
-              )}
+              <Text size="xl" weight={500} mb="md">
+                ${formatNumber2Decimals(serviceListing.basePrice)}
+              </Text>
+
+              <NumberInputWithIcons
+                min={1}
+                max={10}
+                step={1}
+                value={value}
+                setValue={setValue}
+                fullWidth
+              />
+
               <Button
                 size="md"
                 fullWidth
                 mt="xs"
-                onClick={handleClickBuyNow}
+                onClick={handleClickAddToCart}
                 color="dark"
                 className="gradient-hover"
               >
                 Add to cart
               </Button>
-              <SelectTimeslotModal
-                petOwnerId={userId}
-                serviceListing={serviceListing}
-                opened={opened}
-                onClose={close}
-              />
-              <Transition
-                mounted={showAddedToCart}
-                transition={slideLeftToRight}
-                duration={3000}
-              >
-                {(styles) => (
-                  <div
-                    style={{
-                      ...styles,
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      backgroundColor: "rgba(0, 0, 0, 0.7)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: "white",
-                      fontSize: "1.5rem",
-                      zIndex: 1,
-                    }}
-                  >
-                    Added to cart
-                  </div>
-                )}
-              </Transition>
             </Paper>
+
+            {serviceListing.requiresBooking && (
+              <Paper
+                radius="md"
+                bg={theme.colors.gray[0]}
+                p="lg"
+                withBorder
+                mt="xs"
+                sx={{ position: "relative" }}
+              >
+                <Group mb="xs">
+                  <IconClock color={theme.colors.indigo[5]} />
+                  <Text fw={600} size="lg" ml={-5}>
+                    Available timeslots
+                  </Text>
+                </Group>
+                <Text color="dimmed" size="sm">
+                  This service listing requires appointment booking. View
+                  available timeslots before making your purchase!
+                </Text>
+                <Button
+                  size="md"
+                  fullWidth
+                  mt="md"
+                  onClick={open}
+                  variant="light"
+                  sx={{ border: "1.5px solid" }}
+                >
+                  View timeslots
+                </Button>
+                <SelectTimeslotModal
+                  petOwnerId={userId}
+                  serviceListing={serviceListing}
+                  opened={opened}
+                  onClose={close}
+                  viewOnly
+                />
+              </Paper>
+            )}
           </Grid.Col>
         </Grid>
       </Container>

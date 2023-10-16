@@ -33,7 +33,7 @@ const CustomPopover = ({ text, ...props }: CustomPopoverProps) => {
       </Popover.Target>
       <Popover.Dropdown
         onMouseLeave={close}
-        sx={{ backgroundColor: theme.colors.dark[6] }}
+        sx={{ backgroundColor: theme.colors.dark[6], border: 0 }}
       >
         <Text size="xs" align="center" c="white">
           {text}

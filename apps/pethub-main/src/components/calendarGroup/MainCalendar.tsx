@@ -298,14 +298,14 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
           onChange={(value) => handleCalendarChange(value)}
         />
         <Group>
-          {selectedCalendarId !== "all" ? (
+          {selectedCalendarId !== "all" && (
             <LargeViewButton
               onClick={handleViewCalendarGroup}
               text="View Calendar Settings"
               variant="light"
               leftIcon={<IconSettings size="1.25rem" />}
             />
-          ) : null}
+          )}
         </Group>
       </Group>
       <Group position="apart">

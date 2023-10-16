@@ -185,12 +185,12 @@ export default function Rbac({ permissions }: RbacProps) {
       <Container fluid>
         <Group position="apart" mb="xl">
           <PageTitle title="Role-based Access Control" />
-          {canWrite ? (
+          {canWrite && (
             <LargeCreateButton
               text="Create User Group"
               onClick={() => router.push(`${router.asPath}/create`)}
             />
-          ) : null}
+          )}
         </Group>
 
         {renderContent()}
