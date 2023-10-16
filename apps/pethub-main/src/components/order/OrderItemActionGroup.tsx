@@ -20,6 +20,7 @@ import {
   OrderItemStatusEnum,
   formatISODateTimeShort,
   formatISODayDateTime,
+  formatNumber2Decimals,
 } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
 import { CartItem } from "@/types/types";
@@ -111,10 +112,22 @@ const OrderItemStepperContent = ({
         <Divider />
       </Grid.Col>
       <Grid.Col span={6}>
-        <Text size="xs">
-          Satisfied with your purchase? Your furry friend might appreciate a
-          repeat! Why not <b>buy it again</b> and keep those tails wagging?
-        </Text>
+        {orderItem.status === OrderItemStatusEnum.Expired ? (
+          <Text size="xs" color="red">
+            Your order has reached the end of the validity period and expired on{" "}
+            <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
+          </Text>
+        ) : orderItem.status === OrderItemStatusEnum.Refunded ? (
+          <Text size="xs" color="orange">
+            The amount of ${formatNumber2Decimals(orderItem.itemPrice)} has been
+            refunded to your original payment method.
+          </Text>
+        ) : (
+          <Text size="xs">
+            Satisfied with your purchase? Your furry friend might appreciate a
+            repeat! Why not <b>buy it again</b> and keep those tails wagging?
+          </Text>
+        )}
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
@@ -299,8 +312,6 @@ const OrderItemStepperContent = ({
     </>
   );
 
-  console.log("");
-
   const fulfilledGroup = (
     <>
       {buyAgainColumn}
@@ -314,7 +325,7 @@ const OrderItemStepperContent = ({
     </>
   );
 
-  const expiredOrRefundedGroup = (
+  const expiredAndRefundedGroup = (
     <>
       {buyAgainColumn}
       {invoiceColumn}
@@ -344,7 +355,7 @@ const OrderItemStepperContent = ({
       orderItem.status === OrderItemStatusEnum.Expired ||
       orderItem.status === OrderItemStatusEnum.Refunded
     ) {
-      return expiredOrRefundedGroup;
+      return expiredAndRefundedGroup;
     }
   }
 
