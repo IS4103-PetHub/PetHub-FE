@@ -193,7 +193,7 @@ const OrderItemStepper = ({
     ) {
       stepDetails = {
         color: "red",
-        label: "Not fulfilled",
+        label: "Not Fulfilled",
         description: "Order not fulfilled",
       };
     }
