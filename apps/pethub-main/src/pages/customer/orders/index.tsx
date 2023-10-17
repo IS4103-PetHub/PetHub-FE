@@ -191,7 +191,7 @@ export default function Orders({ userId }: OrdersProps) {
       mb="lg"
     >
       <Text>
-        Your furry friends have {orderBarCounts.toBookCount} orders awaiting
+        Your furry friends have {orderBarCounts?.toBookCount} orders awaiting
         bookings. Please paw-ticipate by scheduling your time slots before their
         tail-wagging validity periods end.
       </Text>
