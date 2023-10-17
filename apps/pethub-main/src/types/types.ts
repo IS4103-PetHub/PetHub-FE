@@ -224,7 +224,7 @@ export interface Booking {
   // not yet implemented
   invoiceId?: number;
   transactionId?: number;
-  orderItem: OrderItem;
+  orderItemId: number;
 }
 
 export interface AddRemoveFavouriteServiceListingPayload {
@@ -262,4 +262,9 @@ export interface CheckoutSummary {
   gst: number;
   platformFee: number;
   total: number;
+}
+
+export interface CompleteOrderItemPayload {
+  userId: number;
+  voucherCode: string;
 }

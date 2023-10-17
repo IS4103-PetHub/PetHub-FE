@@ -17,3 +17,25 @@ export const useGetorderItemsByPetOwnerId = (petOwnerId: number) => {
     enabled: !!petOwnerId,
   });
 };
+
+export const useCompleteOrderItem = (orderItemId: number) => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      return (
+        await api.post(
+          `${ORDER_ITEMS_API}/complete-order/${orderItemId}`,
+          payload,
+        )
+      ).data;
+    },
+    // onSuccess: (data) => {
+    //   if (data.code === 200) {
+    //     console.log("Order item completed successfully");
+    //   } else if (data.code === 400) {
+    //     console.log("Bad request. Invalid voucher code or order item ID.");
+    //   } else if (data.code === 404) {
+    //     console.log("Order item not found.");
+    //   }
+    // },
+  });
+};

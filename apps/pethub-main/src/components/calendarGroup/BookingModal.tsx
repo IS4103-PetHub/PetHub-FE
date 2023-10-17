@@ -12,8 +12,13 @@ import {
   Button,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
-import { useForm } from "@mantine/form";
-import { IconClipboardList, IconGiftCard } from "@tabler/icons-react";
+import { isNotEmpty, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
+import {
+  IconCheck,
+  IconClipboardList,
+  IconGiftCard,
+} from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import { useEffect } from "react";
 import {
@@ -21,8 +26,10 @@ import {
   Tag,
   formatNumber2Decimals,
   formatStringToLetterCase,
+  getErrorMessageProps,
 } from "shared-utils";
-import { Booking } from "@/types/types";
+import { useCompleteOrderItem } from "@/hooks/order";
+import { Booking, CompleteOrderItemPayload } from "@/types/types";
 
 interface BookingModalProps {
   booking: Booking;
@@ -82,6 +89,12 @@ const BookingModal = ({
 
   const form = useForm({
     initialValues: formDefaultValues,
+    validate: {
+      voucherCode: (value) =>
+        isNotEmpty("Voucher code required.") && value.length === 6
+          ? "Voucher code is of 6 characters."
+          : null,
+    },
   });
 
   useEffect(() => {
@@ -98,6 +111,25 @@ const BookingModal = ({
     const minutes = String(date.getMinutes()).padStart(2, "0");
     return `${hours}:${minutes}`;
   }
+
+  const completeOrderMutation = useCompleteOrderItem(
+    booking ? booking.orderItemId : null,
+  );
+  const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
+    try {
+      await completeOrderMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Order Item Fulfilled",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Voucher successfully claimed.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps("Error claiming voucher", error),
+      });
+    }
+  };
 
   return (
     <>
@@ -287,9 +319,14 @@ const BookingModal = ({
                       color="primary"
                       onClick={() => {
                         const voucherCode = form.values.voucherCode;
-                        if (voucherCode && voucherCode.length === 6) {
-                        } else {
-                        }
+                        const payload: CompleteOrderItemPayload = {
+                          // userId: booking.petOwner
+                          //   ? booking.petOwner.userId
+                          //   : null,
+                          userId: 9,
+                          voucherCode: voucherCode,
+                        };
+                        handleCompleteOrder(payload);
                       }}
                     >
                       Claim
