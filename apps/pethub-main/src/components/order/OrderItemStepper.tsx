@@ -63,7 +63,7 @@ const OrderItemStepper = ({
       separator: {
         transform:
           numberOfSteps === 4
-            ? "scaleX(2.5)"
+            ? "scaleX(3.0)"
             : numberOfSteps === 3
             ? "scaleX(1.5)"
             : null,

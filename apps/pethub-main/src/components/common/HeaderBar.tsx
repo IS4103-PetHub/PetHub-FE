@@ -118,6 +118,10 @@ const links: {
         link: "/customer/appointments",
         label: "My appointments",
       },
+      {
+        link: "/customer/orders",
+        label: "My orders",
+      },
     ],
   },
   {

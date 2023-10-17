@@ -28,7 +28,6 @@ interface CartItemCardProps {
   onCheckedChange: (checked: any) => void;
   setItemQuantity: (cartItemId: number, quantity: number) => void;
   removeItem: () => void;
-  isExpired: boolean;
   isDisabled: boolean;
   quantity: number;
 }
@@ -41,7 +40,6 @@ const CartItemCard = ({
   setItemQuantity,
   removeItem,
   quantity,
-  isExpired,
   isDisabled,
 }: CartItemCardProps) => {
   const theme = useMantineTheme();
@@ -66,20 +64,7 @@ const CartItemCard = ({
   };
 
   return (
-    <Card
-      withBorder
-      mb="lg"
-      mih={220}
-      mah={250}
-      sx={{
-        backgroundColor: isExpired
-          ? theme.colors.gray[3]
-          : theme.colors.gray[0],
-        opacity: isExpired ? 0.7 : 1,
-      }}
-      radius="md"
-      shadow="sm"
-    >
+    <Card withBorder mb="lg" mih={220} mah={250} radius="md" shadow="sm">
       <Group position="apart" mb="xs">
         <Center>
           <Checkbox
@@ -125,9 +110,6 @@ const CartItemCard = ({
               fit="contain"
               w="auto"
               alt="Cart Item Photo"
-              sx={{
-                filter: isExpired ? "grayscale(100%)" : "none",
-              }}
             />
           ) : (
             <Image
