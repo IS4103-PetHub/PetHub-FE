@@ -14,6 +14,7 @@ import {
   CopyButton,
   Center,
   Alert,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -75,6 +76,7 @@ const OrderItemCard = ({
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
   const { addItemToCart } = useCartOperations(userId);
+  const [visible, { toggle }] = useDisclosure(false);
 
   function triggerNotImplementedNotification() {
     notifications.show({
@@ -103,6 +105,11 @@ const OrderItemCard = ({
 
   function bookNowHandler() {
     open();
+  }
+
+  function viewDetailsHandler() {
+    toggle();
+    router.push(`/customer/orders/${orderItemId}`);
   }
 
   const orderItemFooterGroup = (
@@ -246,8 +253,13 @@ const OrderItemCard = ({
                 : theme.colors.gray[1],
           },
         }}
-        onClick={() => router.push(`/customer/orders/${orderItemId}`)}
+        onClick={viewDetailsHandler}
       >
+        <LoadingOverlay
+          visible={visible}
+          overlayBlur={0.1}
+          loaderProps={{ size: "sm", color: "indigo", variant: "bars" }}
+        />
         <Grid.Col span={4} mih={125}>
           {serviceListing?.attachmentURLs?.length > 0 ? (
             <Image
