@@ -208,7 +208,7 @@ const OrderItemCard = ({
   );
 
   return (
-    <Card withBorder mah={230} mih={225} radius="xs" shadow="xs">
+    <Card withBorder mih={225} radius="xs" shadow="xs">
       <Group position="apart" mb={5} mt={-5}>
         <Center>
           <Text fw={500} mr={2} size="sm">
@@ -229,7 +229,7 @@ const OrderItemCard = ({
         </Center>
         <Center>
           <Text size="xs" mr="md" fw={500} mt={3}>
-            {formatISODateTimeShort(createdAt)}
+            Ordered on: {formatISODateTimeShort(createdAt)}
           </Text>
           <Box>
             <Badge mr="md" radius="xl" c="dark" sx={{ fontWeight: 600 }}>

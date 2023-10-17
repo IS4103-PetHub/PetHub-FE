@@ -36,7 +36,7 @@ import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
-import OrderItemStepperContent from "@/components/order/OrderItemActionGroup";
+import OrderItemActionGroup from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
 import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
@@ -198,7 +198,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const actionGroupAccordionItem = (
     <Accordion.Item value="actionGroup" {...ACCORDION_ITEM_PROPS}>
       <Box m="lg">
-        <OrderItemStepperContent orderItem={orderItem} userId={userId} />
+        <OrderItemActionGroup orderItem={orderItem} userId={userId} />
       </Box>
     </Accordion.Item>
   );
