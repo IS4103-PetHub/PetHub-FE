@@ -94,6 +94,12 @@ const OrderItemStepperContent = ({
   );
   // ================================= FAKE REFUND STUFF ================================= //
 
+  const dividerColumn = (
+    <Grid.Col>
+      <Divider />
+    </Grid.Col>
+  );
+
   const invoiceColumn = (
     <>
       <Grid.Col span={8} />
@@ -103,8 +109,9 @@ const OrderItemStepperContent = ({
           variant="light"
           sx={{ border: "1px solid #e0e0e0" }}
           onClick={viewInvoiceHandler}
+          leftIcon={<IconFileDownload size="1rem" />}
         >
-          <IconFileDownload size="1rem" /> &nbsp; View Invoice
+          View Invoice
         </Button>
       </Grid.Col>
     </>
@@ -176,8 +183,8 @@ const OrderItemStepperContent = ({
               fullWidth
               variant="light"
               sx={{ border: "1px solid #e0e0e0", backgroundColor: "white" }}
+              leftIcon={<IconCopy size="1rem" />}
             >
-              <IconCopy size="1rem" /> &nbsp;
               {copied
                 ? "Copied to clipboard"
                 : `Voucher Code: ${orderItem.voucherCode}`}
@@ -272,17 +279,11 @@ const OrderItemStepperContent = ({
   const pendingBookingGroup = (
     <>
       {bookNowColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {refundColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {invoiceColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {voucherColumn}
     </>
   );
@@ -292,19 +293,13 @@ const OrderItemStepperContent = ({
       {orderItem.serviceListing.requiresBooking && (
         <>
           {bookNowColumn}
-          <Grid.Col>
-            <Divider />
-          </Grid.Col>
+          {dividerColumn}
         </>
       )}
       {refundColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {invoiceColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {voucherColumn}
       {orderItem.serviceListing.requiresBooking &&
         displayBookingColumn(
@@ -316,17 +311,11 @@ const OrderItemStepperContent = ({
   const fulfilledGroup = (
     <>
       {buyAgainColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {refundColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {reviewColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
     </>
@@ -335,9 +324,7 @@ const OrderItemStepperContent = ({
   const expiredAndRefundedGroup = (
     <>
       {buyAgainColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
+      {dividerColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
     </>

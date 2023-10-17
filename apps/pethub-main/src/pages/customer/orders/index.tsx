@@ -273,7 +273,7 @@ export default function Orders({ userId }: OrdersProps) {
           {orderBarCounts?.toBookCount !== 0 && toBookAlert}
           <Group position="apart">
             <PageTitle title={`My orders`} mb="lg" />
-            {orderItems.length > 0 ? searchAndSortGroup : null}
+            {orderItems.length > 0 && searchAndSortGroup}
           </Group>
           <OrderStatusBar
             activeTab={activeTab}
