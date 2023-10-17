@@ -1,4 +1,4 @@
-import { ActionIcon, Group, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Badge, Group, useMantineTheme } from "@mantine/core";
 import { IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   OrderItem,
   TABLE_PAGE_SIZE,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getMinTableHeight,
 } from "shared-utils";
@@ -32,6 +33,15 @@ const PBOrdersTable = ({
   const router = useRouter();
   const theme = useMantineTheme();
 
+  const orderStatusColorMap = new Map([
+    ["PENDING_BOOKING", "indigo"],
+    ["PENDING_FULFILLMENT", "violet"],
+    ["FULFILLED", "green"],
+    ["PAID_OUT", "green"],
+    ["REFUNDED", "orange"],
+    ["EXPIRED", "red"],
+  ]);
+
   return (
     <>
       <DataTable
@@ -56,7 +66,7 @@ const PBOrdersTable = ({
             title: "Price ($)",
             textAlignment: "right",
             render: (record) => {
-              return `$ ${record.itemPrice.toFixed(2)}`;
+              return `${formatNumber2Decimals(record.itemPrice)}`;
             },
             sortable: true,
           },
@@ -87,7 +97,13 @@ const PBOrdersTable = ({
             accessor: "status",
             title: "Status",
             textAlignment: "left",
-            render: (record) => formatStringToLetterCase(record.status),
+            render: (record) => {
+              return (
+                <Badge color={orderStatusColorMap.get(record.status)}>
+                  {record.status}
+                </Badge>
+              );
+            },
           },
           {
             accessor: "actions",

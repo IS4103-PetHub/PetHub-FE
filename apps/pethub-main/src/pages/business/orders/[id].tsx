@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Badge,
   Box,
+  Button,
   Container,
   Grid,
   Group,
@@ -19,7 +20,11 @@ import { IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { OrderItem, formatStringToLetterCase } from "shared-utils";
+import {
+  OrderItem,
+  formatNumber2Decimals,
+  formatStringToLetterCase,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
@@ -38,6 +43,15 @@ export default function PBOrdersDetails({
 }: PBOrdersDetailsProps) {
   const router = useRouter();
   const theme = useMantineTheme();
+
+  const orderStatusColorMap = new Map([
+    ["PENDING_BOOKING", "indigo"],
+    ["PENDING_FULFILLMENT", "violet"],
+    ["FULFILLED", "green"],
+    ["PAID_OUT", "green"],
+    ["REFUNDED", "orange"],
+    ["EXPIRED", "red"],
+  ]);
 
   return (
     <>
@@ -58,16 +72,19 @@ export default function PBOrdersDetails({
       <Container mt="xl" mb="xl">
         <Group position="apart">
           <PageTitle title={`${order.itemName}`} />
-          <ActionIcon
-            size="xl"
-            radius="xl"
+          <Button
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
             color={theme.primaryColor}
-            onClick={function (): void {
+            onClick={() => {
               window.open(order.attachmentURL, "_blank");
             }}
           >
-            <IconFileDownload size={"3.25rem"} />
-          </ActionIcon>
+            <IconFileDownload size={"1.5rem"} />
+            Download Invoice
+          </Button>
         </Group>
         <Accordion
           radius="md"
@@ -90,7 +107,9 @@ export default function PBOrdersDetails({
                 <Text size="xl" weight={600}>
                   Order Details
                 </Text>
-                <Badge>{formatStringToLetterCase(order.status)}</Badge>
+                <Badge color={orderStatusColorMap.get(order.status)}>
+                  {order.status}
+                </Badge>
               </Group>
             </Accordion.Control>
             <Accordion.Panel mb="xs">
@@ -110,14 +129,14 @@ export default function PBOrdersDetails({
                 <Grid.Col span={6}>
                   <Box>
                     <Text weight="600">Expiry Date:</Text>
-                    <Text>{dayjs(order.expiryDate).format("YYYY-MM-DD")}</Text>
+                    <Text>{dayjs(order.expiryDate).format("DD-MM-YYYY")}</Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <Box>
                     <Text weight="600">Date Created:</Text>
                     <Text>
-                      {dayjs(order.invoice.createdAt).format("YYYY-MM-DD")}
+                      {dayjs(order.invoice.createdAt).format("DD-MM-YYYY")}
                     </Text>
                   </Box>
                 </Grid.Col>
@@ -130,13 +149,17 @@ export default function PBOrdersDetails({
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Miscellaneous fee :</Text>
-                    <Text>$ {(0.07 * order.itemPrice).toFixed(2)}</Text>
+                    <Text>
+                      $ {formatNumber2Decimals(0.07 * order.itemPrice)}
+                    </Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Total Price :</Text>
-                    <Text>$ {(1.07 * order.itemPrice).toFixed(2)}</Text>
+                    <Text>
+                      $ {formatNumber2Decimals(1.07 * order.itemPrice)}
+                    </Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={4}>
@@ -149,7 +172,10 @@ export default function PBOrdersDetails({
                   <Box>
                     <Text weight="600">Commission Amount:</Text>
                     <Text>
-                      $ {(order.commissionRate * order.itemPrice).toFixed(2)}
+                      ${" "}
+                      {formatNumber2Decimals(
+                        order.commissionRate * order.itemPrice,
+                      )}
                     </Text>
                   </Box>
                 </Grid.Col>
@@ -158,17 +184,17 @@ export default function PBOrdersDetails({
                     <Text weight="600">Net Total:</Text>
                     <Text>
                       ${" "}
-                      {(
+                      {formatNumber2Decimals(
                         1.07 * order.itemPrice -
-                        order.commissionRate * order.itemPrice
-                      ).toFixed(2)}
+                          order.commissionRate * order.itemPrice,
+                      )}
                     </Text>
                   </Box>
                 </Grid.Col>
               </Grid>
             </Accordion.Panel>
           </Accordion.Item>
-          {order.booking ? (
+          {order.booking && (
             <>
               <Accordion.Item value="BookingDetails">
                 <Accordion.Control
@@ -178,7 +204,7 @@ export default function PBOrdersDetails({
                     Booking Timings
                   </Text>
                 </Accordion.Control>
-                <Accordion.Panel ml={5} mr={5}>
+                <Accordion.Panel mb="xs">
                   <Grid>
                     <Grid.Col span={6}>
                       <Box>
@@ -191,7 +217,7 @@ export default function PBOrdersDetails({
                         <Text weight="600">Date Created:</Text>
                         <Text>
                           {dayjs(order.booking.dateCreated).format(
-                            "YYYY-MM-DD",
+                            "DD-MM-YYYY",
                           )}
                         </Text>
                       </Box>
@@ -201,7 +227,7 @@ export default function PBOrdersDetails({
                         <Text weight="600">Start time:</Text>
                         <Text>
                           {dayjs(order.booking.startTime).format(
-                            "YYYY-MM-DD, HH:MM",
+                            "DD-MM-YYYY, HH:MM",
                           )}
                         </Text>
                       </Box>
@@ -211,7 +237,7 @@ export default function PBOrdersDetails({
                         <Text weight="600">End time:</Text>
                         <Text>
                           {dayjs(order.booking.endTime).format(
-                            "YYYY-MM-DD, HH:MM",
+                            "DD-MM-YYYY, HH:MM",
                           )}
                         </Text>
                       </Box>
@@ -227,7 +253,7 @@ export default function PBOrdersDetails({
                     Pet Owner Details
                   </Text>
                 </Accordion.Control>
-                <Accordion.Panel ml={5} mr={5}>
+                <Accordion.Panel mb="xs">
                   <Grid>
                     {petOwner && (
                       <>
@@ -284,7 +310,7 @@ export default function PBOrdersDetails({
                 </Accordion.Panel>
               </Accordion.Item>
             </>
-          ) : null}
+          )}
           <Accordion.Item value="ServiceListingDetails">
             <Accordion.Control
               icon={<IconNotes color={theme.colors.indigo[5]} />}
@@ -293,7 +319,7 @@ export default function PBOrdersDetails({
                 Service Listing Details
               </Text>
             </Accordion.Control>
-            <Accordion.Panel ml={5} mr={5}>
+            <Accordion.Panel mb="xs">
               <Grid>
                 <Grid.Col span={6}>
                   <Box>
@@ -333,7 +359,7 @@ export default function PBOrdersDetails({
                     <Box>
                       <Text weight="600">Address:</Text>
                       {order.serviceListing.addresses.map((address) => (
-                        <Badge key={address.addressId}>
+                        <Badge key={address.addressId} variant="dot">
                           {address.addressName}
                         </Badge>
                       ))}
@@ -345,7 +371,9 @@ export default function PBOrdersDetails({
                   <Box>
                     <Text weight="600">Tags:</Text>
                     {order.serviceListing.tags.map((tag) => (
-                      <Badge key={tag.tagId}>{tag.name}</Badge>
+                      <Badge key={tag.tagId} color="gray">
+                        {tag.name}
+                      </Badge>
                     ))}
                   </Box>
                 </Grid.Col>
@@ -358,7 +386,7 @@ export default function PBOrdersDetails({
                 Refund Details
               </Text>
             </Accordion.Control>
-            <Accordion.Panel ml={5} mr={5}>
+            <Accordion.Panel mb="xs">
               Refund DEETS
             </Accordion.Panel>
           </Accordion.Item> */}

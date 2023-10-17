@@ -124,11 +124,7 @@ export default function Orders({ userId }: OrdersProps) {
 
   function searchOrdersForPB(orderItems: OrderItem[], searchStr: string) {
     return orderItems.filter((orderItem: OrderItem) => {
-      const formattedCategory = formatEnumValueToLowerCase(orderItem.status);
-      return (
-        orderItem.itemName.toLowerCase().includes(searchStr.toLowerCase()) ||
-        formattedCategory.includes(searchStr.toLowerCase())
-      );
+      return orderItem.itemName.toLowerCase().includes(searchStr.toLowerCase());
     });
   }
 
@@ -184,6 +180,7 @@ export default function Orders({ userId }: OrdersProps) {
         <Grid>
           <Grid.Col span={6}>
             <MultiSelect
+              size="md"
               label="Service Listing"
               placeholder="Select service listing"
               data={serviceListingsOptions}
@@ -196,8 +193,32 @@ export default function Orders({ userId }: OrdersProps) {
               }}
             />
           </Grid.Col>
-          <Grid.Col span={6}>
+          <Grid.Col span={3}>
+            <DateInput
+              size="md"
+              valueFormat="DD-MM-YYYY"
+              label="Start Date"
+              placeholder="Select start date"
+              value={new Date(startDate)}
+              onChange={(newDate) => setStartDate(newDate)}
+            />
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <DateInput
+              size="md"
+              valueFormat="DD-MM-YYYY"
+              label="End Date"
+              placeholder="Select end date"
+              value={new Date(endDate)}
+              onChange={(newDate) => setEndDate(newDate)}
+            />
+          </Grid.Col>
+          <Grid.Col span={9}>
+            <SearchBar text="Search by name" onSearch={handleSearch} />
+          </Grid.Col>
+          <Grid.Col span={3}>
             <MultiSelect
+              size="md"
               label="Status"
               placeholder="Select status"
               data={orderItemStatusValues}
@@ -209,30 +230,6 @@ export default function Orders({ userId }: OrdersProps) {
                   setStatusFilter(selectedStatus.join(","));
                 }
               }}
-            />
-          </Grid.Col>
-          <Grid.Col span={6}>
-            <DateInput
-              valueFormat="YYYY MMM DD"
-              label="Start Date"
-              placeholder="Date input"
-              value={new Date(startDate)}
-              onChange={(newDate) => setStartDate(newDate)}
-            />
-          </Grid.Col>
-          <Grid.Col span={6}>
-            <DateInput
-              valueFormat="YYYY MMM DD"
-              label="End Date"
-              placeholder="Date input"
-              value={new Date(endDate)}
-              onChange={(newDate) => setEndDate(newDate)}
-            />
-          </Grid.Col>
-          <Grid.Col span={12}>
-            <SearchBar
-              text="Search by name and status"
-              onSearch={handleSearch}
             />
           </Grid.Col>
         </Grid>
