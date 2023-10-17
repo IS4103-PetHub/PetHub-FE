@@ -64,15 +64,10 @@ export const useGetAllServiceListingsWithQueryParams = (
   return useQuery({
     queryKey: ["service-listings", { params }],
     queryFn: async () => {
-      if (categoryValue || (tagNames && tagNames.length > 0)) {
-        const response = await api.get(`${SERVICE_LISTING_API}/active`, {
-          params,
-        });
-        return response.data as ServiceListing[];
-      } else {
-        const response = await api.get(`${SERVICE_LISTING_API}/active`);
-        return response.data as ServiceListing[];
-      }
+      const response = await api.get(`${SERVICE_LISTING_API}/active`, {
+        params,
+      });
+      return response.data as ServiceListing[];
     },
   });
 };
