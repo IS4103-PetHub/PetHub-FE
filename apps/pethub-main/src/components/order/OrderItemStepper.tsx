@@ -61,13 +61,6 @@ const OrderItemStepper = ({
       },
       // push separator up to be beside stepper icon
       separator: {
-        transform:
-          numberOfSteps === 4
-            ? "scaleX(3.0)"
-            : numberOfSteps === 3
-            ? "scaleX(1.5)"
-            : null,
-        transformOrigin: "center center",
         position: "relative",
         top: "-30px",
       },
