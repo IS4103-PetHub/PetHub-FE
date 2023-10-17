@@ -186,14 +186,14 @@ export default function Orders({ userId }: OrdersProps) {
   const toBookAlert = (
     <Alert
       title="Booking(s) Not Scheduled"
-      color="red"
+      color="orange"
       icon={<IconExclamationCircle size="2rem" />}
       mb="lg"
     >
       <Text>
-        Your furry friends have orders awaiting bookings. Please paw-ticipate by
-        scheduling your time slots before their tail-wagging validity periods
-        end.
+        Your furry friends have {orderBarCounts.toBookCount} orders awaiting
+        bookings. Please paw-ticipate by scheduling your time slots before their
+        tail-wagging validity periods end.
       </Text>
       <Button
         mt="xs"
