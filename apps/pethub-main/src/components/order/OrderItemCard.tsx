@@ -229,7 +229,7 @@ const OrderItemCard = ({
         </Center>
         <Center>
           <Text size="xs" mr="md" fw={500} mt={3}>
-            {formatISODateTimeShort(createdAt)}
+            Ordered on: {formatISODateTimeShort(createdAt)}
           </Text>
           <Box>
             <Badge mr="md" radius="xl" c="dark" sx={{ fontWeight: 600 }}>

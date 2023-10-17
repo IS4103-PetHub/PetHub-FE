@@ -96,9 +96,6 @@ const OrderItemStepperContent = ({
 
   const invoiceColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={8} />
       <Grid.Col span={4}>
         <Button
@@ -115,9 +112,6 @@ const OrderItemStepperContent = ({
 
   const buyAgainColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={6}>
         {orderItem.status === OrderItemStatusEnum.Expired ? (
           <Text size="xs" color="red">
@@ -147,9 +141,6 @@ const OrderItemStepperContent = ({
 
   const bookNowColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={6}>
         {orderItem.booking ? (
           <Text size="xs">
@@ -175,9 +166,6 @@ const OrderItemStepperContent = ({
 
   const voucherColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={8} />
       <Grid.Col span={4}>
         <CopyButton value={orderItem.voucherCode} timeout={3000}>
@@ -202,9 +190,6 @@ const OrderItemStepperContent = ({
 
   const reviewColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={7}>
         <Text size="xs">
           🐾 Loved our products for your furry friend? We&apos;d be purr-fectly
@@ -229,9 +214,6 @@ const OrderItemStepperContent = ({
 
   const refundColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={6}>
         <Text size="xs" color="dimmed">
           {eligibleForRefund
@@ -290,52 +272,74 @@ const OrderItemStepperContent = ({
   const pendingBookingGroup = (
     <>
       {bookNowColumn}
-      {refundColumn}
-      {invoiceColumn}
-      {voucherColumn}
       <Grid.Col>
         <Divider />
       </Grid.Col>
+      {refundColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
+      {invoiceColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
+      {voucherColumn}
     </>
   );
 
   const pendingFulfillmentGroup = (
     <>
-      {orderItem.serviceListing.requiresBooking && bookNowColumn}
+      {orderItem.serviceListing.requiresBooking && (
+        <>
+          {bookNowColumn}
+          <Grid.Col>
+            <Divider />
+          </Grid.Col>
+        </>
+      )}
       {refundColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
       {invoiceColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
       {voucherColumn}
       {orderItem.serviceListing.requiresBooking &&
         displayBookingColumn(
           "You have scheduled a booking for this item on the timing displayed here. Please present the voucher code to the establishment to complete your purchase.",
         )}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
     </>
   );
 
   const fulfilledGroup = (
     <>
       {buyAgainColumn}
-      {refundColumn}
-      {reviewColumn}
-      {invoiceColumn}
-      {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
       <Grid.Col>
         <Divider />
       </Grid.Col>
+      {refundColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
+      {reviewColumn}
+      <Grid.Col>
+        <Divider />
+      </Grid.Col>
+      {invoiceColumn}
+      {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
     </>
   );
 
   const expiredAndRefundedGroup = (
     <>
       {buyAgainColumn}
-      {invoiceColumn}
-      {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
       <Grid.Col>
         <Divider />
       </Grid.Col>
+      {invoiceColumn}
+      {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
     </>
   );
 
