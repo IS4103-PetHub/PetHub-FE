@@ -36,8 +36,6 @@ const OrderItemStepper = ({
     }
   }, [setActive, activeStepIndexRef.current]);
 
-  console.log("num", numberOfSteps);
-
   const STEPPER_PROPS = {
     active: active,
     size: "md",

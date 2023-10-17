@@ -29,7 +29,6 @@ import { PageTitle } from "web-ui";
 import CustomPopover from "web-ui/shared/CustomPopover";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
-import CartItemBookingAlert from "@/components/cart/CartItemBookingAlert";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
 import {
@@ -57,7 +56,6 @@ export default function Cart({ userId }: CartProps) {
   const theme = useMantineTheme();
   const [cartItems, setCartItems] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
-  const [expiredItems, setExpiredItems] = useState({}); // This might not be needed anymore as per PH-264
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
 
   useEffect(() => {
@@ -70,7 +68,6 @@ export default function Cart({ userId }: CartProps) {
       initialExpiredState[item.cartItemId] = false; // default is all items not expired
     });
     setCheckedItems(initialCheckedState);
-    setExpiredItems(initialExpiredState);
     if (cartItems.length === 0) {
       setHasNoFetchedRecords(true);
     }
@@ -93,16 +90,9 @@ export default function Cart({ userId }: CartProps) {
     setAllCartItemsIsSelected(isChecked);
   }
 
-  function setCardExpired(cartItemId, isExpired) {
-    setExpiredItems((prev) => ({
-      ...prev,
-      [cartItemId]: isExpired,
-    }));
-  }
-
   function hasNoCheckedItems() {
     for (const cartItemId in checkedItems) {
-      if (checkedItems[cartItemId] && !expiredItems[cartItemId]) {
+      if (checkedItems[cartItemId]) {
         return false;
       }
     }
@@ -112,7 +102,7 @@ export default function Cart({ userId }: CartProps) {
   const calculateTotalBuyables = () => {
     let totalBuyables = 0;
     cartItems.forEach((item) => {
-      if (!expiredItems[item.cartItemId] && checkedItems[item.cartItemId]) {
+      if (checkedItems[item.cartItemId]) {
         // Check if item is not expired and is checked
         totalBuyables += item.quantity || 1; // Rmr some items got quantity
       }
@@ -126,7 +116,7 @@ export default function Cart({ userId }: CartProps) {
       return totalPrice;
     }
     cartItems.forEach((item) => {
-      if (!expiredItems[item.cartItemId] && checkedItems[item.cartItemId]) {
+      if (checkedItems[item.cartItemId]) {
         // Check if item is not expired and is checked
         totalPrice += item.quantity * item.serviceListing.basePrice;
       }
@@ -183,8 +173,8 @@ export default function Cart({ userId }: CartProps) {
   }
 
   // As long as all non-expired items are checked, this will be true
-  const areAllChecked = cartItems.every((item) =>
-    expiredItems[item.cartItemId] ? true : checkedItems[item.cartItemId],
+  const areAllChecked = cartItems.every(
+    (item) => checkedItems[item.cartItemId],
   );
 
   const emptyCartMessage = (
@@ -216,26 +206,7 @@ export default function Cart({ userId }: CartProps) {
       {cartItems
         .slice()
         .reverse()
-        .sort((a, b) => (expiredItems[a.cartItemId] ? 1 : -1)) // Sort expired items to the back
         .map((item) => {
-          /*
-            - No checking for expired bookings atm as per PH-264
-          */
-
-          // let shouldFetch = item.bookingSelection && item.serviceListing.calendarGroupId;
-          // let isDisabled = false;
-          // getAvailableTimeSlotsByCGIdNoCache(
-          //   shouldFetch ? item.serviceListing.calendarGroupId : null,
-          //   shouldFetch ? item.bookingSelection.startTime : null,
-          //   shouldFetch ? item.bookingSelection.endTime : null,
-          //   shouldFetch ? item.serviceListing.duration : null
-          // ).then((availTimeslots) => {
-          //   isDisabled = shouldFetch && availTimeslots.length === 0 ? true : false;
-          //   setCardExpired(item.cartItemId, isDisabled);
-          // });
-
-          let isDisabled = false; // Stub
-
           return (
             <CartItemCard
               key={item.cartItemId}
@@ -248,8 +219,7 @@ export default function Cart({ userId }: CartProps) {
               quantity={item.quantity}
               setItemQuantity={setItemQuantity}
               removeItem={() => removeItemFromCart(item.cartItemId)}
-              isExpired={expiredItems[item.cartItemId] || false}
-              isDisabled={isDisabled}
+              isDisabled={false}
             />
           );
         })}

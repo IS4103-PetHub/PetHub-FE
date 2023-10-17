@@ -201,7 +201,7 @@ const OrderItemCard = ({
   );
 
   return (
-    <Card withBorder mah={225} mih={225} radius="xs" shadow="xs">
+    <Card withBorder mah={230} mih={225} radius="xs" shadow="xs">
       <Group position="apart" mb={5} mt={-5}>
         <Center>
           <Text fw={500} mr={2} size="sm">
