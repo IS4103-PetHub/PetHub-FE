@@ -1,4 +1,10 @@
-import { Badge, Indicator, Tabs, createStyles } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Indicator,
+  Tabs,
+  createStyles,
+} from "@mantine/core";
 import {
   IconBrowserCheck,
   IconBulb,
@@ -45,6 +51,7 @@ function OrderStatusBar({
   return (
     <Tabs
       defaultValue={OrderItemStatusEnum.All}
+      value={activeTab}
       onTabChange={setActiveTab}
       variant="outline"
       radius="sm"
@@ -57,7 +64,12 @@ function OrderStatusBar({
           }
           value={OrderItemStatusEnum.All}
           icon={<IconMenu2 size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={allCount} />}
+          rightSection={
+            <OrderItemTabBadge
+              count={allCount}
+              isActive={activeTab === OrderItemStatusEnum.All}
+            />
+          }
         >
           All Orders
         </Tabs.Tab>
@@ -69,7 +81,12 @@ function OrderStatusBar({
           }
           value={OrderItemStatusEnum.PendingBooking}
           icon={<IconBulb size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={toBookCount} />}
+          rightSection={
+            <OrderItemTabBadge
+              count={toBookCount}
+              isActive={activeTab === OrderItemStatusEnum.PendingBooking}
+            />
+          }
         >
           To Book
         </Tabs.Tab>
@@ -81,7 +98,12 @@ function OrderStatusBar({
           }
           value={OrderItemStatusEnum.PendingFulfillment}
           icon={<IconCalendarEvent size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={toFulfillCount} />}
+          rightSection={
+            <OrderItemTabBadge
+              count={toFulfillCount}
+              isActive={activeTab === OrderItemStatusEnum.PendingFulfillment}
+            />
+          }
         >
           To Fulfill
         </Tabs.Tab>
@@ -93,7 +115,12 @@ function OrderStatusBar({
           }
           value={OrderItemStatusEnum.Fulfilled}
           icon={<IconBrowserCheck size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={fulfilledCount} />}
+          rightSection={
+            <OrderItemTabBadge
+              count={fulfilledCount}
+              isActive={activeTab === OrderItemStatusEnum.Fulfilled}
+            />
+          }
         >
           Fulfilled
         </Tabs.Tab>
@@ -103,7 +130,12 @@ function OrderStatusBar({
           }
           value={OrderItemStatusEnum.Expired}
           icon={<IconClockExclamation size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={expiredCount} />}
+          rightSection={
+            <OrderItemTabBadge
+              count={expiredCount}
+              isActive={activeTab === OrderItemStatusEnum.Expired}
+            />
+          }
         >
           Expired
         </Tabs.Tab>
@@ -115,7 +147,12 @@ function OrderStatusBar({
           }
           value={OrderItemStatusEnum.Refunded}
           icon={<IconCreditCard size="1rem" color="gray" />}
-          rightSection={<OrderItemTabBadge count={refundedCount} />}
+          rightSection={
+            <OrderItemTabBadge
+              count={refundedCount}
+              isActive={activeTab === OrderItemStatusEnum.Refunded}
+            />
+          }
         >
           Refunded
         </Tabs.Tab>
