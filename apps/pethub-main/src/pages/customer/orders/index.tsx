@@ -228,20 +228,10 @@ export default function Orders({ userId }: OrdersProps) {
         return <CenterLoader />;
       }
       return (
-        <Transition
-          mounted={hasNoFetchedRecords}
-          transition="fade"
-          duration={100}
-        >
-          {(styles) => (
-            <div style={styles}>
-              <SadDimmedMessage
-                title="No orders found"
-                subtitle="Order that you place in the future will appear here"
-              />
-            </div>
-          )}
-        </Transition>
+        <SadDimmedMessage
+          title="No orders found"
+          subtitle="Order that you place in the future will appear here"
+        />
       );
     }
 
