@@ -150,8 +150,8 @@ const SettingsForm = ({
               minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="Start date"
-              placeholder="Start date (DD/MM/YYYY)"
-              valueFormat="DD/MM/YYYY"
+              placeholder="Start date (DD-MM-YYYY)"
+              valueFormat="DD-MM-YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
               disabled={isEditingDisabled}
@@ -172,8 +172,8 @@ const SettingsForm = ({
               minDate={dayjs(new Date()).add(1, "day").toDate()}
               maxDate={dayjs(new Date()).add(3, "month").toDate()}
               label="End date"
-              placeholder="End date (DD/MM/YYYY)"
-              valueFormat="DD/MM/YYYY"
+              placeholder="End date (DD-MM-YYYY)"
+              valueFormat="DD-MM-YYYY"
               icon={<IconCalendar size="1rem" />}
               sx={{ width: "48%" }}
               disabled={isEditingDisabled || isSettingOver}

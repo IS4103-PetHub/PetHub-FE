@@ -271,7 +271,7 @@ const PetInfoModal = ({
               label="Date of Birth"
               clearable
               placeholder="Date of birth"
-              valueFormat="DD/MM/YYYY"
+              valueFormat="DD-MM-YYYY"
               maxDate={new Date()}
               icon={<IconCalendar size="1rem" />}
               {...form.getInputProps("dateOfBirth")}

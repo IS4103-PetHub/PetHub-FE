@@ -182,7 +182,7 @@ export default function Appointments({
           <DateInput
             label="Start date (inclusive)"
             placeholder="Select start date"
-            valueFormat="DD/MM/YYYY"
+            valueFormat="DD-MM-YYYY"
             icon={<IconCalendar size="1rem" />}
             value={startDate}
             onChange={setStartDate}
@@ -190,7 +190,7 @@ export default function Appointments({
           <DateInput
             label="End date (exclusive)"
             placeholder="Select end date"
-            valueFormat="DD/MM/YYYY"
+            valueFormat="DD-MM-YYYY"
             icon={<IconCalendar size="1rem" />}
             value={endDate}
             onChange={setEndDate}

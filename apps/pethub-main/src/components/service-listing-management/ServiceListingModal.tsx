@@ -406,7 +406,7 @@ const ServiceListingModal = ({
             disabled={isViewing}
             label="Last Operational Date"
             placeholder="Input last possible date"
-            valueFormat="DD/MM/YYYY"
+            valueFormat="DD-MM-YYYY"
             minDate={new Date()}
             clearable
             {...serviceListingForm.getInputProps("lastPossibleDate")}

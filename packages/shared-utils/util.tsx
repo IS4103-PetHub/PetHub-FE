@@ -47,7 +47,7 @@ export function formatISODateLong(dateString: string) {
 
 export function formatISODateOnly(dateString: string) {
   // e.g. 1/9/2023
-  return dayjs(dateString).format("D/M/YYYY");
+  return dayjs(dateString).format("DD-MM-YYYY");
 }
 
 export function formatISOTimeOnly(dateString: string) {
@@ -57,7 +57,7 @@ export function formatISOTimeOnly(dateString: string) {
 
 export function formatISODayDateTime(dateString: string) {
   // e.g. Sat
-  return dayjs(dateString).format("ddd D/M/YYYY h:mma");
+  return dayjs(dateString).format("ddd DD-MM-YYYY h:mma");
 }
 
 export function formatISODateTimeShort(dateString: string) {
