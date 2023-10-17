@@ -1,11 +1,13 @@
 import {
   Alert,
   Box,
+  Button,
   Container,
   Grid,
   Group,
   Text,
   Transition,
+  useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -36,6 +38,7 @@ interface OrdersProps {
 }
 
 export default function Orders({ userId }: OrdersProps) {
+  const theme = useMantineTheme();
   const [activeTab, setActiveTab] = useState(OrderItemStatusEnum.All);
   const [sortStatus, setSortStatus] = useState<string>("recent");
   const [isSearching, setIsSearching] = useToggle();
@@ -57,6 +60,13 @@ export default function Orders({ userId }: OrdersProps) {
   function resetRecordsSliced() {
     setRecords(getFilteredAndSortedRecords().slice(0, page * PAGE_SIZE));
   }
+
+  useEffect(() => {
+    document.body.style.background = theme.colors.gray[0];
+    return () => {
+      document.body.style.background = "";
+    };
+  }, []);
 
   // Reset infinite scroll to page 1 when I change tab
   useEffect(() => {
@@ -176,20 +186,26 @@ export default function Orders({ userId }: OrdersProps) {
   const toBookAlert = (
     <Alert
       title="Booking(s) Not Scheduled"
-      color="red"
+      color="orange"
       icon={<IconExclamationCircle size="2rem" />}
       mb="lg"
     >
       <Text>
-        You have orders that require bookings to be made. Please schedule your
-        time slots for these bookings before the end of the respective validity
-        periods.
+        Your furry friends have {orderBarCounts?.toBookCount} orders awaiting
+        bookings. Please paw-ticipate by scheduling your time slots before their
+        tail-wagging validity periods end.
       </Text>
+      <Button
+        mt="xs"
+        onClick={() => setActiveTab(OrderItemStatusEnum.PendingBooking)}
+      >
+        View orders
+      </Button>
     </Alert>
   );
 
   const searchAndSortGroup = (
-    <Group position="right" align="center" mb="lg">
+    <Group position="right" align="center" mb="lg" w="75%">
       <SearchBar
         size="md"
         w="55%"
@@ -257,7 +273,7 @@ export default function Orders({ userId }: OrdersProps) {
           {orderBarCounts?.toBookCount !== 0 && toBookAlert}
           <Group position="apart">
             <PageTitle title={`My orders`} mb="lg" />
-            <Box>{orderItems.length > 0 ? searchAndSortGroup : null}</Box>
+            {orderItems.length > 0 && searchAndSortGroup}
           </Group>
           <OrderStatusBar
             activeTab={activeTab}
