@@ -9,6 +9,7 @@ import {
   IconBrowserCheck,
   IconBulb,
   IconCalendarEvent,
+  IconCalendarTime,
   IconClockExclamation,
   IconCreditCard,
   IconMenu2,
@@ -80,7 +81,7 @@ function OrderStatusBar({
               : classes.inActiveTab
           }
           value={OrderItemStatusEnum.PendingBooking}
-          icon={<IconBulb size="1rem" color="gray" />}
+          icon={<IconCalendarTime size="1rem" color="gray" />}
           rightSection={
             <OrderItemTabBadge
               count={toBookCount}

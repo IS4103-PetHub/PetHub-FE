@@ -191,9 +191,9 @@ export default function Orders({ userId }: OrdersProps) {
       mb="lg"
     >
       <Text>
-        You have orders that require bookings to be made. Please schedule your
-        time slots for these bookings before the end of the respective validity
-        periods.
+        Your furry friends have orders awaiting bookings. Please paw-ticipate by
+        scheduling your time slots before their tail-wagging validity periods
+        end.
       </Text>
       <Button
         mt="xs"

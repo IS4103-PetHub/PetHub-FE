@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCopy } from "@tabler/icons-react";
+import { IconCopy, IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -104,7 +104,7 @@ const OrderItemStepperContent = ({
           sx={{ border: "1px solid #e0e0e0" }}
           onClick={viewInvoiceHandler}
         >
-          View Invoice
+          <IconFileDownload size="1rem" /> &nbsp; View Invoice
         </Button>
       </Grid.Col>
     </>
@@ -171,11 +171,11 @@ const OrderItemStepperContent = ({
         <CopyButton value={orderItem.voucherCode} timeout={3000}>
           {({ copied, copy }) => (
             <Button
-              color={copied ? "green" : "indigo"}
+              color={copied ? "green" : null}
               onClick={copy}
               fullWidth
               variant="light"
-              sx={{ border: "1px solid #e0e0e0" }}
+              sx={{ border: "1px solid #e0e0e0", backgroundColor: "white" }}
             >
               <IconCopy size="1rem" /> &nbsp;
               {copied
@@ -253,7 +253,7 @@ const OrderItemStepperContent = ({
             <Grid.Col span={2} />
             <Grid.Col span={4}>
               <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
-                <Text size="sm">
+                <Text size="sm" mb={-10}>
                   <b>Start: </b>
                   {formatISODayDateTime(orderItem.booking.startTime)}
                 </Text>
