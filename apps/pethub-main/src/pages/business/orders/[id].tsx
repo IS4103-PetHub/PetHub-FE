@@ -252,7 +252,7 @@ export default function PBOrdersDetails({
                         <Grid.Col span={6}>
                           <Box>
                             <Text weight="600">Email:</Text>
-                            <Text>{petOwner.email}</Text>
+                            <Text>{petOwner.user.email}</Text>
                           </Box>
                         </Grid.Col>
                       </>
