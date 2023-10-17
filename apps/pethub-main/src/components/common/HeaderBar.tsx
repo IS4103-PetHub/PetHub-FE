@@ -97,8 +97,8 @@ const links: {
     ],
   },
   {
-    link: "/lost-and-found",
-    label: "Lost & found pets",
+    link: "/pet-lost-and-found",
+    label: "Pet Lost & Found",
     links: undefined,
   },
   {
