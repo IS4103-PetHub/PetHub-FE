@@ -28,14 +28,15 @@ export const useCompleteOrderItem = (orderItemId: number) => {
         )
       ).data;
     },
-    // onSuccess: (data) => {
-    //   if (data.code === 200) {
-    //     console.log("Order item completed successfully");
-    //   } else if (data.code === 400) {
-    //     console.log("Bad request. Invalid voucher code or order item ID.");
-    //   } else if (data.code === 404) {
-    //     console.log("Order item not found.");
-    //   }
-    // },
+  });
+};
+
+export const useGetOrderItemById = (orderItemId: number) => {
+  return useQuery({
+    queryKey: ["order-items", orderItemId],
+    queryFn: async () => {
+      const response = await api.get(`${ORDER_ITEMS_API}/${orderItemId}`);
+      return response.data as OrderItem;
+    },
   });
 };

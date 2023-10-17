@@ -27,8 +27,9 @@ import {
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
+  OrderItemStatusEnum,
 } from "shared-utils";
-import { useCompleteOrderItem } from "@/hooks/order";
+import { useCompleteOrderItem, useGetOrderItemById } from "@/hooks/order";
 import { Booking, CompleteOrderItemPayload } from "@/types/types";
 
 interface BookingModalProps {
@@ -49,6 +50,10 @@ const BookingModal = ({
   const theme = useMantineTheme();
   const defaultValues = ["Customer Details"];
 
+  const { data: currentOrderItem } = useGetOrderItemById(
+    booking ? booking.orderItemId : null,
+  );
+
   const formDefaultValues = {
     // Booking details
     startTime: booking ? formatTime(booking.startTime) : "",
@@ -66,7 +71,11 @@ const BookingModal = ({
         )
       : [],
     basePrice: booking ? booking.serviceListing.basePrice : 0,
-    voucherCode: "",
+    voucherCode:
+      currentOrderItem &&
+      currentOrderItem.status === OrderItemStatusEnum.Fulfilled
+        ? currentOrderItem.voucherCode
+        : "",
 
     // user details
     petOwnerName: booking
@@ -99,7 +108,7 @@ const BookingModal = ({
 
   useEffect(() => {
     form.setValues(formDefaultValues);
-  }, [booking]);
+  }, [booking, currentOrderItem]);
 
   /*
    *    HELPER FUNCTIONS
@@ -113,7 +122,7 @@ const BookingModal = ({
   }
 
   const completeOrderMutation = useCompleteOrderItem(
-    booking ? booking.orderItemId : null,
+    currentOrderItem ? currentOrderItem.orderItemId : null,
   );
   const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
     try {
@@ -311,12 +320,20 @@ const BookingModal = ({
                       label="Voucher Code"
                       placeholder="Enter customer's code"
                       maxLength={6}
+                      disabled={
+                        currentOrderItem?.status ===
+                        OrderItemStatusEnum.Fulfilled
+                      }
                       {...form.getInputProps("voucherCode")}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
                     <Button
                       color="primary"
+                      disabled={
+                        currentOrderItem?.status ===
+                        OrderItemStatusEnum.Fulfilled
+                      }
                       onClick={() => {
                         const voucherCode = form.values.voucherCode;
                         const payload: CompleteOrderItemPayload = {
