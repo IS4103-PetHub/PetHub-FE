@@ -320,13 +320,11 @@ const BookingModal = ({
                       onClick={() => {
                         const voucherCode = form.values.voucherCode;
                         const payload: CompleteOrderItemPayload = {
-                          // userId: booking.petOwner
-                          //   ? booking.petOwner.userId
-                          //   : null,
-                          userId: 9,
+                          userId: booking ? booking.petOwnerId : null,
                           voucherCode: voucherCode,
                         };
                         handleCompleteOrder(payload);
+                        onClose();
                       }}
                     >
                       Claim
