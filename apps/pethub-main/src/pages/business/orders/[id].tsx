@@ -28,6 +28,7 @@ import {
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
+import { PLATFORM_FEE_PERCENT } from "@/types/constants";
 import { Pet, PetOwner } from "@/types/types";
 
 interface PBOrdersDetailsProps {
@@ -148,9 +149,12 @@ export default function PBOrdersDetails({
                 </Grid.Col>
                 <Grid.Col span={4}>
                   <Box>
-                    <Text weight="600">Miscellaneous fee :</Text>
+                    <Text weight="600">Platform Fee :</Text>
                     <Text>
-                      $ {formatNumber2Decimals(0.07 * order.itemPrice)}
+                      ${" "}
+                      {formatNumber2Decimals(
+                        PLATFORM_FEE_PERCENT * order.itemPrice,
+                      )}
                     </Text>
                   </Box>
                 </Grid.Col>
@@ -158,7 +162,10 @@ export default function PBOrdersDetails({
                   <Box>
                     <Text weight="600">Total Price :</Text>
                     <Text>
-                      $ {formatNumber2Decimals(1.07 * order.itemPrice)}
+                      ${" "}
+                      {formatNumber2Decimals(
+                        (1 + PLATFORM_FEE_PERCENT) * order.itemPrice,
+                      )}
                     </Text>
                   </Box>
                 </Grid.Col>
@@ -185,7 +192,7 @@ export default function PBOrdersDetails({
                     <Text>
                       ${" "}
                       {formatNumber2Decimals(
-                        1.07 * order.itemPrice -
+                        (1 + PLATFORM_FEE_PERCENT) * order.itemPrice -
                           order.commissionRate * order.itemPrice,
                       )}
                     </Text>
@@ -201,14 +208,14 @@ export default function PBOrdersDetails({
                   icon={<IconCalendar color={theme.colors.indigo[5]} />}
                 >
                   <Text size="xl" weight={600}>
-                    Booking Timings
+                    Booking Details
                   </Text>
                 </Accordion.Control>
                 <Accordion.Panel mb="xs">
                   <Grid>
                     <Grid.Col span={6}>
                       <Box>
-                        <Text weight="600">Booking Id:</Text>
+                        <Text weight="600">Booking ID:</Text>
                         <Text>{order.booking.bookingId}</Text>
                       </Box>
                     </Grid.Col>
@@ -224,7 +231,7 @@ export default function PBOrdersDetails({
                     </Grid.Col>
                     <Grid.Col span={6}>
                       <Box>
-                        <Text weight="600">Start time:</Text>
+                        <Text weight="600">Start Time:</Text>
                         <Text>
                           {dayjs(order.booking.startTime).format(
                             "DD-MM-YYYY, HH:MM",
@@ -234,7 +241,7 @@ export default function PBOrdersDetails({
                     </Grid.Col>
                     <Grid.Col span={6}>
                       <Box>
-                        <Text weight="600">End time:</Text>
+                        <Text weight="600">End Time:</Text>
                         <Text>
                           {dayjs(order.booking.endTime).format(
                             "DD-MM-YYYY, HH:MM",
@@ -259,13 +266,13 @@ export default function PBOrdersDetails({
                       <>
                         <Grid.Col span={6}>
                           <Box>
-                            <Text weight="600">First name:</Text>
+                            <Text weight="600">First Name:</Text>
                             <Text>{petOwner.firstName}</Text>
                           </Box>
                         </Grid.Col>
                         <Grid.Col span={6}>
                           <Box>
-                            <Text weight="600">Last name:</Text>
+                            <Text weight="600">Last Name:</Text>
                             <Text>{petOwner.lastName}</Text>
                           </Box>
                         </Grid.Col>
@@ -288,7 +295,7 @@ export default function PBOrdersDetails({
                       <>
                         <Grid.Col span={6}>
                           <Box>
-                            <Text weight="600">Pet name:</Text>
+                            <Text weight="600">Pet Name:</Text>
                             <Text>{pet.petName}</Text>
                           </Box>
                         </Grid.Col>
@@ -359,7 +366,11 @@ export default function PBOrdersDetails({
                     <Box>
                       <Text weight="600">Address:</Text>
                       {order.serviceListing.addresses.map((address) => (
-                        <Badge key={address.addressId} variant="dot">
+                        <Badge
+                          key={address.addressId}
+                          variant="dot"
+                          style={{ marginRight: "8px" }}
+                        >
                           {address.addressName}
                         </Badge>
                       ))}
