@@ -163,8 +163,6 @@ const OrderItemStepper = ({
     return steps[type] || {};
   }
 
-  console.log("orderItem", orderItem);
-
   function getStepDetails(
     stepType: string,
     orderItem: OrderItem,

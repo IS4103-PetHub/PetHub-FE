@@ -8,6 +8,7 @@ import {
   ServiceListing,
   GenderEnum,
   CommissionRule,
+  OrderItem,
 } from "shared-utils";
 import { PetTypeEnum } from "./constants";
 
@@ -224,9 +225,7 @@ export interface Booking {
   invoiceId?: number;
   transactionId?: number;
   orderItemId?: number;
-  OrderItem?: {
-    voucherCode?: string;
-  };
+  OrderItem?: OrderItem;
 }
 
 export interface AddRemoveFavouriteServiceListingPayload {

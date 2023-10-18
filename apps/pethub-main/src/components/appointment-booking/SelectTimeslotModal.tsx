@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
+  OrderItem,
   ServiceListing,
   convertMinsToDurationString,
   formatISODayDateTime,
@@ -41,7 +42,7 @@ const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 interface SelectTimeslotModalProps {
   petOwnerId: number;
   serviceListing: ServiceListing;
-  orderItemId: number;
+  orderItem: OrderItem;
   opened: boolean;
   onClose(): void;
   // optional, only for updating
@@ -54,7 +55,7 @@ interface SelectTimeslotModalProps {
 const SelectTimeslotModal = ({
   petOwnerId,
   serviceListing,
-  orderItemId,
+  orderItem,
   opened,
   onClose,
   isUpdating,
@@ -76,7 +77,7 @@ const SelectTimeslotModal = ({
 
   const { data: availTimeslots = [], isLoading } =
     useGetAvailableTimeSlotsByOrderItemId(
-      orderItemId,
+      orderItem?.orderItemId,
       selectedMonth.toISOString(),
       dayjs(selectedMonth).add(1, "month").toISOString(),
       serviceListing.duration,
@@ -97,7 +98,7 @@ const SelectTimeslotModal = ({
       });
       return;
     }
-    if (!orderItemId) {
+    if (!orderItem?.orderItemId) {
       notifications.show({
         title: "System Error",
         message: "No OrderItemID provided",
@@ -120,7 +121,7 @@ const SelectTimeslotModal = ({
         payload = {
           petOwnerId: session.user["userId"],
           calendarGroupId: serviceListing.calendarGroupId,
-          orderItemId: orderItemId,
+          orderItemId: orderItem?.orderItemId,
           startTime,
           endTime,
         };
@@ -138,7 +139,6 @@ const SelectTimeslotModal = ({
           selectedTimeslot,
         )} has been confirmed!`,
       });
-      router.push(`/customer/orders/${orderItemId}`);
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(
@@ -274,7 +274,7 @@ const SelectTimeslotModal = ({
           : "Please confirm your selected timeslot and select a pet (optional)."}
       </Text>
       <TimeslotCard
-        orderItemId={orderItemId}
+        orderItem={orderItem}
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled

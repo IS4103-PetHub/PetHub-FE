@@ -225,14 +225,14 @@ export default function Orders({ userId }: OrdersProps) {
     <Grid.Col key={item.orderItemId}>
       <OrderItemCard
         userId={userId}
-        orderItemId={item.orderItemId}
-        expiryDate={item.expiryDate}
-        price={item.itemPrice}
-        voucherCode={item.voucherCode}
-        serviceListing={item.serviceListing}
-        status={item.status}
-        createdAt={item.invoice.createdAt}
-        booking={item.booking as any}
+        orderItem={item}
+        // expiryDate={item.expiryDate}
+        // price={item.itemPrice}
+        // voucherCode={item.voucherCode}
+        // serviceListing={item.serviceListing}
+        // status={item.status}
+        // createdAt={item.invoice.createdAt}
+        // booking={item.booking as any}
       />
     </Grid.Col>
   ));
