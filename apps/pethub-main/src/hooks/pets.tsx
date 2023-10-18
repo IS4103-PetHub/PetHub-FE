@@ -1,6 +1,7 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { Pet } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { Pet, PetPayload } from "@/types/types";
+import { PetPayload } from "@/types/types";
 
 const PETS_API = "/pets";
 

@@ -1,4 +1,11 @@
-import { Container, Grid, Group, MultiSelect, Transition } from "@mantine/core";
+import {
+  Container,
+  Grid,
+  Group,
+  MultiSelect,
+  Select,
+  Transition,
+} from "@mantine/core";
 import { DateInput, DatePicker } from "@mantine/dates";
 import { useToggle } from "@mantine/hooks";
 import dayjs from "dayjs";
@@ -23,16 +30,27 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import PBOrdersTable from "@/components/pb-orders/PBOrdersTable";
-import { useGetOrderItemsByPBId } from "@/hooks/order";
-import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
+import api from "@/api/axiosConfig";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
+import { useGetAllOrderItem } from "@/hooks/order";
+import { useGetAllPetBusinesses } from "@/hooks/pet-business";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { Permission } from "@/types/types";
 
 interface OrdersProps {
-  userId: number;
+  permissions: Permission[];
 }
 
-export default function Orders({ userId }: OrdersProps) {
+export default function Orders({ permissions }: OrdersProps) {
   const router = useRouter();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WriteOrderItems,
+  );
+  const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadOrderItems);
+
   const allStatusString =
     "PENDING_BOOKING,PENDING_FULFILLMENT,FULFILLED,PAID_OUT,REFUNDED,EXPIRED";
   const [startDate, setStartDate] = useState<Date>(
@@ -42,32 +60,31 @@ export default function Orders({ userId }: OrdersProps) {
     new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
   );
   const [statusFilter, setStatusFilter] = useState<string>(allStatusString);
-  const [serviceListingFilter, setServiceListingFilter] =
-    useState<string>(undefined);
+  const [petBusinessFilter, setPetBusinessFilter] = useState<number>(undefined);
+
   /*
    * Fetch data
    */
   const orderItemStatusValues = Object.values(OrderItemStatusEnum)
     .slice(1)
     .map((status) => status.toString());
-  // everytime there is a change in startdate, endate, status, sl call the endpoint to ge the new set of orders
+
   const {
     data: orderItems = [],
     refetch: refetchOrderItems,
     isLoading,
-  } = useGetOrderItemsByPBId(
-    userId,
+  } = useGetAllOrderItem(
+    petBusinessFilter,
     startDate.toISOString(),
     endDate.toISOString(),
     statusFilter,
-    serviceListingFilter,
   );
-  const { data: serviceListings = [] } =
-    useGetServiceListingByPetBusinessId(userId);
 
-  const serviceListingsOptions = serviceListings.map((listing) => ({
-    value: listing.serviceListingId.toString(),
-    label: listing.title,
+  const { data: petBusiness = [] } = useGetAllPetBusinesses();
+
+  const petBusinessOptions = petBusiness.map((petBusiness) => ({
+    value: petBusiness.userId.toString(),
+    label: petBusiness.companyName,
   }));
 
   /*
@@ -134,6 +151,10 @@ export default function Orders({ userId }: OrdersProps) {
     });
   }
 
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
+
   const renderContent = () => {
     if (orderItems.length === 0) {
       if (isLoading) {
@@ -167,7 +188,7 @@ export default function Orders({ userId }: OrdersProps) {
               onSortStatusChange={setSortStatus}
               onPageChange={setPage}
               router={router}
-              isAdmin={false}
+              isAdmin={true}
             />
           </>
         )}
@@ -187,16 +208,17 @@ export default function Orders({ userId }: OrdersProps) {
         </Group>
         <Grid>
           <Grid.Col span={6}>
-            <MultiSelect
+            <Select
               size="md"
-              label="Service Listing"
-              placeholder="Select service listing"
-              data={serviceListingsOptions}
-              onChange={(selectedServiceListing) => {
-                if (selectedServiceListing.length === 0) {
-                  setServiceListingFilter(undefined);
+              label="Pet Business"
+              placeholder="Select pet business"
+              data={petBusinessOptions}
+              clearable
+              onChange={(selectedPetBusiness) => {
+                if (selectedPetBusiness === null) {
+                  setPetBusinessFilter(undefined);
                 } else {
-                  setServiceListingFilter(selectedServiceListing.join(","));
+                  setPetBusinessFilter(Number(selectedPetBusiness));
                 }
               }}
             />
@@ -252,10 +274,11 @@ export default function Orders({ userId }: OrdersProps) {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
-
   if (!session) return { props: {} };
 
   const userId = session.user["userId"];
-
-  return { props: { userId } };
+  const permissions = await (
+    await api.get(`/rbac/users/${userId}/permissions`)
+  ).data;
+  return { props: { permissions } };
 }

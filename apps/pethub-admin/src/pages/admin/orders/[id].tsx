@@ -1,25 +1,41 @@
 import { useMantineTheme } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { getSession } from "next-auth/react";
 import { OrderItem, Pet } from "shared-utils";
 import ViewOrderDetails from "web-ui/shared//order-management/viewOrderDetails";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
-import { PetOwner } from "@/types/types";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { PetOwner, Permission } from "@/types/types";
 
 interface PBOrdersDetailsProps {
   order: OrderItem;
   petOwner: PetOwner;
   pet: Pet;
+  permissions: Permission[];
 }
 
 export default function PBOrdersDetails({
   order,
   petOwner,
   pet,
+  permissions,
 }: PBOrdersDetailsProps) {
   const router = useRouter();
   const theme = useMantineTheme();
+
+  //permissions
+  const permissionCodes = permissions.map((permission) => permission.code);
+  const canWrite = permissionCodes.includes(
+    PermissionsCodeEnum.WriteOrderItems,
+  );
+  const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadOrderItems);
+
+  if (!canRead) {
+    return <NoPermissionsMessage />;
+  }
 
   return (
     <>
@@ -32,7 +48,7 @@ export default function PBOrdersDetails({
       <LargeBackButton
         text="Back to Order Management"
         onClick={() => {
-          router.push("/business/orders");
+          router.push("/admin/orders");
         }}
         size="sm"
         mb="md"
@@ -64,5 +80,14 @@ export async function getServerSideProps(context) {
       pet = petData;
     }
   }
-  return { props: { order, petOwner, pet } };
+
+  const session = await getSession(context);
+  if (!session) return { props: {} };
+
+  const userId = session.user["userId"];
+  const permissions = await (
+    await api.get(`/rbac/users/${userId}/permissions`)
+  ).data;
+
+  return { props: { order, petOwner, pet, permissions } };
 }

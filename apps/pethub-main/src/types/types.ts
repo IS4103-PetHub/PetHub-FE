@@ -8,8 +8,9 @@ import {
   ServiceListing,
   GenderEnum,
   CommissionRule,
+  PetTypeEnum,
+  Pet,
 } from "shared-utils";
-import { PetTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -162,24 +163,6 @@ export interface tuiCalendar {
   name: string;
   backgroundColor: string;
   borderColor: string;
-}
-
-/*
- * Pet
- */
-
-export interface Pet {
-  petId: number;
-  petName: string;
-  petType: PetTypeEnum;
-  gender: GenderEnum;
-  petWeight?: number;
-  dateOfBirth?: string;
-  microchipNumber?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  dateCreated: string;
-  dateUpdated: string;
 }
 
 export interface PetPayload {

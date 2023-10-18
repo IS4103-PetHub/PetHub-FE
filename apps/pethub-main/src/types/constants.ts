@@ -65,16 +65,6 @@ export const orderItemsSortOptions = [
   },
 ];
 
-export enum PetTypeEnum {
-  Dog = "DOG",
-  Cat = "CAT",
-  Bird = "BIRD",
-  Terrapin = "TERRAPIN",
-  Rabbit = "RABBIT",
-  Rodent = "RODENT",
-  Others = "OTHERS",
-}
-
 // for landing page and service listings sidebar
 
 export const landingPageCategories = [
@@ -112,7 +102,6 @@ export const serviceListingSideBarCategories = [
 
 export const allowedRoutesAfterLogin = ["/customer/appointments"];
 
-export const PLATFORM_FEE_PERCENT = 0.07;
 export const GST_PERCENT = 0.08;
 
 export const PLATFORM_FEE_MESSAGE: string =
