@@ -360,7 +360,7 @@ const OrderItemStepperContent = ({
         serviceListing={orderItem.serviceListing}
         opened={opened}
         onClose={close}
-        isUpdating={orderItem.booking ? true : false}
+        isUpdating={!!orderItem.booking}
         onUpdateBooking={() => {}}
         booking={orderItem.booking as any}
       />
