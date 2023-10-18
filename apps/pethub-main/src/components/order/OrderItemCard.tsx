@@ -50,8 +50,6 @@ import OrderItemPopover from "./OrderItemPopover";
 interface OrderItemCardProps {
   userId: number;
   orderItemId: number;
-  invoiceId: number;
-  paymentId: string;
   price: number;
   expiryDate: string;
   voucherCode: string;
@@ -64,8 +62,6 @@ interface OrderItemCardProps {
 const OrderItemCard = ({
   userId,
   orderItemId,
-  invoiceId,
-  paymentId,
   expiryDate,
   price,
   voucherCode,
@@ -344,10 +340,10 @@ const OrderItemCard = ({
       </Grid>
       <SelectTimeslotModal
         petOwnerId={userId}
-        orderItemId={orderItemId}
-        serviceListing={serviceListing}
         opened={opened}
         onClose={close}
+        orderItemId={orderItemId}
+        serviceListing={serviceListing}
         isUpdating={booking ? true : false}
         onUpdateBooking={() => {}}
         booking={booking as any}

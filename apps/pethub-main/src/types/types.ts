@@ -223,6 +223,10 @@ export interface Booking {
   // not yet implemented
   invoiceId?: number;
   transactionId?: number;
+  orderItemId?: number;
+  OrderItem?: {
+    voucherCode?: string;
+  };
 }
 
 export interface AddRemoveFavouriteServiceListingPayload {

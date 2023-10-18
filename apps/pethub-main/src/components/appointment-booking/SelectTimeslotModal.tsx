@@ -30,7 +30,7 @@ import {
 } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
-import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useGetAvailableTimeSlotsByOrderItemId } from "@/hooks/calendar-group";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
@@ -41,7 +41,7 @@ const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 interface SelectTimeslotModalProps {
   petOwnerId: number;
   serviceListing: ServiceListing;
-  orderItemId?: number;
+  orderItemId: number;
   opened: boolean;
   onClose(): void;
   // optional, only for updating
@@ -75,8 +75,8 @@ const SelectTimeslotModal = ({
   );
 
   const { data: availTimeslots = [], isLoading } =
-    useGetAvailableTimeSlotsByCGId(
-      serviceListing.calendarGroupId,
+    useGetAvailableTimeSlotsByOrderItemId(
+      orderItemId,
       selectedMonth.toISOString(),
       dayjs(selectedMonth).add(1, "month").toISOString(),
       serviceListing.duration,

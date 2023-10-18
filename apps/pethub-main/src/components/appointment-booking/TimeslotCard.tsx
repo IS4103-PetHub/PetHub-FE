@@ -106,6 +106,7 @@ const TimeslotCard = ({
           <>
             <Button onClick={open}>Reschedule</Button>
             <SelectTimeslotModal
+              orderItemId={orderItemId}
               serviceListing={serviceListing}
               opened={opened}
               onClose={close}

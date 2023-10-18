@@ -226,8 +226,6 @@ export default function Orders({ userId }: OrdersProps) {
       <OrderItemCard
         userId={userId}
         orderItemId={item.orderItemId}
-        invoiceId={item.invoiceId}
-        paymentId={item.invoice.paymentId}
         expiryDate={item.expiryDate}
         price={item.itemPrice}
         voucherCode={item.voucherCode}
