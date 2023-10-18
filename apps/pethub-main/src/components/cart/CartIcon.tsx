@@ -1,4 +1,4 @@
-import { Center } from "@mantine/core";
+import { Center, Text } from "@mantine/core";
 import { IconShoppingCart } from "@tabler/icons-react";
 
 interface CartIconProps {
@@ -8,7 +8,9 @@ interface CartIconProps {
 const CartIcon = ({ size }: CartIconProps) => {
   return (
     <Center>
-      My cart &nbsp;
+      <Text fw={500} size="md" mr={5}>
+        My cart
+      </Text>
       <div>
         <IconShoppingCart size="1.25rem" />
         <span>{size}</span>

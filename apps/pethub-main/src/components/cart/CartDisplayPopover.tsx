@@ -48,6 +48,7 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
           onMouseEnter={open}
           onMouseLeave={close}
           variant="subtle"
+          compact
           sx={{ color: "white", ":hover": { backgroundColor: "transparent" } }}
         >
           <CartIcon size={size} />
