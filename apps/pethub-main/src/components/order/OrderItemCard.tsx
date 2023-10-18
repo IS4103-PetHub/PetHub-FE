@@ -58,6 +58,7 @@ interface OrderItemCardProps {
   serviceListing: ServiceListing;
   status: string;
   createdAt: string;
+  booking?: Booking;
 }
 
 const OrderItemCard = ({
@@ -71,6 +72,7 @@ const OrderItemCard = ({
   serviceListing,
   status,
   createdAt,
+  booking,
 }: OrderItemCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -116,18 +118,18 @@ const OrderItemCard = ({
     <>
       {status === OrderItemStatusEnum.PendingBooking && (
         <>
+          <Button miw={90} size="xs" mr={-5} onClick={bookNowHandler}>
+            Book now
+          </Button>
           <Button
             color="red"
             variant="light"
             size="xs"
             miw={90}
-            mr={-5}
             onClick={triggerNotImplementedNotification}
+            mr={-5}
           >
-            Cancel
-          </Button>
-          <Button miw={90} size="xs" mr={-10} onClick={bookNowHandler}>
-            Book now
+            Refund
           </Button>
           <OrderItemPopover
             text={`Make your booking and redeem your voucher before the end of the validity period on ${formatISODayDateTime(
@@ -138,6 +140,9 @@ const OrderItemCard = ({
       )}
       {status === OrderItemStatusEnum.PendingFulfillment && (
         <>
+          <Button miw={90} size="xs" mr={-10} onClick={bookNowHandler}>
+            Reschedule
+          </Button>
           <OrderItemPopover
             text={`Redeem your voucher before the end of the validity period on ${formatISODayDateTime(
               expiryDate,
@@ -174,17 +179,16 @@ const OrderItemCard = ({
       {(status === OrderItemStatusEnum.Fulfilled ||
         status === OrderItemStatusEnum.PaidOut) && (
         <>
+          <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
+            Buy again
+          </Button>
           <Button
             variant="light"
             size="xs"
             miw={90}
-            mr={-5}
             onClick={triggerNotImplementedNotification}
           >
             Review
-          </Button>
-          <Button size="xs" miw={90} onClick={buyAgainHandler}>
-            Buy again
           </Button>
         </>
       )}
@@ -344,6 +348,9 @@ const OrderItemCard = ({
         serviceListing={serviceListing}
         opened={opened}
         onClose={close}
+        isUpdating={booking ? true : false}
+        onUpdateBooking={() => {}}
+        booking={booking as any}
       />
     </Card>
   );

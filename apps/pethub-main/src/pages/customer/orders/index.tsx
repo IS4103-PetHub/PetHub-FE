@@ -234,6 +234,7 @@ export default function Orders({ userId }: OrdersProps) {
         serviceListing={item.serviceListing}
         status={item.status}
         createdAt={item.invoice.createdAt}
+        booking={item.booking as any}
       />
     </Grid.Col>
   ));
