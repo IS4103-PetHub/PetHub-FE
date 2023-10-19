@@ -268,3 +268,15 @@ export interface PetLostAndFound {
   pet?: Pet;
   dateCreated: string;
 }
+
+export interface CreatePetLostAndFoundPayload {
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  contactNumber: string;
+  file: File;
+  petOwnerId: number;
+  petId: string;
+}

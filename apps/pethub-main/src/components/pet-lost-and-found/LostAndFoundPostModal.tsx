@@ -1,6 +1,5 @@
 import {
   Modal,
-  Group,
   Text,
   TextInput,
   Grid,
@@ -12,14 +11,18 @@ import {
   Card,
   FileInput,
   Image,
-  Box,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconMapPin } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { AccountTypeEnum, getErrorMessageProps } from "shared-utils";
+import { useCreatePetLostAndFoundPost } from "@/hooks/pet-lost-and-found";
+import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { PetRequestTypeEnum } from "@/types/constants";
+import { CreatePetLostAndFoundPayload } from "@/types/types";
 
 interface LostAndFoundPostModalProps {
   petOwnerId: number;
@@ -33,8 +36,14 @@ const LostAndFoundPostModal = ({
   close,
 }: LostAndFoundPostModalProps) => {
   const theme = useMantineTheme();
+  const { data: petOwner } = useGetPetOwnerByIdAndAccountType(
+    petOwnerId,
+    AccountTypeEnum.PetOwner,
+  );
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
+
+  const createPetLostAndFoundPostMutation = useCreatePetLostAndFoundPost();
 
   const form = useForm({
     initialValues: {
@@ -43,7 +52,7 @@ const LostAndFoundPostModal = ({
       requestType: PetRequestTypeEnum.LostPet,
       lastSeenDate: "",
       lastSeenLocation: "",
-      contactNumber: "",
+      contactNumber: petOwner ? petOwner.contactNumber : "",
       petId: "",
       attachment: null,
     },
@@ -75,6 +84,33 @@ const LostAndFoundPostModal = ({
           : "Contact number must be 8 digits long.",
     },
   });
+
+  useEffect(
+    () => form.setFieldValue("contactNumber", petOwner.contactNumber),
+    [petOwner],
+  );
+
+  type FormValues = typeof form.values;
+
+  async function handleSubmit(values: FormValues) {
+    try {
+      const payload: CreatePetLostAndFoundPayload = {
+        ...values,
+        file: values.attachment,
+        petOwnerId,
+      };
+      await createPetLostAndFoundPostMutation.mutateAsync(payload);
+      close();
+      notifications.show({
+        message: "Pet Lost and Found Post Created",
+        color: "green",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps("Error Creating Post", error),
+      });
+    }
+  }
 
   function handleClose() {
     close();
@@ -110,7 +146,7 @@ const LostAndFoundPostModal = ({
         </Text>
       }
     >
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Grid grow>
           <Grid.Col span={12}>
             <SegmentedControl
@@ -210,7 +246,7 @@ const LostAndFoundPostModal = ({
               onChange={(file) => handleFileInputChange(file)}
               capture={false}
             />
-            {imagePreviewUrl && (
+            {form.values.attachment && imagePreviewUrl && (
               <Card sx={{ maxWidth: "100%" }}>
                 <Image
                   src={imagePreviewUrl}
