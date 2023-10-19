@@ -267,6 +267,8 @@ export interface PetLostAndFound {
   petId?: number;
   pet?: Pet;
   dateCreated: string;
+  dateUpdated?: string;
+  isResolved: boolean;
 }
 
 export interface CreatePetLostAndFoundPayload {

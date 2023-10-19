@@ -1,27 +1,34 @@
 import {
-  BackgroundImage,
+  Box,
   Chip,
   Container,
+  Grid,
   Group,
   MantineProvider,
-  Text,
+  Transition,
   useMantineTheme,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import localFont from "next/font/local";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import { useState } from "react";
-import { formatStringToLetterCase } from "shared-utils";
+import { useEffect, useState } from "react";
+import { EMPTY_STATE_DELAY_MS, formatStringToLetterCase } from "shared-utils";
 import { PageTitle } from "web-ui";
+import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
+import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SortBySelect from "web-ui/shared/SortBySelect";
+import LostAndFoundMasonryGrid from "@/components/pet-lost-and-found/LostAndFoundMasonryGrid";
 import LostAndFoundPostModal from "@/components/pet-lost-and-found/LostAndFoundPostModal";
+import { useGetAllPetLostAndFoundPosts } from "@/hooks/pet-lost-and-found";
 import {
   PetRequestTypeEnum,
   petLostAndFoundSortOptions,
-  serviceListingSortOptions,
 } from "@/types/constants";
+import { PetLostAndFound } from "@/types/types";
+import { sortRecords } from "@/util";
 
 interface PetLostAndFoundProps {
   userId: number;
@@ -34,9 +41,44 @@ const inter = localFont({
 
 export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
   const theme = useMantineTheme();
+  const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
-  const [activeType, setActiveType] = useState<PetRequestTypeEnum | string>("");
-  const [sortStatus, setSortStatus] = useState<string>("");
+  const [sortStatus, setSortStatus] = useState<string>("newest");
+  const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+
+  // get selected category from router query
+  const activeType = router.query?.requestType as string;
+
+  const {
+    data: posts = [],
+    isLoading,
+    refetch,
+  } = useGetAllPetLostAndFoundPosts(activeType);
+  const [records, setRecords] = useState<PetLostAndFound[]>(posts);
+
+  useEffect(() => {
+    console.log(activeType);
+  }, [activeType]);
+
+  useEffect(() => {
+    // handle sort
+    const newRecords = sortRecords(
+      petLostAndFoundSortOptions,
+      posts,
+      sortStatus,
+    );
+    setRecords(newRecords);
+  }, [posts, sortStatus]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // display empty state message if no records fetched after some time
+      if (posts.length === 0) {
+        setHasNoFetchedRecords(true);
+      }
+    }, EMPTY_STATE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleClickNewPost = async () => {
     const session = await getSession();
@@ -50,6 +92,38 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
     }
     open();
   };
+
+  function renderContent() {
+    if (posts.length === 0) {
+      if (isLoading) {
+        return <CenterLoader mt={0} />;
+      }
+      // no records fetched
+      return (
+        <Transition
+          mounted={hasNoFetchedRecords}
+          transition="fade"
+          duration={100}
+        >
+          {(styles) => (
+            <div style={styles}>
+              <div style={{ opacity: 0.7 }}>
+                <SadDimmedMessage
+                  title="No posts found"
+                  subtitle="There are no pet lost and found posts at the moment. Please check back later!"
+                />
+              </div>
+            </div>
+          )}
+        </Transition>
+      );
+    }
+    return (
+      <Box mt="lg">
+        <LostAndFoundMasonryGrid posts={records} />
+      </Box>
+    );
+  }
 
   return (
     <Container fluid h="100%" w="100%" bg={theme.colors.dark[6]}>
@@ -67,6 +141,7 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
             petOwnerId={userId}
             opened={opened}
             close={close}
+            refetch={refetch}
           />
         </Group>
 
@@ -74,7 +149,11 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
           <Chip.Group
             multiple={false}
             value={activeType}
-            onChange={setActiveType}
+            onChange={(value) =>
+              router.push({
+                query: { requestType: value },
+              })
+            }
           >
             <Group position="left" w="75%">
               <Chip
@@ -92,7 +171,10 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
                   size="lg"
                   value={requestType}
                   key={requestType}
-                  style={{ opacity: activeType === requestType ? 1 : 0.8 }}
+                  style={{
+                    opacity:
+                      router.query?.requestType === requestType ? 1 : 0.8,
+                  }}
                 >
                   {formatStringToLetterCase(requestType)}
                 </Chip>
@@ -112,6 +194,7 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
             />
           </MantineProvider>
         </Group>
+        {renderContent()}
       </Container>
     </Container>
   );

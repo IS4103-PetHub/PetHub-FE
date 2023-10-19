@@ -399,3 +399,16 @@ export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
   }
   return CGCopy;
 }
+
+// for pet
+export const calculateAge = (dateOfBirth: any) => {
+  const currentDate = new Date();
+  const dob = new Date(dateOfBirth);
+  let age = dayjs(currentDate).diff(dob, "years");
+
+  if (age == 0) {
+    age = dayjs(currentDate).diff(dob, "months");
+    return `${age} month${age !== 1 ? "s" : ""}`;
+  }
+  return `${age} year${age > 1 ? "s" : ""}`;
+};

@@ -12,8 +12,9 @@ import {
   FileInput,
   Image,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+import { DateTimePicker } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconMapPin } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
@@ -28,12 +29,14 @@ interface LostAndFoundPostModalProps {
   petOwnerId: number;
   opened: boolean;
   close(): void;
+  refetch(): void;
 }
 
 const LostAndFoundPostModal = ({
   petOwnerId,
   opened,
   close,
+  refetch,
 }: LostAndFoundPostModalProps) => {
   const theme = useMantineTheme();
   const { data: petOwner } = useGetPetOwnerByIdAndAccountType(
@@ -42,6 +45,7 @@ const LostAndFoundPostModal = ({
   );
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
+  const [isCreating, setIsCreating] = useToggle();
 
   const createPetLostAndFoundPostMutation = useCreatePetLostAndFoundPost();
 
@@ -86,13 +90,14 @@ const LostAndFoundPostModal = ({
   });
 
   useEffect(
-    () => form.setFieldValue("contactNumber", petOwner.contactNumber),
+    () => form.setFieldValue("contactNumber", petOwner?.contactNumber),
     [petOwner],
   );
 
   type FormValues = typeof form.values;
 
   async function handleSubmit(values: FormValues) {
+    setIsCreating(true);
     try {
       const payload: CreatePetLostAndFoundPayload = {
         ...values,
@@ -101,15 +106,18 @@ const LostAndFoundPostModal = ({
       };
       await createPetLostAndFoundPostMutation.mutateAsync(payload);
       close();
+      refetch();
       notifications.show({
         message: "Pet Lost and Found Post Created",
         color: "green",
       });
     } catch (error: any) {
+      setIsCreating(false);
       notifications.show({
         ...getErrorMessageProps("Error Creating Post", error),
       });
     }
+    setIsCreating(false);
   }
 
   function handleClose() {
@@ -169,13 +177,13 @@ const LostAndFoundPostModal = ({
             />
           </Grid.Col>
           <Grid.Col span={6}>
-            <DateInput
+            <DateTimePicker
               withAsterisk
               label="Last Seen Date"
               clearable
               description="When was the pet last spotted?"
               placeholder="Last seen date"
-              valueFormat="DD-MM-YYYY"
+              valueFormat="DD-MM-YYYY HH:mm"
               maxDate={new Date()}
               icon={<IconCalendar size="1rem" />}
               {...form.getInputProps("lastSeenDate")}
@@ -264,6 +272,7 @@ const LostAndFoundPostModal = ({
           color="dark"
           size="md"
           className="gradient-hover"
+          loading={isCreating}
         >
           Create post
         </Button>
