@@ -50,6 +50,7 @@ interface SelectTimeslotModalProps {
   booking?: Booking;
   onUpdateBooking?(): void;
   viewOnly?: boolean;
+  forPetBusiness?: boolean;
 }
 
 const SelectTimeslotModal = ({
@@ -62,6 +63,7 @@ const SelectTimeslotModal = ({
   booking,
   onUpdateBooking,
   viewOnly,
+  forPetBusiness,
 }: SelectTimeslotModalProps) => {
   const router = useRouter();
   const isTablet = useMediaQuery("(max-width: 100em)");
@@ -268,33 +270,42 @@ const SelectTimeslotModal = ({
 
   const confirmation = (
     <>
-      <Text mb="lg">
-        {isUpdating
-          ? "Please confirm your new timeslot."
-          : "Please confirm your selected timeslot and select a pet (optional)."}
-      </Text>
+      {forPetBusiness ? (
+        <Text mb="lg">
+          Please verify the new appointment details for the customer. They will
+          also receive an email notification upon confirmation.
+        </Text>
+      ) : (
+        <Text mb="lg">
+          {isUpdating
+            ? "Please confirm your new timeslot."
+            : "Please confirm your selected timeslot and select a pet (optional)."}
+        </Text>
+      )}
       <TimeslotCard
         orderItem={orderItem}
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
       />
-      <Select
-        disabled={isUpdating}
-        label="Pet"
-        maxDropdownHeight={200}
-        placeholder="Select a pet"
-        dropdownPosition="bottom"
-        withinPortal
-        clearable
-        mb="xl"
-        data={...pets.map((pet) => ({
-          value: pet.petId.toString(),
-          label: pet.petName,
-        }))}
-        value={selectedPetId}
-        onChange={setSelectedPetId}
-      />
+      {!forPetBusiness && (
+        <Select
+          disabled={isUpdating}
+          label="Pet"
+          maxDropdownHeight={200}
+          placeholder="Select a pet"
+          dropdownPosition="bottom"
+          withinPortal
+          clearable
+          mb="xl"
+          data={...pets.map((pet) => ({
+            value: pet.petId.toString(),
+            label: pet.petName,
+          }))}
+          value={selectedPetId}
+          onChange={setSelectedPetId}
+        />
+      )}
     </>
   );
 

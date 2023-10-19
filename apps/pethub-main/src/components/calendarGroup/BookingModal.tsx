@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Button,
   Grid,
   Group,
   Modal,
@@ -12,8 +13,10 @@ import {
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { IconClipboardList } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useEffect } from "react";
 import {
   Address,
@@ -22,6 +25,7 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { Booking } from "@/types/types";
+import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 
 interface BookingModalProps {
   booking: Booking;
@@ -29,6 +33,7 @@ interface BookingModalProps {
   onClose(): void;
   addresses: Address[];
   tags: Tag[];
+  refetch: () => void;
 }
 
 const BookingModal = ({
@@ -37,7 +42,12 @@ const BookingModal = ({
   onClose,
   addresses,
   tags,
+  refetch,
 }: BookingModalProps) => {
+  const [
+    rescheduleModalOpened,
+    { open: openRescheduleModal, close: closeRescheduleModal },
+  ] = useDisclosure(false);
   const theme = useMantineTheme();
   const defaultValues = ["Customer Details"];
 
@@ -97,21 +107,35 @@ const BookingModal = ({
     return `${hours}:${minutes}`;
   }
 
+  function onUpdateBooking() {
+    refetch();
+    onClose();
+  }
+
+  const modalTitle = (
+    <Group>
+      <Text size="lg" weight={500}>
+        {form.values.startTime} - {form.values.endTime}
+      </Text>
+      <Button variant="outline" compact onClick={openRescheduleModal}>
+        Reschedule
+      </Button>
+    </Group>
+  );
+
   return (
     <>
       {booking && (
         <Modal
           opened={opened}
           onClose={onClose}
-          title={
-            <Text size="lg" weight={600}>
-              {form.values.startTime} - {form.values.endTime}:{" "}
-              {booking.serviceListing.title}
-            </Text>
-          }
+          title={modalTitle}
           centered
           size="80vh"
         >
+          <Text size="lg" weight={600} mb="xs">
+            {booking.serviceListing.title}
+          </Text>
           <Accordion variant="separated" multiple defaultValue={defaultValues}>
             {/* Customer related details, name, contact nuber, etc */}
             <Accordion.Item value="Customer Details">
@@ -275,6 +299,19 @@ const BookingModal = ({
             </Accordion.Item> */}
           </Accordion>
         </Modal>
+      )}
+      {booking && (
+        <SelectTimeslotModal
+          petOwnerId={booking?.petOwnerId}
+          opened={rescheduleModalOpened}
+          onClose={closeRescheduleModal}
+          orderItem={booking?.OrderItem}
+          serviceListing={booking?.serviceListing}
+          onUpdateBooking={onUpdateBooking}
+          booking={booking}
+          isUpdating
+          forPetBusiness
+        />
       )}
     </>
   );
