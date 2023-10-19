@@ -110,7 +110,13 @@ export const serviceListingSideBarCategories = [
   ...landingPageCategories,
 ];
 
-export const allowedRoutesAfterLogin = ["/customer/appointments"];
+export const allowedRoutesAfterLogin = [
+  "/customer/appointments",
+  "/customer/account",
+  "/customer/orders",
+  "business/application",
+  "business/account",
+];
 
 export const PLATFORM_FEE_PERCENT = 0.07;
 export const GST_PERCENT = 0.08;
