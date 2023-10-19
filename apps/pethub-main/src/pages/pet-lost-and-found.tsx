@@ -2,7 +2,6 @@ import {
   Box,
   Chip,
   Container,
-  Grid,
   Group,
   MantineProvider,
   Transition,
@@ -22,7 +21,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import LostAndFoundMasonryGrid from "@/components/pet-lost-and-found/LostAndFoundMasonryGrid";
 import LostAndFoundPostModal from "@/components/pet-lost-and-found/LostAndFoundPostModal";
-import { useGetAllPetLostAndFoundPosts } from "@/hooks/pet-lost-and-found";
+import { useGetPetLostAndFoundPostsByRequestTypeAndUserId } from "@/hooks/pet-lost-and-found";
 import {
   PetRequestTypeEnum,
   petLostAndFoundSortOptions,
@@ -39,6 +38,8 @@ const inter = localFont({
   variable: "--font-inter",
 });
 
+const MY_POSTS_VALUE = "MY_POSTS";
+
 export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -53,12 +54,8 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
     data: posts = [],
     isLoading,
     refetch,
-  } = useGetAllPetLostAndFoundPosts(activeType);
+  } = useGetPetLostAndFoundPostsByRequestTypeAndUserId(activeType, userId);
   const [records, setRecords] = useState<PetLostAndFound[]>(posts);
-
-  useEffect(() => {
-    console.log(activeType);
-  }, [activeType]);
 
   useEffect(() => {
     // handle sort
@@ -93,6 +90,12 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
     open();
   };
 
+  function handleChangeSelectedType(value: string) {
+    router.push({
+      query: { requestType: value },
+    });
+  }
+
   function renderContent() {
     if (posts.length === 0) {
       if (isLoading) {
@@ -120,7 +123,7 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
     }
     return (
       <Box mt="lg">
-        <LostAndFoundMasonryGrid posts={records} />
+        <LostAndFoundMasonryGrid posts={records} activeType={activeType} />
       </Box>
     );
   }
@@ -149,11 +152,7 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
           <Chip.Group
             multiple={false}
             value={activeType}
-            onChange={(value) =>
-              router.push({
-                query: { requestType: value },
-              })
-            }
+            onChange={(value) => handleChangeSelectedType(value)}
           >
             <Group position="left" w="75%">
               <Chip
@@ -179,6 +178,14 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
                   {formatStringToLetterCase(requestType)}
                 </Chip>
               ))}
+              <Chip
+                value={MY_POSTS_VALUE}
+                variant="filled"
+                size="lg"
+                style={{ opacity: activeType === MY_POSTS_VALUE ? 1 : 0.8 }}
+              >
+                My posts
+              </Chip>
             </Group>
           </Chip.Group>
           <MantineProvider

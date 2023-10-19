@@ -10,6 +10,7 @@ import {
   ServiceListing,
   TimePeriod,
 } from "shared-utils";
+import { PetLostAndFound } from "./types/types";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {

@@ -1,3 +1,4 @@
+import { uniqueId } from "lodash";
 import { Masonry } from "masonic";
 import React from "react";
 import { PetLostAndFound } from "@/types/types";
@@ -5,9 +6,17 @@ import PostCard from "./PostCard";
 
 interface LostAndFoundMasonryGridProps {
   posts: PetLostAndFound[];
+  activeType: string;
 }
 
-const LostAndFoundMasonryGrid = ({ posts }: LostAndFoundMasonryGridProps) => {
+const COL_GUTTER = 15;
+const MIN_WIDTH = 350;
+const OVERSCAN = 5;
+
+const LostAndFoundMasonryGrid = ({
+  posts,
+  activeType,
+}: LostAndFoundMasonryGridProps) => {
   const items = posts.map((post) => {
     return {
       id: post.petLostAndFoundId,
@@ -62,14 +71,16 @@ const LostAndFoundMasonryGrid = ({ posts }: LostAndFoundMasonryGridProps) => {
 
   return (
     <Masonry
+      // always create a new layout
+      key={uniqueId()}
       // Provides the data for our grid items
       items={items}
       // Adds space between the grid cells
-      columnGutter={15}
+      columnGutter={COL_GUTTER}
       // Sets the minimum column width
-      columnWidth={400}
+      columnWidth={MIN_WIDTH}
       // Pre-renders windows worth of content
-      overscanBy={3}
+      overscanBy={OVERSCAN}
       // This is the grid item component
       render={MasonryPostCard}
     />

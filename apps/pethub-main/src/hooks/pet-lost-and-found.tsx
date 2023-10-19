@@ -37,10 +37,21 @@ export const useCreatePetLostAndFoundPost = () => {
   });
 };
 
-export const useGetAllPetLostAndFoundPosts = (activeType?: string) => {
+// used to get all posts, by request type, or by a PO user id
+export const useGetPetLostAndFoundPostsByRequestTypeAndUserId = (
+  activeType?: string,
+  userId?: number,
+) => {
   return useQuery({
-    queryKey: ["lost-and-found", { activeType }],
+    queryKey: ["lost-and-found", { requestType: activeType, userId: userId }],
     queryFn: async () => {
+      if (activeType === "MY_POSTS") {
+        const data = await (
+          await api.get(`${PET_LOST_AND_FOUND_API}/pet-owner/${userId}`)
+        ).data;
+        return data as PetLostAndFound[];
+      }
+
       const params = { requestType: activeType };
       const data = await (
         await api.get(`${PET_LOST_AND_FOUND_API}`, {
