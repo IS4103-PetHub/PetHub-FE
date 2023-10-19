@@ -538,49 +538,31 @@ const ServiceListingModal = ({
               ))}
           </div>
 
-          {!isViewing && (
-            <>
-              {/* TODO: link to page with terms and conditions  */}
-              {/* {!isUpdating && (
-                  <Checkbox
-                    mt="md"
-                    label={"I agree to all the terms and conditions."}
-                    {...serviceListingForm.getInputProps("confirmation", {
-                      type: "checkbox",
-                    })}
-                    />
-                  )} */}
-              <Group position="right">
-                {!isViewing && (
-                  <Button
-                    type="reset"
-                    color="gray"
-                    onClick={() => {
-                      closeAndResetForm();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                )}
-                <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
-              </Group>
-            </>
-          )}
-
-          {isViewing && (
-            <>
-              <Group position="right">
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setUpdating(true);
-                    setViewing(false);
-                  }}
-                >
-                  Edit
-                </Button>
-              </Group>
-            </>
+          {!isViewing ? (
+            <Group position="right">
+              <Button
+                type="reset"
+                color="gray"
+                onClick={() => {
+                  closeAndResetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
+            </Group>
+          ) : (
+            <Group position="right">
+              <Button
+                type="button"
+                onClick={() => {
+                  setUpdating(true);
+                  setViewing(false);
+                }}
+              >
+                Edit
+              </Button>
+            </Group>
           )}
         </Stack>
       </form>

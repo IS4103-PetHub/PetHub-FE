@@ -17,13 +17,13 @@ import {
 import localFont from "next/font/local";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AccountTypeEnum } from "shared-utils";
 import {
   LoadingOverlayProvider,
   useLoadingOverlay,
 } from "web-ui/shared/LoadingOverlayContext";
-import { CartProvider, useCart } from "@/components/cart/CartContext";
+import { CartProvider } from "@/components/cart/CartContext";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
