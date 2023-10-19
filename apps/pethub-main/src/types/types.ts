@@ -9,7 +9,7 @@ import {
   GenderEnum,
   CommissionRule,
 } from "shared-utils";
-import { PetLostRequestType, PetTypeEnum } from "./constants";
+import { PetRequestTypeEnum, PetTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -256,13 +256,15 @@ export interface PetLostAndFound {
   petLostAndFoundId: number;
   title: string;
   description: string;
-  requestType: PetLostRequestType;
+  requestType: PetRequestTypeEnum;
   lastSeenDate: string;
   lastSeenLocation: string;
   attachmentKeys: string[];
   attachmentURLs: string[];
+  contactNumber: string;
   userId: number;
   petOwner?: PetOwner;
   petId?: number;
   pet?: Pet;
+  dateCreated: string;
 }

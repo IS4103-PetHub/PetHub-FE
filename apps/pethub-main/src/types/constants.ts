@@ -118,7 +118,28 @@ export const GST_PERCENT = 0.08;
 export const PLATFORM_FEE_MESSAGE: string =
   "The platform fee covers operational costs to help keep PetHub up and running. PetHub strives to deliver a smooth and pleasant experience for all users.";
 
-export enum PetLostRequestType {
+export enum PetRequestTypeEnum {
   LostPet = "LOST_PET",
   FoundPet = "FOUND_PET",
 }
+
+export const petLostAndFoundSortOptions = [
+  {
+    value: "newest",
+    label: "Newest",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+  {
+    value: "recently_spotted",
+    label: "Recently spotted",
+    attribute: "last",
+    direction: "asc",
+  },
+];

@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/api/axiosConfig";
-import { PetLostRequestType } from "@/types/constants";
+import { PetRequestTypeEnum } from "@/types/constants";
 
 const PET_LOST_AND_FOUND_API = "/lost-and-found";
 
-export const useGetAllPetLostAndFound = (requestType?: PetLostRequestType) => {
+export const useGetAllPetLostAndFound = (requestType?: PetRequestTypeEnum) => {
   return useQuery({
     queryKey: ["lost-and-found"],
     queryFn: async () => {

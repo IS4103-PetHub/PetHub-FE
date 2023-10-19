@@ -9,13 +9,17 @@ import {
   Select,
   Button,
   useMantineTheme,
+  Card,
+  FileInput,
+  Image,
+  Box,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { IconCalendar, IconMapPin } from "@tabler/icons-react";
-import React from "react";
+import React, { useState } from "react";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { PetLostRequestType } from "@/types/constants";
+import { PetRequestTypeEnum } from "@/types/constants";
 
 interface LostAndFoundPostModalProps {
   petOwnerId: number;
@@ -30,12 +34,13 @@ const LostAndFoundPostModal = ({
 }: LostAndFoundPostModalProps) => {
   const theme = useMantineTheme();
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
 
   const form = useForm({
     initialValues: {
       title: "",
       description: "",
-      requestType: PetLostRequestType.LostPet,
+      requestType: PetRequestTypeEnum.LostPet,
       lastSeenDate: "",
       lastSeenLocation: "",
       contactNumber: "",
@@ -47,7 +52,7 @@ const LostAndFoundPostModal = ({
       title: (value) => {
         const maxLength = 64;
         if (!value) {
-          return "Title is required.";
+          return "Title required.";
         }
         if (value.length > maxLength) {
           return `Title must be ${maxLength} characters or less.`;
@@ -56,19 +61,48 @@ const LostAndFoundPostModal = ({
       description: (value) => {
         const maxLength = 500;
         if (!value) {
-          return "Description is required.";
+          return "Please enter a description.";
         }
         if (value.length > maxLength) {
           return `Description must be ${maxLength} characters or less.`;
         }
       },
+      lastSeenDate: isNotEmpty("Last seen date required."),
+      lastSeenLocation: isNotEmpty("Last seen location required."),
+      contactNumber: (value) =>
+        /^[0-9]{8}$/.test(value)
+          ? null
+          : "Contact number must be 8 digits long.",
     },
   });
+
+  function handleClose() {
+    close();
+    form.reset();
+  }
+
+  const handleFileInputChange = (file) => {
+    if (file) {
+      const imageObjectUrl = URL.createObjectURL(file);
+      setImagePreviewUrl(imageObjectUrl);
+      form.setValues({
+        ...form.values,
+        attachment: file,
+      });
+    } else {
+      setImagePreviewUrl("");
+      form.setValues({
+        ...form.values,
+        attachment: null,
+      });
+    }
+  };
 
   return (
     <Modal
       opened={opened}
-      onClose={close}
+      onClose={handleClose}
+      closeOnClickOutside={false}
       size="xl"
       title={
         <Text fw={500} size="lg">
@@ -84,8 +118,8 @@ const LostAndFoundPostModal = ({
               size="md"
               fullWidth
               data={[
-                { label: "Lost Pet", value: PetLostRequestType.LostPet },
-                { label: "Found Pet", value: PetLostRequestType.FoundPet },
+                { label: "Lost Pet", value: PetRequestTypeEnum.LostPet },
+                { label: "Found Pet", value: PetRequestTypeEnum.FoundPet },
               ]}
               {...form.getInputProps("requestType")}
             />
@@ -135,7 +169,9 @@ const LostAndFoundPostModal = ({
               {form.values.description.length} / 500 characters
             </Text>
           </Grid.Col>
-          <Grid.Col span={6} mt={-20}>
+        </Grid>
+        <Grid grow mt={-20}>
+          <Grid.Col span={6}>
             <TextInput
               withAsterisk
               label="Contact Number"
@@ -144,8 +180,8 @@ const LostAndFoundPostModal = ({
               {...form.getInputProps("contactNumber")}
             />
           </Grid.Col>
-          {form.values.requestType === PetLostRequestType.LostPet && (
-            <Grid.Col span={6} mt={-20}>
+          {form.values.requestType === PetRequestTypeEnum.LostPet && (
+            <Grid.Col span={6}>
               <Select
                 label="Pet"
                 maxDropdownHeight={200}
@@ -154,7 +190,6 @@ const LostAndFoundPostModal = ({
                 dropdownPosition="bottom"
                 withinPortal
                 clearable
-                mb="xl"
                 data={...pets.map((pet) => ({
                   value: pet.petId.toString(),
                   label: pet.petName,
@@ -163,11 +198,40 @@ const LostAndFoundPostModal = ({
               />
             </Grid.Col>
           )}
+          <Grid.Col span={12}>
+            <FileInput
+              label="Upload Display Image"
+              clearable
+              placeholder={
+                !imagePreviewUrl ? "No file selected" : "Upload new image"
+              }
+              accept="image/*"
+              name="image"
+              onChange={(file) => handleFileInputChange(file)}
+              capture={false}
+            />
+            {imagePreviewUrl && (
+              <Card sx={{ maxWidth: "100%" }}>
+                <Image
+                  src={imagePreviewUrl}
+                  alt="Image Preview"
+                  sx={{ maxWidth: "100%", display: "block" }}
+                />
+              </Card>
+            )}
+          </Grid.Col>
         </Grid>
+        <Button
+          mt="lg"
+          type="submit"
+          fullWidth
+          color="dark"
+          size="md"
+          className="gradient-hover"
+        >
+          Create post
+        </Button>
       </form>
-      <Button fullWidth color="dark" size="md" className="gradient-hover">
-        Create post
-      </Button>
     </Modal>
   );
 };
