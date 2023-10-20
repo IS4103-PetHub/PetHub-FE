@@ -2,7 +2,7 @@ import { Container, useMantineTheme, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { AxiosError } from "axios";
+import { AxiosError, all } from "axios";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
@@ -84,7 +84,6 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
 
   const handleLogin = async (values: LoginFormValues) => {
-    let successfullyLoggedIn = false;
     const res = await signIn("credentials", {
       callbackUrl: originalPath,
       redirect: false,
@@ -100,25 +99,23 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
         color: "red",
       });
     } else {
-      // Only set redirect to true if the login is successful
-      successfullyLoggedIn = true;
       const session = await getSession();
       if (
         session &&
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
         showOverlay();
-        router.push("/business/dashboard");
+        if (allowedRoutesAfterLogin.includes(originalPath)) {
+          router.push(originalPath);
+        } else {
+          router.push("/business/dashboard");
+        }
+      }
+      if (allowedRoutesAfterLogin.includes(originalPath)) {
+        router.push(originalPath);
       }
     }
-    if (
-      successfullyLoggedIn &&
-      allowedRoutesAfterLogin.includes(originalPath)
-    ) {
-      router.push(originalPath);
-    }
     close();
-
     const timer = setTimeout(() => {
       loginForm.reset();
     }, 800);

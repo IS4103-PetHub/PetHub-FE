@@ -90,7 +90,7 @@ const OrderItemStepperContent = ({
     dayjs(orderItem.expiryDate).add(3, "day").endOf("day").toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem.expiryDate).add(7, "day").endOf("day"),
+    dayjs(orderItem.expiryDate).add(3, "day").endOf("day"),
   );
   // ================================= FAKE REFUND STUFF ================================= //
 
@@ -356,10 +356,13 @@ const OrderItemStepperContent = ({
       {renderContent()}
       <SelectTimeslotModal
         petOwnerId={userId}
-        orderItemId={orderItem.orderItemId}
+        orderItem={orderItem}
         serviceListing={orderItem.serviceListing}
         opened={opened}
         onClose={close}
+        isUpdating={!!orderItem.booking}
+        onUpdateBooking={() => {}}
+        booking={orderItem.booking as any}
       />
     </Grid>
   );

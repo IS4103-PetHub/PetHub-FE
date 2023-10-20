@@ -8,7 +8,6 @@ import { AccountTypeEnum } from "shared-utils";
 import { LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
 
-// TODO: Change stuff to fit the format of the finalized API after
 export const loginService = async ({
   email,
   password,

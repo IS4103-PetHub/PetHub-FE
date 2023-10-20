@@ -31,6 +31,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Invoice,
+  OrderItem,
   OrderItemStatusEnum,
   ServiceListing,
   convertMinsToDurationString,
@@ -49,29 +50,10 @@ import OrderItemPopover from "./OrderItemPopover";
 
 interface OrderItemCardProps {
   userId: number;
-  orderItemId: number;
-  invoiceId: number;
-  paymentId: string;
-  price: number;
-  expiryDate: string;
-  voucherCode: string;
-  serviceListing: ServiceListing;
-  status: string;
-  createdAt: string;
+  orderItem: OrderItem;
 }
 
-const OrderItemCard = ({
-  userId,
-  orderItemId,
-  invoiceId,
-  paymentId,
-  expiryDate,
-  price,
-  voucherCode,
-  serviceListing,
-  status,
-  createdAt,
-}: OrderItemCardProps) => {
+const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
@@ -89,8 +71,8 @@ const OrderItemCard = ({
   async function buyAgainHandler() {
     await addItemToCart(
       {
-        serviceListing: serviceListing,
-        ...(serviceListing.calendarGroupId ? {} : { quantity: 1 }),
+        serviceListing: orderItem?.serviceListing,
+        ...(orderItem?.serviceListing.calendarGroupId ? {} : { quantity: 1 }),
         isSelected: true,
       } as CartItem,
       1,
@@ -109,38 +91,43 @@ const OrderItemCard = ({
 
   function viewDetailsHandler() {
     toggle();
-    router.push(`/customer/orders/${orderItemId}`);
+    router.push(`/customer/orders/${orderItem?.orderItemId}`);
   }
 
   const orderItemFooterGroup = (
     <>
-      {status === OrderItemStatusEnum.PendingBooking && (
+      {orderItem?.status === OrderItemStatusEnum.PendingBooking && (
         <>
+          <Button miw={90} size="xs" mr={-5} onClick={bookNowHandler}>
+            Book now
+          </Button>
           <Button
             color="red"
             variant="light"
             size="xs"
             miw={90}
-            mr={-5}
             onClick={triggerNotImplementedNotification}
+            mr={-5}
           >
-            Cancel
-          </Button>
-          <Button miw={90} size="xs" mr={-10} onClick={bookNowHandler}>
-            Book now
+            Refund
           </Button>
           <OrderItemPopover
             text={`Make your booking and redeem your voucher before the end of the validity period on ${formatISODayDateTime(
-              expiryDate,
+              orderItem?.expiryDate,
             )}`}
           />
         </>
       )}
-      {status === OrderItemStatusEnum.PendingFulfillment && (
+      {orderItem?.status === OrderItemStatusEnum.PendingFulfillment && (
         <>
+          {orderItem?.booking && (
+            <Button miw={90} size="xs" mr={-10} onClick={bookNowHandler}>
+              Reschedule
+            </Button>
+          )}
           <OrderItemPopover
             text={`Redeem your voucher before the end of the validity period on ${formatISODayDateTime(
-              expiryDate,
+              orderItem?.expiryDate,
             )}`}
           />
           <Center>
@@ -149,9 +136,9 @@ const OrderItemCard = ({
             </Text>
             &nbsp;
             <Badge radius="xs" c="indigo" p={2} variant="">
-              {voucherCode}
+              {orderItem?.voucherCode}
             </Badge>
-            <CopyButton value={voucherCode} timeout={3000}>
+            <CopyButton value={orderItem?.voucherCode} timeout={3000}>
               {({ copied, copy }) => (
                 <Button
                   color={copied ? "teal" : "dark"}
@@ -171,36 +158,35 @@ const OrderItemCard = ({
         </>
       )}
       {/* In the future, review should be changed to "View review" if already reviewed */}
-      {(status === OrderItemStatusEnum.Fulfilled ||
-        status === OrderItemStatusEnum.PaidOut) && (
+      {(orderItem?.status === OrderItemStatusEnum.Fulfilled ||
+        orderItem?.status === OrderItemStatusEnum.PaidOut) && (
         <>
+          <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
+            Buy again
+          </Button>
           <Button
             variant="light"
             size="xs"
             miw={90}
-            mr={-5}
             onClick={triggerNotImplementedNotification}
           >
             Review
           </Button>
-          <Button size="xs" miw={90} onClick={buyAgainHandler}>
-            Buy again
-          </Button>
         </>
       )}
-      {status === OrderItemStatusEnum.Expired && (
+      {orderItem?.status === OrderItemStatusEnum.Expired && (
         <>
           <Text size="xs" fw={500} color="red">
             You did not redeem your voucher before the end of the validity
-            period on {formatISODayDateTime(expiryDate)}
+            period on {formatISODayDateTime(orderItem?.expiryDate)}
           </Text>
         </>
       )}
-      {status === OrderItemStatusEnum.Refunded && (
+      {orderItem?.status === OrderItemStatusEnum.Refunded && (
         <>
           <Text size="xs" fw={500} color="orange">
-            The amount of ${formatNumber2Decimals(price)} has been refunded to
-            your original payment method
+            The amount of ${formatNumber2Decimals(orderItem?.itemPrice)} has
+            been refunded to your original payment method
           </Text>
         </>
       )}
@@ -212,7 +198,7 @@ const OrderItemCard = ({
       <Group position="apart" mb={5} mt={-5}>
         <Center>
           <Text fw={500} mr={2} size="sm">
-            {serviceListing?.petBusiness?.companyName}
+            {orderItem?.serviceListing?.petBusiness?.companyName}
           </Text>
           <Button
             size="xs"
@@ -221,7 +207,9 @@ const OrderItemCard = ({
               <IconBuildingStore size="1rem" style={{ marginRight: "-5px" }} />
             }
             onClick={() =>
-              router.push("/pet-businesses/" + serviceListing?.petBusinessId)
+              router.push(
+                "/pet-businesses/" + orderItem?.serviceListing?.petBusinessId,
+              )
             }
           >
             Visit Shop
@@ -229,13 +217,13 @@ const OrderItemCard = ({
         </Center>
         <Center>
           <Text size="xs" mr="md" fw={500} mt={3}>
-            Ordered on: {formatISODateTimeShort(createdAt)}
+            Ordered on: {formatISODateTimeShort(orderItem?.invoice.createdAt)}
           </Text>
           <Box>
             <Badge mr="md" radius="xl" c="dark" sx={{ fontWeight: 600 }}>
-              Item ID: {orderItemId}
+              Item ID: {orderItem?.orderItemId}
             </Badge>
-            <OrderItemBadge text={status} />
+            <OrderItemBadge text={orderItem?.status} />
           </Box>
         </Center>
       </Group>
@@ -261,10 +249,10 @@ const OrderItemCard = ({
           loaderProps={{ size: "sm", color: "indigo", variant: "bars" }}
         />
         <Grid.Col span={4} mih={125}>
-          {serviceListing?.attachmentURLs?.length > 0 ? (
+          {orderItem?.serviceListing?.attachmentURLs?.length > 0 ? (
             <Image
               radius="md"
-              src={serviceListing.attachmentURLs[0]}
+              src={orderItem?.serviceListing.attachmentURLs[0]}
               fit="contain"
               w="auto"
               alt="Cart Item Photo"
@@ -282,14 +270,17 @@ const OrderItemCard = ({
         <Grid.Col span={16}>
           <Box>
             <Text fw={600} size={16}>
-              {serviceListing.title}
+              {orderItem?.serviceListing.title}
             </Text>
             <Text lineClamp={2} size="xs">
-              {serviceListing.description}
+              {orderItem?.serviceListing.description}
             </Text>
-            {serviceListing.duration && (
+            {orderItem?.serviceListing.duration && (
               <Badge variant="dot" radius="xs">
-                Duration: {convertMinsToDurationString(serviceListing.duration)}
+                Duration:{" "}
+                {convertMinsToDurationString(
+                  orderItem?.serviceListing.duration,
+                )}
               </Badge>
             )}
           </Box>
@@ -304,7 +295,7 @@ const OrderItemCard = ({
           }}
         >
           <Text size="sm" c="dark" fw={500}>
-            ${formatNumber2Decimals(price)}
+            ${formatNumber2Decimals(orderItem?.itemPrice)}
           </Text>
         </Grid.Col>
       </Grid>
@@ -333,17 +324,22 @@ const OrderItemCard = ({
             </Text>
             &nbsp;
             <Text c="dark" fw={600} size="xl">
-              ${formatNumber2Decimals(price)}
+              ${formatNumber2Decimals(orderItem?.itemPrice)}
             </Text>
           </Center>
         </Grid.Col>
       </Grid>
       <SelectTimeslotModal
         petOwnerId={userId}
-        orderItemId={orderItemId}
-        serviceListing={serviceListing}
         opened={opened}
         onClose={close}
+        orderItem={orderItem}
+        serviceListing={orderItem?.serviceListing}
+        isUpdating={!!orderItem?.booking}
+        onUpdateBooking={() => {
+          router.push(`/customer/orders/${orderItem?.orderItemId}`);
+        }}
+        booking={orderItem?.booking as any}
       />
     </Card>
   );

@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
+  OrderItem,
   ServiceListing,
   convertMinsToDurationString,
   formatISODayDateTime,
@@ -30,7 +31,7 @@ import {
 } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
-import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useGetAvailableTimeSlotsByOrderItemId } from "@/hooks/calendar-group";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
@@ -41,7 +42,7 @@ const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 interface SelectTimeslotModalProps {
   petOwnerId: number;
   serviceListing: ServiceListing;
-  orderItemId?: number;
+  orderItem: OrderItem;
   opened: boolean;
   onClose(): void;
   // optional, only for updating
@@ -49,18 +50,20 @@ interface SelectTimeslotModalProps {
   booking?: Booking;
   onUpdateBooking?(): void;
   viewOnly?: boolean;
+  forPetBusiness?: boolean;
 }
 
 const SelectTimeslotModal = ({
   petOwnerId,
   serviceListing,
-  orderItemId,
+  orderItem,
   opened,
   onClose,
   isUpdating,
   booking,
   onUpdateBooking,
   viewOnly,
+  forPetBusiness,
 }: SelectTimeslotModalProps) => {
   const router = useRouter();
   const isTablet = useMediaQuery("(max-width: 100em)");
@@ -75,8 +78,8 @@ const SelectTimeslotModal = ({
   );
 
   const { data: availTimeslots = [], isLoading } =
-    useGetAvailableTimeSlotsByCGId(
-      serviceListing.calendarGroupId,
+    useGetAvailableTimeSlotsByOrderItemId(
+      orderItem?.orderItemId,
       selectedMonth.toISOString(),
       dayjs(selectedMonth).add(1, "month").toISOString(),
       serviceListing.duration,
@@ -97,7 +100,7 @@ const SelectTimeslotModal = ({
       });
       return;
     }
-    if (!orderItemId) {
+    if (!orderItem?.orderItemId) {
       notifications.show({
         title: "System Error",
         message: "No OrderItemID provided",
@@ -120,7 +123,7 @@ const SelectTimeslotModal = ({
         payload = {
           petOwnerId: session.user["userId"],
           calendarGroupId: serviceListing.calendarGroupId,
-          orderItemId: orderItemId,
+          orderItemId: orderItem?.orderItemId,
           startTime,
           endTime,
         };
@@ -138,7 +141,6 @@ const SelectTimeslotModal = ({
           selectedTimeslot,
         )} has been confirmed!`,
       });
-      router.push(`/customer/orders/${orderItemId}`);
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(
@@ -268,33 +270,42 @@ const SelectTimeslotModal = ({
 
   const confirmation = (
     <>
-      <Text mb="lg">
-        {isUpdating
-          ? "Please confirm your new timeslot."
-          : "Please confirm your selected timeslot and select a pet (optional)."}
-      </Text>
+      {forPetBusiness ? (
+        <Text mb="lg">
+          Please verify the new appointment details for the customer. They will
+          also receive an email notification upon confirmation.
+        </Text>
+      ) : (
+        <Text mb="lg">
+          {isUpdating
+            ? "Please confirm your new timeslot."
+            : "Please confirm your selected timeslot and select a pet (optional)."}
+        </Text>
+      )}
       <TimeslotCard
-        orderItemId={orderItemId}
+        orderItem={orderItem}
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
       />
-      <Select
-        disabled={isUpdating}
-        label="Pet"
-        maxDropdownHeight={200}
-        placeholder="Select a pet"
-        dropdownPosition="bottom"
-        withinPortal
-        clearable
-        mb="xl"
-        data={...pets.map((pet) => ({
-          value: pet.petId.toString(),
-          label: pet.petName,
-        }))}
-        value={selectedPetId}
-        onChange={setSelectedPetId}
-      />
+      {!forPetBusiness && (
+        <Select
+          disabled={isUpdating}
+          label="Pet"
+          maxDropdownHeight={200}
+          placeholder="Select a pet"
+          dropdownPosition="bottom"
+          withinPortal
+          clearable
+          mb="xl"
+          data={...pets.map((pet) => ({
+            value: pet.petId.toString(),
+            label: pet.petName,
+          }))}
+          value={selectedPetId}
+          onChange={setSelectedPetId}
+        />
+      )}
     </>
   );
 
