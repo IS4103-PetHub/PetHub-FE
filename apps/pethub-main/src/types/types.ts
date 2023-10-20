@@ -10,6 +10,7 @@ import {
   CommissionRule,
   PetTypeEnum,
   Pet,
+  OrderItem,
 } from "shared-utils";
 
 /*
@@ -209,6 +210,7 @@ export interface Booking {
   invoiceId?: number;
   transactionId?: number;
   orderItemId?: number;
+  OrderItem?: OrderItem;
 }
 
 export interface AddRemoveFavouriteServiceListingPayload {

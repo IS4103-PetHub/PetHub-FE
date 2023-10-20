@@ -100,7 +100,16 @@ export const serviceListingSideBarCategories = [
   ...landingPageCategories,
 ];
 
-export const allowedRoutesAfterLogin = ["/customer/appointments"];
+export const allowedRoutesAfterLogin = [
+  "/customer/appointments",
+  "/customer/account",
+  "/customer/orders",
+  "/customer/cart",
+  "/customer/favourites",
+  "/business/application",
+  "/business/appointments",
+  "/business/listings",
+];
 
 export const GST_PERCENT = 0.08;
 

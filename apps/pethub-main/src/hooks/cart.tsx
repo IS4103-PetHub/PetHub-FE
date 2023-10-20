@@ -13,6 +13,10 @@ export function useCartOperations(userId: number) {
 
   /* ============================================== Helper Functions ============================================== */
 
+  const isItemExpired = (date) => {
+    return new Date() > new Date(date);
+  };
+
   const getCurrentCart = () => {
     let currentCart = carts.find((cart) => cart.userId === userId);
     if (!currentCart) {
@@ -52,19 +56,22 @@ export function useCartOperations(userId: number) {
         (response) => response.data,
       );
 
-      const updatedCartItems = currentCart.cartItems.map((item) => {
-        const updatedListing = updatedListings.find(
-          (listing) =>
-            listing.serviceListingId === item.serviceListing.serviceListingId,
-        );
-        return {
-          ...item,
-          serviceListing: updatedListing || item.serviceListing, // Use updated listing or fallback to the old one
-        };
-      });
+      const updatedCartItems = currentCart.cartItems
+        .map((item) => {
+          const updatedListing = updatedListings.find(
+            (listing) =>
+              listing.serviceListingId === item.serviceListing.serviceListingId,
+          );
+          return {
+            ...item,
+            serviceListing: updatedListing || item.serviceListing, // Use updated listing or fallback to the old one
+          };
+        })
+        .filter((item) => !isItemExpired(item.serviceListing.lastPossibleDate)); // Filter out expired SLs;
 
       setCurrentCart({
         ...currentCart,
+        itemCount: calculateTotalItemCount(updatedCartItems),
         cartItems: updatedCartItems,
       });
     } catch (error) {

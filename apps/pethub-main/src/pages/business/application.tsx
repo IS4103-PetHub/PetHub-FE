@@ -23,7 +23,7 @@ import {
   BusinessApplicationStatusEnum,
   getErrorMessageProps,
 } from "shared-utils";
-import { PageTitle } from "web-ui";
+import { PageTitle, useLoadingOverlay } from "web-ui";
 import AddAddressModal from "web-ui/shared/pb-applications/AddAddressModal";
 import AddressSidewaysScrollThing from "web-ui/shared/pb-applications/AddressSidewaysScrollThing";
 import ApplicationStatusAlert from "@/components/pb-application/ApplicationStatusAlert";
@@ -44,11 +44,16 @@ export default function Application({ userId }: ApplicationProps) {
   const [applicationStatus, setApplicationStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
+  const { hideOverlay } = useLoadingOverlay();
 
   const {
     data: petBusinessApplication,
     refetch: refetchPetBusinessApplication,
   } = useGetPetBusinessApplicationByPBId(userId);
+
+  useEffect(() => {
+    hideOverlay(); // Hide the overlay that was triggered via a PB login in the event of a direct page login
+  }, []);
 
   useEffect(() => {
     if (!petBusinessApplication) {

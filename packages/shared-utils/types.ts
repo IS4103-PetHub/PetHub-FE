@@ -127,6 +127,7 @@ export interface OrderItem {
   attachmentKey: string;
   attachmentURL: string;
   commissionRate: number;
+  dateFulfilled?: string;
 }
 
 export interface OrderBarCounts {

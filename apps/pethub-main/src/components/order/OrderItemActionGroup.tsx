@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCopy } from "@tabler/icons-react";
+import { IconCopy, IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -90,15 +90,18 @@ const OrderItemStepperContent = ({
     dayjs(orderItem.expiryDate).add(3, "day").endOf("day").toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem.expiryDate).add(7, "day").endOf("day"),
+    dayjs(orderItem.expiryDate).add(3, "day").endOf("day"),
   );
   // ================================= FAKE REFUND STUFF ================================= //
 
+  const dividerColumn = (
+    <Grid.Col>
+      <Divider />
+    </Grid.Col>
+  );
+
   const invoiceColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={8} />
       <Grid.Col span={4}>
         <Button
@@ -106,6 +109,7 @@ const OrderItemStepperContent = ({
           variant="light"
           sx={{ border: "1px solid #e0e0e0" }}
           onClick={viewInvoiceHandler}
+          leftIcon={<IconFileDownload size="1rem" />}
         >
           View Invoice
         </Button>
@@ -115,9 +119,6 @@ const OrderItemStepperContent = ({
 
   const buyAgainColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={6}>
         {orderItem.status === OrderItemStatusEnum.Expired ? (
           <Text size="xs" color="red">
@@ -147,9 +148,6 @@ const OrderItemStepperContent = ({
 
   const bookNowColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={6}>
         {orderItem.booking ? (
           <Text size="xs">
@@ -175,21 +173,18 @@ const OrderItemStepperContent = ({
 
   const voucherColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={8} />
       <Grid.Col span={4}>
         <CopyButton value={orderItem.voucherCode} timeout={3000}>
           {({ copied, copy }) => (
             <Button
-              color={copied ? "green" : "indigo"}
+              color={copied ? "green" : null}
               onClick={copy}
               fullWidth
               variant="light"
-              sx={{ border: "1px solid #e0e0e0" }}
+              sx={{ border: "1px solid #e0e0e0", backgroundColor: "white" }}
+              leftIcon={<IconCopy size="1rem" />}
             >
-              <IconCopy size="1rem" /> &nbsp;
               {copied
                 ? "Copied to clipboard"
                 : `Voucher Code: ${orderItem.voucherCode}`}
@@ -202,9 +197,6 @@ const OrderItemStepperContent = ({
 
   const reviewColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={7}>
         <Text size="xs">
           🐾 Loved our products for your furry friend? We&apos;d be purr-fectly
@@ -229,9 +221,6 @@ const OrderItemStepperContent = ({
 
   const refundColumn = (
     <>
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
       <Grid.Col span={6}>
         <Text size="xs" color="dimmed">
           {eligibleForRefund
@@ -271,7 +260,7 @@ const OrderItemStepperContent = ({
             <Grid.Col span={2} />
             <Grid.Col span={4}>
               <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
-                <Text size="sm">
+                <Text size="sm" mb={-10}>
                   <b>Start: </b>
                   {formatISODayDateTime(orderItem.booking.startTime)}
                 </Text>
@@ -290,52 +279,54 @@ const OrderItemStepperContent = ({
   const pendingBookingGroup = (
     <>
       {bookNowColumn}
+      {dividerColumn}
       {refundColumn}
+      {dividerColumn}
       {invoiceColumn}
+      {dividerColumn}
       {voucherColumn}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
     </>
   );
 
   const pendingFulfillmentGroup = (
     <>
-      {orderItem.serviceListing.requiresBooking && bookNowColumn}
+      {orderItem.serviceListing.requiresBooking && (
+        <>
+          {bookNowColumn}
+          {dividerColumn}
+        </>
+      )}
       {refundColumn}
+      {dividerColumn}
       {invoiceColumn}
+      {dividerColumn}
       {voucherColumn}
       {orderItem.serviceListing.requiresBooking &&
         displayBookingColumn(
           "You have scheduled a booking for this item on the timing displayed here. Please present the voucher code to the establishment to complete your purchase.",
         )}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
     </>
   );
 
   const fulfilledGroup = (
     <>
       {buyAgainColumn}
+      {dividerColumn}
       {refundColumn}
+      {dividerColumn}
       {reviewColumn}
+      {dividerColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
     </>
   );
 
   const expiredAndRefundedGroup = (
     <>
       {buyAgainColumn}
+      {dividerColumn}
       {invoiceColumn}
       {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
-      <Grid.Col>
-        <Divider />
-      </Grid.Col>
     </>
   );
 
@@ -365,10 +356,13 @@ const OrderItemStepperContent = ({
       {renderContent()}
       <SelectTimeslotModal
         petOwnerId={userId}
-        orderItemId={orderItem.orderItemId}
+        orderItem={orderItem}
         serviceListing={orderItem.serviceListing}
         opened={opened}
         onClose={close}
+        isUpdating={!!orderItem.booking}
+        onUpdateBooking={() => {}}
+        booking={orderItem.booking as any}
       />
     </Grid>
   );

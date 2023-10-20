@@ -2,10 +2,15 @@ import { Badge, Text, BadgeProps } from "@mantine/core";
 import React from "react";
 
 interface OrderItemTabBadgeProps extends BadgeProps {
+  isActive: boolean;
   count: number;
 }
 
-const OrderItemTabBadge = ({ count, ...props }: OrderItemTabBadgeProps) => {
+const OrderItemTabBadge = ({
+  isActive,
+  count,
+  ...props
+}: OrderItemTabBadgeProps) => {
   return (
     <Badge
       miw={16}
@@ -13,6 +18,7 @@ const OrderItemTabBadge = ({ count, ...props }: OrderItemTabBadgeProps) => {
       sx={{ pointerEvents: "none" }}
       variant="filled"
       size="xs"
+      color={isActive ? "indigo" : "gray"}
       p={1}
     >
       {count}
