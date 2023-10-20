@@ -114,8 +114,11 @@ export const allowedRoutesAfterLogin = [
   "/customer/appointments",
   "/customer/account",
   "/customer/orders",
-  "business/application",
-  "business/account",
+  "/customer/cart",
+  "/customer/favourites",
+  "/business/application",
+  "/business/appointments",
+  "/business/listings",
 ];
 
 export const PLATFORM_FEE_PERCENT = 0.07;
