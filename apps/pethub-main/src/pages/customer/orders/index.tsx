@@ -1,16 +1,13 @@
 import {
   Alert,
-  Box,
   Button,
   Container,
   Grid,
   Group,
   Text,
-  Transition,
   useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -254,12 +251,12 @@ export default function Orders({ userId }: OrdersProps) {
   return (
     <>
       <Head>
-        <title>Orders - Pet Hub</title>
+        <title>My Orders - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
         <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
-          {orderBarCounts?.toBookCount !== 0 && toBookAlert}
+          {orderBarCounts?.toBookCount > 0 && toBookAlert}
           <Group position="apart">
             <PageTitle title={`My orders`} mb="lg" />
             {orderItems.length > 0 && searchAndSortGroup}
