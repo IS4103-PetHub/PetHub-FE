@@ -1,7 +1,10 @@
+import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
+import { useEffect } from "react";
 import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
+import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
 import NewListings from "@/components/common/landing/NewListings";
 import ServicesSection from "@/components/common/landing/ServicesSection";
@@ -13,6 +16,10 @@ interface HomeProps {
   newServiceListings: ServiceListing[];
 }
 export default function Home({ newServiceListings }: HomeProps) {
+  // for appointment reminder modal
+  const [opened, { open, close }] = useDisclosure(false);
+  useEffect(() => open(), []);
+
   return (
     <>
       <Head>
@@ -25,6 +32,7 @@ export default function Home({ newServiceListings }: HomeProps) {
         <ServicesSection />
         <NewListings serviceListings={newServiceListings} />
         <WhyPetHub />
+        <AppointmentReminderModal opened={opened} close={close} />
       </main>
       <SimpleFooter />
     </>

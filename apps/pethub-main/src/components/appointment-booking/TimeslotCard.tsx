@@ -8,7 +8,6 @@ import {
   Box,
   Badge,
   CopyButton,
-  Center,
   Stack,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -38,6 +37,8 @@ interface TimeslotCardProps {
   onUpdateBooking?(): void;
   // Make everything viewable on a smol screen
   smallify?: boolean;
+  // hide buttons
+  viewOnly?: boolean;
 }
 
 const TimeslotCard = ({
@@ -49,6 +50,7 @@ const TimeslotCard = ({
   booking,
   onUpdateBooking,
   smallify,
+  viewOnly,
 }: TimeslotCardProps) => {
   const theme = useMantineTheme();
   const [opened, { open, close }] = useDisclosure(false);
@@ -125,7 +127,7 @@ const TimeslotCard = ({
           )}
         </Box>
 
-        {!disabled && !isPastAppointment && (
+        {!disabled && !isPastAppointment && !viewOnly && (
           <>
             <Stack sx={{ display: "flex", alignItems: "flex-end" }} w="45%">
               <Button
