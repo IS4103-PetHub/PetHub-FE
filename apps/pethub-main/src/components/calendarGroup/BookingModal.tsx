@@ -14,7 +14,7 @@ import {
 import { TimeInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconClipboardList } from "@tabler/icons-react";
+import { IconClipboardList, IconClockHour4 } from "@tabler/icons-react";
 import { IconUserSquare } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useEffect } from "react";
@@ -117,7 +117,12 @@ const BookingModal = ({
       <Text size="lg" weight={500}>
         {form.values.startTime} - {form.values.endTime}
       </Text>
-      <Button variant="outline" compact onClick={openRescheduleModal}>
+      <Button
+        variant="filled"
+        compact
+        onClick={openRescheduleModal}
+        leftIcon={<IconClockHour4 size="1rem" style={{ marginRight: -5 }} />}
+      >
         Reschedule
       </Button>
     </Group>
