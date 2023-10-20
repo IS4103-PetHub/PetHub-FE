@@ -81,7 +81,7 @@ const OrdersManagementTable = ({
       textAlignment: "left",
       render: (record) => {
         return record.invoice
-          ? dayjs(record.invoice.createdAt).format("YYYY-MM-DD")
+          ? dayjs(record.invoice.createdAt).format("DD-MM-YYYY")
           : "-";
       },
       sortable: true,
@@ -157,7 +157,7 @@ const OrdersManagementTable = ({
       textAlignment: "left",
       render: (record) => {
         return record.invoice
-          ? dayjs(record.invoice.createdAt).format("YYYY-MM-DD")
+          ? dayjs(record.invoice.createdAt).format("DD-MM-YYYY")
           : "-";
       },
       sortable: true,
@@ -168,7 +168,7 @@ const OrdersManagementTable = ({
       textAlignment: "left",
       render: (record) => {
         return record.booking
-          ? dayjs(record.booking.startTime).format("YYYY-MM-DD")
+          ? dayjs(record.booking.startTime).format("DD-MM-YYYY")
           : "-";
       },
       sortable: true,
