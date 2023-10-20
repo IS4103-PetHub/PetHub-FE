@@ -15,7 +15,7 @@ import {
   searchServiceListingsForPB,
   sortInvalidServiceListings,
 } from "shared-utils";
-import { PageTitle } from "web-ui";
+import { PageTitle, useLoadingOverlay } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -65,6 +65,7 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
     accountType,
   );
   const [hasError, setHasError] = useState(false);
+  const { hideOverlay } = useLoadingOverlay();
 
   useEffect(() => {
     if (petBusinessData) {
@@ -86,6 +87,11 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
   /*
    * Effect Hooks
    */
+
+  useEffect(() => {
+    hideOverlay(); // Hide the overlay that was triggered via a PB login in the event of a direct page login
+  }, []);
+
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;

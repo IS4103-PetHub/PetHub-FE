@@ -2,8 +2,9 @@ import { Container, Group } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import { useEffect } from "react";
 import { AccountTypeEnum } from "shared-utils";
-import { PageTitle } from "web-ui";
+import { PageTitle, useLoadingOverlay } from "web-ui";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import MainCalendar from "@/components/calendarGroup/MainCalendar";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
@@ -16,6 +17,7 @@ interface MyAccountProps {
 }
 export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
   const router = useRouter();
+  const { hideOverlay } = useLoadingOverlay();
 
   const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
     useGetCalendarGroupByPBId(userId);
@@ -25,6 +27,10 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
     accountType,
   );
   const { data: tags } = useGetAllTags();
+
+  useEffect(() => {
+    hideOverlay(); // Hide the overlay that was triggered via a PB login in the event of a direct page login
+  }, []);
 
   return (
     <>

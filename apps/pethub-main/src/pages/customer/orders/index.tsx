@@ -223,18 +223,7 @@ export default function Orders({ userId }: OrdersProps) {
 
   const orderItemCards = records?.map((item) => (
     <Grid.Col key={item.orderItemId}>
-      <OrderItemCard
-        userId={userId}
-        orderItemId={item.orderItemId}
-        invoiceId={item.invoiceId}
-        paymentId={item.invoice.paymentId}
-        expiryDate={item.expiryDate}
-        price={item.itemPrice}
-        voucherCode={item.voucherCode}
-        serviceListing={item.serviceListing}
-        status={item.status}
-        createdAt={item.invoice.createdAt}
-      />
+      <OrderItemCard userId={userId} orderItem={item} />
     </Grid.Col>
   ));
 
