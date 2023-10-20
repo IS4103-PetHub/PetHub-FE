@@ -1,12 +1,12 @@
 import {
   Container,
   Box,
-  Center,
   Badge,
   Group,
   Button,
   useMantineTheme,
   Text,
+  Center,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -96,7 +96,6 @@ export default function VerifyEmail() {
           >
             Verify your email address
           </Text>
-          <Center mb="lg" />
           <Text size="md" color="dimmed" align="center" w="42vw">
             {isVerifyEmail
               ? `Thank you for registering with PetHub! We strongly recommend you to follow the 
