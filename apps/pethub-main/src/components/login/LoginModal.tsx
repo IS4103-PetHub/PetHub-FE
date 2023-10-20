@@ -94,7 +94,7 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
     if (res?.error) {
       notifications.show({
         title: "Login Failed",
-        message: "Invalid Credentials",
+        message: res?.error,
         color: "red",
       });
     } else {
