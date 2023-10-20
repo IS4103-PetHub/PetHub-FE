@@ -93,9 +93,10 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       accountType: values.accountType,
     });
     if (res?.error) {
+      const verificationError = res.error.includes("Account not verified");
       notifications.show({
         title: "Login Failed",
-        message: "Invalid Credentials",
+        message: `${verificationError ? res.error : "Invalid Credentials"}`,
         color: "red",
       });
     } else {

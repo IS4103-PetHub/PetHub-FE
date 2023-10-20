@@ -19,6 +19,14 @@ export interface ResetPasswordPayload {
   newPassword: string;
 }
 
+export interface VerifyEmailPayload {
+  token: string | null;
+}
+
+export interface ResendVerifyEmailPayload {
+  email: string;
+}
+
 export interface Tag {
   tagId: number;
   name: string;
