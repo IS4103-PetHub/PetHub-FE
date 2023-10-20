@@ -20,7 +20,12 @@ export const authOptions: NextAuthOptions = {
           password: credentials.password,
           accountType: credentials.accountType,
         };
-        const user = await loginService(loginCredentials);
+        let user;
+        try {
+          user = await loginService(loginCredentials);
+        } catch (error) {
+          throw new Error(error.response.data.message);
+        }
         return user ? user : null;
       },
     }),

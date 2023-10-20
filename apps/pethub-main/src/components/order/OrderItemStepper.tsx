@@ -10,7 +10,11 @@ import {
   IconStar,
 } from "@tabler/icons-react";
 import React, { useEffect, useRef } from "react";
-import { OrderItem, OrderItemStatusEnum } from "shared-utils";
+import {
+  OrderItem,
+  OrderItemStatusEnum,
+  formatISODateTimeShort,
+} from "shared-utils";
 
 interface OrderItemStepperProps {
   userId: number;
@@ -137,7 +141,7 @@ const OrderItemStepper = ({
         description:
           stepIndex < fulfilledStepNumber
             ? "Pending order fulfillment"
-            : "Order has been fulfilled",
+            : `${formatISODateTimeShort(orderItem.dateFulfilled)}`,
       },
       Reviewed: {
         label: stepIndex < ReviewedStepNumber ? "Not Reviewed" : "Reviewed",
@@ -184,7 +188,7 @@ const OrderItemStepper = ({
     // RIGHT NOW THERE IS NO WAY TO CHECK IF AN ORDER IS FULFILLED, IT WILL ALWAYS SAY NOT FULFILLED (thats what the `true` represents below)
     if (
       stepType === "Fulfilled" &&
-      true &&
+      !orderItem.dateFulfilled &&
       (group === stepGroups.refundedNoBooking ||
         group === stepGroups.refundedBooking)
     ) {

@@ -355,6 +355,7 @@ const MainCalendar = ({ calendarGroupings, userId, addresses, tags }) => {
         opened={isBookingModalOpen}
         addresses={addresses}
         tags={tags}
+        refetch={bookingsQuery.refetch}
       />
     </div>
   );
