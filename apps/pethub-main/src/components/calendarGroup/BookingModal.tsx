@@ -22,7 +22,6 @@ import {
   IconClockHour4,
   IconUserSquare,
 } from "@tabler/icons-react";
-import dayjs from "dayjs";
 import { useEffect } from "react";
 import {
   Address,
@@ -60,9 +59,9 @@ const BookingModal = ({
   const theme = useMantineTheme();
   const defaultValues = ["Customer Details"];
 
-  const { data: currentOrderItem } = useGetOrderItemByOrderId(
-    booking ? booking.orderItemId : null,
-  );
+  // const { data: currentOrderItem } = useGetOrderItemByOrderId(
+  //   booking ? booking.orderItemId : null
+  // );
 
   const formDefaultValues = {
     // Booking details
@@ -81,10 +80,14 @@ const BookingModal = ({
         )
       : [],
     basePrice: booking ? booking.serviceListing.basePrice : 0,
+    // voucherCode:
+    //   currentOrderItem &&
+    //   currentOrderItem.status === OrderItemStatusEnum.Fulfilled
+    //     ? currentOrderItem.voucherCode
+    //     : "",
     voucherCode:
-      currentOrderItem &&
-      currentOrderItem.status === OrderItemStatusEnum.Fulfilled
-        ? currentOrderItem.voucherCode
+      booking && booking.OrderItem?.status === OrderItemStatusEnum.Fulfilled
+        ? booking.OrderItem?.voucherCode
         : "",
 
     // user details
@@ -118,7 +121,7 @@ const BookingModal = ({
 
   useEffect(() => {
     form.setValues(formDefaultValues);
-  }, [booking, currentOrderItem]);
+  }, [booking]);
 
   /*
    *    HELPER FUNCTIONS
@@ -132,7 +135,8 @@ const BookingModal = ({
   }
 
   const completeOrderMutation = useCompleteOrderItem(
-    currentOrderItem ? currentOrderItem.orderItemId : null,
+    //currentOrderItem ? currentOrderItem.orderItemId : null
+    booking ? booking.orderItemId : null,
   );
   const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
     try {
@@ -349,8 +353,14 @@ const BookingModal = ({
                       placeholder="Enter customer's code"
                       maxLength={6}
                       disabled={
-                        currentOrderItem?.status ===
-                        OrderItemStatusEnum.Fulfilled
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Fulfilled ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.PaidOut ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Refunded ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Expired
                       }
                       {...form.getInputProps("voucherCode")}
                     />
@@ -359,8 +369,14 @@ const BookingModal = ({
                     <Button
                       color="primary"
                       disabled={
-                        currentOrderItem?.status ===
-                        OrderItemStatusEnum.Fulfilled
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Fulfilled ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.PaidOut ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Refunded ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Expired
                       }
                       onClick={() => {
                         const voucherCode = form.values.voucherCode;
