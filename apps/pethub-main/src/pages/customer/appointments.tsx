@@ -62,7 +62,7 @@ export default function Appointments({
     userId,
     startDate?.toISOString(),
     // make the end date inclusive
-    endDate ? dayjs(endDate).add(1, "day").toISOString() : null,
+    endDate ? dayjs(endDate).toISOString() : null,
   );
 
   const [records, setRecords] = useState<Booking[]>(bookings);
@@ -185,7 +185,7 @@ export default function Appointments({
           display={segmentedControlValue === "custom" ? "display" : "none"}
         >
           <DateInput
-            label="Start date"
+            label="Start date (inclusive)"
             placeholder="Select start date"
             valueFormat="DD/MM/YYYY"
             icon={<IconCalendar size="1rem" />}
@@ -193,7 +193,7 @@ export default function Appointments({
             onChange={setStartDate}
           />
           <DateInput
-            label="End date"
+            label="End date (exclusive)"
             placeholder="Select end date"
             valueFormat="DD/MM/YYYY"
             icon={<IconCalendar size="1rem" />}
