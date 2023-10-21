@@ -1,4 +1,9 @@
-import { ForgotPasswordPayload, ResetPasswordPayload } from "shared-utils";
+import {
+  ForgotPasswordPayload,
+  ResendVerifyEmailPayload,
+  ResetPasswordPayload,
+  VerifyEmailPayload,
+} from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
@@ -57,5 +62,27 @@ export const resetPasswordService = async ({
   } catch (e) {
     console.log("Error from [userService - resetPassword]:", e);
     throw e;
+  }
+};
+
+export const verifyEmail = async ({ token }: VerifyEmailPayload) => {
+  try {
+    let res = await api.post(`/users/verify-email/${token}`);
+    return res.data;
+  } catch (error) {
+    console.log("ERROR: unable to verify email", error);
+    throw error;
+  }
+};
+
+export const resendVerifyEmail = async ({
+  email,
+}: ResendVerifyEmailPayload) => {
+  try {
+    let res = await api.post(`/users/resend-verify-email/${email}`);
+    return res.data;
+  } catch (error) {
+    console.log("ERROR: unable to resend email", error);
+    throw error;
   }
 };
