@@ -58,7 +58,7 @@ const BookingModal = ({
   ] = useDisclosure(false);
   const [isClaimed, setIsClaimed] = useState(false);
   const theme = useMantineTheme();
-  const defaultValues = ["Customer Details"];
+  const defaultValues = ["Claim Voucher"];
 
   // const { data: currentOrderItem } = useGetOrderItemByOrderId(
   //   booking ? booking.orderItemId : null
