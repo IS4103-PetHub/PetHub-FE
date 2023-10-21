@@ -89,7 +89,7 @@ export async function getServerSideProps(context) {
   // get upcoming bookings
   const startTime = new Date().toISOString();
   const endTime = dayjs(startTime).add(DAYS_AHEAD, "day");
-  const response = api.get(`bookings/pet-business/${userId}`, {
+  const response = api.get(`/bookings/pet-business/${userId}`, {
     params: { startTime, endTime },
   });
   const upcomingBookings: Booking[] = (await response).data;

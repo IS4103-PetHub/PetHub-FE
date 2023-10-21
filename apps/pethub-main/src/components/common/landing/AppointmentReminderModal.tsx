@@ -50,7 +50,7 @@ const AppointmentReminderModal = ({
     const startTime = new Date().toISOString();
     const endTime = dayjs(startTime).add(DAYS_AHEAD, "day").toISOString();
     const params = { startTime, endTime };
-    const response = await api.get(`bookings/users/${userId}`, {
+    const response = await api.get(`/bookings/users/${userId}`, {
       params,
     });
     return response.data as Booking[];
@@ -115,7 +115,7 @@ const AppointmentReminderModal = ({
           w="60%"
           color="dark"
           className="gradient-hover"
-          onClick={() => router.push("customer/appointments")}
+          onClick={() => router.push("/customer/appointments")}
         >
           View all appointments
         </Button>
