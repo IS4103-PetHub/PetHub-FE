@@ -72,3 +72,15 @@ export enum RefundStatusEnum {
   Rejected = "REJECTED",
   Cancelled = "CANCELLED",
 }
+
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
+}
+
+export const PLATFORM_FEE_PERCENT = 0.07;

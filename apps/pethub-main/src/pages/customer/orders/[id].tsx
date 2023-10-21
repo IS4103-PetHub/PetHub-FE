@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
+  PLATFORM_FEE_PERCENT,
   convertMinsToDurationString,
   formatISODayDateTime,
 } from "shared-utils";
@@ -36,11 +37,10 @@ import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
-import OrderItemStepperContent from "@/components/order/OrderItemActionGroup";
+import OrderItemActionGroup from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
 import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
-import { PLATFORM_FEE_PERCENT } from "@/types/constants";
 
 interface OrderDetailsProps {
   userId: number;
@@ -52,6 +52,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(1);
   const [numberOfSteps, setNumberOfSteps] = useState(0);
+  const [backButtonLoading, setBackButtonLoading] = useState(false);
   // used to refresh data on the index page upon return
   const {
     data: orderItems = [],
@@ -92,6 +93,12 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   useEffect(() => {
     setStepperCount();
   }, [orderItem]);
+
+  function goBack() {
+    setBackButtonLoading(true);
+    router.push("/customer/orders");
+    refetch();
+  }
 
   function setStepperCount() {
     if (
@@ -148,10 +155,10 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           }
           ml={-15}
           c="dimmed"
-          onClick={() => {
-            router.push("/customer/orders");
-            refetch();
-          }}
+          loading={backButtonLoading}
+          loaderPosition="right"
+          loaderProps={{ color: "dark" }}
+          onClick={goBack}
         >
           Back
         </Button>
@@ -191,7 +198,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const actionGroupAccordionItem = (
     <Accordion.Item value="actionGroup" {...ACCORDION_ITEM_PROPS}>
       <Box m="lg">
-        <OrderItemStepperContent orderItem={orderItem} userId={userId} />
+        <OrderItemActionGroup orderItem={orderItem} userId={userId} />
       </Box>
     </Accordion.Item>
   );

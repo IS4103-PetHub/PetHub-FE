@@ -31,7 +31,32 @@ export const useCompleteOrderItem = (orderItemId: number) => {
   });
 };
 
-export const useGetOrderItemById = (orderItemId: number) => {
+export const useGetOrderItemsByPBId = (
+  petBusinessId: number,
+  startDate: string,
+  endDate: string,
+  statusFilter: string,
+  serviceListingFilters: string,
+) => {
+  const params = {
+    statusFilter: statusFilter,
+    startDate: startDate,
+    endDate: endDate,
+    serviceListingFilters: serviceListingFilters,
+  };
+  return useQuery({
+    queryKey: ["order-items", { petBusinessId: petBusinessId }, { params }],
+    queryFn: async () => {
+      const response = await api.get(
+        `${ORDER_ITEMS_API}/pet-businesses/${petBusinessId}`,
+        { params },
+      );
+      return response.data as OrderItem[];
+    },
+  });
+};
+
+export const useGetOrderItemByOrderId = (orderItemId: number) => {
   return useQuery({
     queryKey: ["order-items", orderItemId],
     queryFn: async () => {

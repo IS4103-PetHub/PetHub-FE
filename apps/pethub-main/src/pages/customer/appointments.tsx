@@ -9,7 +9,7 @@ import {
   Center,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useToggle } from "@mantine/hooks";
+import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { IconCalendar } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Head from "next/head";
@@ -35,6 +35,9 @@ export default function Appointments({
   userId,
   memberSince,
 }: AppointmentsProps) {
+  const isMobile = useMediaQuery("(max-width: 64em)");
+  const isTablet = useMediaQuery("(max-width: 100em)");
+
   const [segmentedControlValue, setSegmentedControlValue] = useState("30");
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(
@@ -59,7 +62,7 @@ export default function Appointments({
     userId,
     startDate?.toISOString(),
     // make the end date inclusive
-    endDate ? dayjs(endDate).add(1, "day").toISOString() : null,
+    endDate ? dayjs(endDate).toISOString() : null,
   );
 
   const [records, setRecords] = useState<Booking[]>(bookings);
@@ -103,6 +106,8 @@ export default function Appointments({
       endTime={booking.endTime}
       booking={booking}
       onUpdateBooking={refetchUserBookings}
+      orderItem={booking.OrderItem}
+      smallify={isMobile}
     />
   ));
 
@@ -180,7 +185,7 @@ export default function Appointments({
           display={segmentedControlValue === "custom" ? "display" : "none"}
         >
           <DateInput
-            label="Start date"
+            label="Start date (inclusive)"
             placeholder="Select start date"
             valueFormat="DD/MM/YYYY"
             icon={<IconCalendar size="1rem" />}
@@ -188,7 +193,7 @@ export default function Appointments({
             onChange={setStartDate}
           />
           <DateInput
-            label="End date"
+            label="End date (exclusive)"
             placeholder="Select end date"
             valueFormat="DD/MM/YYYY"
             icon={<IconCalendar size="1rem" />}

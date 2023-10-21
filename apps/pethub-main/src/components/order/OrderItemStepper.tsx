@@ -10,7 +10,11 @@ import {
   IconStar,
 } from "@tabler/icons-react";
 import React, { useEffect, useRef } from "react";
-import { OrderItem, OrderItemStatusEnum } from "shared-utils";
+import {
+  OrderItem,
+  OrderItemStatusEnum,
+  formatISODateTimeShort,
+} from "shared-utils";
 
 interface OrderItemStepperProps {
   userId: number;
@@ -61,13 +65,6 @@ const OrderItemStepper = ({
       },
       // push separator up to be beside stepper icon
       separator: {
-        transform:
-          numberOfSteps === 4
-            ? "scaleX(2.5)"
-            : numberOfSteps === 3
-            ? "scaleX(1.5)"
-            : null,
-        transformOrigin: "center center",
         position: "relative",
         top: "-30px",
       },
@@ -76,8 +73,8 @@ const OrderItemStepper = ({
 
   // These are the possible stepper steps for each flow
   const stepGroups = {
-    happyBooking: ["Ordered", "Booked", "Fulfilled", "Rated"],
-    happyNoBooking: ["Ordered", "Fulfilled", "Rated"],
+    happyBooking: ["Ordered", "Booked", "Fulfilled", "Reviewed"],
+    happyNoBooking: ["Ordered", "Fulfilled", "Reviewed"],
     expiredBooking: ["Ordered", "Booked", "Expired"],
     expiredNoBooking: ["Ordered", "Expired"],
     refundedBooking: ["Ordered", "Booked", "Fulfilled", "Refunded"],
@@ -97,9 +94,9 @@ const OrderItemStepper = ({
   // Apparently JSX elements in a map need a unique key or husky will be mad
   const mapStepTypeToIcon = new Map([
     ["Ordered", <IconClipboardCheck key="IconClipboardCheck" />],
-    ["Booked", <IconBulb key="IconBulb" />],
+    ["Booked", <IconCalendarEvent key="IconCalendarEvent" />],
     ["Fulfilled", <IconBrowserCheck key="IconBrowserCheck" />],
-    ["Rated", <IconStar key="IconStar" />],
+    ["Reviewed", <IconStar key="IconStar" />],
     ["Expired", <IconClockExclamation key="IconClockExclamation" />],
     ["Refunded", <IconCreditCard key="IconCreditCard" />],
   ]);
@@ -118,10 +115,14 @@ const OrderItemStepper = ({
         : 2
       : -1;
 
-    const isRatedStep =
+    const isReviewedStep =
       stepGroups.happyBooking.includes(type) ||
       stepGroups.happyNoBooking.includes(type);
-    const ratedStepNumber = isRatedStep ? (numberOfSteps === 4 ? 4 : 3) : -1;
+    const ReviewedStepNumber = isReviewedStep
+      ? numberOfSteps === 4
+        ? 4
+        : 3
+      : -1;
 
     const steps = {
       Ordered: {
@@ -140,14 +141,14 @@ const OrderItemStepper = ({
         description:
           stepIndex < fulfilledStepNumber
             ? "Pending order fulfillment"
-            : "Order has been fulfilled",
+            : `${formatISODateTimeShort(orderItem.dateFulfilled)}`,
       },
-      Rated: {
-        label: stepIndex < ratedStepNumber ? "Not Rated" : "Rated",
+      Reviewed: {
+        label: stepIndex < ReviewedStepNumber ? "Not Reviewed" : "Reviewed",
         description:
-          stepIndex < ratedStepNumber
-            ? "Pending order rating"
-            : "Order has been rated",
+          stepIndex < ReviewedStepNumber
+            ? "Pending review"
+            : "Order has been Reviewed",
       },
       Expired: {
         label: "Expired",
@@ -187,7 +188,7 @@ const OrderItemStepper = ({
     // RIGHT NOW THERE IS NO WAY TO CHECK IF AN ORDER IS FULFILLED, IT WILL ALWAYS SAY NOT FULFILLED (thats what the `true` represents below)
     if (
       stepType === "Fulfilled" &&
-      true &&
+      !orderItem.dateFulfilled &&
       (group === stepGroups.refundedNoBooking ||
         group === stepGroups.refundedBooking)
     ) {

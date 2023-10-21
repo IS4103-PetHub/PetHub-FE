@@ -1,6 +1,7 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { Pet } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { Pet, PetPayload } from "@/types/types";
+import { PetPayload } from "@/types/types";
 
 const PETS_API = "/pets";
 
@@ -10,6 +11,15 @@ export const useGetPetsByPetOwnerId = (userId: number) => {
     queryFn: async () => {
       const data = await api.get(`${PETS_API}/pet-owners/${userId}`);
       return data.data as Pet[];
+    },
+  });
+};
+
+export const useGetPetByPetId = (petId: number) => {
+  return useQuery({
+    queryFn: async () => {
+      const data = await api.get(`${PETS_API}/${petId}`);
+      return data.data as Pet;
     },
   });
 };

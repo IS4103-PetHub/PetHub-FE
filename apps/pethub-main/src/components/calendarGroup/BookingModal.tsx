@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Button,
   Grid,
   Group,
   Modal,
@@ -9,17 +10,19 @@ import {
   TextInput,
   Textarea,
   useMantineTheme,
-  Button,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconCheck,
   IconClipboardList,
   IconGiftCard,
+  IconClockHour4,
+  IconUserSquare,
 } from "@tabler/icons-react";
-import { IconUserSquare } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useEffect } from "react";
 import {
   Address,
@@ -29,8 +32,9 @@ import {
   getErrorMessageProps,
   OrderItemStatusEnum,
 } from "shared-utils";
-import { useCompleteOrderItem, useGetOrderItemById } from "@/hooks/order";
+import { useCompleteOrderItem, useGetOrderItemByOrderId } from "@/hooks/order";
 import { Booking, CompleteOrderItemPayload } from "@/types/types";
+import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 
 interface BookingModalProps {
   booking: Booking;
@@ -38,6 +42,7 @@ interface BookingModalProps {
   onClose(): void;
   addresses: Address[];
   tags: Tag[];
+  refetch: () => void;
 }
 
 const BookingModal = ({
@@ -46,11 +51,16 @@ const BookingModal = ({
   onClose,
   addresses,
   tags,
+  refetch,
 }: BookingModalProps) => {
+  const [
+    rescheduleModalOpened,
+    { open: openRescheduleModal, close: closeRescheduleModal },
+  ] = useDisclosure(false);
   const theme = useMantineTheme();
   const defaultValues = ["Customer Details"];
 
-  const { data: currentOrderItem } = useGetOrderItemById(
+  const { data: currentOrderItem } = useGetOrderItemByOrderId(
     booking ? booking.orderItemId : null,
   );
 
@@ -139,6 +149,26 @@ const BookingModal = ({
       });
     }
   };
+  function onUpdateBooking() {
+    refetch();
+    onClose();
+  }
+
+  const modalTitle = (
+    <Group>
+      <Text size="lg" weight={500}>
+        {form.values.startTime} - {form.values.endTime}
+      </Text>
+      <Button
+        variant="filled"
+        compact
+        onClick={openRescheduleModal}
+        leftIcon={<IconClockHour4 size="1rem" style={{ marginRight: -5 }} />}
+      >
+        Reschedule
+      </Button>
+    </Group>
+  );
 
   return (
     <>
@@ -146,15 +176,13 @@ const BookingModal = ({
         <Modal
           opened={opened}
           onClose={onClose}
-          title={
-            <Text size="lg" weight={600}>
-              {form.values.startTime} - {form.values.endTime}:{" "}
-              {booking.serviceListing.title}
-            </Text>
-          }
+          title={modalTitle}
           centered
           size="80vh"
         >
+          <Text size="lg" weight={600} mb="xs">
+            {booking.serviceListing.title}
+          </Text>
           <Accordion variant="separated" multiple defaultValue={defaultValues}>
             {/* Customer related details, name, contact nuber, etc */}
             <Accordion.Item value="Customer Details">
@@ -363,6 +391,19 @@ const BookingModal = ({
             </Accordion.Item> */}
           </Accordion>
         </Modal>
+      )}
+      {booking && (
+        <SelectTimeslotModal
+          petOwnerId={booking?.petOwnerId}
+          opened={rescheduleModalOpened}
+          onClose={closeRescheduleModal}
+          orderItem={booking?.OrderItem}
+          serviceListing={booking?.serviceListing}
+          onUpdateBooking={onUpdateBooking}
+          booking={booking}
+          isUpdating
+          forPetBusiness
+        />
       )}
     </>
   );
