@@ -112,7 +112,7 @@ export default function VerifyEmail() {
                         has expired, click on the Resend Email.`}
           </Text>
           <Group position="center" mt={35}>
-            {isVerifyEmail && (
+            {isVerifyEmail ? (
               <Button
                 size="md"
                 color="dark"
@@ -121,8 +121,7 @@ export default function VerifyEmail() {
               >
                 Verify your account
               </Button>
-            )}
-            {!isVerifyEmail && (
+            ) : (
               <Button
                 size="md"
                 color="dark"
