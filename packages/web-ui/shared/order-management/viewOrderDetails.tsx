@@ -20,7 +20,6 @@ import {
   OrderItem,
   PLATFORM_FEE_PERCENT,
   Pet,
-  PetOwner,
   formatNumber2Decimals,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -28,14 +27,12 @@ import { PageTitle } from "../PageTitle";
 
 interface ViewOrderDetailsProps {
   order: OrderItem;
-  petOwner: PetOwner;
   pet: Pet;
   theme: any;
 }
 
 export default function ViewOrderDetails({
   order,
-  petOwner,
   pet,
   theme,
 }: ViewOrderDetailsProps) {
@@ -226,72 +223,68 @@ export default function ViewOrderDetails({
                   </Grid>
                 </Accordion.Panel>
               </Accordion.Item>
-              <Accordion.Item value="PetOwnerDetails">
-                <Accordion.Control
-                  icon={<IconUserCircle color={theme.colors.indigo[5]} />}
-                >
-                  <Text size="xl" weight={600}>
-                    Pet Owner Details
-                  </Text>
-                </Accordion.Control>
-                <Accordion.Panel mb="xs">
-                  <Grid>
-                    {petOwner && (
-                      <>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">First Name:</Text>
-                            <Text>{petOwner.firstName}</Text>
-                          </Box>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">Last Name:</Text>
-                            <Text>{petOwner.lastName}</Text>
-                          </Box>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">Contact Number:</Text>
-                            <Text>{petOwner.contactNumber}</Text>
-                          </Box>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">Email:</Text>
-                            <Text>{petOwner.user.email}</Text>
-                          </Box>
-                        </Grid.Col>
-                      </>
-                    )}
-
-                    {pet && (
-                      <>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">Pet Name:</Text>
-                            <Text>{pet.petName}</Text>
-                          </Box>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">Pet Type:</Text>
-                            <Text>{formatStringToLetterCase(pet.petType)}</Text>
-                          </Box>
-                        </Grid.Col>
-                        <Grid.Col span={6}>
-                          <Box>
-                            <Text weight="600">Gender:</Text>
-                            <Text>{formatStringToLetterCase(pet.gender)}</Text>
-                          </Box>
-                        </Grid.Col>
-                      </>
-                    )}
-                  </Grid>
-                </Accordion.Panel>
-              </Accordion.Item>
             </>
           )}
+          <Accordion.Item value="PetOwnerDetails">
+            <Accordion.Control
+              icon={<IconUserCircle color={theme.colors.indigo[5]} />}
+            >
+              <Text size="xl" weight={600}>
+                Pet Owner Details
+              </Text>
+            </Accordion.Control>
+            <Accordion.Panel mb="xs">
+              <Grid>
+                <Grid.Col span={6}>
+                  <Box>
+                    <Text weight="600">First Name:</Text>
+                    <Text>{order.invoice.PetOwner.firstName}</Text>
+                  </Box>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Box>
+                    <Text weight="600">Last Name:</Text>
+                    <Text>{order.invoice.PetOwner.lastName}</Text>
+                  </Box>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Box>
+                    <Text weight="600">Contact Number:</Text>
+                    <Text>{order.invoice.PetOwner.contactNumber}</Text>
+                  </Box>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Box>
+                    <Text weight="600">Email:</Text>
+                    <Text>{order.invoice.PetOwner.user.email}</Text>
+                  </Box>
+                </Grid.Col>
+
+                {pet && (
+                  <>
+                    <Grid.Col span={6}>
+                      <Box>
+                        <Text weight="600">Pet Name:</Text>
+                        <Text>{pet.petName}</Text>
+                      </Box>
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Box>
+                        <Text weight="600">Pet Type:</Text>
+                        <Text>{formatStringToLetterCase(pet.petType)}</Text>
+                      </Box>
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                      <Box>
+                        <Text weight="600">Gender:</Text>
+                        <Text>{formatStringToLetterCase(pet.gender)}</Text>
+                      </Box>
+                    </Grid.Col>
+                  </>
+                )}
+              </Grid>
+            </Accordion.Panel>
+          </Accordion.Item>
           <Accordion.Item value="ServiceListingDetails">
             <Accordion.Control
               icon={<IconNotes color={theme.colors.indigo[5]} />}

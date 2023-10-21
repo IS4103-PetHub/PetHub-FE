@@ -12,14 +12,12 @@ import { PetOwner, Permission } from "@/types/types";
 
 interface PBOrdersDetailsProps {
   order: OrderItem;
-  petOwner: PetOwner;
   pet: Pet;
   permissions: Permission[];
 }
 
 export default function PBOrdersDetails({
   order,
-  petOwner,
   pet,
   permissions,
 }: PBOrdersDetailsProps) {
@@ -53,30 +51,18 @@ export default function PBOrdersDetails({
         size="sm"
         mb="md"
       />
-      <ViewOrderDetails
-        order={order}
-        petOwner={petOwner}
-        pet={pet}
-        theme={theme}
-      />
+      <ViewOrderDetails order={order} pet={pet} theme={theme} />
     </>
   );
 }
 
 export async function getServerSideProps(context) {
   const orderId = context.params.id;
-  const { data: order } = await await api.get(`/order-items/${orderId}`);
-  let petOwner = null;
+  const { data: order } = await api.get(`/order-items/${orderId}`);
   let pet = null;
   if (order.booking) {
-    const { data: petOwnerData } = await await api.get(
-      `/users/pet-owners/${order.booking.petOwnerId}`,
-    );
-    petOwner = petOwnerData;
     if (order.booking.petId) {
-      const { data: petData } = await await api.get(
-        `/pets/${order.booking.petId}`,
-      );
+      const { data: petData } = await api.get(`/pets/${order.booking.petId}`);
       pet = petData;
     }
   }
@@ -89,5 +75,5 @@ export async function getServerSideProps(context) {
     await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
 
-  return { props: { order, petOwner, pet, permissions } };
+  return { props: { order, pet, permissions } };
 }

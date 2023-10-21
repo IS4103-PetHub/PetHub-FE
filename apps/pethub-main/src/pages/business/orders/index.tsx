@@ -23,7 +23,6 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import PBOrdersTable from "@/components/pb-orders/PBOrdersTable";
 import { useGetOrderItemsByPBId } from "@/hooks/order";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
 
