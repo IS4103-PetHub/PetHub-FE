@@ -8,9 +8,10 @@ import {
   ServiceListing,
   GenderEnum,
   CommissionRule,
+  PetTypeEnum,
+  Pet,
   OrderItem,
 } from "shared-utils";
-import { PetTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -69,6 +70,8 @@ export interface PetOwner extends User {
   lastName: string;
   dateOfBirth: string;
   favouriteListings?: ServiceListing[];
+
+  user?: User; // BE not flattening for some endpoints
 }
 
 export interface BusinessApplicationApprover {
@@ -161,24 +164,6 @@ export interface tuiCalendar {
   name: string;
   backgroundColor: string;
   borderColor: string;
-}
-
-/*
- * Pet
- */
-
-export interface Pet {
-  petId: number;
-  petName: string;
-  petType: PetTypeEnum;
-  gender: GenderEnum;
-  petWeight?: number;
-  dateOfBirth?: string;
-  microchipNumber?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  dateCreated: string;
-  dateUpdated: string;
 }
 
 export interface PetPayload {

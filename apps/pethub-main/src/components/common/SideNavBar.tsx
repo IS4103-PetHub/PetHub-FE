@@ -16,6 +16,7 @@ import {
   IconHome2,
   IconCalendar,
   IconLogout,
+  IconFileInvoice,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -94,6 +95,11 @@ const data = [
     link: "/business/account",
     label: "My Account",
     icon: IconUser,
+  },
+  {
+    link: "/business/orders",
+    label: "Orders",
+    icon: IconFileInvoice,
   },
   {
     link: "/business/listings",
