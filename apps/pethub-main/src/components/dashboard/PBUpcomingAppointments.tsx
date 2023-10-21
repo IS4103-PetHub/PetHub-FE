@@ -26,7 +26,6 @@ const PBUpcomingAppointments = ({
 }: PBUpcomingAppointmentsProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
-  console.log(bookings);
   // iso date string, booking[]
   const [bookingsMap, setBookingsMap] = useState<Map<string, Booking[]>>(
     new Map(),
@@ -34,7 +33,10 @@ const PBUpcomingAppointments = ({
 
   // for display
   const startString = dayjs(new Date()).format("D MMM");
-  const endString = dayjs(new Date()).add(daysAhead, "day").format("D MMM");
+  const endString = dayjs(new Date())
+    // minus 1 day because end date is exclusive
+    .add(daysAhead - 1, "day")
+    .format("D MMM");
 
   function processBookings() {
     const newMap = new Map<string, Booking[]>([]);
@@ -52,7 +54,6 @@ const PBUpcomingAppointments = ({
   }
 
   useEffect(() => processBookings(), []);
-  useEffect(() => console.log(bookingsMap), [bookingsMap]);
 
   const renderContent = () => {
     if (bookings.length === 0) {
