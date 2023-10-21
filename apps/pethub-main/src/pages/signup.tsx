@@ -106,32 +106,8 @@ export default function SignUp() {
 
   type FormValues = typeof form.values;
 
-  const handleLogin = async (loginCredentials: LoginCredentials) => {
-    const res = await signIn("credentials", {
-      callbackUrl: "/",
-      redirect: false,
-      ...loginCredentials,
-    });
-    if (res?.error) {
-      notifications.show({
-        title: "Login Failed",
-        message: "Invalid Credentials",
-        color: "red",
-      });
-    } else {
-      const session = await getSession();
-      if (session) {
-        if (session.user["accountType"] === AccountTypeEnum.PetBusiness) {
-          showOverlay();
-          router.push("/business/dashboard");
-        } else {
-          router.push("/");
-        }
-      }
-    }
-    setTimeout(() => {
-      form.reset();
-    }, 800);
+  const handleRouteToVerfiyEmail = async (email) => {
+    router.push(`/verify-email?email=${email}`);
   };
 
   const createPetOwnerMutation = useCreatePetOwner();
@@ -144,12 +120,8 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet owner account created successfully!`,
       });
-      // login and redirect home page
-      handleLogin({
-        email: payload.email,
-        password: payload.password,
-        accountType: AccountTypeEnum.PetOwner,
-      });
+      // login and redirect to verify email
+      handleRouteToVerfiyEmail(payload.email);
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Account", error),
@@ -169,12 +141,8 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet business account created successfully!`,
       });
-      // login and redirect to pet business dashboard
-      handleLogin({
-        email: payload.email,
-        password: payload.password,
-        accountType: AccountTypeEnum.PetBusiness,
-      });
+      // login and redirect to verify email
+      handleRouteToVerfiyEmail(payload.email);
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Account", error),
