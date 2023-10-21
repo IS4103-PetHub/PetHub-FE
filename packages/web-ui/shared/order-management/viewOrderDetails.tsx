@@ -454,7 +454,7 @@ export default function ViewOrderDetails({
                       onClick={() => {
                         const voucherCode = form.values.voucherCode;
                         const payload: CompleteOrderItemPayload = {
-                          userId: petOwner?.user?.userId,
+                          userId: order.invoice.PetOwner.userId,
                           voucherCode: voucherCode,
                         };
                         handleCompleteOrder(payload);
