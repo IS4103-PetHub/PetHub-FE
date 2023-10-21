@@ -7,23 +7,33 @@ import {
   Grid,
   Group,
   Text,
+  TextInput,
 } from "@mantine/core";
+import { isNotEmpty, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
 import {
   IconFileDownload,
   IconPackage,
   IconCalendar,
   IconUserCircle,
   IconNotes,
+  IconGiftCard,
+  IconCheck,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { useState } from "react";
 import {
   OrderItem,
+  OrderItemStatusEnum,
   PLATFORM_FEE_PERCENT,
   Pet,
   PetOwner,
   formatNumber2Decimals,
   formatStringToLetterCase,
+  getErrorMessageProps,
 } from "shared-utils";
+import { useCompleteOrderItem } from "../../../../apps/pethub-main/src/hooks/order";
+import { CompleteOrderItemPayload } from "../../../../apps/pethub-main/src/types/types";
 import { PageTitle } from "../PageTitle";
 
 interface ViewOrderDetailsProps {
@@ -47,7 +57,43 @@ export default function ViewOrderDetails({
     ["REFUNDED", "orange"],
     ["EXPIRED", "red"],
   ]);
+  const [isClaimed, setIsClaimed] = useState(false);
 
+  const form = useForm({
+    initialValues: {
+      voucherCode:
+        order.status === OrderItemStatusEnum.Fulfilled ||
+        order.status === OrderItemStatusEnum.PaidOut ||
+        order.status === OrderItemStatusEnum.Refunded ||
+        order.status === OrderItemStatusEnum.Expired
+          ? order.voucherCode
+          : "",
+    },
+    validate: {
+      voucherCode: (value) =>
+        isNotEmpty("Voucher code required.") && value.length === 6
+          ? "Voucher code is of 6 characters."
+          : null,
+    },
+  });
+
+  const completeOrderMutation = useCompleteOrderItem(order.orderItemId);
+  const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
+    try {
+      await completeOrderMutation.mutateAsync(payload);
+      notifications.show({
+        title: "Order Item Fulfilled",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Voucher successfully claimed.`,
+      });
+      setIsClaimed(true);
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps("Error claiming voucher", error),
+      });
+    }
+  };
   return (
     <>
       <Container mt="xl" mb="xl">
@@ -78,6 +124,7 @@ export default function ViewOrderDetails({
             "BookingDetails",
             "PetOwnerDetails",
             "ServiceListingDetails",
+            "ClaimVoucher",
           ]}
         >
           <Accordion.Item value="OrderDetails">
@@ -95,11 +142,17 @@ export default function ViewOrderDetails({
             </Accordion.Control>
             <Accordion.Panel mb="xs">
               <Grid>
-                <Grid.Col span={12}>
+                <Grid.Col span={6}>
                   <Box>
                     <Text weight="600">Order Item Name:</Text>
                   </Box>
                   <Text>{order.itemName}</Text>
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <Box>
+                    <Text weight="600">Order Item Id:</Text>
+                  </Box>
+                  <Text>{order.orderItemId}</Text>
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <Box>
@@ -365,6 +418,72 @@ export default function ViewOrderDetails({
               </Grid>
             </Accordion.Panel>
           </Accordion.Item>
+          {!order.booking &&
+            order.status !== OrderItemStatusEnum.PendingBooking && (
+              <Accordion.Item value="ClaimVoucher">
+                <Accordion.Control>
+                  <Group>
+                    <IconGiftCard color={theme.colors.indigo[5]} />{" "}
+                    <Text size="lg">
+                      Claim Voucher
+                      {order.status === OrderItemStatusEnum.Fulfilled ||
+                        (order.status === OrderItemStatusEnum.PaidOut && (
+                          <Badge color="green">Claimed</Badge>
+                        ))}
+                      {order.status ===
+                        OrderItemStatusEnum.PendingFulfillment && (
+                        <Badge color="red">Unclaimed</Badge>
+                      )}
+                      {order.status === OrderItemStatusEnum.Refunded ||
+                        (order.status === OrderItemStatusEnum.Expired && (
+                          <Badge color="red">Refunded</Badge>
+                        ))}
+                    </Text>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel mb="xs">
+                  <Grid>
+                    <Grid.Col span={12}>
+                      <TextInput
+                        label="Voucher Code"
+                        placeholder="Enter customer's code"
+                        maxLength={6}
+                        disabled={
+                          isClaimed ||
+                          order.status === OrderItemStatusEnum.Fulfilled ||
+                          order.status === OrderItemStatusEnum.PaidOut ||
+                          order.status === OrderItemStatusEnum.Refunded ||
+                          order.status === OrderItemStatusEnum.Expired
+                        }
+                        {...form.getInputProps("voucherCode")}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={12}>
+                      <Button
+                        color="primary"
+                        disabled={
+                          isClaimed ||
+                          order.status === OrderItemStatusEnum.Fulfilled ||
+                          order.status === OrderItemStatusEnum.PaidOut ||
+                          order.status === OrderItemStatusEnum.Refunded ||
+                          order.status === OrderItemStatusEnum.Expired
+                        }
+                        onClick={() => {
+                          const voucherCode = form.values.voucherCode;
+                          const payload: CompleteOrderItemPayload = {
+                            userId: petOwner?.user?.userId,
+                            voucherCode: voucherCode,
+                          };
+                          handleCompleteOrder(payload);
+                        }}
+                      >
+                        Claim
+                      </Button>
+                    </Grid.Col>
+                  </Grid>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
           {/* <Accordion.Item value="RefundDetails">
             <Accordion.Control>
               <Text size="xl" weight={600}>

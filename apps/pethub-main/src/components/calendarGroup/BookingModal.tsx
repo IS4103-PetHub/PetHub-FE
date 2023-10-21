@@ -32,7 +32,7 @@ import {
   getErrorMessageProps,
   OrderItemStatusEnum,
 } from "shared-utils";
-import { useCompleteOrderItem, useGetOrderItemByOrderId } from "@/hooks/order";
+import { useCompleteOrderItem } from "@/hooks/order";
 import { Booking, CompleteOrderItemPayload } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 
@@ -61,9 +61,14 @@ const BookingModal = ({
   const theme = useMantineTheme();
   const defaultValues = ["Claim Voucher"];
 
-  // const { data: currentOrderItem } = useGetOrderItemByOrderId(
-  //   booking ? booking.orderItemId : null
-  // );
+  const isOrderItemClaimed = (status) => {
+    return (
+      status === OrderItemStatusEnum.Fulfilled ||
+      status === OrderItemStatusEnum.PaidOut ||
+      status === OrderItemStatusEnum.Refunded ||
+      status === OrderItemStatusEnum.Expired
+    );
+  };
 
   const formDefaultValues = {
     // Booking details
@@ -82,13 +87,8 @@ const BookingModal = ({
         )
       : [],
     basePrice: booking ? booking.serviceListing.basePrice : 0,
-    // voucherCode:
-    //   currentOrderItem &&
-    //   currentOrderItem.status === OrderItemStatusEnum.Fulfilled
-    //     ? currentOrderItem.voucherCode
-    //     : "",
     voucherCode:
-      booking && booking.OrderItem?.status === OrderItemStatusEnum.Fulfilled
+      booking && isOrderItemClaimed(booking?.OrderItem.status)
         ? booking.OrderItem?.voucherCode
         : "",
 
@@ -197,12 +197,10 @@ const BookingModal = ({
                   <IconGiftCard color={theme.colors.indigo[5]} />{" "}
                   <Text size="lg">
                     Claim Voucher
-                    {booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Fulfilled && (
+                    {isOrderItemClaimed(booking?.OrderItem.status) ||
+                    isClaimed ? (
                       <Badge color="green">Claimed</Badge>
-                    )}
-                    {booking?.OrderItem.status !==
-                      OrderItemStatusEnum.Fulfilled && (
+                    ) : (
                       <Badge color="red">Unclaimed</Badge>
                     )}
                   </Text>
@@ -216,15 +214,8 @@ const BookingModal = ({
                       placeholder="Enter customer's code"
                       maxLength={6}
                       disabled={
-                        isClaimed ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Fulfilled ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.PaidOut ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Refunded ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Expired
+                        isOrderItemClaimed(booking?.OrderItem.status) ||
+                        isClaimed
                       }
                       {...form.getInputProps("voucherCode")}
                     />
@@ -233,15 +224,8 @@ const BookingModal = ({
                     <Button
                       color="primary"
                       disabled={
-                        isClaimed ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Fulfilled ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.PaidOut ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Refunded ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Expired
+                        isOrderItemClaimed(booking?.OrderItem.status) ||
+                        isClaimed
                       }
                       onClick={() => {
                         const voucherCode = form.values.voucherCode;
