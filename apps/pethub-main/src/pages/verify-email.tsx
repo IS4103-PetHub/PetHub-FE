@@ -99,7 +99,7 @@ export default function VerifyEmail() {
           <Text size="md" color="dimmed" align="center" w="42vw">
             {isVerifyEmail
               ? `Thank you for registering with PetHub! We strongly recommend you to follow the 
-                        process below and sign in to verify and release messages to your mail box.
+                        process below and sign in and verify your account, ensuring you can receive messages in your mailbox.
                         
                         To make your PetHub account more secure and to receive important messages and transaction 
                         history from PetHub, Kindly use the button below to verify your email address. A confirmation message 
@@ -109,14 +109,14 @@ export default function VerifyEmail() {
                         and activate your account. Once you've verified your email, you'll have 
                         full access to PetHub's features. If you haven't received the email, please 
                         check your spam folder. The link would expire in 15 minutes. If you have yet to receive the email or the link 
-                        has expired, click on the Resend Email.`}
+                        has expired, click on the Resend email.`}
           </Text>
           <Group position="center" mt={35}>
             {isVerifyEmail ? (
               <Button
                 size="md"
-                color="dark"
-                variant="default"
+                color="lime"
+                variant="filled"
                 onClick={() => handleVerifyPassword()}
               >
                 Verify your account
@@ -124,11 +124,11 @@ export default function VerifyEmail() {
             ) : (
               <Button
                 size="md"
-                color="dark"
-                variant="default"
+                color="lime"
+                variant="filled"
                 onClick={() => handleResendEmail()}
               >
-                Resend Email
+                Resend email
               </Button>
             )}
           </Group>
