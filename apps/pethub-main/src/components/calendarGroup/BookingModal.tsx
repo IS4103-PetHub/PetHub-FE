@@ -22,7 +22,7 @@ import {
   IconClockHour4,
   IconUserSquare,
 } from "@tabler/icons-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Address,
   Tag,
@@ -56,6 +56,7 @@ const BookingModal = ({
     rescheduleModalOpened,
     { open: openRescheduleModal, close: closeRescheduleModal },
   ] = useDisclosure(false);
+  const [isClaimed, setIsClaimed] = useState(false);
   const theme = useMantineTheme();
   const defaultValues = ["Customer Details"];
 
@@ -120,6 +121,7 @@ const BookingModal = ({
   });
 
   useEffect(() => {
+    setIsClaimed(false);
     form.setValues(formDefaultValues);
   }, [booking]);
 
@@ -135,7 +137,6 @@ const BookingModal = ({
   }
 
   const completeOrderMutation = useCompleteOrderItem(
-    //currentOrderItem ? currentOrderItem.orderItemId : null
     booking ? booking.orderItemId : null,
   );
   const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
@@ -147,6 +148,7 @@ const BookingModal = ({
         icon: <IconCheck />,
         message: `Voucher successfully claimed.`,
       });
+      setIsClaimed(true);
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps("Error claiming voucher", error),
@@ -188,6 +190,64 @@ const BookingModal = ({
             {booking.serviceListing.title}
           </Text>
           <Accordion variant="separated" multiple defaultValue={defaultValues}>
+            <Accordion.Item value="Claim Voucher">
+              <Accordion.Control>
+                <Group>
+                  <IconGiftCard color={theme.colors.indigo[5]} />{" "}
+                  <Text size="lg">Claim Voucher</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel>
+                <Grid>
+                  <Grid.Col span={12}>
+                    <TextInput
+                      label="Voucher Code"
+                      placeholder="Enter customer's code"
+                      maxLength={6}
+                      disabled={
+                        isClaimed ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Fulfilled ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.PaidOut ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Refunded ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Expired
+                      }
+                      {...form.getInputProps("voucherCode")}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={12}>
+                    <Button
+                      color="primary"
+                      disabled={
+                        isClaimed ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Fulfilled ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.PaidOut ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Refunded ||
+                        booking?.OrderItem.status ===
+                          OrderItemStatusEnum.Expired
+                      }
+                      onClick={() => {
+                        const voucherCode = form.values.voucherCode;
+                        const payload: CompleteOrderItemPayload = {
+                          userId: booking ? booking.petOwnerId : null,
+                          voucherCode: voucherCode,
+                        };
+                        handleCompleteOrder(payload);
+                        onClose();
+                      }}
+                    >
+                      Claim
+                    </Button>
+                  </Grid.Col>
+                </Grid>
+              </Accordion.Panel>
+            </Accordion.Item>
             {/* Customer related details, name, contact nuber, etc */}
             <Accordion.Item value="Customer Details">
               <Accordion.Control>
@@ -333,63 +393,6 @@ const BookingModal = ({
                       }
                       {...form.getInputProps("tags")}
                     />
-                  </Grid.Col>
-                </Grid>
-              </Accordion.Panel>
-            </Accordion.Item>
-
-            <Accordion.Item value="Claim Voucher">
-              <Accordion.Control>
-                <Group>
-                  <IconGiftCard color={theme.colors.indigo[5]} />{" "}
-                  <Text size="lg">Claim Voucher</Text>
-                </Group>
-              </Accordion.Control>
-              <Accordion.Panel>
-                <Grid>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Voucher Code"
-                      placeholder="Enter customer's code"
-                      maxLength={6}
-                      disabled={
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Fulfilled ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.PaidOut ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Refunded ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Expired
-                      }
-                      {...form.getInputProps("voucherCode")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={12}>
-                    <Button
-                      color="primary"
-                      disabled={
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Fulfilled ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.PaidOut ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Refunded ||
-                        booking?.OrderItem.status ===
-                          OrderItemStatusEnum.Expired
-                      }
-                      onClick={() => {
-                        const voucherCode = form.values.voucherCode;
-                        const payload: CompleteOrderItemPayload = {
-                          userId: booking ? booking.petOwnerId : null,
-                          voucherCode: voucherCode,
-                        };
-                        handleCompleteOrder(payload);
-                        onClose();
-                      }}
-                    >
-                      Claim
-                    </Button>
                   </Grid.Col>
                 </Grid>
               </Accordion.Panel>
