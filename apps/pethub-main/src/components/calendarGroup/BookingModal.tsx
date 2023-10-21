@@ -197,12 +197,22 @@ const BookingModal = ({
                   <IconGiftCard color={theme.colors.indigo[5]} />{" "}
                   <Text size="lg">
                     Claim Voucher
-                    {isOrderItemClaimed(booking?.OrderItem.status) ||
-                    isClaimed ? (
+                    {isClaimed ||
+                    booking?.OrderItem.status ===
+                      OrderItemStatusEnum.Fulfilled ||
+                    booking?.OrderItem.status ===
+                      OrderItemStatusEnum.PaidOut ? (
                       <Badge color="green">Claimed</Badge>
-                    ) : (
+                    ) : booking?.OrderItem.status ===
+                      OrderItemStatusEnum.PendingFulfillment ? (
                       <Badge color="red">Unclaimed</Badge>
-                    )}
+                    ) : booking?.OrderItem.status ===
+                      OrderItemStatusEnum.Refunded ? (
+                      <Badge color="orange">Refunded</Badge>
+                    ) : booking?.OrderItem.status ===
+                      OrderItemStatusEnum.Expired ? (
+                      <Badge color="red">Expired</Badge>
+                    ) : null}
                   </Text>
                 </Group>
               </Accordion.Control>
