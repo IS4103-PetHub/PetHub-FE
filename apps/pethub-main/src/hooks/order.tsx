@@ -18,6 +18,19 @@ export const useGetorderItemsByPetOwnerId = (petOwnerId: number) => {
   });
 };
 
+export const useCompleteOrderItem = (orderItemId: number) => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      return (
+        await api.post(
+          `${ORDER_ITEMS_API}/complete-order/${orderItemId}`,
+          payload,
+        )
+      ).data;
+    },
+  });
+};
+
 export const useGetOrderItemsByPBId = (
   petBusinessId: number,
   startDate: string,
