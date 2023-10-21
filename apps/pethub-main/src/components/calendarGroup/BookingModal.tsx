@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Badge,
   Button,
   Grid,
   Group,
@@ -194,7 +195,17 @@ const BookingModal = ({
               <Accordion.Control>
                 <Group>
                   <IconGiftCard color={theme.colors.indigo[5]} />{" "}
-                  <Text size="lg">Claim Voucher</Text>
+                  <Text size="lg">
+                    Claim Voucher
+                    {booking?.OrderItem.status ===
+                      OrderItemStatusEnum.Fulfilled && (
+                      <Badge color="green">Claimed</Badge>
+                    )}
+                    {booking?.OrderItem.status !==
+                      OrderItemStatusEnum.Fulfilled && (
+                      <Badge color="red">Unclaimed</Badge>
+                    )}
+                  </Text>
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
