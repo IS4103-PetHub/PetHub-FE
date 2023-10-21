@@ -24,18 +24,14 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { formatNumber2Decimals } from "shared-utils";
+import { PLATFORM_FEE_PERCENT, formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CustomPopover from "web-ui/shared/CustomPopover";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import CartItemCard from "@/components/cart/CartItemCard";
 import { useCartOperations } from "@/hooks/cart";
-import {
-  GST_PERCENT,
-  PLATFORM_FEE_PERCENT,
-  PLATFORM_FEE_MESSAGE,
-} from "@/types/constants";
+import { GST_PERCENT, PLATFORM_FEE_MESSAGE } from "@/types/constants";
 
 interface CartProps {
   userId: number;

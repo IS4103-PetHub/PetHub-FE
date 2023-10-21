@@ -28,4 +28,6 @@ export const enum PermissionsCodeEnum {
   ReadServiceListings = "READ_SERVICE_LISTINGS",
   WriteCommissionRules = "WRITE_COMMISSION_RULES",
   ReadCommissionRules = "READ_COMMISSION_RULES",
+  WriteOrderItems = "WRITE_ORDER_ITEMS",
+  ReadOrderItems = "READ_ORDER_ITEMS",
 }

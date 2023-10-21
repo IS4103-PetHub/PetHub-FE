@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
+  PLATFORM_FEE_PERCENT,
   convertMinsToDurationString,
   formatISODayDateTime,
 } from "shared-utils";
@@ -40,7 +41,6 @@ import OrderItemActionGroup from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
 import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
-import { PLATFORM_FEE_PERCENT } from "@/types/constants";
 
 interface OrderDetailsProps {
   userId: number;

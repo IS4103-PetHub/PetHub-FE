@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
   GenderEnum,
+  PetTypeEnum,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
@@ -34,7 +35,6 @@ import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { PetTypeEnum } from "@/types/constants";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
