@@ -114,6 +114,16 @@ export interface OrderItem {
   invoice: {
     paymentId: string;
     createdAt: string;
+    PetOwner: {
+      firstName: string;
+      lastName: string;
+      contactNumber: string;
+      dateOfBirth: string;
+      userId: number;
+      user: {
+        email: string;
+      };
+    };
   };
   serviceListingId: number;
   serviceListing: ServiceListing;
