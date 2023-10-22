@@ -23,6 +23,8 @@ import {
   ServiceCategoryEnum,
   TABLE_PAGE_SIZE,
   formatEnumValueToLowerCase,
+  formatLetterCaseToEnumString,
+  formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import OrdersManagementTable from "web-ui/shared//order-management/ordersManagementTable";
@@ -67,7 +69,7 @@ export default function Orders({ permissions }: OrdersProps) {
    */
   const orderItemStatusValues = Object.values(OrderItemStatusEnum)
     .slice(1)
-    .map((status) => status.toString());
+    .map((status) => formatStringToLetterCase(status.toString()));
 
   const {
     data: orderItems = [],
@@ -247,10 +249,12 @@ export default function Orders({ permissions }: OrdersProps) {
             <SearchBar
               text="Search by Order ID and name"
               onSearch={handleSearch}
+              size="md"
             />
           </Grid.Col>
           <Grid.Col span={3}>
             <MultiSelect
+              mt={-4.5}
               size="md"
               label="Status"
               placeholder="Select status"
@@ -260,7 +264,10 @@ export default function Orders({ permissions }: OrdersProps) {
                   setStatusFilter(allStatusString);
                 } else {
                   // If selections are made, join them into a comma-separated string
-                  setStatusFilter(selectedStatus.join(","));
+                  const statusFilterValues = selectedStatus.map((status) =>
+                    formatLetterCaseToEnumString(status),
+                  );
+                  setStatusFilter(statusFilterValues.join(","));
                 }
               }}
             />

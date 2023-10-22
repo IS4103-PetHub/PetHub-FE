@@ -7,6 +7,7 @@ import {
   OrderItem,
   TABLE_PAGE_SIZE,
   formatNumber2Decimals,
+  formatStringToLetterCase,
   getMinTableHeight,
 } from "shared-utils";
 import ViewActionButton from "../ViewActionButton";
@@ -94,7 +95,7 @@ const OrdersManagementTable = ({
       render: (record) => {
         return (
           <Badge color={orderStatusColorMap.get(record.status)}>
-            {record.status}
+            {formatStringToLetterCase(record.status)}
           </Badge>
         );
       },
@@ -181,7 +182,7 @@ const OrdersManagementTable = ({
       render: (record) => {
         return (
           <Badge color={orderStatusColorMap.get(record.status)}>
-            {record.status}
+            {formatStringToLetterCase(record.status)}
           </Badge>
         );
       },
