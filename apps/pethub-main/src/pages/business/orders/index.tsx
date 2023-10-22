@@ -134,7 +134,7 @@ export default function Orders({ userId, accountStatus }: OrdersProps) {
     });
   }
 
-  const renderContent = async () => {
+  const renderContent = () => {
     if (orderItems.length === 0) {
       if (isLoading) {
         return <CenterLoader />;
