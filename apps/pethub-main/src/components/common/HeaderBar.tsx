@@ -137,7 +137,7 @@ const HeaderBar = () => {
   const [opened, { toggle }] = useDisclosure(false);
 
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { getItemCount } = useCartOperations(session?.user["userId"]);
 
   const items = links.map((link) => {

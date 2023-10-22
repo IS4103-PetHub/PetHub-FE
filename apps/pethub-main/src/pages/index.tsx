@@ -6,10 +6,10 @@ import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
 import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
-import NewListings from "@/components/common/landing/NewListings";
 import ServicesSection from "@/components/common/landing/ServicesSection";
 import SimpleFooter from "@/components/common/landing/SimpleFooter";
 import WhyPetHub from "@/components/common/landing/WhyPetHub";
+import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 
 const LIMIT_SIZE = 6;
 interface HomeProps {
@@ -30,7 +30,10 @@ export default function Home({ newServiceListings }: HomeProps) {
       <main>
         <Banner />
         <ServicesSection />
-        <NewListings serviceListings={newServiceListings} />
+        <ServiceListingScrollCarousel
+          serviceListings={newServiceListings}
+          title="New listings"
+        />
         <WhyPetHub />
         <AppointmentReminderModal opened={opened} close={close} />
       </main>

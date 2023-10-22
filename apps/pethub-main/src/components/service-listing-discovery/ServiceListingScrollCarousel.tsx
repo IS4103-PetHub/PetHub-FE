@@ -1,25 +1,32 @@
 import { Carousel } from "@mantine/carousel";
-import { Box, Container, useMantineTheme } from "@mantine/core";
+import { Box, Container, useMantineTheme, Text } from "@mantine/core";
 import React from "react";
 import { ServiceListing } from "shared-utils";
 import { PageTitle } from "web-ui";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 
-interface NewListingsProps {
+interface ServiceListingScrollCarouselProps {
   serviceListings: ServiceListing[];
+  title: string;
 }
 
-const NewListings = ({ serviceListings }: NewListingsProps) => {
+const ServiceListingScrollCarousel = ({
+  serviceListings,
+  title,
+}: ServiceListingScrollCarouselProps) => {
   const theme = useMantineTheme();
+
+  if (!serviceListings || serviceListings.length === 0) {
+    return null;
+  }
+
   return (
     <Box h={600} sx={{ backgroundColor: "white" }}>
       <Container fluid w="80vw" h="100%" pt={50}>
         <Box>
-          <PageTitle
-            title="New listings"
-            pt="xl"
-            color={theme.colors.dark[9]}
-          />
+          <Text fw={600} pt="xl" size="1.5rem" color={theme.colors.dark[9]}>
+            {title}
+          </Text>
         </Box>
         <Carousel
           mt="xl"
@@ -41,4 +48,4 @@ const NewListings = ({ serviceListings }: NewListingsProps) => {
   );
 };
 
-export default NewListings;
+export default ServiceListingScrollCarousel;

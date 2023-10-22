@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import React, { useEffect, useState } from "react";
+import { OrderItemStatusEnum } from "shared-utils";
 import api from "@/api/axiosConfig";
 import TimeslotCard from "@/components/appointment-booking/TimeslotCard";
 import { Booking } from "@/types/types";
@@ -48,7 +49,10 @@ const AppointmentReminderModal = ({
     const userId = session.user["userId"];
 
     const startTime = new Date().toISOString();
-    const endTime = dayjs(startTime).add(DAYS_AHEAD, "day").toISOString();
+    const endTime = dayjs(startTime)
+      .add(DAYS_AHEAD, "day")
+      .startOf("day")
+      .toISOString();
     const params = { startTime, endTime };
     const response = await api.get(`/bookings/users/${userId}`, {
       params,
@@ -58,7 +62,13 @@ const AppointmentReminderModal = ({
 
   useEffect(() => {
     getUpcomingAppointments().then((data) => {
-      setBookings(data);
+      const upcomingNotCompleted = data
+        ?.filter(
+          (booking) =>
+            booking.OrderItem.status === OrderItemStatusEnum.PendingFulfillment,
+        )
+        .sort((a, b) => (dayjs(a.startTime).isAfter(b.startTime) ? 1 : -1));
+      setBookings(upcomingNotCompleted);
       setIsLoading(false);
     });
   }, []);
