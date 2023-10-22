@@ -7,6 +7,7 @@ import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
 import {
+  AccountStatusEnum,
   AccountTypeEnum,
   EMPTY_STATE_DELAY_MS,
   ServiceListing,
@@ -21,6 +22,7 @@ import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
 import ServiceListingModal from "@/components/service-listing-management/ServiceListingModal";
 import ServiceListTable from "@/components/service-listing-management/ServiceListingTable";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
@@ -30,9 +32,14 @@ import { useGetAllTags } from "@/hooks/tags";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
+  accountStatus: AccountStatusEnum;
 }
 
-export default function Listings({ userId, accountType }: MyAccountProps) {
+export default function Listings({
+  userId,
+  accountType,
+  accountStatus,
+}: MyAccountProps) {
   /*
    * Fetch data
    */
@@ -201,45 +208,49 @@ export default function Listings({ userId, accountType }: MyAccountProps) {
         <title>Service Listings - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid>
-        <Group position="apart">
-          <PageTitle title="Service Listing Management" />
-          <LargeCreateButton
-            text="Create Service Listing"
-            onClick={openCreateServiceModal}
-          />
-        </Group>
+      {accountStatus === AccountStatusEnum.Pending ? (
+        <PBPendingAccountMessage />
+      ) : (
+        <Container fluid>
+          <Group position="apart">
+            <PageTitle title="Service Listing Management" />
+            <LargeCreateButton
+              text="Create Service Listing"
+              onClick={openCreateServiceModal}
+            />
+          </Group>
 
-        <Group mt="xs">
-          {hasError && (
-            <Alert
-              color="red"
-              title="Urgent Action Required"
-              icon={<IconAlertCircle />}
-              w="100%"
-            >
-              Service Listings highlighted in RED are `invalid` and requires
-              action. <br />
-              Please ensure that every service listing that requires a booking
-              has an allocated Calendar Group, valid duration and last possible
-              date
-            </Alert>
-          )}
-          <ServiceListingModal
-            opened={isCreateServiceModalOpen}
-            onClose={closeCreateServiceModal}
-            isView={false}
-            isUpdate={false}
-            serviceListing={null}
-            userId={userId}
-            refetch={refetchServiceListings}
-            tags={tags}
-            addresses={petBusiness ? petBusiness.businessAddresses : []}
-            calendarGroups={calendarGroups}
-          />
-        </Group>
-        {renderContent()}
-      </Container>
+          <Group mt="xs">
+            {hasError && (
+              <Alert
+                color="red"
+                title="Urgent Action Required"
+                icon={<IconAlertCircle />}
+                w="100%"
+              >
+                Service Listings highlighted in RED are `invalid` and requires
+                action. <br />
+                Please ensure that every service listing that requires a booking
+                has an allocated Calendar Group, valid duration and last
+                possible date
+              </Alert>
+            )}
+            <ServiceListingModal
+              opened={isCreateServiceModalOpen}
+              onClose={closeCreateServiceModal}
+              isView={false}
+              isUpdate={false}
+              serviceListing={null}
+              userId={userId}
+              refetch={refetchServiceListings}
+              tags={tags}
+              addresses={petBusiness ? petBusiness.businessAddresses : []}
+              calendarGroups={calendarGroups}
+            />
+          </Group>
+          {renderContent()}
+        </Container>
+      )}
     </>
   );
 }
@@ -251,6 +262,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
+  const accountStatus = session.user["accountStatus"];
 
-  return { props: { userId, accountType } };
+  return { props: { userId, accountType, accountStatus } };
 }

@@ -26,7 +26,6 @@ import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { LightDarkModeToggle } from "web-ui";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -157,7 +156,6 @@ const SideNavBar = () => {
           >
             PetHub Admin
           </Text>
-          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

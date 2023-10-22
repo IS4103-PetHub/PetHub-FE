@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React from "react";
 import {
+  AccountStatusEnum,
   CalendarGroup,
   RecurrencePatternEnum,
   getErrorMessageProps,
@@ -14,6 +15,7 @@ import {
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
 import {
   useCreateCalendarGroup,
   useGetCalendarGroupByPBId,
@@ -26,10 +28,12 @@ import {
 
 interface CreateCalendarGroupProps {
   userId: number;
+  accountStatus: AccountStatusEnum;
 }
 
 export default function CreateCalendarGroup({
   userId,
+  accountStatus,
 }: CreateCalendarGroupProps) {
   const router = useRouter();
   const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
@@ -91,25 +95,29 @@ export default function CreateCalendarGroup({
         <title>Create Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="xl" mb="xl">
-        <LargeBackButton
-          size="sm"
-          text="Back to Calendar View"
-          onClick={() => router.push("/business/appointments")}
-          mb="md"
-        />
-        <PageTitle title="Create Calendar Group" />
-
-        <Group>
-          <CalendarGroupForm
-            form={form}
-            userId={userId}
-            forView={false}
-            isEditingDisabled={false}
-            submit={createCalendarGroup}
+      {accountStatus === AccountStatusEnum.Pending ? (
+        <PBPendingAccountMessage />
+      ) : (
+        <Container mt="xl" mb="xl">
+          <LargeBackButton
+            size="sm"
+            text="Back to Calendar View"
+            onClick={() => router.push("/business/appointments")}
+            mb="md"
           />
-        </Group>
-      </Container>
+          <PageTitle title="Create Calendar Group" />
+
+          <Group>
+            <CalendarGroupForm
+              form={form}
+              userId={userId}
+              forView={false}
+              isEditingDisabled={false}
+              submit={createCalendarGroup}
+            />
+          </Group>
+        </Container>
+      )}
     </>
   );
 }
@@ -120,6 +128,7 @@ export async function getServerSideProps(context) {
   if (!session) return null;
 
   const userId = session.user["userId"];
+  const accountStatus = session.user["accountStatus"];
 
-  return { props: { userId } };
+  return { props: { userId, accountStatus } };
 }

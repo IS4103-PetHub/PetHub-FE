@@ -5,7 +5,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { AccountTypeEnum, BusinessApplicationStatusEnum } from "shared-utils";
+import {
+  AccountStatusEnum,
+  AccountTypeEnum,
+  BusinessApplicationStatusEnum,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import api from "@/api/axiosConfig";
@@ -55,7 +59,8 @@ export default function Dashboard({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
-        {applicationStatus !== BusinessApplicationStatusEnum.Approved && (
+        {applicationStatus !== BusinessApplicationStatusEnum.Approved ? (
+          // PB application is not yet approved
           <ApplicationStatusAlert
             forDashboard={true}
             applicationStatus={applicationStatus}
@@ -63,16 +68,18 @@ export default function Dashboard({
               petBusinessApplication && petBusinessApplication.adminRemarks
             }
           />
+        ) : (
+          // PB application approved
+          <>
+            <Group position="left">
+              <PageTitle title="Dashboard" />
+            </Group>
+            <PBUpcomingAppointments
+              bookings={upcomingBookings}
+              daysAhead={DAYS_AHEAD}
+            />
+          </>
         )}
-        <Group position="left">
-          {applicationStatus === BusinessApplicationStatusEnum.Approved && (
-            <PageTitle title="Dashboard" />
-          )}
-        </Group>
-        <PBUpcomingAppointments
-          bookings={upcomingBookings}
-          daysAhead={DAYS_AHEAD}
-        />
       </Container>
     </>
   );
@@ -85,6 +92,11 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
+
+  const accountStatus = session.user["accountStatus"];
+  if (accountStatus === AccountStatusEnum.Pending) {
+    return { props: { userId, accountType } };
+  }
 
   // get upcoming bookings
   const startTime = new Date().toISOString();

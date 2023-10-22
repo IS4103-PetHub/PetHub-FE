@@ -3,10 +3,11 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect } from "react";
-import { AccountTypeEnum } from "shared-utils";
+import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle, useLoadingOverlay } from "web-ui";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import MainCalendar from "@/components/calendarGroup/MainCalendar";
+import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetAllTags } from "@/hooks/tags";
@@ -14,8 +15,13 @@ import { useGetAllTags } from "@/hooks/tags";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
+  accountStatus: AccountStatusEnum;
 }
-export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
+export default function CalendarGroup({
+  userId,
+  accountType,
+  accountStatus,
+}: MyAccountProps) {
   const router = useRouter();
   const { hideOverlay } = useLoadingOverlay();
 
@@ -38,21 +44,25 @@ export default function CalendarGroup({ userId, accountType }: MyAccountProps) {
         <title>Appointments - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid>
-        <Group position="apart">
-          <PageTitle title="Appointment Management" />
-          <LargeCreateButton
-            text="Create Calendar Group"
-            onClick={() => router.push("/business/calendar-groups/create")}
+      {accountStatus === AccountStatusEnum.Pending ? (
+        <PBPendingAccountMessage />
+      ) : (
+        <Container fluid>
+          <Group position="apart">
+            <PageTitle title="Appointment Management" />
+            <LargeCreateButton
+              text="Create Calendar Group"
+              onClick={() => router.push("/business/calendar-groups/create")}
+            />
+          </Group>
+          <MainCalendar
+            calendarGroupings={calendarGroup}
+            userId={userId}
+            addresses={petBusinessData ? petBusinessData.businessAddresses : []}
+            tags={tags}
           />
-        </Group>
-        <MainCalendar
-          calendarGroupings={calendarGroup}
-          userId={userId}
-          addresses={petBusinessData ? petBusinessData.businessAddresses : []}
-          tags={tags}
-        />
-      </Container>
+        </Container>
+      )}
     </>
   );
 }
@@ -64,6 +74,7 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
+  const accountStatus = session.user["accountStatus"];
 
-  return { props: { userId, accountType } };
+  return { props: { userId, accountType, accountStatus } };
 }

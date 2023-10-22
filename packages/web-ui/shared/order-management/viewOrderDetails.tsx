@@ -8,6 +8,7 @@ import {
   Group,
   Text,
   TextInput,
+  useMantineTheme,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -38,14 +39,13 @@ import { PageTitle } from "../PageTitle";
 interface ViewOrderDetailsProps {
   order: OrderItem;
   pet: Pet;
-  theme: any;
 }
 
 export default function ViewOrderDetails({
   order,
   pet,
-  theme,
 }: ViewOrderDetailsProps) {
+  const theme = useMantineTheme();
   const orderStatusColorMap = new Map([
     ["PENDING_BOOKING", "indigo"],
     ["PENDING_FULFILLMENT", "violet"],
@@ -126,17 +126,20 @@ export default function ViewOrderDetails({
             "ServiceListingDetails",
             "ClaimVoucher",
           ]}
+          onChange={() => {}}
+          chevronSize={0}
         >
           <Accordion.Item value="OrderDetails">
             <Accordion.Control
               icon={<IconPackage color={theme.colors.indigo[5]} />}
+              sx={{ "&:hover": { cursor: "default" } }}
             >
               <Group>
                 <Text size="xl" weight={600}>
                   Order Details
                 </Text>
                 <Badge color={orderStatusColorMap.get(order.status)}>
-                  {order.status}
+                  {formatStringToLetterCase(order.status)}
                 </Badge>
               </Group>
             </Accordion.Control>
@@ -171,14 +174,14 @@ export default function ViewOrderDetails({
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Item Price:</Text>
-                    <Text>$ {order.itemPrice}</Text>
+                    <Text>${formatNumber2Decimals(order.itemPrice)}</Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Platform Fee :</Text>
                     <Text>
-                      ${" "}
+                      $
                       {formatNumber2Decimals(
                         PLATFORM_FEE_PERCENT * order.itemPrice,
                       )}
@@ -189,7 +192,7 @@ export default function ViewOrderDetails({
                   <Box>
                     <Text weight="600">Total Price :</Text>
                     <Text>
-                      ${" "}
+                      $
                       {formatNumber2Decimals(
                         (1 + PLATFORM_FEE_PERCENT) * order.itemPrice,
                       )}
@@ -199,14 +202,14 @@ export default function ViewOrderDetails({
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Commission Rate:</Text>
-                    <Text>{order.commissionRate * 100} % </Text>
+                    <Text>{order.commissionRate * 100}% </Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Commission Amount:</Text>
                     <Text>
-                      ${" "}
+                      $
                       {formatNumber2Decimals(
                         order.commissionRate * order.itemPrice,
                       )}
@@ -217,7 +220,7 @@ export default function ViewOrderDetails({
                   <Box>
                     <Text weight="600">Net Total:</Text>
                     <Text>
-                      ${" "}
+                      $
                       {formatNumber2Decimals(
                         (1 + PLATFORM_FEE_PERCENT) * order.itemPrice -
                           order.commissionRate * order.itemPrice,
@@ -233,6 +236,7 @@ export default function ViewOrderDetails({
               <Accordion.Item value="BookingDetails">
                 <Accordion.Control
                   icon={<IconCalendar color={theme.colors.indigo[5]} />}
+                  sx={{ "&:hover": { cursor: "default" } }}
                 >
                   <Text size="xl" weight={600}>
                     Booking Details
@@ -284,6 +288,7 @@ export default function ViewOrderDetails({
           <Accordion.Item value="PetOwnerDetails">
             <Accordion.Control
               icon={<IconUserCircle color={theme.colors.indigo[5]} />}
+              sx={{ "&:hover": { cursor: "default" } }}
             >
               <Text size="xl" weight={600}>
                 Pet Owner Details
@@ -344,6 +349,7 @@ export default function ViewOrderDetails({
           <Accordion.Item value="ServiceListingDetails">
             <Accordion.Control
               icon={<IconNotes color={theme.colors.indigo[5]} />}
+              sx={{ "&:hover": { cursor: "default" } }}
             >
               <Text size="xl" weight={600}>
                 Service Listing Details
@@ -374,7 +380,9 @@ export default function ViewOrderDetails({
                 <Grid.Col span={6}>
                   <Box>
                     <Text weight="600">Base Price:</Text>
-                    <Text>$ {order.serviceListing.basePrice}</Text>
+                    <Text>
+                      ${formatNumber2Decimals(order.serviceListing.basePrice)}
+                    </Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={6}>
@@ -406,7 +414,7 @@ export default function ViewOrderDetails({
                     <Text weight="600">Tags:</Text>
                     {order.serviceListing.tags.map((tag) => (
                       <Badge key={tag.tagId} color="gray">
-                        {tag.name}
+                        {formatStringToLetterCase(tag.name)}
                       </Badge>
                     ))}
                   </Box>
@@ -416,7 +424,7 @@ export default function ViewOrderDetails({
           </Accordion.Item>
           {order.status !== OrderItemStatusEnum.PendingBooking && (
             <Accordion.Item value="ClaimVoucher">
-              <Accordion.Control>
+              <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
                 <Group>
                   <IconGiftCard color={theme.colors.indigo[5]} />{" "}
                   <Text size="lg">

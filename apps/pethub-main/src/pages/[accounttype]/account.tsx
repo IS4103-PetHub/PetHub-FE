@@ -12,14 +12,13 @@ import {
   IconAddressBook,
   IconPaw,
   IconDiscount2,
-  IconInfoCircle,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
-import React, { useEffect } from "react";
+import React from "react";
 import { formatISODateLong } from "shared-utils";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
-import { PageTitle, useLoadingOverlay } from "web-ui";
+import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import ChangePasswordForm from "web-ui/shared/ChangePasswordForm";
 import CustomPopover from "web-ui/shared/CustomPopover";
@@ -96,37 +95,38 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           multiple
           defaultValue={defaultValues}
         >
-          {petBusiness && (
-            // commission for PB
-            <Accordion.Item value="commission">
-              <Accordion.Control>
-                <Group>
-                  <IconDiscount2 color={theme.colors.indigo[5]} />
-                  <Text size="lg">Commission rule</Text>
-                </Group>
-              </Accordion.Control>
-              <Accordion.Panel p="md" pt={0}>
-                <Text size="lg" weight={600} color={theme.primaryColor}>
-                  {petBusiness.commissionRule.name}
-                </Text>
-                <Group ml={-6}>
-                  <CustomPopover
-                    text="PetHub collects a small commission fee from transactions to
-                  help cover operational costs."
-                    width={300}
-                  >
-                    {}
-                  </CustomPopover>
-                  <Text ml={-15}>
-                    Commission rate:{" "}
-                    <strong>
-                      {petBusiness.commissionRule.commissionRate * 100}%
-                    </strong>
+          {petBusiness &&
+            petBusiness.accountStatus !== AccountStatusEnum.Pending && (
+              // commission for PB
+              <Accordion.Item value="commission">
+                <Accordion.Control>
+                  <Group>
+                    <IconDiscount2 color={theme.colors.indigo[5]} />
+                    <Text size="lg">Commission rule</Text>
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel p="md" pt={0}>
+                  <Text size="lg" weight={600} color={theme.primaryColor}>
+                    {petBusiness.commissionRule.name}
                   </Text>
-                </Group>
-              </Accordion.Panel>
-            </Accordion.Item>
-          )}
+                  <Group ml={-6}>
+                    <CustomPopover
+                      text="PetHub collects a small commission fee from transactions to
+                  help cover operational costs."
+                      width={300}
+                    >
+                      {}
+                    </CustomPopover>
+                    <Text ml={-15}>
+                      Commission rate:{" "}
+                      <strong>
+                        {petBusiness.commissionRule.commissionRate * 100}%
+                      </strong>
+                    </Text>
+                  </Group>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
 
           <Accordion.Item value="account">
             <Accordion.Control>
