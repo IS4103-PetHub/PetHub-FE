@@ -48,6 +48,7 @@ interface SelectTimeslotModalProps {
   // optional, only for updating
   isUpdating?: boolean;
   booking?: Booking;
+  onCreateBooking?(): void;
   onUpdateBooking?(): void;
   viewOnly?: boolean;
   forPetBusiness?: boolean;
@@ -61,6 +62,7 @@ const SelectTimeslotModal = ({
   onClose,
   isUpdating,
   booking,
+  onCreateBooking,
   onUpdateBooking,
   viewOnly,
   forPetBusiness,
@@ -132,6 +134,7 @@ const SelectTimeslotModal = ({
           payload = { ...payload, petId: parseInt(selectedPetId) };
         }
         await createBookingMutation.mutateAsync(payload);
+        onCreateBooking();
       }
       notifications.show({
         title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,

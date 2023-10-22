@@ -34,18 +34,6 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const cookies = parseCookies();
   const originalPath = cookies.originalPath || "/";
 
-  useEffect(() => {
-    const html = document.documentElement;
-    if (opened) {
-      html.style.overflowY = "hidden";
-    } else {
-      html.style.overflowY = "";
-    }
-    return () => {
-      html.style.overflowY = "";
-    };
-  }, [opened]);
-
   const loginForm = useForm({
     initialValues: {
       email: "",
