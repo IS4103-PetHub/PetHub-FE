@@ -8,11 +8,13 @@ import ServiceListingCard from "@/components/service-listing-discovery/ServiceLi
 interface ServiceListingScrollCarouselProps {
   serviceListings: ServiceListing[];
   title: string;
+  description: string;
 }
 
 const ServiceListingScrollCarousel = ({
   serviceListings,
   title,
+  description,
 }: ServiceListingScrollCarouselProps) => {
   const theme = useMantineTheme();
 
@@ -27,6 +29,7 @@ const ServiceListingScrollCarousel = ({
           <Text fw={600} pt="xl" size="1.5rem" color={theme.colors.dark[9]}>
             {title}
           </Text>
+          <Text color="dimmed">{description}</Text>
         </Box>
         <Carousel
           mt="xl"

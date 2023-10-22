@@ -367,6 +367,7 @@ export default function ServiceListingDetails({
             <ServiceListingScrollCarousel
               serviceListings={recommendedListings}
               title="Recommended for you"
+              description="Based on your pets, order history and what's popular"
             />
           </Grid.Col>
         </Grid>
