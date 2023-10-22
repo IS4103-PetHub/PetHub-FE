@@ -144,7 +144,16 @@ export default function ServiceListingDetails({
     }
   };
 
-  const handleFavouriteToggle = () => {
+  const handleFavouriteToggle = async () => {
+    const session = await getSession();
+    if (!session) {
+      notifications.show({
+        title: "Login Required",
+        message: "Please log in to save a favourite!",
+        color: "red",
+      });
+      return;
+    }
     if (isFavourite) {
       handleRemoveFavourite(payload);
     } else {
@@ -265,7 +274,7 @@ export default function ServiceListingDetails({
                 text={isFavourite ? "Remove Favourite" : "Favourite"}
                 isFavourite={isFavourite}
                 size={20}
-                onClick={handleFavouriteToggle}
+                onClick={async () => handleFavouriteToggle()}
               />
             </Group>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
@@ -354,6 +363,14 @@ export default function ServiceListingDetails({
                 >
                   View timeslots
                 </Button>
+                <SelectTimeslotModal
+                  orderItem={null}
+                  petOwnerId={userId}
+                  serviceListing={serviceListing}
+                  opened={opened}
+                  onClose={close}
+                  viewOnly
+                />
               </Paper>
             )}
           </Grid.Col>

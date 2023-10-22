@@ -31,7 +31,7 @@ import {
 } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
-import { useGetAvailableTimeSlotsByOrderItemId } from "@/hooks/calendar-group";
+import { useGetAvailableTimeSlots } from "@/hooks/calendar-group";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
@@ -77,13 +77,13 @@ const SelectTimeslotModal = ({
     booking ? booking.petId?.toString() : "",
   );
 
-  const { data: availTimeslots = [], isLoading } =
-    useGetAvailableTimeSlotsByOrderItemId(
-      orderItem?.orderItemId,
-      selectedMonth.toISOString(),
-      dayjs(selectedMonth).add(1, "month").toISOString(),
-      serviceListing.duration,
-    );
+  const { data: availTimeslots = [], isLoading } = useGetAvailableTimeSlots(
+    orderItem?.orderItemId || null,
+    orderItem ? null : serviceListing.serviceListingId,
+    selectedMonth.toISOString(),
+    dayjs(selectedMonth).add(1, "month").toISOString(),
+    serviceListing.duration,
+  );
 
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
 
@@ -253,7 +253,7 @@ const SelectTimeslotModal = ({
                 {timeslotChips?.length}
               </Badge>
             </Group>
-            <Group>
+            <Group sx={viewOnly ? { pointerEvents: "none" } : {}}>
               <Chip.Group
                 multiple={false}
                 value={selectedTimeslot}
@@ -329,37 +329,39 @@ const SelectTimeslotModal = ({
     >
       {showConfirmation ? confirmation : selectTimeslotsGrid}
 
-      <Group position={showConfirmation ? "apart" : "right"}>
-        <LargeBackButton
-          text="Back"
-          variant="light"
-          display={showConfirmation ? "inline" : "none"}
-          onClick={() => setShowConfirmation(false)}
-        />
-        <Group position="right">
-          {selectedTimeslot && !showConfirmation ? (
-            <Text>
-              <strong>Selected: </strong>
-              {formatISODayDateTime(selectedTimeslot)}
-            </Text>
-          ) : null}
-          <Button
-            size="md"
-            color="gray"
-            variant="default"
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="md"
-            disabled={!selectedTimeslot}
-            onClick={handleClickButton}
-          >
-            {showConfirmation ? "Confirm" : "Next"}
-          </Button>
+      {!viewOnly && (
+        <Group position={showConfirmation ? "apart" : "right"}>
+          <LargeBackButton
+            text="Back"
+            variant="light"
+            display={showConfirmation ? "inline" : "none"}
+            onClick={() => setShowConfirmation(false)}
+          />
+          <Group position="right">
+            {selectedTimeslot && !showConfirmation ? (
+              <Text>
+                <strong>Selected: </strong>
+                {formatISODayDateTime(selectedTimeslot)}
+              </Text>
+            ) : null}
+            <Button
+              size="md"
+              color="gray"
+              variant="default"
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="md"
+              disabled={!selectedTimeslot}
+              onClick={handleClickButton}
+            >
+              {showConfirmation ? "Confirm" : "Next"}
+            </Button>
+          </Group>
         </Group>
-      </Group>
+      )}
     </Modal>
   );
 };
