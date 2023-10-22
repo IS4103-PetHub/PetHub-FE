@@ -278,7 +278,11 @@ export default function ServiceListingDetails({
               radius="md"
               variant="filled"
               mt="xl"
-              mb={recommendedListings.length === 0 ? 80 : 0}
+              mb={
+                !recommendedListings || recommendedListings?.length === 0
+                  ? 80
+                  : 0
+              }
               multiple
               value={ACCORDION_VALUES}
               chevronSize={0}

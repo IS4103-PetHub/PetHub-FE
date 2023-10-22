@@ -49,9 +49,9 @@ export async function getServerSideProps(context) {
     path: "/",
   });
   const newServiceListings =
-    (await (
+    ((await (
       await api.get(`/service-listings/active?limit=${LIMIT_SIZE}`)
-    ).data) ?? [];
+    ).data) as ServiceListing[]) ?? [];
 
   return { props: { newServiceListings } };
 }
