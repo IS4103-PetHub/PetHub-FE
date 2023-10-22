@@ -157,7 +157,7 @@ const BookingModal = ({
         </>
       );
     }
-    return null; // for any other cases
+    return null;
   }
 
   return (

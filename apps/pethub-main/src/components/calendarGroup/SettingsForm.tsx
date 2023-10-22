@@ -178,8 +178,14 @@ const SettingsForm = ({
         <Card.Section inheritPadding mb="lg">
           {isEditingDisabled ? (
             <>
-              {renderItemGroup("Start date", setting?.recurrence?.startDate)}
-              {renderItemGroup("End date", setting?.recurrence?.endDate)}
+              {renderItemGroup(
+                "Start date",
+                dayjs(setting?.recurrence?.startDate).format("DD/MM/YYYY"),
+              )}
+              {renderItemGroup(
+                "End date",
+                dayjs(setting?.recurrence?.endDate).format("DD/MM/YYYY"),
+              )}
             </>
           ) : (
             <Group position="apart">
