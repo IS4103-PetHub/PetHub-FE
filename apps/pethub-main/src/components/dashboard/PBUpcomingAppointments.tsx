@@ -91,7 +91,10 @@ const PBUpcomingAppointments = ({
           radius="md"
           p="md"
           // if more than 3 appointments, it will display scrollbar at the side
-          sx={{ backgroundColor: theme.colors.gray[0], overflowY: "auto" }}
+          sx={{
+            backgroundColor: theme.colors.gray[0],
+            overflowY: "auto",
+          }}
         >
           <Text size="lg" fw="500">
             {formatISOLongWithDay(key)}
