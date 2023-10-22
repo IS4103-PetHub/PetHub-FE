@@ -76,7 +76,7 @@ const OrdersManagementTable = ({
       sortable: true,
     },
     {
-      accessor: "createdAt",
+      accessor: "invoice.createdAt",
       title: "Date Created",
       textAlignment: "left",
       render: (record) => {
@@ -152,7 +152,7 @@ const OrdersManagementTable = ({
       sortable: true,
     },
     {
-      accessor: "createdAt",
+      accessor: "invoice.createdAt",
       title: "Date Created",
       textAlignment: "left",
       render: (record) => {
@@ -163,7 +163,7 @@ const OrdersManagementTable = ({
       sortable: true,
     },
     {
-      accessor: "bookingDate",
+      accessor: "booking.startTime",
       title: "Appointment Date",
       textAlignment: "left",
       render: (record) => {
