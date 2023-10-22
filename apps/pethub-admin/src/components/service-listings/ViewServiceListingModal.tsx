@@ -236,6 +236,17 @@ const ViewServiceListingModal = ({
                 )}
               </Grid.Col>
 
+              {serviceListing.requiresBooking && (
+                <>
+                  <Grid.Col span={3}>
+                    <Text fw={700}>Duration:</Text>
+                  </Grid.Col>
+                  <Grid.Col span={9}>
+                    <Text>{serviceListing.duration} mins</Text>
+                  </Grid.Col>
+                </>
+              )}
+
               <Grid.Col span={3}>
                 <Text fw={700}>Default Expiry Days:</Text>
               </Grid.Col>
