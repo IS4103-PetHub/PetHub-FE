@@ -45,6 +45,7 @@ export default function Orders({ userId }: OrdersProps) {
   const [statusFilter, setStatusFilter] = useState<string>(allStatusString);
   const [serviceListingFilter, setServiceListingFilter] =
     useState<string>(undefined);
+  const [searchString, setSearchString] = useState<string>("");
   /*
    * Fetch data
    */
@@ -98,7 +99,7 @@ export default function Orders({ userId }: OrdersProps) {
   }, [page, sortStatus, orderItems, searchResults]);
 
   useEffect(() => {
-    setSearchResults(orderItems);
+    handleSearch(searchString);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (orderItems.length === 0) {
@@ -112,6 +113,7 @@ export default function Orders({ userId }: OrdersProps) {
    * Search Functions
    */
   const handleSearch = (searchStr: string) => {
+    setSearchString(searchStr);
     if (searchStr.length === 0) {
       setIsSearching(false);
       setSearchResults(orderItems);

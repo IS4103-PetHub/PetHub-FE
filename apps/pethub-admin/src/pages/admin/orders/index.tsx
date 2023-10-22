@@ -101,6 +101,7 @@ export default function Orders({ permissions }: OrdersProps) {
   });
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [searchResults, setSearchResults] = useState<OrderItem[]>([]);
+  const [searchString, setSearchString] = useState<string>("");
 
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
@@ -116,7 +117,7 @@ export default function Orders({ permissions }: OrdersProps) {
   }, [page, sortStatus, orderItems, searchResults]);
 
   useEffect(() => {
-    setSearchResults(orderItems);
+    handleSearch(searchString);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (orderItems.length === 0) {
@@ -130,6 +131,7 @@ export default function Orders({ permissions }: OrdersProps) {
    * Search Functions
    */
   const handleSearch = (searchStr: string) => {
+    setSearchString(searchStr);
     if (searchStr.length === 0) {
       setIsSearching(false);
       setSearchResults(orderItems);
