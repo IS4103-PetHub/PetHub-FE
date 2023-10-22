@@ -1,3 +1,4 @@
+import { Container } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
