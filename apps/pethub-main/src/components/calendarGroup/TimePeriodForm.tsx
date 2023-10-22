@@ -2,6 +2,7 @@ import {
   Box,
   Center,
   Grid,
+  Group,
   NumberInput,
   Text,
   useMantineTheme,
@@ -35,60 +36,85 @@ const TimePeriodForm = ({
   const [isEndTimeInitialized, setIsEndTimeInitialized] = useState(false);
   const TIME_INTERVAL = 30;
 
+  function renderItemGroup(label: string, value: string) {
+    return (
+      <>
+        {value && (
+          <Group ml={30} mr="xl" mb="md" position="apart">
+            <Text fw={600}>{label}</Text>
+            <Text style={{ position: "absolute", right: 40 }} color="dimmed">
+              {value}
+            </Text>
+          </Group>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <Grid>
-        <Center>
-          <Box mr={20} ml="xs">
-            <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]} mt={24}>
-              Period {index + 1}:{" "}
-            </Text>
-          </Box>
-          <Box mr={50}>
-            <TimeSelect
-              defaultTime={timePeriod.startTime ?? null}
-              label={index === 0 && "Start time"}
-              interval={TIME_INTERVAL}
-              disabled={isEditingDisabled}
-              onChange={(value) => {
-                onChange({ startTime: value });
-                setIsEndTimeInitialized(true);
-              }}
-            />
-          </Box>
-          <Box mr={50}>
-            {isEndTimeInitialized && (
+        {isEditingDisabled ? (
+          <>
+            {renderItemGroup(
+              `Time period ${index + 1}`,
+              `Start: ${timePeriod.startTime}, End: ${timePeriod.endTime}, Vacancies: ${timePeriod.vacancies}`,
+            )}
+          </>
+        ) : (
+          <Center>
+            <Box mr={20} ml="xs">
+              <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]} mt={24}>
+                Period {index + 1}:{" "}
+              </Text>
+            </Box>
+            <Box mr={50}>
               <TimeSelect
-                defaultTime={timePeriod.endTime ?? null}
-                label={index === 0 && "End time"}
+                defaultTime={timePeriod.startTime ?? null}
+                label={index === 0 && "Start time"}
                 interval={TIME_INTERVAL}
                 disabled={isEditingDisabled}
                 onChange={(value) => {
-                  onChange({ endTime: value });
+                  onChange({ startTime: value });
+                  setIsEndTimeInitialized(true);
                 }}
               />
-            )}
-          </Box>
-          <Box mr={50}>
-            <NumberInput
-              label={index === 0 ? "Vacancies" : " "}
-              w={80}
-              disabled={isEditingDisabled}
-              placeholder=""
-              defaultValue={timePeriod.vacancies || 1}
-              min={1}
-              onChange={(value) => onChange({ vacancies: value })}
-              error={errors?.[index]?.vacancies}
-            />
-          </Box>
-          <Box sx={{ display: numberOfTimeslots <= 1 ? "none" : "inline" }}>
-            <DeleteActionIcon
-              onClick={onRemove}
-              mt={24}
-              disabled={isEditingDisabled}
-            />
-          </Box>
-        </Center>
+            </Box>
+            <Box mr={50}>
+              {isEndTimeInitialized && (
+                <TimeSelect
+                  defaultTime={timePeriod.endTime ?? null}
+                  label={index === 0 && "End time"}
+                  interval={TIME_INTERVAL}
+                  disabled={isEditingDisabled}
+                  onChange={(value) => {
+                    onChange({ endTime: value });
+                  }}
+                />
+              )}
+            </Box>
+            <Box mr={50}>
+              <NumberInput
+                label={index === 0 ? "Vacancies" : " "}
+                w={80}
+                disabled={isEditingDisabled}
+                placeholder=""
+                defaultValue={timePeriod.vacancies || 1}
+                min={1}
+                onChange={(value) => onChange({ vacancies: value })}
+                error={errors?.[index]?.vacancies}
+              />
+            </Box>
+            <Box sx={{ display: numberOfTimeslots <= 1 ? "none" : "inline" }}>
+              <DeleteActionIcon
+                onClick={onRemove}
+                mt={24}
+                disabled={isEditingDisabled}
+              />
+            </Box>
+          </Center>
+        )}
+
         {errors && (
           <Text color={theme.colors.red[5]} fz="0.75rem" ml={85} mt={1}>
             {errors[index]}

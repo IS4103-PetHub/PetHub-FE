@@ -68,6 +68,10 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
     });
   }
 
+  function navToOrderDetailsPage() {
+    router.push(`/customer/orders/${orderItem?.orderItemId}`);
+  }
+
   async function buyAgainHandler() {
     await addItemToCart(
       {
@@ -336,9 +340,8 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
         orderItem={orderItem}
         serviceListing={orderItem?.serviceListing}
         isUpdating={!!orderItem?.booking}
-        onUpdateBooking={() => {
-          router.push(`/customer/orders/${orderItem?.orderItemId}`);
-        }}
+        onCreateBooking={navToOrderDetailsPage}
+        onUpdateBooking={navToOrderDetailsPage}
         booking={orderItem?.booking as any}
       />
     </Card>

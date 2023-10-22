@@ -177,6 +177,38 @@ const BookingModal = ({
     </Group>
   );
 
+  function renderItemGroup(label: string, value: string | any[]) {
+    if (Array.isArray(value) && value.length > 0) {
+      return (
+        <>
+          <Group position="apart" ml="xs" mr="xs" mb="md">
+            <Text fw={600}>{label}:</Text>
+            <Text size="sm">
+              {value.map((item, index) => (
+                <span key={item.id}>
+                  {index > 0 ? ", " : ""}
+                  {item.name}
+                </span>
+              ))}
+            </Text>
+          </Group>
+        </>
+      );
+    } else if (typeof value === "string") {
+      return (
+        <>
+          {value && (
+            <Group position="apart" ml="xs" mr="xs" mb="md">
+              <Text fw={600}>{label}</Text>
+              <Text>{value}</Text>
+            </Group>
+          )}
+        </>
+      );
+    }
+    return null;
+  }
+
   return (
     <>
       {booking && (
@@ -262,54 +294,11 @@ const BookingModal = ({
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
-                <Grid>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Name"
-                      disabled
-                      {...form.getInputProps("petOwnerName")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TextInput
-                      label="Contact"
-                      disabled
-                      {...form.getInputProps("petOwnerContact")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TextInput
-                      label="Email"
-                      disabled
-                      {...form.getInputProps("petOwnerEmail")}
-                    />
-                  </Grid.Col>
-                  {booking.pet && (
-                    <>
-                      <Grid.Col span={12}>
-                        <TextInput
-                          label="Pet Name"
-                          disabled
-                          {...form.getInputProps("petName")}
-                        />
-                      </Grid.Col>
-                      <Grid.Col span={6}>
-                        <TextInput
-                          label="Pet Type"
-                          disabled
-                          {...form.getInputProps("petType")}
-                        />
-                      </Grid.Col>
-                      <Grid.Col span={6}>
-                        <TextInput
-                          label="Pet Gender"
-                          disabled
-                          {...form.getInputProps("petGender")}
-                        />
-                      </Grid.Col>
-                    </>
-                  )}
-                </Grid>
+                {renderItemGroup("Name", form.values.petOwnerName)}
+                {renderItemGroup("Contact", form.values.petOwnerContact)}
+                {renderItemGroup("Email", form.values.petOwnerEmail)}
+                {renderItemGroup("Pet Name", form.values.petName)}
+                {renderItemGroup("Pet Type", form.values.petType)}
               </Accordion.Panel>
             </Accordion.Item>
             <Accordion.Item value="Booking Details">
@@ -320,99 +309,23 @@ const BookingModal = ({
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
-                <Grid>
-                  <Grid.Col span={12}>
-                    <Textarea
-                      label="Description"
-                      disabled
-                      autosize
-                      {...form.getInputProps("description")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <NumberInput
-                      label="Base Price"
-                      disabled
-                      parser={(value) => {
-                        const floatValue = parseFloat(
-                          value.replace(/\$\s?|(,*)/g, ""),
-                        );
-                        return isNaN(floatValue) ? "" : floatValue.toString();
-                      }}
-                      formatter={(value) => {
-                        const formattedValue = formatNumber2Decimals(
-                          parseFloat(value.replace(/\$\s?/, "")),
-                        );
-                        return `$ ${formattedValue}`;
-                      }}
-                      {...form.getInputProps("basePrice")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TextInput
-                      label="Category"
-                      disabled
-                      {...form.getInputProps("category")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TimeInput
-                      label="Start Time"
-                      disabled
-                      {...form.getInputProps("startTime")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={6}>
-                    <TimeInput
-                      label="End Time"
-                      disabled
-                      {...form.getInputProps("endTime")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={12}>
-                    <MultiSelect
-                      data={
-                        addresses
-                          ? addresses.map((address) => ({
-                              value: address.addressId.toString(),
-                              label: address.addressName,
-                            }))
-                          : []
-                      }
-                      disabled
-                      label="Addresses"
-                      {...form.getInputProps("addresses")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={12}>
-                    <MultiSelect
-                      disabled
-                      label="Tags"
-                      data={
-                        tags
-                          ? tags.map((tag) => ({
-                              value: tag.tagId.toString(),
-                              label: tag.name,
-                            }))
-                          : []
-                      }
-                      {...form.getInputProps("tags")}
-                    />
-                  </Grid.Col>
-                </Grid>
+                {renderItemGroup("Base Price", `$ ${form.values.basePrice}`)}
+                {renderItemGroup("Category", form.values.category)}
+                {renderItemGroup("Start Time", form.values.startTime)}
+                {renderItemGroup("End Time", form.values.endTime)}
+                {renderItemGroup(
+                  "Addresses",
+                  addresses.map((address) => ({
+                    id: address.addressId,
+                    name: address.addressName,
+                  })),
+                )}
+                {renderItemGroup(
+                  "Tags",
+                  tags.map((tag) => ({ id: tag.tagId, name: tag.name })),
+                )}
               </Accordion.Panel>
             </Accordion.Item>
-
-            {/* Invoice and Transaction details */}
-            {/* <Accordion.Item value="Invoice Details">
-              <Accordion.Control>
-                <Group>
-                  <IconFileInvoice color={theme.colors.indigo[5]} />
-                  <Text size="lg">Invoice Details</Text>
-                </Group>
-              </Accordion.Control>
-              <Accordion.Panel>TODO: Invoice DETIALS</Accordion.Panel>
-            </Accordion.Item> */}
           </Accordion>
         </Modal>
       )}

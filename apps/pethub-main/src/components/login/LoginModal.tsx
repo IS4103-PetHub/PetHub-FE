@@ -34,20 +34,6 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   const cookies = parseCookies();
   const originalPath = cookies.originalPath || "/";
 
-  // Reset the entire modal (including forms, states etc) if it is closed and re-opened
-  useEffect(() => {
-    if (!opened) {
-      // Let closing animation finish so it's not visible
-      const timer = setTimeout(() => {
-        loginForm.reset();
-        forgotPasswordForm.reset();
-        toggle("login");
-        setIsForgotPasswordSuccessful(false);
-        setIsSubmitButtonLoading(false);
-      }, 800);
-    }
-  }, [opened]);
-
   const loginForm = useForm({
     initialValues: {
       email: "",

@@ -206,7 +206,7 @@ export default function Orders({ userId }: OrdersProps) {
       <SearchBar
         size="md"
         w="55%"
-        text="Search for an order item here"
+        text="Search by title, business or ID"
         onSearch={handleSearch}
       />
       <SortBySelect

@@ -17,6 +17,7 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
+import { useEffect } from "react";
 import { useCartOperations } from "@/hooks/cart";
 import CartDisplayPopover from "../cart/CartDisplayPopover";
 import LoginModal from "../login/LoginModal";

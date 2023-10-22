@@ -141,7 +141,7 @@ const OrderItemStepper = ({
         description:
           stepIndex < fulfilledStepNumber
             ? "Pending order fulfillment"
-            : `${formatISODateTimeShort(orderItem.dateFulfilled)}`,
+            : `${formatISODateTimeShort(orderItem?.dateFulfilled)}`,
       },
       Reviewed: {
         label: stepIndex < ReviewedStepNumber ? "Not Reviewed" : "Reviewed",
@@ -174,7 +174,7 @@ const OrderItemStepper = ({
     // Override step color and text if the order item is not booked
     if (
       stepType === "Booked" &&
-      !orderItem.booking &&
+      !orderItem?.booking &&
       (group === stepGroups.expiredBooking ||
         group === stepGroups.refundedBooking)
     ) {
@@ -188,7 +188,7 @@ const OrderItemStepper = ({
     // RIGHT NOW THERE IS NO WAY TO CHECK IF AN ORDER IS FULFILLED, IT WILL ALWAYS SAY NOT FULFILLED (thats what the `true` represents below)
     if (
       stepType === "Fulfilled" &&
-      !orderItem.dateFulfilled &&
+      !orderItem?.dateFulfilled &&
       (group === stepGroups.refundedNoBooking ||
         group === stepGroups.refundedBooking)
     ) {
@@ -205,14 +205,14 @@ const OrderItemStepper = ({
   // Render the stepper steps based on the step group
   function renderSteps(group: string[]) {
     let mappedStatusToStepGroupStep = mapStatusToStepGroupStep.get(
-      orderItem.status,
+      orderItem?.status,
     );
 
     // If the order item is pending fulfillment and requires booking, override the step to booked
     if (
       mappedStatusToStepGroupStep === "Ordered" &&
-      orderItem.status === OrderItemStatusEnum.PendingFulfillment &&
-      orderItem.serviceListing.requiresBooking
+      orderItem?.status === OrderItemStatusEnum.PendingFulfillment &&
+      orderItem?.serviceListing.requiresBooking
     ) {
       mappedStatusToStepGroupStep = "Booked";
     }
@@ -242,29 +242,29 @@ const OrderItemStepper = ({
 
   function renderContent() {
     const contentMap = {
-      [OrderItemStatusEnum.PaidOut]: orderItem.serviceListing.requiresBooking
+      [OrderItemStatusEnum.PaidOut]: orderItem?.serviceListing.requiresBooking
         ? stepGroups.happyBooking
         : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.PendingFulfillment]: orderItem.serviceListing
+      [OrderItemStatusEnum.PendingFulfillment]: orderItem?.serviceListing
         .requiresBooking
         ? stepGroups.happyBooking
         : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.Fulfilled]: orderItem.serviceListing.requiresBooking
+      [OrderItemStatusEnum.Fulfilled]: orderItem?.serviceListing.requiresBooking
         ? stepGroups.happyBooking
         : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.PendingBooking]: orderItem.serviceListing
+      [OrderItemStatusEnum.PendingBooking]: orderItem?.serviceListing
         .requiresBooking
         ? stepGroups.happyBooking
         : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.Expired]: orderItem.serviceListing.requiresBooking
+      [OrderItemStatusEnum.Expired]: orderItem?.serviceListing.requiresBooking
         ? stepGroups.expiredBooking
         : stepGroups.expiredNoBooking,
-      [OrderItemStatusEnum.Refunded]: orderItem.serviceListing.requiresBooking
+      [OrderItemStatusEnum.Refunded]: orderItem?.serviceListing.requiresBooking
         ? stepGroups.refundedBooking
         : stepGroups.refundedNoBooking,
     };
 
-    const groupToRender = contentMap[orderItem.status];
+    const groupToRender = contentMap[orderItem?.status];
     return (
       groupToRender && (
         <Stepper {...(STEPPER_PROPS as any)}>

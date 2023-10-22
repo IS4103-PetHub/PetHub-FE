@@ -110,6 +110,10 @@ export function formatStringToLetterCase(enumString: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+export function formatLetterCaseToEnumString(str: string) {
+  return str.replace(/\s+/g, "_").toUpperCase();
+}
+
 export const formatEnumValueToLowerCase = (value: string) => {
   return value.replace(/_/g, " ").toLowerCase();
 };

@@ -171,13 +171,15 @@ export default function Appointments({
               data={segmentedControlData}
             />
           </Box>
-          <SortBySelect
-            mb={2}
-            size="sm"
-            data={bookingsSortOptions}
-            value={sortStatus}
-            onChange={setSortStatus}
-          />
+          {!isMobile && (
+            <SortBySelect
+              mb={2}
+              size="sm"
+              data={bookingsSortOptions}
+              value={sortStatus}
+              onChange={setSortStatus}
+            />
+          )}
         </Group>
 
         <Group

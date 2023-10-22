@@ -40,19 +40,30 @@ import api from "@/api/axiosConfig";
 import OrderItemActionGroup from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
-import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
+import {
+  useGetOrderItemByOrderId,
+  useGetorderItemsByPetOwnerId,
+} from "@/hooks/order";
 
 interface OrderDetailsProps {
   userId: number;
-  orderItem: OrderItem;
 }
 
-export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
+export default function OrderDetails({ userId }: OrderDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(1);
   const [numberOfSteps, setNumberOfSteps] = useState(0);
   const [backButtonLoading, setBackButtonLoading] = useState(false);
+
+  const orderItemId = Number(router.query.id);
+
+  const {
+    data: orderItem,
+    refetch: refetchOrderItem,
+    isLoading: isFetchOrderItemLoading,
+  } = useGetOrderItemByOrderId(orderItemId);
+
   // used to refresh data on the index page upon return
   const {
     data: orderItems = [],
@@ -61,7 +72,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   } = useGetorderItemsByPetOwnerId(userId);
 
   const PLATFORM_FEE =
-    Math.round(orderItem.itemPrice * PLATFORM_FEE_PERCENT * 100) / 100;
+    Math.round(orderItem?.itemPrice * PLATFORM_FEE_PERCENT * 100) / 100;
 
   const OPEN_FOREVER = [
     "header",
@@ -102,25 +113,25 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
 
   function setStepperCount() {
     if (
-      orderItem.status === OrderItemStatusEnum.PaidOut ||
-      orderItem.status === OrderItemStatusEnum.PendingFulfillment ||
-      orderItem.status === OrderItemStatusEnum.Fulfilled ||
-      orderItem.status === OrderItemStatusEnum.PendingBooking
+      orderItem?.status === OrderItemStatusEnum.PaidOut ||
+      orderItem?.status === OrderItemStatusEnum.PendingFulfillment ||
+      orderItem?.status === OrderItemStatusEnum.Fulfilled ||
+      orderItem?.status === OrderItemStatusEnum.PendingBooking
     ) {
-      if (orderItem.serviceListing.requiresBooking) {
+      if (orderItem?.serviceListing.requiresBooking) {
         setNumberOfSteps(4);
       } else {
         setNumberOfSteps(3);
       }
     }
-    if (orderItem.status === OrderItemStatusEnum.Expired) {
-      if (orderItem.serviceListing.requiresBooking) {
+    if (orderItem?.status === OrderItemStatusEnum.Expired) {
+      if (orderItem?.serviceListing.requiresBooking) {
         setNumberOfSteps(3);
       }
       setNumberOfSteps(2);
     }
-    if (orderItem.status === OrderItemStatusEnum.Refunded) {
-      if (orderItem.serviceListing.requiresBooking) {
+    if (orderItem?.status === OrderItemStatusEnum.Refunded) {
+      if (orderItem?.serviceListing.requiresBooking) {
         setNumberOfSteps(4);
       }
       setNumberOfSteps(3);
@@ -165,16 +176,16 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
         <Center>
           <Text size="sm">ORDER ITEM ID.</Text>
           &nbsp;
-          <Text size="sm">{orderItem.orderItemId}</Text>
+          <Text size="sm">{orderItem?.orderItemId}</Text>
           <Text ml="md" mr="md" size="sm">
             |
           </Text>
           <Text
             size="sm"
-            color={orderStatusColorMap.get(orderItem.status)}
+            color={orderStatusColorMap.get(orderItem?.status)}
             tt="uppercase"
           >
-            {orderStatusTextMap.get(orderItem.status)}
+            {orderStatusTextMap.get(orderItem?.status)}
           </Text>
         </Center>
       </Group>
@@ -198,7 +209,11 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
   const actionGroupAccordionItem = (
     <Accordion.Item value="actionGroup" {...ACCORDION_ITEM_PROPS}>
       <Box m="lg">
-        <OrderItemActionGroup orderItem={orderItem} userId={userId} />
+        <OrderItemActionGroup
+          orderItem={orderItem}
+          userId={userId}
+          refetch={refetchOrderItem}
+        />
       </Box>
     </Accordion.Item>
   );
@@ -209,7 +224,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
         <Group position="apart" mb={5} mt={-5}>
           <Center>
             <Text fw={500} mr={2} size="sm">
-              {orderItem.serviceListing?.petBusiness?.companyName}
+              {orderItem?.serviceListing?.petBusiness?.companyName}
             </Text>
             <Button
               size="xs"
@@ -222,7 +237,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
               }
               onClick={() =>
                 router.push(
-                  "/pet-businesses/" + orderItem.serviceListing?.petBusinessId,
+                  "/pet-businesses/" + orderItem?.serviceListing?.petBusinessId,
                 )
               }
             >
@@ -237,17 +252,17 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
                 sx={{ fontWeight: 600 }}
                 variant="dot"
               >
-                Ordered on: {formatISODayDateTime(orderItem.invoice.createdAt)}
+                Ordered on: {formatISODayDateTime(orderItem?.invoice.createdAt)}
               </Badge>
             </Box>
           </Center>
         </Group>
         <Grid columns={24}>
           <Grid.Col span={4} mih={125}>
-            {orderItem.serviceListing?.attachmentURLs?.length > 0 ? (
+            {orderItem?.serviceListing?.attachmentURLs?.length > 0 ? (
               <Image
                 radius="md"
-                src={orderItem.serviceListing.attachmentURLs[0]}
+                src={orderItem?.serviceListing.attachmentURLs[0]}
                 fit="contain"
                 w="auto"
                 alt="Cart Item Photo"
@@ -265,19 +280,19 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
 
           <Grid.Col span={16}>
             <Box>
-              <Link href={`/service-listings/${orderItem.serviceListingId}`}>
+              <Link href={`/service-listings/${orderItem?.serviceListingId}`}>
                 <Text fw={600} size={16}>
-                  {orderItem.serviceListing.title}
+                  {orderItem?.serviceListing.title}
                 </Text>
               </Link>
               <Text lineClamp={2} size="xs">
-                {orderItem.serviceListing.description}
+                {orderItem?.serviceListing.description}
               </Text>
-              {orderItem.serviceListing.duration && (
+              {orderItem?.serviceListing.duration && (
                 <Badge variant="dot" radius="xs">
                   Duration:{" "}
                   {convertMinsToDurationString(
-                    orderItem.serviceListing.duration,
+                    orderItem?.serviceListing.duration,
                   )}
                 </Badge>
               )}
@@ -294,7 +309,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
             }}
           >
             <Text size="sm" fw={500} color="dimmed">
-              ${formatNumber2Decimals(orderItem.itemPrice)}
+              ${formatNumber2Decimals(orderItem?.itemPrice)}
             </Text>
           </Grid.Col>
         </Grid>
@@ -312,7 +327,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
-              ${formatNumber2Decimals(orderItem.itemPrice)}
+              ${formatNumber2Decimals(orderItem?.itemPrice)}
             </Text>
           </Grid.Col>
 
@@ -338,7 +353,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="md" fw={600}>
-              ${formatNumber2Decimals(orderItem.itemPrice + PLATFORM_FEE)}
+              ${formatNumber2Decimals(orderItem?.itemPrice + PLATFORM_FEE)}
             </Text>
           </Grid.Col>
 
@@ -367,7 +382,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
               {/* The first 2 sections of the payment ID */}
-              {orderItem.invoice?.paymentId.split("-").slice(0, 2).join("-")}
+              {orderItem?.invoice?.paymentId.split("-").slice(0, 2).join("-")}
             </Text>
           </Grid.Col>
 
@@ -380,7 +395,7 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
           </Grid.Col>
           <Grid.Col span={ORDER_ITEM_DETAILS_GRID_RIGHT} {...FLEX_END_PROPS}>
             <Text size="sm" fw={500}>
-              {orderItem.invoiceId}
+              {orderItem?.invoiceId}
             </Text>
           </Grid.Col>
         </Grid>
@@ -395,31 +410,30 @@ export default function OrderDetails({ userId, orderItem }: OrderDetailsProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
-        <Accordion
-          multiple
-          variant="filled"
-          value={OPEN_FOREVER}
-          onChange={() => {}}
-          chevronSize={0}
-        >
-          {headerAccordionItem}
-          {stepperAccordionItem}
-          {actionGroupAccordionItem}
-          {orderItemDetailsAccordionItem}
-          {orderItemPaymentDetailsAccordionItem}
-        </Accordion>
+        {orderItem && (
+          <Accordion
+            multiple
+            variant="filled"
+            value={OPEN_FOREVER}
+            onChange={() => {}}
+            chevronSize={0}
+          >
+            {headerAccordionItem}
+            {stepperAccordionItem}
+            {actionGroupAccordionItem}
+            {orderItemDetailsAccordionItem}
+            {orderItemPaymentDetailsAccordionItem}
+          </Accordion>
+        )}
       </Container>
     </div>
   );
 }
 
 export async function getServerSideProps(context) {
-  const id = context.params.id;
-
-  const orderItem = await (await api.get(`/order-items/${id}`)).data;
   const session = await getSession(context);
-  if (!session) return { props: { orderItem } };
+  if (!session) return;
   const userId = session.user["userId"];
 
-  return { props: { userId, orderItem } };
+  return { props: { userId } };
 }

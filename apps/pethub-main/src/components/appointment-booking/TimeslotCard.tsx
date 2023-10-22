@@ -132,9 +132,10 @@ const TimeslotCard = ({
             <Stack sx={{ display: "flex", alignItems: "flex-end" }} w="45%">
               <Button
                 onClick={open}
-                w="75%"
+                w="65%"
                 size={smallify ? "xs" : "sm"}
                 maw={200}
+                mb={-7}
               >
                 Reschedule
               </Button>
@@ -142,9 +143,8 @@ const TimeslotCard = ({
                 {({ copied, copy }) => (
                   <Button
                     maw={200}
-                    size={smallify ? "xs" : "sm"}
                     color={copied ? "green" : null}
-                    w="75%"
+                    w="65%"
                     onClick={copy}
                     variant="light"
                     sx={{

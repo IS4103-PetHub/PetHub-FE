@@ -62,11 +62,10 @@ export function searchOrderItemsForCustomer(
   return orderItems.filter(
     (orderItem: OrderItem) =>
       orderItem.itemName?.toLowerCase().includes(search) ||
-      orderItem.invoiceId?.toString().includes(search) ||
+      orderItem.orderItemId?.toString() === search ||
       orderItem.serviceListing?.petBusiness?.companyName
         ?.toLowerCase()
-        .includes(search) ||
-      orderItem.serviceListing?.title.toLowerCase().includes(search),
+        .includes(search),
   );
 }
 
