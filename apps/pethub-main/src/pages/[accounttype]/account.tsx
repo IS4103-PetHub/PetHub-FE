@@ -50,6 +50,11 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
     ? petOwner.accountStatus
     : petBusiness.accountStatus;
 
+  const isApprovedPB =
+    petBusiness &&
+    petBusiness.petBusinessApplication?.petBusinessApplicationId &&
+    petBusiness.accountStatus !== AccountStatusEnum.Pending;
+
   // to determine to show deactivate or reactivate
   const action =
     accountStatus === AccountStatusEnum.Active ? "Deactivate" : " Reactivate";
@@ -95,38 +100,37 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           multiple
           defaultValue={defaultValues}
         >
-          {petBusiness &&
-            petBusiness.accountStatus !== AccountStatusEnum.Pending && (
-              // commission for PB
-              <Accordion.Item value="commission">
-                <Accordion.Control>
-                  <Group>
-                    <IconDiscount2 color={theme.colors.indigo[5]} />
-                    <Text size="lg">Commission rule</Text>
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel p="md" pt={0}>
-                  <Text size="lg" weight={600} color={theme.primaryColor}>
-                    {petBusiness.commissionRule.name}
-                  </Text>
-                  <Group ml={-6}>
-                    <CustomPopover
-                      text="PetHub collects a small commission fee from transactions to
+          {isApprovedPB && (
+            // commission for PB
+            <Accordion.Item value="commission">
+              <Accordion.Control>
+                <Group>
+                  <IconDiscount2 color={theme.colors.indigo[5]} />
+                  <Text size="lg">Commission rule</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md" pt={0}>
+                <Text size="lg" weight={600} color={theme.primaryColor}>
+                  {petBusiness.commissionRule.name}
+                </Text>
+                <Group ml={-6}>
+                  <CustomPopover
+                    text="PetHub collects a small commission fee from transactions to
                   help cover operational costs."
-                      width={300}
-                    >
-                      {}
-                    </CustomPopover>
-                    <Text ml={-15}>
-                      Commission rate:{" "}
-                      <strong>
-                        {petBusiness.commissionRule.commissionRate * 100}%
-                      </strong>
-                    </Text>
-                  </Group>
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
+                    width={300}
+                  >
+                    {}
+                  </CustomPopover>
+                  <Text ml={-15}>
+                    Commission rate:{" "}
+                    <strong>
+                      {petBusiness.commissionRule.commissionRate * 100}%
+                    </strong>
+                  </Text>
+                </Group>
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
 
           <Accordion.Item value="account">
             <Accordion.Control>
@@ -150,23 +154,22 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
             </Accordion.Panel>
           </Accordion.Item>
 
-          {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
-            petBusiness.accountStatus !== AccountStatusEnum.Pending && (
-              <Accordion.Item value="addresses">
-                <Accordion.Control>
-                  <Group>
-                    <IconAddressBook color={theme.colors.indigo[5]} />
-                    <Text size="lg">Addresses</Text>
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel p="md">
-                  <AddressInfoForm
-                    petBusiness={petBusiness}
-                    refetch={refetchPetBusiness}
-                  />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
+          {isApprovedPB && (
+            <Accordion.Item value="addresses">
+              <Accordion.Control>
+                <Group>
+                  <IconAddressBook color={theme.colors.indigo[5]} />
+                  <Text size="lg">Addresses</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md">
+                <AddressInfoForm
+                  petBusiness={petBusiness}
+                  refetch={refetchPetBusiness}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
 
           {petOwner && (
             // pets for PO

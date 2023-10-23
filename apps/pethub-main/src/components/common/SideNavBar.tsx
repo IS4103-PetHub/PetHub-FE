@@ -24,6 +24,8 @@ import { getSession, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { AccountStatusEnum } from "shared-utils";
+import api from "@/api/axiosConfig";
+import { PetBusiness } from "@/types/types";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -128,7 +130,17 @@ const SideNavBar = () => {
   const checkStatusAndAddLinks = async () => {
     const session = await getSession();
     const accountStatus = session.user["accountStatus"];
-    if (accountStatus !== AccountStatusEnum.Pending) {
+    const userId = session.user["userId"];
+
+    const petBusiness = (await (
+      await api.get(`/users/pet-businesses/${userId}`)
+    ).data) as PetBusiness;
+
+    const canView =
+      accountStatus !== AccountStatusEnum.Pending &&
+      petBusiness.petBusinessApplication;
+
+    if (canView) {
       const newLinks = [...defaultLinks, ...nonPendingLinks];
       setLinksToRender(newLinks);
     }

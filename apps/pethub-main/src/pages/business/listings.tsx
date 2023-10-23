@@ -22,23 +22,25 @@ import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
+import api from "@/api/axiosConfig";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import ServiceListingModal from "@/components/service-listing-management/ServiceListingModal";
 import ServiceListTable from "@/components/service-listing-management/ServiceListingTable";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
+import { PetBusiness } from "@/types/types";
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
-  accountStatus: AccountStatusEnum;
+  canView: boolean;
 }
 
 export default function Listings({
   userId,
   accountType,
-  accountStatus,
+  canView,
 }: MyAccountProps) {
   /*
    * Fetch data
@@ -208,8 +210,8 @@ export default function Listings({
         <title>Service Listings - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {accountStatus === AccountStatusEnum.Pending ? (
-        <PBPendingAccountMessage />
+      {!canView ? (
+        <PBCannotAccessMessage />
       ) : (
         <Container fluid>
           <Group position="apart">
@@ -263,6 +265,13 @@ export async function getServerSideProps(context) {
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
   const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId, accountType, accountStatus } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, accountType, canView } };
 }

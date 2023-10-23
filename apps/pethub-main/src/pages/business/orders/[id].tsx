@@ -1,4 +1,3 @@
-import { useMantineTheme } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -6,18 +5,19 @@ import { AccountStatusEnum, OrderItem, Pet } from "shared-utils";
 import ViewOrderDetails from "web-ui/shared//order-management/viewOrderDetails";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
-import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
+import { PetBusiness } from "@/types/types";
 
 interface PBOrdersDetailsProps {
   order: OrderItem;
   pet: Pet;
-  accountStatus: AccountStatusEnum;
+  canView: boolean;
 }
 
 export default function PBOrdersDetails({
   order,
   pet,
-  accountStatus,
+  canView,
 }: PBOrdersDetailsProps) {
   const router = useRouter();
 
@@ -29,8 +29,8 @@ export default function PBOrdersDetails({
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {accountStatus === AccountStatusEnum.Pending ? (
-        <PBPendingAccountMessage />
+      {!canView ? (
+        <PBCannotAccessMessage />
       ) : (
         <>
           <LargeBackButton
@@ -50,6 +50,7 @@ export default function PBOrdersDetails({
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  const userId = session.user["userId"];
   const accountStatus = session.user["accountStatus"];
   const orderId = context.params.id;
   const { data: order } = await api.get(`/order-items/${orderId}`);
@@ -60,5 +61,13 @@ export async function getServerSideProps(context) {
       pet = petData;
     }
   }
-  return { props: { order, pet, accountStatus } };
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
+
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { order, pet, canView } };
 }

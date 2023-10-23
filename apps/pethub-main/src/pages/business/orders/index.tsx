@@ -22,16 +22,18 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
-import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
+import api from "@/api/axiosConfig";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import { useGetOrderItemsByPBId } from "@/hooks/order";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
+import { PetBusiness } from "@/types/types";
 
 interface OrdersProps {
   userId: number;
-  accountStatus: AccountStatusEnum;
+  canView: boolean;
 }
 
-export default function Orders({ userId, accountStatus }: OrdersProps) {
+export default function Orders({ userId, canView }: OrdersProps) {
   const router = useRouter();
   const allStatusString =
     "PENDING_BOOKING,PENDING_FULFILLMENT,FULFILLED,PAID_OUT,REFUNDED,EXPIRED";
@@ -181,8 +183,8 @@ export default function Orders({ userId, accountStatus }: OrdersProps) {
         <title>Orders - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {accountStatus === AccountStatusEnum.Pending ? (
-        <PBPendingAccountMessage />
+      {!canView ? (
+        <PBCannotAccessMessage />
       ) : (
         <Container fluid>
           <Group position="apart">
@@ -266,6 +268,13 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId, accountStatus } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, canView } };
 }

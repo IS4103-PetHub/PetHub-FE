@@ -14,12 +14,14 @@ import {
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
+import api from "@/api/axiosConfig";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
-import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import {
   useCreateCalendarGroup,
   useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
+import { PetBusiness } from "@/types/types";
 import {
   validateCGDescription,
   validateCGName,
@@ -28,12 +30,12 @@ import {
 
 interface CreateCalendarGroupProps {
   userId: number;
-  accountStatus: AccountStatusEnum;
+  canView: boolean;
 }
 
 export default function CreateCalendarGroup({
   userId,
-  accountStatus,
+  canView,
 }: CreateCalendarGroupProps) {
   const router = useRouter();
   const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
@@ -95,8 +97,8 @@ export default function CreateCalendarGroup({
         <title>Create Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {accountStatus === AccountStatusEnum.Pending ? (
-        <PBPendingAccountMessage />
+      {!canView ? (
+        <PBCannotAccessMessage />
       ) : (
         <Container mt="xl" mb="xl">
           <LargeBackButton
@@ -129,6 +131,13 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId, accountStatus } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, canView } };
 }

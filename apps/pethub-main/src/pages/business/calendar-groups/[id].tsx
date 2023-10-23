@@ -15,14 +15,16 @@ import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
+import api from "@/api/axiosConfig";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
-import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import {
   useDeleteCalendarGroupById,
   useGetCalendarGroupById,
   useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
+import { PetBusiness } from "@/types/types";
 import {
   validateCGDescription,
   validateCGName,
@@ -31,12 +33,12 @@ import {
 
 interface ViewCalendarGroupProps {
   userId: number;
-  accountStatus: AccountStatusEnum;
+  canView: boolean;
 }
 
 export default function ViewCalendarGroup({
   userId,
-  accountStatus,
+  canView,
 }: ViewCalendarGroupProps) {
   const router = useRouter();
   const [isEditingDisabled, setIsEditingDisabled] = useState(true);
@@ -148,8 +150,8 @@ export default function ViewCalendarGroup({
         <title>View Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {accountStatus === AccountStatusEnum.Pending ? (
-        <PBPendingAccountMessage />
+      {!canView ? (
+        <PBCannotAccessMessage />
       ) : (
         <Container mt="xl" mb="xl">
           {isLoading ? (
@@ -224,6 +226,13 @@ export async function getServerSideProps(context) {
 
   const userId = session.user["userId"];
   const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId, accountStatus } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, canView } };
 }

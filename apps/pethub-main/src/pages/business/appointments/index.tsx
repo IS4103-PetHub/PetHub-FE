@@ -6,21 +6,23 @@ import { useEffect } from "react";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle, useLoadingOverlay } from "web-ui";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
+import api from "@/api/axiosConfig";
 import MainCalendar from "@/components/calendarGroup/MainCalendar";
-import PBPendingAccountMessage from "@/components/common/PBPendingAccountMessage";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetPetBusinessByIdAndAccountType } from "@/hooks/pet-business";
 import { useGetAllTags } from "@/hooks/tags";
+import { PetBusiness } from "@/types/types";
 
 interface MyAccountProps {
   userId: number;
   accountType: AccountTypeEnum;
-  accountStatus: AccountStatusEnum;
+  canView: boolean;
 }
 export default function CalendarGroup({
   userId,
   accountType,
-  accountStatus,
+  canView,
 }: MyAccountProps) {
   const router = useRouter();
   const { hideOverlay } = useLoadingOverlay();
@@ -44,8 +46,8 @@ export default function CalendarGroup({
         <title>Appointments - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {accountStatus === AccountStatusEnum.Pending ? (
-        <PBPendingAccountMessage />
+      {!canView ? (
+        <PBCannotAccessMessage />
       ) : (
         <Container fluid>
           <Group position="apart">
@@ -75,6 +77,13 @@ export async function getServerSideProps(context) {
   const userId = session.user["userId"];
   const accountType = session.user["accountType"];
   const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId, accountType, accountStatus } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, accountType, canView } };
 }
