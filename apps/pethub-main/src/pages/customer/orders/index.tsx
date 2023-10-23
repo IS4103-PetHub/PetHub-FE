@@ -242,7 +242,7 @@ export default function Orders({ userId }: OrdersProps) {
         {isSearching && records.length === 0 ? (
           <NoSearchResultsMessage />
         ) : (
-          <Grid>{orderItemCards}</Grid>
+          <Grid mb="xl">{orderItemCards}</Grid>
         )}
       </>
     );

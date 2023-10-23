@@ -1,7 +1,6 @@
 import { Container, Grid, Group, MultiSelect, Transition } from "@mantine/core";
-import { DateInput, DatePicker } from "@mantine/dates";
+import { DateInput } from "@mantine/dates";
 import { useToggle } from "@mantine/hooks";
-import dayjs from "dayjs";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
 import Head from "next/head";
@@ -9,13 +8,11 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
-  AccountTypeEnum,
+  AccountStatusEnum,
   EMPTY_STATE_DELAY_MS,
   OrderItem,
   OrderItemStatusEnum,
-  ServiceCategoryEnum,
   TABLE_PAGE_SIZE,
-  formatEnumValueToLowerCase,
   formatLetterCaseToEnumString,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -25,14 +22,18 @@ import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import api from "@/api/axiosConfig";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import { useGetOrderItemsByPBId } from "@/hooks/order";
 import { useGetServiceListingByPetBusinessId } from "@/hooks/service-listing";
+import { PetBusiness } from "@/types/types";
 
 interface OrdersProps {
   userId: number;
+  canView: boolean;
 }
 
-export default function Orders({ userId }: OrdersProps) {
+export default function Orders({ userId, canView }: OrdersProps) {
   const router = useRouter();
   const allStatusString =
     "PENDING_BOOKING,PENDING_FULFILLMENT,FULFILLED,PAID_OUT,REFUNDED,EXPIRED";
@@ -184,76 +185,80 @@ export default function Orders({ userId }: OrdersProps) {
         <title>Orders - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid>
-        <Group position="apart">
-          <PageTitle title="Orders Management" />
-        </Group>
-        <Grid>
-          <Grid.Col span={6}>
-            <MultiSelect
-              size="md"
-              label="Service Listing"
-              placeholder="Select service listing"
-              data={serviceListingsOptions}
-              onChange={(selectedServiceListing) => {
-                if (selectedServiceListing.length === 0) {
-                  setServiceListingFilter(undefined);
-                } else {
-                  setServiceListingFilter(selectedServiceListing.join(","));
-                }
-              }}
-            />
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <DateInput
-              size="md"
-              valueFormat="DD-MM-YYYY"
-              label="Start Date"
-              placeholder="Select start date"
-              value={new Date(startDate)}
-              onChange={(newDate) => setStartDate(newDate)}
-            />
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <DateInput
-              size="md"
-              valueFormat="DD-MM-YYYY"
-              label="End Date"
-              placeholder="Select end date"
-              value={new Date(endDate)}
-              onChange={(newDate) => setEndDate(newDate)}
-            />
-          </Grid.Col>
-          <Grid.Col span={9}>
-            <SearchBar
-              text="Search by Order ID and name"
-              onSearch={handleSearch}
-              size="md"
-            />
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <MultiSelect
-              mt={-4.5}
-              size="md"
-              label="Status"
-              placeholder="Select status"
-              data={orderItemStatusValues}
-              onChange={(selectedStatus) => {
-                if (selectedStatus.length === 0) {
-                  setStatusFilter(allStatusString);
-                } else {
-                  // If selections are made, join them into a comma-separated string
-                  const statusFilterValues = selectedStatus.map((status) =>
-                    formatLetterCaseToEnumString(status),
-                  );
-                  setStatusFilter(statusFilterValues.join(","));
-                }
-              }}
-            />
-          </Grid.Col>
-        </Grid>
-        {renderContent()}
-      </Container>
+      {!canView ? (
+        <PBCannotAccessMessage />
+      ) : (
+        <Container fluid>
+          <Group position="apart">
+            <PageTitle title="Orders Management" />
+          </Group>
+          <Grid>
+            <Grid.Col span={6}>
+              <MultiSelect
+                size="md"
+                label="Service Listing"
+                placeholder="Select service listing"
+                data={serviceListingsOptions}
+                onChange={(selectedServiceListing) => {
+                  if (selectedServiceListing.length === 0) {
+                    setServiceListingFilter(undefined);
+                  } else {
+                    setServiceListingFilter(selectedServiceListing.join(","));
+                  }
+                }}
+              />
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <DateInput
+                size="md"
+                valueFormat="DD-MM-YYYY"
+                label="Start Date"
+                placeholder="Select start date"
+                value={new Date(startDate)}
+                onChange={(newDate) => setStartDate(newDate)}
+              />
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <DateInput
+                size="md"
+                valueFormat="DD-MM-YYYY"
+                label="End Date"
+                placeholder="Select end date"
+                value={new Date(endDate)}
+                onChange={(newDate) => setEndDate(newDate)}
+              />
+            </Grid.Col>
+            <Grid.Col span={9}>
+              <SearchBar
+                text="Search by Order ID and name"
+                onSearch={handleSearch}
+                size="md"
+              />
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <MultiSelect
+                mt={-4.5}
+                size="md"
+                label="Status"
+                placeholder="Select status"
+                data={orderItemStatusValues}
+                onChange={(selectedStatus) => {
+                  if (selectedStatus.length === 0) {
+                    setStatusFilter(allStatusString);
+                  } else {
+                    // If selections are made, join them into a comma-separated string
+                    const statusFilterValues = selectedStatus.map((status) =>
+                      formatLetterCaseToEnumString(status),
+                    );
+                    setStatusFilter(statusFilterValues.join(","));
+                  }
+                }}
+              />
+            </Grid.Col>
+          </Grid>
+          {renderContent()}
+        </Container>
+      )}
     </>
   );
 }
@@ -264,6 +269,14 @@ export async function getServerSideProps(context) {
   if (!session) return { props: {} };
 
   const userId = session.user["userId"];
+  const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, canView } };
 }

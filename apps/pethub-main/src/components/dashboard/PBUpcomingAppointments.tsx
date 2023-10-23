@@ -39,6 +39,7 @@ const PBUpcomingAppointments = ({
     .format("D MMM");
 
   function processBookings() {
+    if (!bookings) return;
     const newMap = new Map<string, Booking[]>([]);
     const now = new Date();
     for (let i = 0; i < daysAhead; i++) {
@@ -56,7 +57,7 @@ const PBUpcomingAppointments = ({
   useEffect(() => processBookings(), []);
 
   const renderContent = () => {
-    if (bookings.length === 0) {
+    if (bookings?.length === 0) {
       // no upcoming bookings
       return (
         <Paper

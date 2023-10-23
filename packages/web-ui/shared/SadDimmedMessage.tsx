@@ -1,4 +1,11 @@
-import { Box, Center, Container, Text, useMantineTheme } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import { IconMoodSad } from "@tabler/icons-react";
 import { ReactNode } from "react";
 
@@ -7,6 +14,7 @@ interface SadDimmedMessageProps {
   subtitle?: string;
   disabled?: boolean;
   replaceIcon?: ReactNode;
+  button?: ReactNode;
 }
 
 const SadDimmedMessage = ({
@@ -14,6 +22,7 @@ const SadDimmedMessage = ({
   subtitle,
   disabled,
   replaceIcon,
+  button,
 }: SadDimmedMessageProps) => {
   const theme = useMantineTheme();
 
@@ -37,15 +46,23 @@ const SadDimmedMessage = ({
             />
           )}
         </Center>
-        <Text size="xl" weight={500} color="dimmed" align="center" mb={10}>
+        <Text
+          size="xl"
+          weight={500}
+          color="dimmed"
+          align="center"
+          mb={10}
+          w="50vw"
+        >
           {title}
         </Text>
 
         {subtitle && (
-          <Text size="md" color="dimmed" align="center">
+          <Text size="md" color="dimmed" align="center" w="50vw">
             {subtitle}
           </Text>
         )}
+        {button && <Center mt="lg">{button}</Center>}
       </Box>
     </Container>
   );

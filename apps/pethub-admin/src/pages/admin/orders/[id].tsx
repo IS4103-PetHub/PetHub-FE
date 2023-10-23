@@ -22,7 +22,6 @@ export default function PBOrdersDetails({
   permissions,
 }: PBOrdersDetailsProps) {
   const router = useRouter();
-  const theme = useMantineTheme();
 
   //permissions
   const permissionCodes = permissions.map((permission) => permission.code);
@@ -51,7 +50,7 @@ export default function PBOrdersDetails({
         size="sm"
         mb="md"
       />
-      <ViewOrderDetails order={order} pet={pet} theme={theme} />
+      <ViewOrderDetails order={order} pet={pet} />
     </>
   );
 }
