@@ -24,7 +24,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { ServiceListing } from "shared-utils";
+import { AccountStatusEnum, ServiceListing } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
@@ -34,6 +34,7 @@ import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslot
 import FavouriteButton from "@/components/favourites/FavouriteButton";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
+import InactiveServiceListingMessage from "@/components/service-listing-discovery/InactiveServiceListingMessage";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
@@ -199,6 +200,11 @@ export default function ServiceListingDetails({
       });
     }
   };
+
+  // prevent user from viewing service listing details if pet business is inactive
+  if (serviceListing.petBusiness.accountStatus !== AccountStatusEnum.Active) {
+    return <InactiveServiceListingMessage />;
+  }
 
   const businessSection = (
     <Accordion.Item value="business" p="sm" mb="xl">
