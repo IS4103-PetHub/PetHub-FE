@@ -201,7 +201,7 @@ export default function ServiceListingDetails({
     }
   };
 
-  // prevent user from viewing pet business page if pet business is inactive
+  // prevent user from viewing service listing details if pet business is inactive
   if (serviceListing.petBusiness.accountStatus !== AccountStatusEnum.Active) {
     return <InactiveServiceListingMessage />;
   }
