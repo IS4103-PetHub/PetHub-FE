@@ -118,6 +118,7 @@ export default function SignUp() {
       // login and redirect to verify email
       handleRouteToVerfiyEmail(payload.email);
     } catch (error: any) {
+      hideOverlay();
       notifications.show({
         ...getErrorMessageProps("Error Creating Account", error),
       });

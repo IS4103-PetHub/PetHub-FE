@@ -27,6 +27,8 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   Tag,
+  downloadFile,
+  extractFileName,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
@@ -225,20 +227,6 @@ const ServiceListingModal = ({
       label: formatStringToLetterCase(categoryValue),
     }),
   );
-
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
 
   const setServiceListingFields = async () => {
     const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());

@@ -24,6 +24,7 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import { PetRequestTypeEnum } from "@/types/constants";
 import { calculateAge } from "@/util";
+import LostAndFoundPostModal from "./LostAndFoundPostModal";
 
 interface PostCardProps {
   // destructure and flatten everything because of the masonry library
@@ -44,6 +45,7 @@ interface PostCardProps {
   userId: number;
   sessionUserId?: number;
   onDelete(id: number): void;
+  onUpdate(id: number): void;
 }
 
 const PostCard = ({
@@ -64,6 +66,7 @@ const PostCard = ({
   userId,
   sessionUserId,
   onDelete,
+  onUpdate,
 }: PostCardProps) => {
   const theme = useMantineTheme();
   const hasImage = !!attachmentURL;
@@ -189,7 +192,7 @@ const PostCard = ({
 
       {userId === sessionUserId && (
         <Group position="right" mt="md">
-          <EditActionButton onClick={() => {}} />
+          <EditActionButton onClick={() => onUpdate(id)} />
           <DeleteActionButtonModal
             title={`Are you sure you want to delete this post?`}
             subtitle={`This action cannot be undone. This pet lost and found post titled "${title}" would be permanently deleted.`}

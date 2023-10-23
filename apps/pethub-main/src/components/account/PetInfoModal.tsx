@@ -18,6 +18,7 @@ import {
   GenderEnum,
   Pet,
   PetTypeEnum,
+  extractFileName,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
@@ -213,10 +214,6 @@ const PetInfoModal = ({
     value: value,
     label: formatStringToLetterCase(value),
   }));
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
 
   const downloadFile = async (url: string, fileName: string) => {
     try {

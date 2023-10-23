@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/api/axiosConfig";
-import { PetRequestTypeEnum } from "@/types/constants";
 import { CreatePetLostAndFoundPayload, PetLostAndFound } from "@/types/types";
 
 const PET_LOST_AND_FOUND_API = "/lost-and-found";
@@ -67,6 +66,38 @@ export const useDeletePetLostAndFoundPostById = () => {
   return useMutation({
     mutationFn: async (id: number) => {
       return (await api.delete(`${PET_LOST_AND_FOUND_API}/${id}`)).data;
+    },
+  });
+};
+
+export const useUpdatePetLostAndFoundPost = () => {
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      const formData = new FormData();
+      formData.append("title", payload.title);
+      formData.append("description", payload.description);
+      formData.append("requestType", payload.requestType);
+      formData.append("lastSeenDate", payload.lastSeenDate);
+      formData.append("lastSeenLocation", payload.lastSeenLocation);
+      formData.append("contactNumber", payload.contactNumber);
+      if (payload.petId) {
+        formData.append("petId", payload.petId);
+      }
+      if (payload.file) {
+        formData.append("file", payload.file);
+      }
+
+      const response = await api.put(
+        `${PET_LOST_AND_FOUND_API}/${payload.petLostAndFoundId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+
+      return response.data;
     },
   });
 };

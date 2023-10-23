@@ -1,10 +1,15 @@
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { uniqueId } from "lodash";
 import { Masonry } from "masonic";
-import React from "react";
+import React, { useState } from "react";
 import { getErrorMessageProps } from "shared-utils";
-import { useDeletePetLostAndFoundPostById } from "@/hooks/pet-lost-and-found";
+import {
+  useDeletePetLostAndFoundPostById,
+  useUpdatePetLostAndFoundPost,
+} from "@/hooks/pet-lost-and-found";
 import { PetLostAndFound } from "@/types/types";
+import LostAndFoundPostModal from "./LostAndFoundPostModal";
 import PostCard from "./PostCard";
 
 const COL_GUTTER = 15;
@@ -22,6 +27,9 @@ const LostAndFoundMasonryGrid = ({
   sessionUserId,
   refetch,
 }: LostAndFoundMasonryGridProps) => {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [selectedPost, setSelectedPost] = useState<PetLostAndFound>();
+
   const items = posts.map((post) => {
     return {
       id: post.petLostAndFoundId,
@@ -56,6 +64,25 @@ const LostAndFoundMasonryGrid = ({
         ...getErrorMessageProps("Error Deleting Post", error),
       });
     }
+  };
+
+  const updatePetLostAndFoundPostMutation = useUpdatePetLostAndFoundPost();
+  const handleUpdatePost = (id: number) => {
+    setSelectedPost(posts.find((post) => post.petLostAndFoundId === id));
+    open();
+    // try {
+    //   // const payload = {};
+    //   // await updatePetLostAndFoundPostMutation.mutateAsync(payload);
+    //   // refetch();
+    //   notifications.show({
+    //     message: "Pet Lost and Found Post Updated",
+    //     color: "green",
+    //   });
+    // } catch (error) {
+    //   notifications.show({
+    //     ...getErrorMessageProps("Error Updating Post", error),
+    //   });
+    // }
   };
 
   const MasonryPostCard = ({
@@ -95,24 +122,34 @@ const LostAndFoundMasonryGrid = ({
       userId={userId}
       sessionUserId={sessionUserId}
       onDelete={handleDeletePost}
+      onUpdate={handleUpdatePost}
     />
   );
 
   return (
-    <Masonry
-      // always create a new layout
-      key={uniqueId()}
-      // Provides the data for our grid items
-      items={items}
-      // Adds space between the grid cells
-      columnGutter={COL_GUTTER}
-      // Sets the minimum column width
-      columnWidth={MIN_WIDTH}
-      // Pre-renders windows worth of content
-      overscanBy={OVERSCAN}
-      // This is the grid item component
-      render={MasonryPostCard}
-    />
+    <>
+      <Masonry
+        // always create a new layout
+        key={uniqueId()}
+        // Provides the data for our grid items
+        items={items}
+        // Adds space between the grid cells
+        columnGutter={COL_GUTTER}
+        // Sets the minimum column width
+        columnWidth={MIN_WIDTH}
+        // Pre-renders windows worth of content
+        overscanBy={OVERSCAN}
+        // This is the grid item component
+        render={MasonryPostCard}
+      />
+      <LostAndFoundPostModal
+        petOwnerId={sessionUserId}
+        opened={opened}
+        close={close}
+        post={selectedPost}
+        refetch={refetch}
+      />
+    </>
   );
 };
 

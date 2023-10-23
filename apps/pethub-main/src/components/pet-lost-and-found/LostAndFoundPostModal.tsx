@@ -7,7 +7,6 @@ import {
   Textarea,
   Select,
   Button,
-  useMantineTheme,
   Card,
   FileInput,
   Image,
@@ -19,12 +18,24 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconMapPin } from "@tabler/icons-react";
 import React, { useEffect, useState } from "react";
-import { AccountTypeEnum, getErrorMessageProps } from "shared-utils";
-import { useCreatePetLostAndFoundPost } from "@/hooks/pet-lost-and-found";
+import {
+  AccountTypeEnum,
+  downloadFile,
+  extractFileName,
+  getErrorMessageProps,
+} from "shared-utils";
+import {
+  useCreatePetLostAndFoundPost,
+  useUpdatePetLostAndFoundPost,
+} from "@/hooks/pet-lost-and-found";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { PetRequestTypeEnum } from "@/types/constants";
-import { CreatePetLostAndFoundPayload, PetLostAndFound } from "@/types/types";
+import {
+  CreatePetLostAndFoundPayload,
+  PetLostAndFound,
+  UpdatePetLostAndFoundPayload,
+} from "@/types/types";
 
 interface LostAndFoundPostModalProps {
   petOwnerId: number;
@@ -45,22 +56,26 @@ const LostAndFoundPostModal = ({
     petOwnerId,
     AccountTypeEnum.PetOwner,
   );
+
+  // pet lost and found object is passed in, hence is updating
+  const isUpdating = post;
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useToggle();
 
   const createPetLostAndFoundPostMutation = useCreatePetLostAndFoundPost();
+  const updatePetLostAndFoundMutation = useUpdatePetLostAndFoundPost();
 
   const form = useForm({
     initialValues: {
-      title: "",
-      description: "",
-      requestType: PetRequestTypeEnum.LostPet,
-      lastSeenDate: "",
-      lastSeenLocation: "",
+      title: post ? post.title : "",
+      description: post ? post.description : "",
+      requestType: post ? post.requestType : PetRequestTypeEnum.LostPet,
+      lastSeenDate: post ? new Date(post.lastSeenDate) : "",
+      lastSeenLocation: post ? post.lastSeenLocation : "",
       contactNumber: petOwner ? petOwner.contactNumber : "",
-      petId: "",
-      attachment: null,
+      petId: post ? post.petId?.toString() : "",
+      file: null,
     },
 
     validate: {
@@ -91,56 +106,119 @@ const LostAndFoundPostModal = ({
     },
   });
 
-  useEffect(
-    () => form.setFieldValue("contactNumber", petOwner?.contactNumber),
-    [petOwner],
-  );
+  const downloadPromise = () => {
+    try {
+      const fileName = extractFileName(post.attachmentKeys[0]);
+      const url = post.attachmentURLs[0];
+      return downloadFile(url, fileName);
+    } catch (error) {
+      console.error(`Error downloading file:`, error);
+      return null;
+    }
+  };
+
+  const setFormFields = async () => {
+    if (isUpdating) {
+      form.setValues({
+        title: post ? post.title : "",
+        description: post ? post.description : "",
+        requestType: post ? post.requestType : PetRequestTypeEnum.LostPet,
+        lastSeenDate: post ? new Date(post.lastSeenDate) : "",
+        lastSeenLocation: post ? post.lastSeenLocation : "",
+        contactNumber: post ? post.contactNumber : "",
+        petId: post ? post.petId?.toString() : "",
+      });
+
+      if (post.attachmentURLs?.length > 0) {
+        const newFile: File = await downloadPromise();
+        console.log(newFile);
+        const imageObjectUrl = URL.createObjectURL(newFile);
+        console.log(imageObjectUrl);
+        setImagePreviewUrl(imageObjectUrl);
+        form.setFieldValue("file", newFile);
+      }
+
+      return;
+    }
+    form.setFieldValue("contactNumber", petOwner?.contactNumber);
+  };
+
+  useEffect(() => {
+    // console.log(post);
+    setFormFields();
+  }, [petOwner, post]);
+
+  // useEffect(() => {
+  //   console.log(imagePreviewUrl);
+  // }, [imagePreviewUrl]);
 
   type FormValues = typeof form.values;
 
-  function handleClose() {
+  async function handleClose() {
+    if (isUpdating) {
+      await setFormFields();
+    } else {
+      form.reset();
+      setImagePreviewUrl("");
+    }
     close();
-    form.reset();
   }
 
   async function handleSubmit(values: FormValues) {
     setIsLoading(true);
-    try {
-      const payload: CreatePetLostAndFoundPayload = {
-        ...values,
-        file: values.attachment,
-        petOwnerId,
-      };
-      await createPetLostAndFoundPostMutation.mutateAsync(payload);
-      handleClose();
-      refetch();
-      notifications.show({
-        message: "Pet Lost and Found Post Created",
-        color: "green",
-      });
-    } catch (error: any) {
-      setIsLoading(false);
-      notifications.show({
-        ...getErrorMessageProps("Error Creating Post", error),
-      });
+
+    if (isUpdating) {
+      try {
+        const payload: UpdatePetLostAndFoundPayload = {
+          ...values,
+          lastSeenDate: new Date(values.lastSeenDate).toISOString(),
+          petLostAndFoundId: post.petLostAndFoundId,
+        };
+        await updatePetLostAndFoundMutation.mutateAsync(payload);
+        handleClose();
+        refetch();
+        notifications.show({
+          message: "Pet Lost and Found Post Updated",
+          color: "green",
+        });
+      } catch (error: any) {
+        setIsLoading(false);
+        notifications.show({
+          ...getErrorMessageProps("Error Updating Post", error),
+        });
+      }
+    } else {
+      try {
+        const payload: CreatePetLostAndFoundPayload = {
+          ...values,
+          lastSeenDate: new Date(values.lastSeenDate).toISOString(),
+          petOwnerId,
+        };
+        await createPetLostAndFoundPostMutation.mutateAsync(payload);
+        handleClose();
+        refetch();
+        notifications.show({
+          message: "Pet Lost and Found Post Created",
+          color: "green",
+        });
+      } catch (error: any) {
+        setIsLoading(false);
+        notifications.show({
+          ...getErrorMessageProps("Error Creating Post", error),
+        });
+      }
     }
     setIsLoading(false);
   }
 
-  const handleFileInputChange = (file) => {
-    if (file) {
-      const imageObjectUrl = URL.createObjectURL(file);
+  const handleFileInputChange = (newFile: File) => {
+    if (newFile) {
+      const imageObjectUrl = URL.createObjectURL(newFile);
       setImagePreviewUrl(imageObjectUrl);
-      form.setValues({
-        ...form.values,
-        attachment: file,
-      });
+      form.setFieldValue("file", newFile);
     } else {
       setImagePreviewUrl("");
-      form.setValues({
-        ...form.values,
-        attachment: null,
-      });
+      form.setFieldValue("file", null);
     }
   };
 
@@ -152,7 +230,7 @@ const LostAndFoundPostModal = ({
       size="xl"
       title={
         <Text fw={500} size="lg">
-          {post ? "Update Post" : "Create New Post"}
+          {isUpdating ? "Update Post" : "Create New Post"}
         </Text>
       }
     >
@@ -256,7 +334,7 @@ const LostAndFoundPostModal = ({
               onChange={(file) => handleFileInputChange(file)}
               capture={false}
             />
-            {form.values.attachment && imagePreviewUrl && (
+            {form.values.file && imagePreviewUrl && (
               <Card sx={{ maxWidth: "100%" }}>
                 <Image
                   src={imagePreviewUrl}
@@ -268,7 +346,7 @@ const LostAndFoundPostModal = ({
           </Grid.Col>
         </Grid>
         <Group position="apart">
-          {post && (
+          {isUpdating && (
             <Button
               mt="lg"
               type="reset"
@@ -283,13 +361,13 @@ const LostAndFoundPostModal = ({
           <Button
             mt="lg"
             type="submit"
-            w={post ? "49%" : "100%"}
+            w={isUpdating ? "49%" : "100%"}
             color="dark"
             size="md"
             className="gradient-hover"
             loading={isLoading}
           >
-            {post ? "Save changes" : "Create post"}
+            {isUpdating ? "Save changes" : "Create post"}
           </Button>
         </Group>
       </form>
