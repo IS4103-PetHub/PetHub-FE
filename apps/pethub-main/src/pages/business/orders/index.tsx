@@ -136,7 +136,7 @@ export default function Orders({ userId, canView }: OrdersProps) {
     });
   }
 
-  const renderContent = async () => {
+  const renderContent = () => {
     if (orderItems.length === 0) {
       if (isLoading) {
         return <CenterLoader />;
