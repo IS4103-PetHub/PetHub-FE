@@ -330,8 +330,9 @@ export default function Cart({ userId }: CartProps) {
                     leftIcon={<IconX size="1rem" />}
                     color="red"
                     variant="subtle"
-                    subtitle="Are you sure you want to clear all cart items? All existing chosen appointment time slots will be removed."
+                    subtitle="Are you sure you want to clear all cart items?"
                     title="Clear cart"
+                    overrideDeleteButtonText="Clear"
                   />
                 </Group>
               </Card>
