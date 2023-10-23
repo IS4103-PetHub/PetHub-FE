@@ -1,18 +1,26 @@
+import { Container } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
+import { useEffect } from "react";
 import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
+import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
-import NewListings from "@/components/common/landing/NewListings";
 import ServicesSection from "@/components/common/landing/ServicesSection";
 import SimpleFooter from "@/components/common/landing/SimpleFooter";
 import WhyPetHub from "@/components/common/landing/WhyPetHub";
+import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 
 const LIMIT_SIZE = 6;
 interface HomeProps {
   newServiceListings: ServiceListing[];
 }
 export default function Home({ newServiceListings }: HomeProps) {
+  // for appointment reminder modal
+  const [opened, { open, close }] = useDisclosure(false);
+  useEffect(() => open(), []);
+
   return (
     <>
       <Head>
@@ -23,8 +31,12 @@ export default function Home({ newServiceListings }: HomeProps) {
       <main>
         <Banner />
         <ServicesSection />
-        <NewListings serviceListings={newServiceListings} />
+        <ServiceListingScrollCarousel
+          serviceListings={newServiceListings}
+          title="New listings"
+        />
         <WhyPetHub />
+        <AppointmentReminderModal opened={opened} close={close} />
       </main>
       <SimpleFooter />
     </>
@@ -38,9 +50,9 @@ export async function getServerSideProps(context) {
     path: "/",
   });
   const newServiceListings =
-    (await (
+    ((await (
       await api.get(`/service-listings/active?limit=${LIMIT_SIZE}`)
-    ).data) ?? [];
+    ).data) as ServiceListing[]) ?? [];
 
   return { props: { newServiceListings } };
 }

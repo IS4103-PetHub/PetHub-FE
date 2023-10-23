@@ -18,6 +18,7 @@ import {
   IconArticle,
   IconLogout,
   IconBusinessplan,
+  IconFileInvoice,
 } from "@tabler/icons-react";
 import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
@@ -25,7 +26,6 @@ import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { LightDarkModeToggle } from "web-ui";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -107,6 +107,11 @@ const data = [
     label: "Commission Rules",
     icon: IconBusinessplan,
   },
+  {
+    link: "/admin/orders",
+    label: "Orders",
+    icon: IconFileInvoice,
+  },
 ];
 
 const SideNavBar = () => {
@@ -151,7 +156,6 @@ const SideNavBar = () => {
           >
             PetHub Admin
           </Text>
-          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

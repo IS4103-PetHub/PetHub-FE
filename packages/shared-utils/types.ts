@@ -1,5 +1,9 @@
 import {
+  AccountStatusEnum,
+  AccountTypeEnum,
+  GenderEnum,
   OrderItemStatusEnum,
+  PetTypeEnum,
   RecurrencePatternEnum,
   ServiceCategoryEnum,
 } from "./constants";
@@ -19,6 +23,14 @@ export interface ResetPasswordPayload {
   newPassword: string;
 }
 
+export interface VerifyEmailPayload {
+  token: string | null;
+}
+
+export interface ResendVerifyEmailPayload {
+  email: string;
+}
+
 export interface Tag {
   tagId: number;
   name: string;
@@ -27,7 +39,7 @@ export interface Tag {
 }
 
 export interface Address {
-  addressId?: string;
+  addressId?: number;
   addressName: string;
   line1: string;
   line2: string;
@@ -102,6 +114,16 @@ export interface OrderItem {
   invoice: {
     paymentId: string;
     createdAt: string;
+    PetOwner: {
+      firstName: string;
+      lastName: string;
+      contactNumber: string;
+      dateOfBirth: string;
+      userId: number;
+      user: {
+        email: string;
+      };
+    };
   };
   serviceListingId: number;
   serviceListing: ServiceListing;
@@ -123,6 +145,7 @@ export interface OrderItem {
   attachmentKey: string;
   attachmentURL: string;
   commissionRate: number;
+  dateFulfilled?: string;
 }
 
 export interface OrderBarCounts {
@@ -169,4 +192,41 @@ export interface CommissionRule {
   createdAt: string;
   updatedAt: string;
   petBusinesses: any[];
+}
+
+// User
+export abstract class User {
+  userId: number;
+  contactNumber: string;
+
+  // found in 'user' section of backend response
+  email: string;
+  accountType: AccountTypeEnum;
+  accountStatus: AccountStatusEnum;
+  dateCreated: string;
+  lastUpdated?: string;
+}
+
+export interface PetOwner extends User {
+  // pet owner attributes
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  favouriteListings?: ServiceListing[];
+
+  user?: User; // BE not flattening for some endpoints
+}
+
+export interface Pet {
+  petId: number;
+  petName: string;
+  petType: PetTypeEnum;
+  gender: GenderEnum;
+  petWeight?: number;
+  dateOfBirth?: string;
+  microchipNumber?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  dateCreated: string;
+  dateUpdated: string;
 }

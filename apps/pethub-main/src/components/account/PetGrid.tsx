@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
   GenderEnum,
+  PetTypeEnum,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
@@ -207,19 +208,16 @@ const PetGrid = ({ userId }: PetGridProps) => {
                       )}
                     </Group>
                     <Text>
-                      {pet.dateOfBirth
-                        ? `Age: ${calculateAge(pet.dateOfBirth)}`
-                        : ""}
+                      {pet.dateOfBirth &&
+                        `Age: ${calculateAge(pet.dateOfBirth)}`}
                     </Text>
                     <Text>
-                      {pet.petWeight !== null && pet.petWeight !== undefined
-                        ? `Weight: ${formatNumber2Decimals(pet.petWeight)} kg`
-                        : ""}
+                      {pet.petWeight > 0 &&
+                        `Weight: ${formatNumber2Decimals(pet.petWeight)} kg`}
                     </Text>
                     <Text>
-                      {pet.microchipNumber
-                        ? `Microchip No: ${pet.microchipNumber}`
-                        : ""}
+                      {pet.microchipNumber &&
+                        `Microchip No: ${pet.microchipNumber}`}
                     </Text>
                   </Card.Section>
                   <Card.Section style={{ height: "15%" }}>

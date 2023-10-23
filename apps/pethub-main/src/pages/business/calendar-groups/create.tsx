@@ -7,17 +7,21 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React from "react";
 import {
+  AccountStatusEnum,
   CalendarGroup,
   RecurrencePatternEnum,
   getErrorMessageProps,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
+import api from "@/api/axiosConfig";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import {
   useCreateCalendarGroup,
   useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
+import { PetBusiness } from "@/types/types";
 import {
   validateCGDescription,
   validateCGName,
@@ -26,10 +30,12 @@ import {
 
 interface CreateCalendarGroupProps {
   userId: number;
+  canView: boolean;
 }
 
 export default function CreateCalendarGroup({
   userId,
+  canView,
 }: CreateCalendarGroupProps) {
   const router = useRouter();
   const { data: calendarGroup = [], refetch: refetchCalendarGroup } =
@@ -91,25 +97,29 @@ export default function CreateCalendarGroup({
         <title>Create Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="xl" mb="xl">
-        <LargeBackButton
-          size="sm"
-          text="Back to Calendar View"
-          onClick={() => router.push("/business/appointments")}
-          mb="md"
-        />
-        <PageTitle title="Create Calendar Group" />
-
-        <Group>
-          <CalendarGroupForm
-            form={form}
-            userId={userId}
-            forView={false}
-            isEditingDisabled={false}
-            submit={createCalendarGroup}
+      {!canView ? (
+        <PBCannotAccessMessage />
+      ) : (
+        <Container mt="xl" mb="xl">
+          <LargeBackButton
+            size="sm"
+            text="Back to Calendar View"
+            onClick={() => router.push("/business/appointments")}
+            mb="md"
           />
-        </Group>
-      </Container>
+          <PageTitle title="Create Calendar Group" />
+
+          <Group>
+            <CalendarGroupForm
+              form={form}
+              userId={userId}
+              forView={false}
+              isEditingDisabled={false}
+              submit={createCalendarGroup}
+            />
+          </Group>
+        </Container>
+      )}
     </>
   );
 }
@@ -120,6 +130,14 @@ export async function getServerSideProps(context) {
   if (!session) return null;
 
   const userId = session.user["userId"];
+  const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, canView } };
 }

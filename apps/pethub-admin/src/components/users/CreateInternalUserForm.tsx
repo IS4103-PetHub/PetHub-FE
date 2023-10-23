@@ -30,8 +30,6 @@ export function CreateInternalUserForm({
       lastName: "",
       adminRole: InternalUserRoleEnum.admin,
       email: "",
-      password: "",
-      confirmPassword: "",
     },
 
     validate: {
@@ -44,9 +42,6 @@ export function CreateInternalUserForm({
           ? "Last name is required."
           : null,
       email: isEmail("Invalid email."),
-      password: validatePassword,
-      confirmPassword: (value, values) =>
-        value !== values.password ? "Passwords do not match." : null,
     },
   });
 
@@ -80,7 +75,6 @@ export function CreateInternalUserForm({
       lastName: values.lastName,
       email: values.email,
       adminRole: values.adminRole,
-      password: values.password,
     };
     createInternalUserAccount(payload);
   }
@@ -111,25 +105,7 @@ export function CreateInternalUserForm({
                 {...form.getInputProps("email")}
               />
             </Grid.Col>
-            <Grid.Col span={12}>
-              <PasswordInput
-                placeholder="Password"
-                label="Password"
-                {...form.getInputProps("password")}
-              />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <PasswordBar password={form.values.password} />
-            </Grid.Col>
-            <Grid.Col span={12}>
-              <PasswordInput
-                placeholder="Confirm password"
-                label="Confirm password"
-                {...form.getInputProps("confirmPassword")}
-              />
-            </Grid.Col>
           </Grid>
-
           <Button type="submit" fullWidth leftIcon={<IconPlus size="1rem" />}>
             Create Internal User
           </Button>

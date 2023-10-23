@@ -1,16 +1,13 @@
 import {
   Alert,
-  Box,
   Button,
   Container,
   Grid,
   Group,
   Text,
-  Transition,
   useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { IconExclamationCircle } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -209,7 +206,7 @@ export default function Orders({ userId }: OrdersProps) {
       <SearchBar
         size="md"
         w="55%"
-        text="Search for an order item here"
+        text="Search by title, business or ID"
         onSearch={handleSearch}
       />
       <SortBySelect
@@ -223,18 +220,7 @@ export default function Orders({ userId }: OrdersProps) {
 
   const orderItemCards = records?.map((item) => (
     <Grid.Col key={item.orderItemId}>
-      <OrderItemCard
-        userId={userId}
-        orderItemId={item.orderItemId}
-        invoiceId={item.invoiceId}
-        paymentId={item.invoice.paymentId}
-        expiryDate={item.expiryDate}
-        price={item.itemPrice}
-        voucherCode={item.voucherCode}
-        serviceListing={item.serviceListing}
-        status={item.status}
-        createdAt={item.invoice.createdAt}
-      />
+      <OrderItemCard userId={userId} orderItem={item} />
     </Grid.Col>
   ));
 
@@ -256,7 +242,7 @@ export default function Orders({ userId }: OrdersProps) {
         {isSearching && records.length === 0 ? (
           <NoSearchResultsMessage />
         ) : (
-          <Grid>{orderItemCards}</Grid>
+          <Grid mb="xl">{orderItemCards}</Grid>
         )}
       </>
     );
@@ -265,12 +251,12 @@ export default function Orders({ userId }: OrdersProps) {
   return (
     <>
       <Head>
-        <title>Orders - Pet Hub</title>
+        <title>My Orders - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
         <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
-          {orderBarCounts?.toBookCount !== 0 && toBookAlert}
+          {orderBarCounts?.toBookCount > 0 && toBookAlert}
           <Group position="apart">
             <PageTitle title={`My orders`} mb="lg" />
             {orderItems.length > 0 && searchAndSortGroup}

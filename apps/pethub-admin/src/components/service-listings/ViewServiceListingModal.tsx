@@ -12,6 +12,7 @@ import {
   Divider,
   Group,
   Button,
+  Checkbox,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
@@ -220,6 +221,52 @@ const ViewServiceListingModal = ({
                 <Text>
                   {serviceListing.lastUpdated
                     ? new Date(serviceListing.lastUpdated).toLocaleDateString()
+                    : "-"}
+                </Text>
+              </Grid.Col>
+
+              <Grid.Col span={3}>
+                <Text fw={700}>Requires Bookings:</Text>
+              </Grid.Col>
+              <Grid.Col span={9}>
+                {serviceListing.requiresBooking ? (
+                  <Badge color="green">Yes</Badge>
+                ) : (
+                  <Badge color="red">No</Badge>
+                )}
+              </Grid.Col>
+
+              {serviceListing.requiresBooking && (
+                <>
+                  <Grid.Col span={3}>
+                    <Text fw={700}>Duration:</Text>
+                  </Grid.Col>
+                  <Grid.Col span={9}>
+                    <Text>{serviceListing.duration} mins</Text>
+                  </Grid.Col>
+                </>
+              )}
+
+              <Grid.Col span={3}>
+                <Text fw={700}>Default Expiry Days:</Text>
+              </Grid.Col>
+              <Grid.Col span={9}>
+                <Text>
+                  {serviceListing.defaultExpiryDays
+                    ? `${serviceListing.defaultExpiryDays} Days`
+                    : "-"}
+                </Text>
+              </Grid.Col>
+
+              <Grid.Col span={3}>
+                <Text fw={700}>Last Possible Date:</Text>
+              </Grid.Col>
+              <Grid.Col span={9}>
+                <Text>
+                  {serviceListing.lastPossibleDate
+                    ? new Date(
+                        serviceListing.lastPossibleDate,
+                      ).toLocaleDateString()
                     : "-"}
                 </Text>
               </Grid.Col>

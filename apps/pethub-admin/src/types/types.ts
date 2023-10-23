@@ -57,7 +57,6 @@ export interface CreateInternalUserPayload {
   lastName: string;
   email: string;
   adminRole: string;
-  password: string;
 }
 
 export interface CreateUserGroupPayload {

@@ -9,6 +9,7 @@ import {
   Box,
   Checkbox,
   useMantineTheme,
+  Divider,
 } from "@mantine/core";
 
 import { DateInput } from "@mantine/dates";
@@ -113,6 +114,42 @@ const SettingsForm = ({
     });
   };
 
+  function renderItemGroup(label: string, value: string | any[]) {
+    if (Array.isArray(value) && value.length > 0) {
+      return (
+        <>
+          <Group ml="xl" mr="xl" mb="md" position="apart">
+            <Text fw={600}>{label}</Text>
+            <Text color="dimmed">
+              {value.map((item, index) => (
+                <span key={item.id}>
+                  {index > 0 ? ", " : ""}
+                  {item.name}
+                </span>
+              ))}
+            </Text>
+          </Group>
+          <Divider mb="md" />
+        </>
+      );
+    } else if (typeof value === "string") {
+      return (
+        <>
+          {value && (
+            <>
+              <Group ml="xl" mr="xl" mb="md" position="apart">
+                <Text fw={600}>{label}</Text>
+                <Text color="dimmed">{value}</Text>
+              </Group>
+              <Divider mb="md" />
+            </>
+          )}
+        </>
+      );
+    }
+    return null;
+  }
+
   return (
     <Grid.Col span={12}>
       <Card
@@ -139,79 +176,103 @@ const SettingsForm = ({
           </Group>
         </Card.Section>
         <Card.Section inheritPadding mb="lg">
-          <Group position="apart">
-            <DateInput
-              clearable
-              defaultValue={
-                setting?.recurrence?.startDate
-                  ? new Date(setting.recurrence.startDate)
-                  : null
-              }
-              minDate={dayjs(new Date()).add(1, "day").toDate()}
-              maxDate={dayjs(new Date()).add(3, "month").toDate()}
-              label="Start date"
-              placeholder="Start date (DD-MM-YYYY)"
-              valueFormat="DD-MM-YYYY"
-              icon={<IconCalendar size="1rem" />}
-              sx={{ width: "48%" }}
-              disabled={isEditingDisabled}
-              onChange={(value) =>
-                onChange({
-                  recurrence: { ...setting.recurrence, startDate: value },
-                })
-              }
-              error={errors?.[index]?.recurrence?.startDate}
-            />
-            <DateInput
-              clearable
-              defaultValue={
-                setting?.recurrence?.endDate
-                  ? new Date(setting.recurrence.endDate)
-                  : null
-              }
-              minDate={dayjs(new Date()).add(1, "day").toDate()}
-              maxDate={dayjs(new Date()).add(3, "month").toDate()}
-              label="End date"
-              placeholder="End date (DD-MM-YYYY)"
-              valueFormat="DD-MM-YYYY"
-              icon={<IconCalendar size="1rem" />}
-              sx={{ width: "48%" }}
-              disabled={isEditingDisabled || isSettingOver}
-              onChange={(value) =>
-                onChange({
-                  recurrence: { ...setting.recurrence, endDate: value },
-                })
-              }
-              error={errors?.[index]?.recurrence?.endDate}
-            />
-          </Group>
-        </Card.Section>
-        <Card.Section inheritPadding mb="lg">
-          <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]}>
-            Recurrence pattern
-          </Text>
-          <SegmentedControl
-            defaultValue={setting?.recurrence?.pattern}
-            fullWidth
-            size="xs"
-            data={segmentedControlData}
-            disabled={isEditingDisabled || isSettingOver}
-            onChange={(value) =>
-              onChange({
-                recurrence: { ...setting.recurrence, pattern: value },
-              })
-            }
-          />
-          {setting?.recurrence?.pattern === RecurrencePatternEnum.Daily && (
-            <Text fs="italic" fz="xs" mt="xs" color="orange">
-              {
-                "Since 'Daily' is selected, any time periods set will override other schedule settings with recurrence pattern of 'Weekly' for any overlapping dates."
-              }
-            </Text>
+          {isEditingDisabled ? (
+            <>
+              {renderItemGroup(
+                "Start date",
+                dayjs(setting?.recurrence?.startDate).format("DD/MM/YYYY"),
+              )}
+              {renderItemGroup(
+                "End date",
+                dayjs(setting?.recurrence?.endDate).format("DD/MM/YYYY"),
+              )}
+            </>
+          ) : (
+            <Group position="apart">
+              <DateInput
+                clearable
+                defaultValue={
+                  setting?.recurrence?.startDate
+                    ? new Date(setting.recurrence.startDate)
+                    : null
+                }
+                minDate={dayjs(new Date()).add(1, "day").toDate()}
+                maxDate={dayjs(new Date()).add(3, "month").toDate()}
+                label="Start date"
+                placeholder="Start date (DD/MM/YYYY)"
+                valueFormat="DD/MM/YYYY"
+                icon={<IconCalendar size="1rem" />}
+                sx={{ width: "48%" }}
+                disabled={isEditingDisabled}
+                onChange={(value) =>
+                  onChange({
+                    recurrence: { ...setting.recurrence, startDate: value },
+                  })
+                }
+                error={errors?.[index]?.recurrence?.startDate}
+              />
+              <DateInput
+                clearable
+                defaultValue={
+                  setting?.recurrence?.endDate
+                    ? new Date(setting.recurrence.endDate)
+                    : null
+                }
+                minDate={dayjs(new Date()).add(1, "day").toDate()}
+                maxDate={dayjs(new Date()).add(3, "month").toDate()}
+                label="End date"
+                placeholder="End date (DD/MM/YYYY)"
+                valueFormat="DD/MM/YYYY"
+                icon={<IconCalendar size="1rem" />}
+                sx={{ width: "48%" }}
+                disabled={isEditingDisabled || isSettingOver}
+                onChange={(value) =>
+                  onChange({
+                    recurrence: { ...setting.recurrence, endDate: value },
+                  })
+                }
+                error={errors?.[index]?.recurrence?.endDate}
+              />
+            </Group>
           )}
         </Card.Section>
-        {setting?.recurrence?.pattern === RecurrencePatternEnum.Weekly && (
-          <Card.Section inheritPadding mb="lg">
+        <Card.Section inheritPadding mb="lg">
+          {isEditingDisabled ? (
+            renderItemGroup("Recurrence pattern", setting?.recurrence.pattern)
+          ) : (
+            <>
+              <Text fz="0.875rem" fw={500} color={theme.colors.gray[9]}>
+                Recurrence pattern
+              </Text>
+              <SegmentedControl
+                defaultValue={setting?.recurrence?.pattern}
+                fullWidth
+                size="xs"
+                data={segmentedControlData}
+                disabled={isEditingDisabled || isSettingOver}
+                onChange={(value) =>
+                  onChange({
+                    recurrence: { ...setting.recurrence, pattern: value },
+                  })
+                }
+              />
+              {setting?.recurrence?.pattern === RecurrencePatternEnum.Daily && (
+                <Text fs="italic" fz="xs" mt="xs" color="orange">
+                  {
+                    "Since 'Daily' is selected, any time periods set will override other schedule settings with recurrence pattern of 'Weekly' for any overlapping dates."
+                  }
+                </Text>
+              )}
+            </>
+          )}
+        </Card.Section>
+        <Card.Section inheritPadding mb="lg">
+          {isEditingDisabled ? (
+            renderItemGroup(
+              "Recurring days",
+              setting?.days?.map((day) => ({ id: day, name: day })),
+            )
+          ) : (
             <Checkbox.Group
               defaultValue={setting?.days}
               label="Select the recurring days of the week"
@@ -229,8 +290,8 @@ const SettingsForm = ({
                 ))}
               </Group>
             </Checkbox.Group>
-          </Card.Section>
-        )}
+          )}
+        </Card.Section>
         <Card.Section inheritPadding mb="lg">
           {timePeriods.map((timePeriod: TimePeriod, idx: number) => (
             <TimePeriodForm

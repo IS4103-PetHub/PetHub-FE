@@ -16,13 +16,16 @@ import {
   IconHome2,
   IconCalendar,
   IconLogout,
+  IconFileInvoice,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { signOut } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
-import { LightDarkModeToggle } from "web-ui";
+import { useEffect, useState } from "react";
+import { AccountStatusEnum } from "shared-utils";
+import api from "@/api/axiosConfig";
+import { PetBusiness } from "@/types/types";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -79,7 +82,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-const data = [
+const defaultLinks = [
   {
     link: "/business/dashboard",
     label: "Dashboard",
@@ -94,6 +97,15 @@ const data = [
     link: "/business/account",
     label: "My Account",
     icon: IconUser,
+  },
+];
+
+// display these only if PB account is not pending
+const nonPendingLinks = [
+  {
+    link: "/business/orders",
+    label: "Orders",
+    icon: IconFileInvoice,
   },
   {
     link: "/business/listings",
@@ -113,8 +125,33 @@ const SideNavBar = () => {
   const router = useRouter();
   const [active, setActive] = useState(router.asPath);
   const { data: session, status } = useSession();
+  const [linksToRender, setLinksToRender] = useState<any[]>(defaultLinks);
 
-  const links = data.map((item) => (
+  const checkStatusAndAddLinks = async () => {
+    const session = await getSession();
+    const accountStatus = session.user["accountStatus"];
+    const userId = session.user["userId"];
+
+    const petBusiness = (await (
+      await api.get(`/users/pet-businesses/${userId}`)
+    ).data) as PetBusiness;
+
+    const canView =
+      accountStatus !== AccountStatusEnum.Pending &&
+      petBusiness.petBusinessApplication;
+
+    if (canView) {
+      const newLinks = [...defaultLinks, ...nonPendingLinks];
+      setLinksToRender(newLinks);
+    }
+    return;
+  };
+
+  useEffect(() => {
+    checkStatusAndAddLinks();
+  }, []);
+
+  const links = linksToRender.map((item) => (
     <Link
       className={cx(classes.link, {
         [classes.linkActive]: router.asPath === item.link,
@@ -149,7 +186,6 @@ const SideNavBar = () => {
           >
             PetHub Business
           </Text>
-          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

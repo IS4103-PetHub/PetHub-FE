@@ -16,12 +16,13 @@ import { IconCalendar } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   GenderEnum,
+  Pet,
+  PetTypeEnum,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import { useCreatePet, useUpdatePet } from "@/hooks/pets";
-import { PetTypeEnum } from "@/types/constants";
-import { Pet, PetPayload } from "@/types/types";
+import { PetPayload } from "@/types/types";
 
 interface PetInfoModalProps {
   opened: boolean;

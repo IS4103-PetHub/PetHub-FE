@@ -12,7 +12,6 @@ import {
   IconAddressBook,
   IconPaw,
   IconDiscount2,
-  IconInfoCircle,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -50,6 +49,11 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
   const accountStatus = petOwner
     ? petOwner.accountStatus
     : petBusiness.accountStatus;
+
+  const isApprovedPB =
+    petBusiness &&
+    petBusiness.petBusinessApplication?.petBusinessApplicationId &&
+    petBusiness.accountStatus !== AccountStatusEnum.Pending;
 
   // to determine to show deactivate or reactivate
   const action =
@@ -96,7 +100,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
           multiple
           defaultValue={defaultValues}
         >
-          {petBusiness && (
+          {isApprovedPB && (
             // commission for PB
             <Accordion.Item value="commission">
               <Accordion.Control>
@@ -150,23 +154,22 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
             </Accordion.Panel>
           </Accordion.Item>
 
-          {petBusiness?.petBusinessApplication?.petBusinessApplicationId &&
-            petBusiness.accountStatus !== AccountStatusEnum.Pending && (
-              <Accordion.Item value="addresses">
-                <Accordion.Control>
-                  <Group>
-                    <IconAddressBook color={theme.colors.indigo[5]} />
-                    <Text size="lg">Addresses</Text>
-                  </Group>
-                </Accordion.Control>
-                <Accordion.Panel p="md">
-                  <AddressInfoForm
-                    petBusiness={petBusiness}
-                    refetch={refetchPetBusiness}
-                  />
-                </Accordion.Panel>
-              </Accordion.Item>
-            )}
+          {isApprovedPB && (
+            <Accordion.Item value="addresses">
+              <Accordion.Control>
+                <Group>
+                  <IconAddressBook color={theme.colors.indigo[5]} />
+                  <Text size="lg">Addresses</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md">
+                <AddressInfoForm
+                  petBusiness={petBusiness}
+                  refetch={refetchPetBusiness}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
 
           {petOwner && (
             // pets for PO

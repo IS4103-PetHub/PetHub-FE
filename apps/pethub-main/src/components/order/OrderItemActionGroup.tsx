@@ -30,11 +30,13 @@ import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 interface OrderItemStepperContentProps {
   userId: number;
   orderItem: OrderItem;
+  refetch: () => {};
 }
 
 const OrderItemStepperContent = ({
   userId,
   orderItem,
+  refetch,
   ...props
 }: OrderItemStepperContentProps) => {
   const theme = useMantineTheme();
@@ -53,8 +55,8 @@ const OrderItemStepperContent = ({
   async function buyAgainHandler() {
     await addItemToCart(
       {
-        serviceListing: orderItem.serviceListing,
-        ...(orderItem.serviceListing.calendarGroupId ? {} : { quantity: 1 }),
+        serviceListing: orderItem?.serviceListing,
+        ...(orderItem?.serviceListing.calendarGroupId ? {} : { quantity: 1 }),
         isSelected: true,
       } as CartItem,
       1,
@@ -72,8 +74,8 @@ const OrderItemStepperContent = ({
   }
 
   function viewInvoiceHandler() {
-    if (orderItem.attachmentURL) {
-      window.open(orderItem.attachmentURL, "_blank"); // _blank === New tab
+    if (orderItem?.attachmentURL) {
+      window.open(orderItem?.attachmentURL, "_blank"); // _blank === New tab
     } else {
       notifications.show({
         title: "Error Viewing Invoice",
@@ -87,10 +89,15 @@ const OrderItemStepperContent = ({
   // ================================= FAKE REFUND STUFF ================================= //
   // Add 3 days from expiry date for now 2359
   const fakeRefundDate = formatISODateTimeShort(
-    dayjs(orderItem.expiryDate).add(3, "day").endOf("day").toISOString(),
+    dayjs(orderItem?.expiryDate)
+      .add(3, "day")
+      .endOf("day")
+      .toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem.expiryDate).add(7, "day").endOf("day"),
+    dayjs(orderItem?.expiryDate)
+      .add(3, "day")
+      .endOf("day"),
   );
   // ================================= FAKE REFUND STUFF ================================= //
 
@@ -120,15 +127,15 @@ const OrderItemStepperContent = ({
   const buyAgainColumn = (
     <>
       <Grid.Col span={6}>
-        {orderItem.status === OrderItemStatusEnum.Expired ? (
+        {orderItem?.status === OrderItemStatusEnum.Expired ? (
           <Text size="xs" color="red">
             Your order has reached the end of the validity period and expired on{" "}
-            <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
+            <b>{formatISODayDateTime(orderItem?.expiryDate)}</b>
           </Text>
-        ) : orderItem.status === OrderItemStatusEnum.Refunded ? (
+        ) : orderItem?.status === OrderItemStatusEnum.Refunded ? (
           <Text size="xs" color="orange">
-            The amount of ${formatNumber2Decimals(orderItem.itemPrice)} has been
-            refunded to your original payment method.
+            The amount of ${formatNumber2Decimals(orderItem?.itemPrice)} has
+            been refunded to your original payment method.
           </Text>
         ) : (
           <Text size="xs">
@@ -149,23 +156,23 @@ const OrderItemStepperContent = ({
   const bookNowColumn = (
     <>
       <Grid.Col span={6}>
-        {orderItem.booking ? (
+        {orderItem?.booking ? (
           <Text size="xs">
             You are eligible to reschedule until before the end of the validity
-            period on <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
+            period on <b>{formatISODayDateTime(orderItem?.expiryDate)}</b>
           </Text>
         ) : (
           <Text size="xs">
             Make your booking and redeem your voucher before the end of the
             validity period on{" "}
-            <b>{formatISODayDateTime(orderItem.expiryDate)}</b>
+            <b>{formatISODayDateTime(orderItem?.expiryDate)}</b>
           </Text>
         )}
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
         <Button fullWidth variant="filled" onClick={bookNowHandler}>
-          {orderItem.booking ? "Reschedule" : "Book now"}
+          {orderItem?.booking ? "Reschedule" : "Book now"}
         </Button>
       </Grid.Col>
     </>
@@ -175,7 +182,7 @@ const OrderItemStepperContent = ({
     <>
       <Grid.Col span={8} />
       <Grid.Col span={4}>
-        <CopyButton value={orderItem.voucherCode} timeout={3000}>
+        <CopyButton value={orderItem?.voucherCode} timeout={3000}>
           {({ copied, copy }) => (
             <Button
               color={copied ? "green" : null}
@@ -187,7 +194,7 @@ const OrderItemStepperContent = ({
             >
               {copied
                 ? "Copied to clipboard"
-                : `Voucher Code: ${orderItem.voucherCode}`}
+                : `Voucher Code: ${orderItem?.voucherCode}`}
             </Button>
           )}
         </CopyButton>
@@ -247,7 +254,7 @@ const OrderItemStepperContent = ({
   const displayBookingColumn = (text?: string) => {
     return (
       <>
-        {orderItem.booking && (
+        {orderItem?.booking && (
           <>
             <Grid.Col>
               <Divider />
@@ -262,11 +269,11 @@ const OrderItemStepperContent = ({
               <Stack sx={{ display: "flex", alignItems: "flex-end" }}>
                 <Text size="sm" mb={-10}>
                   <b>Start: </b>
-                  {formatISODayDateTime(orderItem.booking.startTime)}
+                  {formatISODayDateTime(orderItem?.booking.startTime)}
                 </Text>
                 <Text size="sm">
                   <b>End: </b>
-                  {formatISODayDateTime(orderItem.booking.endTime)}
+                  {formatISODayDateTime(orderItem?.booking.endTime)}
                 </Text>
               </Stack>
             </Grid.Col>
@@ -290,7 +297,7 @@ const OrderItemStepperContent = ({
 
   const pendingFulfillmentGroup = (
     <>
-      {orderItem.serviceListing.requiresBooking && (
+      {orderItem?.serviceListing.requiresBooking && (
         <>
           {bookNowColumn}
           {dividerColumn}
@@ -301,7 +308,7 @@ const OrderItemStepperContent = ({
       {invoiceColumn}
       {dividerColumn}
       {voucherColumn}
-      {orderItem.serviceListing.requiresBooking &&
+      {orderItem?.serviceListing.requiresBooking &&
         displayBookingColumn(
           "You have scheduled a booking for this item on the timing displayed here. Please present the voucher code to the establishment to complete your purchase.",
         )}
@@ -317,7 +324,7 @@ const OrderItemStepperContent = ({
       {reviewColumn}
       {dividerColumn}
       {invoiceColumn}
-      {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
+      {orderItem?.serviceListing.requiresBooking && displayBookingColumn()}
     </>
   );
 
@@ -326,12 +333,12 @@ const OrderItemStepperContent = ({
       {buyAgainColumn}
       {dividerColumn}
       {invoiceColumn}
-      {orderItem.serviceListing.requiresBooking && displayBookingColumn()}
+      {orderItem?.serviceListing.requiresBooking && displayBookingColumn()}
     </>
   );
 
   function renderContent() {
-    switch (orderItem.status) {
+    switch (orderItem?.status) {
       case OrderItemStatusEnum.PendingBooking:
         return pendingBookingGroup;
 
@@ -356,10 +363,13 @@ const OrderItemStepperContent = ({
       {renderContent()}
       <SelectTimeslotModal
         petOwnerId={userId}
-        orderItemId={orderItem.orderItemId}
-        serviceListing={orderItem.serviceListing}
+        orderItem={orderItem}
+        serviceListing={orderItem?.serviceListing}
         opened={opened}
         onClose={close}
+        isUpdating={!!orderItem?.booking}
+        onUpdateBooking={refetch}
+        booking={orderItem?.booking as any}
       />
     </Grid>
   );

@@ -18,7 +18,6 @@ import {
   IconPhone,
   IconCheck,
   IconX,
-  IconClock12,
   IconClock,
 } from "@tabler/icons-react";
 import Head from "next/head";
@@ -38,6 +37,7 @@ import DescriptionAccordionItem from "@/components/service-listing-discovery/Des
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
+import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
 import { useCartOperations } from "@/hooks/cart";
 import {
@@ -53,11 +53,13 @@ import {
 interface ServiceListingDetailsProps {
   userId: number;
   serviceListing: ServiceListing;
+  recommendedListings: ServiceListing[];
 }
 
 export default function ServiceListingDetails({
   userId,
   serviceListing,
+  recommendedListings,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -67,7 +69,7 @@ export default function ServiceListingDetails({
     useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
-  const [opened, { open, close }] = useDisclosure(false); // for select timeslot modal
+  const [opened, { open, close }] = useDisclosure(false); // for view timeslot modal
 
   useEffect(() => {
     if (
@@ -144,7 +146,16 @@ export default function ServiceListingDetails({
     }
   };
 
-  const handleFavouriteToggle = () => {
+  const handleFavouriteToggle = async () => {
+    const session = await getSession();
+    if (!session) {
+      notifications.show({
+        title: "Login Required",
+        message: "Please log in to save a favourite!",
+        color: "red",
+      });
+      return;
+    }
     if (isFavourite) {
       handleRemoveFavourite(payload);
     } else {
@@ -265,7 +276,7 @@ export default function ServiceListingDetails({
                 text={isFavourite ? "Remove Favourite" : "Favourite"}
                 isFavourite={isFavourite}
                 size={20}
-                onClick={handleFavouriteToggle}
+                onClick={async () => handleFavouriteToggle()}
               />
             </Group>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
@@ -276,7 +287,11 @@ export default function ServiceListingDetails({
               radius="md"
               variant="filled"
               mt="xl"
-              mb={80}
+              mb={
+                !recommendedListings || recommendedListings?.length === 0
+                  ? 80
+                  : 0
+              }
               multiple
               value={ACCORDION_VALUES}
               chevronSize={0}
@@ -354,8 +369,23 @@ export default function ServiceListingDetails({
                 >
                   View timeslots
                 </Button>
+                <SelectTimeslotModal
+                  orderItem={null}
+                  petOwnerId={userId}
+                  serviceListing={serviceListing}
+                  opened={opened}
+                  onClose={close}
+                  viewOnly
+                />
               </Paper>
             )}
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <ServiceListingScrollCarousel
+              serviceListings={recommendedListings}
+              title="Recommended for you"
+              description="Based on your pets, order history and what's popular"
+            />
           </Grid.Col>
         </Grid>
       </Container>
@@ -365,11 +395,20 @@ export default function ServiceListingDetails({
 
 export async function getServerSideProps(context) {
   const id = context.params.id;
-
-  const serviceListing = await (await api.get(`/service-listings/${id}`)).data;
+  const serviceListing = (await (
+    await api.get(`/service-listings/${id}`)
+  ).data) as ServiceListing;
   const session = await getSession(context);
+
   if (!session) return { props: { serviceListing } };
   const userId = session.user["userId"];
 
-  return { props: { userId, serviceListing } };
+  const recommendedData = (await (
+    await api.get(`/service-listings/get-recommended-listings/${userId}`)
+  ).data) as ServiceListing[];
+  const recommendedListings = recommendedData.filter(
+    (listing) => serviceListing.serviceListingId !== listing.serviceListingId,
+  );
+
+  return { props: { userId, serviceListing, recommendedListings } };
 }
