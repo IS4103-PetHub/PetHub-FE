@@ -24,7 +24,6 @@ import {
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getSession, signIn } from "next-auth/react";
 import React from "react";
 import { getErrorMessageProps, validatePassword } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
@@ -33,11 +32,7 @@ import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
 import { useCreatePetOwner } from "@/hooks/pet-owner";
-import {
-  CreatePetBusinessPayload,
-  CreatePetOwnerPayload,
-  LoginCredentials,
-} from "@/types/types";
+import { CreatePetBusinessPayload, CreatePetOwnerPayload } from "@/types/types";
 
 const useStyles = createStyles((theme) => ({
   backgroundEffect: {
@@ -127,6 +122,7 @@ export default function SignUp() {
         ...getErrorMessageProps("Error Creating Account", error),
       });
     }
+    hideOverlay();
   };
 
   const createPetBusinessMutation = useCreatePetBusiness();
@@ -148,9 +144,11 @@ export default function SignUp() {
         ...getErrorMessageProps("Error Creating Account", error),
       });
     }
+    hideOverlay();
   };
 
   function handleSubmit(values: FormValues) {
+    showOverlay();
     if (values.accountType === AccountTypeEnum.PetOwner) {
       const payload: CreatePetOwnerPayload = {
         firstName: values.firstName,
