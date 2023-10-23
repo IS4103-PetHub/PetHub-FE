@@ -129,8 +129,8 @@ const LostAndFoundMasonryGrid = ({
   return (
     <>
       <Masonry
-        // always create a new layout
-        key={uniqueId()}
+        // create a new layout if the items change
+        key={JSON.stringify(items)}
         // Provides the data for our grid items
         items={items}
         // Adds space between the grid cells
