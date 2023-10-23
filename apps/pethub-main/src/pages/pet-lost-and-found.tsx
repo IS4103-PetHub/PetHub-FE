@@ -123,7 +123,11 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
     }
     return (
       <Box mt="lg">
-        <LostAndFoundMasonryGrid posts={records} activeType={activeType} />
+        <LostAndFoundMasonryGrid
+          posts={records}
+          sessionUserId={userId}
+          refetch={refetch}
+        />
       </Box>
     );
   }
@@ -133,19 +137,23 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
       <Container fluid pt={50} pb={50} w="90%">
         <Group position="apart">
           <PageTitle title="Pet Lost & Found Board" color="white" />
-          <LargeCreateButton
-            mt={-10}
-            text="New post"
-            // variant="white"
-            className="gradient-hover"
-            onClick={handleClickNewPost}
-          />
-          <LostAndFoundPostModal
-            petOwnerId={userId}
-            opened={opened}
-            close={close}
-            refetch={refetch}
-          />
+          {userId && (
+            <>
+              <LargeCreateButton
+                mt={-10}
+                text="New post"
+                // variant="white"
+                className="gradient-hover"
+                onClick={handleClickNewPost}
+              />
+              <LostAndFoundPostModal
+                petOwnerId={userId}
+                opened={opened}
+                close={close}
+                refetch={refetch}
+              />
+            </>
+          )}
         </Group>
 
         <Group position="apart" mt="xl">
@@ -178,14 +186,16 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
                   {formatStringToLetterCase(requestType)}
                 </Chip>
               ))}
-              <Chip
-                value={MY_POSTS_VALUE}
-                variant="filled"
-                size="lg"
-                style={{ opacity: activeType === MY_POSTS_VALUE ? 1 : 0.8 }}
-              >
-                My posts
-              </Chip>
+              {userId && (
+                <Chip
+                  value={MY_POSTS_VALUE}
+                  variant="filled"
+                  size="lg"
+                  style={{ opacity: activeType === MY_POSTS_VALUE ? 1 : 0.8 }}
+                >
+                  My posts
+                </Chip>
+              )}
             </Group>
           </Chip.Group>
           <MantineProvider

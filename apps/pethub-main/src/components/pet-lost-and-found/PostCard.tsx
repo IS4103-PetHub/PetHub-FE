@@ -8,6 +8,7 @@ import {
   Badge,
   Box,
   Paper,
+  Button,
 } from "@mantine/core";
 import {
   IconUserCircle,
@@ -19,6 +20,8 @@ import {
 import dayjs from "dayjs";
 import React from "react";
 import { formatISODateTimeShort, formatStringToLetterCase } from "shared-utils";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import EditActionButton from "web-ui/shared/EditActionButton";
 import { PetRequestTypeEnum } from "@/types/constants";
 import { calculateAge } from "@/util";
 
@@ -37,6 +40,10 @@ interface PostCardProps {
   petType: string;
   petDateOfBirth: string;
   attachmentURL: string;
+  isResolved: boolean;
+  userId: number;
+  sessionUserId?: number;
+  onDelete(id: number): void;
 }
 
 const PostCard = ({
@@ -53,6 +60,10 @@ const PostCard = ({
   petType,
   petDateOfBirth,
   attachmentURL,
+  isResolved,
+  userId,
+  sessionUserId,
+  onDelete,
 }: PostCardProps) => {
   const theme = useMantineTheme();
   const hasImage = !!attachmentURL;
@@ -92,10 +103,15 @@ const PostCard = ({
               opacity: 0.95,
             }}
             color={
-              requestType === PetRequestTypeEnum.FoundPet ? "indigo" : "red"
+              isResolved
+                ? "green"
+                : requestType === PetRequestTypeEnum.FoundPet
+                ? "indigo"
+                : "red"
             }
           >
             {formatStringToLetterCase(requestType)}
+            {isResolved && " (resolved) "}
           </Badge>
           {hasImage && <Image src={attachmentURL} />}
           <Badge
@@ -116,7 +132,13 @@ const PostCard = ({
         </Box>
       </Card.Section>
 
-      <Text fw={600} size="lg" mb={5} mt={hasImage ? "sm" : 40}>
+      <Text
+        fw={600}
+        size="lg"
+        mb={5}
+        mt={hasImage ? "sm" : 40}
+        sx={{ lineHeight: 1.4 }}
+      >
         {title}
       </Text>
       <Text fw={500} size="sm" mb={2}>
@@ -164,6 +186,17 @@ const PostCard = ({
           </Text>
         </Group>
       </Group>
+
+      {userId === sessionUserId && (
+        <Group position="right" mt="md">
+          <EditActionButton onClick={() => {}} />
+          <DeleteActionButtonModal
+            title={`Are you sure you want to delete this post?`}
+            subtitle={`This action cannot be undone. This pet lost and found post titled "${title}" would be permanently deleted.`}
+            onDelete={() => onDelete(id)}
+          />
+        </Group>
+      )}
     </Card>
   );
 };

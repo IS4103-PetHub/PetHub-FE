@@ -62,3 +62,11 @@ export const useGetPetLostAndFoundPostsByRequestTypeAndUserId = (
     },
   });
 };
+
+export const useDeletePetLostAndFoundPostById = () => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (await api.delete(`${PET_LOST_AND_FOUND_API}/${id}`)).data;
+    },
+  });
+};

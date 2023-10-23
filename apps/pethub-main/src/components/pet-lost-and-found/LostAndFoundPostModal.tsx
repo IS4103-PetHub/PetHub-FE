@@ -11,6 +11,7 @@ import {
   Card,
   FileInput,
   Image,
+  Group,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -23,11 +24,12 @@ import { useCreatePetLostAndFoundPost } from "@/hooks/pet-lost-and-found";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { PetRequestTypeEnum } from "@/types/constants";
-import { CreatePetLostAndFoundPayload } from "@/types/types";
+import { CreatePetLostAndFoundPayload, PetLostAndFound } from "@/types/types";
 
 interface LostAndFoundPostModalProps {
   petOwnerId: number;
   opened: boolean;
+  post?: PetLostAndFound;
   close(): void;
   refetch(): void;
 }
@@ -35,17 +37,17 @@ interface LostAndFoundPostModalProps {
 const LostAndFoundPostModal = ({
   petOwnerId,
   opened,
+  post,
   close,
   refetch,
 }: LostAndFoundPostModalProps) => {
-  const theme = useMantineTheme();
   const { data: petOwner } = useGetPetOwnerByIdAndAccountType(
     petOwnerId,
     AccountTypeEnum.PetOwner,
   );
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
-  const [isCreating, setIsCreating] = useToggle();
+  const [isLoading, setIsLoading] = useToggle();
 
   const createPetLostAndFoundPostMutation = useCreatePetLostAndFoundPost();
 
@@ -96,8 +98,13 @@ const LostAndFoundPostModal = ({
 
   type FormValues = typeof form.values;
 
+  function handleClose() {
+    close();
+    form.reset();
+  }
+
   async function handleSubmit(values: FormValues) {
-    setIsCreating(true);
+    setIsLoading(true);
     try {
       const payload: CreatePetLostAndFoundPayload = {
         ...values,
@@ -105,24 +112,19 @@ const LostAndFoundPostModal = ({
         petOwnerId,
       };
       await createPetLostAndFoundPostMutation.mutateAsync(payload);
-      close();
+      handleClose();
       refetch();
       notifications.show({
         message: "Pet Lost and Found Post Created",
         color: "green",
       });
     } catch (error: any) {
-      setIsCreating(false);
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps("Error Creating Post", error),
       });
     }
-    setIsCreating(false);
-  }
-
-  function handleClose() {
-    close();
-    form.reset();
+    setIsLoading(false);
   }
 
   const handleFileInputChange = (file) => {
@@ -150,7 +152,7 @@ const LostAndFoundPostModal = ({
       size="xl"
       title={
         <Text fw={500} size="lg">
-          Create New Post
+          {post ? "Update Post" : "Create New Post"}
         </Text>
       }
     >
@@ -265,17 +267,31 @@ const LostAndFoundPostModal = ({
             )}
           </Grid.Col>
         </Grid>
-        <Button
-          mt="lg"
-          type="submit"
-          fullWidth
-          color="dark"
-          size="md"
-          className="gradient-hover"
-          loading={isCreating}
-        >
-          Create post
-        </Button>
+        <Group position="apart">
+          {post && (
+            <Button
+              mt="lg"
+              type="reset"
+              size="md"
+              color="gray"
+              w="48%"
+              onClick={() => handleClose()}
+            >
+              Cancel
+            </Button>
+          )}
+          <Button
+            mt="lg"
+            type="submit"
+            w={post ? "49%" : "100%"}
+            color="dark"
+            size="md"
+            className="gradient-hover"
+            loading={isLoading}
+          >
+            {post ? "Save changes" : "Create post"}
+          </Button>
+        </Group>
       </form>
     </Modal>
   );

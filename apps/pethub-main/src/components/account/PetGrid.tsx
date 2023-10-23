@@ -32,7 +32,6 @@ import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { PetTypeEnum } from "@/types/constants";
 import { calculateAge } from "@/util";
 import PetInfoModal from "./PetInfoModal";
 
