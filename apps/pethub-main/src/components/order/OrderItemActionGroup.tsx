@@ -365,6 +365,7 @@ const OrderItemStepperContent = ({
         opened={opened}
         onClose={close}
         isUpdating={!!orderItem?.booking}
+        onCreateBooking={refetch}
         onUpdateBooking={refetch}
         booking={orderItem?.booking as any}
       />
