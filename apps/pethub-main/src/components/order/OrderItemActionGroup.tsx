@@ -2,9 +2,11 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   CopyButton,
   Divider,
   Grid,
+  Rating,
   Stack,
   Stepper,
   Text,
@@ -12,7 +14,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCopy, IconFileDownload } from "@tabler/icons-react";
+import { IconCopy, IconFileDownload, IconPaw } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -26,6 +28,7 @@ import {
 import { useCartOperations } from "@/hooks/cart";
 import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
+import ReviewModal from "../review/ReviewModal";
 
 interface OrderItemStepperContentProps {
   userId: number;
@@ -42,7 +45,14 @@ const OrderItemStepperContent = ({
   const theme = useMantineTheme();
   const router = useRouter();
   const { addItemToCart } = useCartOperations(userId);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [
+    timeslotModalOpened,
+    { open: openTimeslotModal, close: closeTimeslotModal },
+  ] = useDisclosure(false);
+  const [
+    reviewModalOpened,
+    { open: openReviewModal, close: closeReviewModal },
+  ] = useDisclosure(false);
 
   function triggerNotImplementedNotification() {
     notifications.show({
@@ -70,7 +80,7 @@ const OrderItemStepperContent = ({
   }
 
   function bookNowHandler() {
-    open();
+    openTimeslotModal();
   }
 
   function viewInvoiceHandler() {
@@ -205,11 +215,44 @@ const OrderItemStepperContent = ({
   const reviewColumn = (
     <>
       <Grid.Col span={7}>
-        <Text size="xs">
-          🐾 Loved our products for your furry friend? We&apos;d be purr-fectly
-          delighted if you could <strong>leave us a paw-sitive review</strong>!
-          Your feedback helps other pets find their new favorites. 🐾
-        </Text>
+        {orderItem?.review ? (
+          <>
+            <Text size="xs">
+              Paw-some! Thank you for leaving your review below titled:
+            </Text>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Text size="xs" lineClamp={1}>
+                ~<strong>{orderItem?.review?.title}</strong>~&nbsp;
+              </Text>
+              <Rating
+                value={orderItem?.review?.rating}
+                readOnly
+                emptySymbol={
+                  <IconPaw
+                    size="1.5rem"
+                    color={theme.colors.yellow[7]}
+                    strokeWidth={1.5}
+                  />
+                }
+                fullSymbol={
+                  <IconPaw
+                    size="1.5rem"
+                    color={theme.colors.yellow[7]}
+                    fill={theme.colors.yellow[5]}
+                    strokeWidth={1.5}
+                  />
+                }
+              />
+            </Box>
+          </>
+        ) : (
+          <Text size="xs">
+            🐾 Loved our products for your furry friend? We&apos;d be
+            purr-fectly delighted if you could{" "}
+            <strong>leave us a paw-sitive review</strong>! Your feedback helps
+            other pets find their new favorites. 🐾
+          </Text>
+        )}
       </Grid.Col>
       <Grid.Col span={1} />
       <Grid.Col span={4}>
@@ -218,9 +261,9 @@ const OrderItemStepperContent = ({
           variant="light"
           color="orange"
           sx={{ border: "1px solid #e0e0e0" }}
-          onClick={triggerNotImplementedNotification}
+          onClick={openReviewModal}
         >
-          Review
+          {orderItem?.review ? "Edit Review" : "Review"}
         </Button>
       </Grid.Col>
     </>
@@ -365,11 +408,18 @@ const OrderItemStepperContent = ({
         petOwnerId={userId}
         orderItem={orderItem}
         serviceListing={orderItem?.serviceListing}
-        opened={opened}
-        onClose={close}
+        opened={timeslotModalOpened}
+        onClose={closeTimeslotModal}
         isUpdating={!!orderItem?.booking}
         onUpdateBooking={refetch}
         booking={orderItem?.booking as any}
+      />
+      <ReviewModal
+        orderItem={orderItem}
+        userId={userId}
+        opened={reviewModalOpened}
+        onClose={closeReviewModal}
+        onCreateOrUpdate={refetch}
       />
     </Grid>
   );

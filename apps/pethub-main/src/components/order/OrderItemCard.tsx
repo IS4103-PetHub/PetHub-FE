@@ -45,7 +45,7 @@ import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useCartOperations } from "@/hooks/cart";
 import { Booking, CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
-import CreateReviewModal from "../review/ReviewModal";
+import ReviewModal from "../review/ReviewModal";
 import OrderItemBadge from "./OrderItemBadge";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -177,7 +177,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
             Buy again
           </Button>
           <Button variant="light" size="xs" miw={90} onClick={openReviewModal}>
-            {orderItem.review ? "View Review" : "Review"}
+            {orderItem.review ? "Edit Review" : "Review"}
           </Button>
         </>
       )}
@@ -347,11 +347,12 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
         onUpdateBooking={navToOrderDetailsPage}
         booking={orderItem?.booking as any}
       />
-      <CreateReviewModal
+      <ReviewModal
         orderItem={orderItem}
         userId={userId}
         opened={reviewModalOpened}
         onClose={closeReviewModal}
+        onCreateOrUpdate={() => {}}
       />
     </Card>
   );

@@ -20,7 +20,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconPaw, IconPawFilled } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -44,6 +44,7 @@ interface ReviewModalProps {
   opened: boolean;
   onClose: () => void;
   userId: number;
+  onCreateOrUpdate?: () => void;
 }
 
 const ReviewModal = ({
@@ -51,13 +52,16 @@ const ReviewModal = ({
   userId,
   opened,
   onClose,
+  onCreateOrUpdate,
 }: ReviewModalProps) => {
+  const theme = useMantineTheme();
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
-  const [isUpdate, setIsUpdate] = useState(false);
 
   const OPEN_FOREVER = ["content"];
+
+  const isUpdate = !!orderItem?.review;
 
   const form = useForm({
     initialValues: {
@@ -74,6 +78,14 @@ const ReviewModal = ({
     },
   });
 
+  const ratingTextMap = {
+    1: "Pawful",
+    2: "Meh, Just Okay",
+    3: "Decent, Not Purrfect",
+    4: "Tail Waggingly Great",
+    5: "Pawsitively Excellent",
+  };
+
   const handleModalClose = () => {
     form.reset();
     setImagePreview([]);
@@ -86,7 +98,7 @@ const ReviewModal = ({
       if (orderItem?.review) await setReviewFields();
     };
     fetchAndSetReviewFields();
-  }, [orderItem?.review]);
+  }, [orderItem, opened]);
 
   const setReviewFields = async () => {
     const fileNames = orderItem?.review?.attachmentKeys.map((keys) =>
@@ -156,6 +168,7 @@ const ReviewModal = ({
       } else {
         await UpdateReviewMutation.mutateAsync(payload as UpdateReviewPayload);
       }
+      if (onCreateOrUpdate) await onCreateOrUpdate();
       notifications.show({
         title: `Review ${isUpdate ? "Updated" : "Created"}`,
         color: "green",
@@ -226,11 +239,24 @@ const ReviewModal = ({
               </Text>
               <Box>
                 <Text fw={400} size="sm" mb={3} align="center">
-                  Overall Rating
+                  {ratingTextMap[form.values.rating] || ""}
                 </Text>
                 <Rating
-                  defaultValue={4}
-                  size="xl"
+                  emptySymbol={
+                    <IconPaw
+                      size="2rem"
+                      color={theme.colors.yellow[7]}
+                      strokeWidth={1.5}
+                    />
+                  }
+                  fullSymbol={
+                    <IconPaw
+                      size="2rem"
+                      color={theme.colors.yellow[7]}
+                      fill={theme.colors.yellow[4]}
+                      strokeWidth={1.5}
+                    />
+                  }
                   {...form.getInputProps("rating")}
                 />
               </Box>
@@ -319,7 +345,7 @@ const ReviewModal = ({
               className="gradient-hover"
               type="submit"
             >
-              Submit Review
+              {!isUpdate ? "Submit Review" : "Update Review"}
             </Button>
           </Box>
         </form>

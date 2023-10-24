@@ -65,8 +65,6 @@ export default function OrderDetails({ userId }: OrderDetailsProps) {
     isLoading: isFetchOrderItemLoading,
   } = useGetOrderItemByOrderId(orderItemId);
 
-  console.log("orderItem", orderItem);
-
   // used to refresh data on the index page upon return
   const {
     data: orderItems = [],
