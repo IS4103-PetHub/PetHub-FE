@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import {
   TABLE_PAGE_SIZE,
+  formatNumber2Decimals,
   getErrorMessageProps,
   getMinTableHeight,
 } from "shared-utils";
@@ -98,7 +99,8 @@ export default function CommissionRuleTable({
             textAlignment: "right",
             width: "10vw",
             sortable: true,
-            render: (rowData) => (rowData.commissionRate * 100).toFixed(2),
+            render: (rowData) =>
+              formatNumber2Decimals(rowData.commissionRate * 100),
           },
           {
             accessor: "createdAt",

@@ -9,7 +9,6 @@ import {
   Text,
   TextInput,
   useMantineTheme,
-  Loader,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -99,6 +98,32 @@ export default function ViewOrderDetails({
       setLoading(false);
     }
   };
+
+  const handleClaimVoucher = () => {
+    const voucherCode = form.values.voucherCode;
+    const payload: CompleteOrderItemPayload = {
+      userId: order.invoice.PetOwner.userId,
+      voucherCode: voucherCode,
+    };
+    handleCompleteOrder(payload);
+  };
+
+  const claimVoucherBadge = () => {
+    if (isClaimed) {
+      return <Badge color="green">Claimed</Badge>;
+    }
+    switch (order.status) {
+      case OrderItemStatusEnum.Fulfilled || OrderItemStatusEnum.PaidOut:
+        return <Badge color="green">Claimed</Badge>;
+      case OrderItemStatusEnum.PendingFulfillment:
+        return <Badge color="red">Unclaimed</Badge>;
+      case OrderItemStatusEnum.Refunded:
+        return <Badge color="orange">Refunded</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <Container mt="xl" mb="xl">
@@ -109,12 +134,11 @@ export default function ViewOrderDetails({
               display: "flex",
               alignItems: "center",
             }}
-            color={theme.primaryColor}
             onClick={() => {
               window.open(order.attachmentURL, "_blank");
             }}
+            leftIcon={<IconFileDownload size={"1.5rem"} />}
           >
-            <IconFileDownload size={"1.5rem"} />
             Download Invoice
           </Button>
         </Group>
@@ -433,19 +457,10 @@ export default function ViewOrderDetails({
                 <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
                   <Group>
                     <IconGiftCard color={theme.colors.indigo[5]} />{" "}
-                    <Text size="xl" weight={600}>
+                    <Text size="xl" weight={600} mr={-8}>
                       Claim Voucher
                     </Text>
-                    {isClaimed ||
-                    order.status === OrderItemStatusEnum.Fulfilled ||
-                    order.status === OrderItemStatusEnum.PaidOut ? (
-                      <Badge color="green">Claimed</Badge>
-                    ) : order.status ===
-                      OrderItemStatusEnum.PendingFulfillment ? (
-                      <Badge color="red">Unclaimed</Badge>
-                    ) : order.status === OrderItemStatusEnum.Refunded ? (
-                      <Badge color="orange">Refunded</Badge>
-                    ) : null}
+                    {claimVoucherBadge()}
                   </Group>
                 </Accordion.Control>
                 <Accordion.Panel mb="xs">
@@ -467,19 +482,7 @@ export default function ViewOrderDetails({
                     </Grid.Col>
                     <Grid.Col span={12}>
                       {!isOrderItemClaimed(order.status) && !isClaimed && (
-                        <Button
-                          color="primary"
-                          onClick={() => {
-                            const voucherCode = form.values.voucherCode;
-                            const payload: CompleteOrderItemPayload = {
-                              userId: order.invoice.PetOwner.userId,
-                              voucherCode: voucherCode,
-                            };
-                            handleCompleteOrder(payload);
-                          }}
-                          disabled={loading} // disable the button while loading
-                          rightIcon={loading ? <Loader size="xs" /> : null}
-                        >
+                        <Button onClick={handleClaimVoucher} loading={loading}>
                           {loading ? "Claiming..." : "Claim"}
                         </Button>
                       )}

@@ -67,7 +67,6 @@ const SelectTimeslotModal = ({
   viewOnly,
   forPetBusiness,
 }: SelectTimeslotModalProps) => {
-  const router = useRouter();
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [selectedMonth, setSelectedMonth] = useState<Date>(
     dayjs(new Date()).startOf("month").toDate(),
@@ -78,6 +77,7 @@ const SelectTimeslotModal = ({
   const [selectedPetId, setSelectedPetId] = useState<string>(
     booking ? booking.petId?.toString() : "",
   );
+  const [isCreatingOrUpdating, setIsCreatingOrUpdating] = useToggle();
 
   const { data: availTimeslots = [], isLoading } = useGetAvailableTimeSlots(
     orderItem?.orderItemId || null,
@@ -159,6 +159,10 @@ const SelectTimeslotModal = ({
   }
 
   function handleClose() {
+    if (isCreatingOrUpdating) {
+      // prevent close when creating or updating booking
+      return;
+    }
     onClose();
     setSelectedMonth(dayjs(new Date()).startOf("month").toDate());
     setSelectedTimeslot(null);
@@ -166,13 +170,15 @@ const SelectTimeslotModal = ({
     setShowConfirmation(false);
   }
 
-  function handleClickButton() {
+  async function handleClickButton() {
     if (!showConfirmation) {
       setShowConfirmation();
       return;
     }
-    createOrUpdateBooking();
+    setIsCreatingOrUpdating(true);
+    await createOrUpdateBooking();
     handleClose();
+    setIsCreatingOrUpdating(false);
   }
 
   const calendar = (
@@ -291,7 +297,7 @@ const SelectTimeslotModal = ({
         startTime={selectedTimeslot}
         disabled
       />
-      {!forPetBusiness && (
+      {!forPetBusiness && !(isUpdating && !selectedPetId) && (
         <Select
           disabled={isUpdating}
           label="Pet"
@@ -359,6 +365,7 @@ const SelectTimeslotModal = ({
               size="md"
               disabled={!selectedTimeslot}
               onClick={handleClickButton}
+              loading={isCreatingOrUpdating}
             >
               {showConfirmation ? "Confirm" : "Next"}
             </Button>

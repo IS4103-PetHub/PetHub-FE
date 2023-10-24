@@ -203,7 +203,7 @@ export default function Orders({ permissions }: OrdersProps) {
   return (
     <>
       <Head>
-        <title>Orders - PetHub Business</title>
+        <title>Orders - Admin Portal - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>

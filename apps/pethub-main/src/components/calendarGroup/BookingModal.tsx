@@ -62,7 +62,7 @@ const BookingModal = ({
   const [isClaimed, setIsClaimed] = useState(false);
   const [loading, setLoading] = useState(false);
   const theme = useMantineTheme();
-  const defaultValues = ["Claim Voucher"];
+  const defaultValues = ["Claim Voucher", "Customer Details"];
 
   const isOrderItemClaimed = (status) => {
     return (
@@ -217,6 +217,22 @@ const BookingModal = ({
     return null;
   }
 
+  const claimVoucherBadge = () => {
+    if (isClaimed) {
+      return <Badge color="green">Claimed</Badge>;
+    }
+    switch (booking?.OrderItem.status) {
+      case OrderItemStatusEnum.Fulfilled || OrderItemStatusEnum.PaidOut:
+        return <Badge color="green">Claimed</Badge>;
+      case OrderItemStatusEnum.PendingFulfillment:
+        return <Badge color="red">Unclaimed</Badge>;
+      case OrderItemStatusEnum.Refunded:
+        return <Badge color="orange">Refunded</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       {booking && (
@@ -235,25 +251,10 @@ const BookingModal = ({
               <Accordion.Control>
                 <Group>
                   <IconGiftCard color={theme.colors.indigo[5]} />{" "}
-                  <Text size="lg">
+                  <Text size="lg" mr={-8}>
                     Claim Voucher
-                    {isClaimed ||
-                    booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Fulfilled ||
-                    booking?.OrderItem.status ===
-                      OrderItemStatusEnum.PaidOut ? (
-                      <Badge color="green">Claimed</Badge>
-                    ) : booking?.OrderItem.status ===
-                      OrderItemStatusEnum.PendingFulfillment ? (
-                      <Badge color="red">Unclaimed</Badge>
-                    ) : booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Refunded ? (
-                      <Badge color="orange">Refunded</Badge>
-                    ) : booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Expired ? (
-                      <Badge color="red">Expired</Badge>
-                    ) : null}
                   </Text>
+                  {claimVoucherBadge()}
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
@@ -275,7 +276,6 @@ const BookingModal = ({
                     {!isOrderItemClaimed(booking?.OrderItem.status) &&
                       !isClaimed && (
                         <Button
-                          color="primary"
                           onClick={() => {
                             const voucherCode = form.values.voucherCode;
                             const payload: CompleteOrderItemPayload = {
