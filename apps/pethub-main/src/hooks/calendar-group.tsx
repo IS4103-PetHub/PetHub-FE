@@ -30,6 +30,8 @@ export const useGetAvailableTimeSlots = (
     },
     // only run this query if all the values are not null
     enabled: !!(startTime && endTime && duration),
+    // always fetch again to find new timeslots
+    refetchOnMount: true,
   });
 };
 
