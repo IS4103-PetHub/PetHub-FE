@@ -44,6 +44,8 @@ const OrderItemStepperContent = ({
   const { addItemToCart } = useCartOperations(userId);
   const [opened, { open, close }] = useDisclosure(false);
 
+  const REFUND_HOLDING_PERIOD_DAYS = 7;
+
   function triggerNotImplementedNotification() {
     notifications.show({
       title: "Not Implemented",
@@ -53,14 +55,11 @@ const OrderItemStepperContent = ({
   }
 
   async function buyAgainHandler() {
-    await addItemToCart(
-      {
-        serviceListing: orderItem?.serviceListing,
-        ...(orderItem?.serviceListing.calendarGroupId ? {} : { quantity: 1 }),
-        isSelected: true,
-      } as CartItem,
-      1,
-    );
+    await addItemToCart({
+      serviceListing: orderItem?.serviceListing,
+      quantity: 1,
+      isSelected: true,
+    } as CartItem);
     notifications.show({
       title: "Added to cart",
       color: "green",
@@ -86,20 +85,18 @@ const OrderItemStepperContent = ({
     }
   }
 
-  // ================================= FAKE REFUND STUFF ================================= //
-  // Add 3 days from expiry date for now 2359
+  // Add the holding period to expiry date
   const fakeRefundDate = formatISODateTimeShort(
     dayjs(orderItem?.expiryDate)
-      .add(3, "day")
+      .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day")
       .toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
     dayjs(orderItem?.expiryDate)
-      .add(3, "day")
+      .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day"),
   );
-  // ================================= FAKE REFUND STUFF ================================= //
 
   const dividerColumn = (
     <Grid.Col>
@@ -368,6 +365,7 @@ const OrderItemStepperContent = ({
         opened={opened}
         onClose={close}
         isUpdating={!!orderItem?.booking}
+        onCreateBooking={refetch}
         onUpdateBooking={refetch}
         booking={orderItem?.booking as any}
       />

@@ -101,11 +101,11 @@ export function useCartOperations(userId: number) {
     );
 
     if (existingItem) {
-      // Item doesn't have a CG and already exists in cart, increment its quantity
+      // Item already exists in cart, increment its quantity
       return incrementItemQuantity(existingItem.cartItemId, incrementBy);
     }
 
-    // Item has a CG and hence is singular, add it to cart regardless
+    // If item is not already in cart
     const newCartItems = [...currentCart.cartItems, item];
     const recalculatedCartItems = recalculateCartItemId(newCartItems);
     setCurrentCart({

@@ -120,7 +120,7 @@ const SelectTimeslotModal = ({
         payload = { bookingId: booking.bookingId, startTime, endTime };
         await updateBookingMutation.mutateAsync(payload);
         // refetch user bookings
-        onUpdateBooking();
+        if (onUpdateBooking) onUpdateBooking();
       } else {
         payload = {
           petOwnerId: session.user["userId"],
@@ -134,7 +134,7 @@ const SelectTimeslotModal = ({
           payload = { ...payload, petId: parseInt(selectedPetId) };
         }
         await createBookingMutation.mutateAsync(payload);
-        onCreateBooking();
+        if (onCreateBooking) onCreateBooking();
       }
       notifications.show({
         title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
