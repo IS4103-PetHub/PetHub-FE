@@ -24,6 +24,7 @@ import {
   IconClockHour4,
   IconUserSquare,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
   Address,
@@ -170,7 +171,8 @@ const BookingModal = ({
   const modalTitle = (
     <Group>
       <Text size="lg" weight={500}>
-        {form.values.startTime} - {form.values.endTime}
+        {dayjs(booking.startTime).format("DD-MM-YYYY")}: {form.values.startTime}{" "}
+        - {form.values.endTime}
       </Text>
       <Button
         variant="filled"
