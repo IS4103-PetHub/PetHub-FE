@@ -151,7 +151,7 @@ export default function Commission({ permissions }: CommissionProps) {
   return (
     <>
       <Head>
-        <title>Commision Group Management</title>
+        <title>Commission Rules - Admin Portal - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>

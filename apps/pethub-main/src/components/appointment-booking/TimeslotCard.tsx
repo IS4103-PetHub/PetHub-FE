@@ -57,7 +57,8 @@ const TimeslotCard = ({
 
   const isPastAppointment =
     dayjs(startTime).isBefore(new Date()) ||
-    orderItem.status !== OrderItemStatusEnum.PendingFulfillment;
+    (orderItem.status !== OrderItemStatusEnum.PendingFulfillment &&
+      orderItem.status !== OrderItemStatusEnum.PendingBooking);
   const appointmentTextColor = isPastAppointment ? "dimmed" : "";
 
   function getTimeDifferenceString() {

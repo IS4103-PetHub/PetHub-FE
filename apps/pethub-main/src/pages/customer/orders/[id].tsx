@@ -107,8 +107,9 @@ export default function OrderDetails({ userId }: OrderDetailsProps) {
 
   function goBack() {
     setBackButtonLoading(true);
-    router.push("/customer/orders");
-    refetch();
+    // router.push("/customer/orders");
+    // refetch();
+    window.location.href = "/customer/orders";
   }
 
   function setStepperCount() {

@@ -27,11 +27,11 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
-import OrdersManagementTable from "web-ui/shared//order-management/ordersManagementTable";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import OrdersManagementTable from "web-ui/shared/order-management/OrdersManagementTable";
 import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import { useGetAllOrderItem } from "@/hooks/order";
@@ -203,7 +203,7 @@ export default function Orders({ permissions }: OrdersProps) {
   return (
     <>
       <Head>
-        <title>Orders - PetHub Business</title>
+        <title>Orders - Admin Portal - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>

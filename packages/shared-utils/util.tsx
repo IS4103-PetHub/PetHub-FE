@@ -118,13 +118,16 @@ export const formatEnumValueToLowerCase = (value: string) => {
   return value.replace(/_/g, " ").toLowerCase();
 };
 
-export function formatNumber2Decimals(num: number) {
-  const precision = 2;
+export function formatNumberCustomDecimals(num: number, precision: number) {
   // use this instead of toFixed() alone to avoid rounding errors e.g. 1.005 should round to 1.01 not 1.00
   // returns a formatted string
   return Number(
     Math.round(parseFloat(num + "e" + precision)) + "e-" + precision,
   ).toFixed(precision);
+}
+
+export function formatNumber2Decimals(num: number) {
+  return formatNumberCustomDecimals(num, 2);
 }
 
 export function searchServiceListingsForPB(

@@ -11,6 +11,7 @@ import {
   TextInput,
   Textarea,
   useMantineTheme,
+  Loader,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -59,8 +60,9 @@ const BookingModal = ({
     { open: openRescheduleModal, close: closeRescheduleModal },
   ] = useDisclosure(false);
   const [isClaimed, setIsClaimed] = useState(false);
+  const [loading, setLoading] = useState(false);
   const theme = useMantineTheme();
-  const defaultValues = ["Claim Voucher"];
+  const defaultValues = ["Claim Voucher", "Customer Details"];
 
   const isOrderItemClaimed = (status) => {
     return (
@@ -142,6 +144,7 @@ const BookingModal = ({
     booking ? booking.orderItemId : null,
   );
   const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
+    setLoading(true);
     try {
       await completeOrderMutation.mutateAsync(payload);
       notifications.show({
@@ -155,6 +158,9 @@ const BookingModal = ({
       notifications.show({
         ...getErrorMessageProps("Error claiming voucher", error),
       });
+    } finally {
+      setLoading(false);
+      onClose();
     }
   };
   function onUpdateBooking() {
@@ -165,8 +171,8 @@ const BookingModal = ({
   const modalTitle = (
     <Group>
       <Text size="lg" weight={500}>
-        {dayjs(booking.startTime).format("DD-MM-YYYY")}: {form.values.startTime}{" "}
-        - {form.values.endTime}
+        {booking ? dayjs(booking.startTime).format("DD-MM-YYYY") : ""}:{" "}
+        {form.values.startTime} - {form.values.endTime}
       </Text>
       <Button
         variant="filled"
@@ -211,6 +217,22 @@ const BookingModal = ({
     return null;
   }
 
+  const claimVoucherBadge = () => {
+    if (isClaimed) {
+      return <Badge color="green">Claimed</Badge>;
+    }
+    switch (booking?.OrderItem.status) {
+      case OrderItemStatusEnum.Fulfilled || OrderItemStatusEnum.PaidOut:
+        return <Badge color="green">Claimed</Badge>;
+      case OrderItemStatusEnum.PendingFulfillment:
+        return <Badge color="red">Unclaimed</Badge>;
+      case OrderItemStatusEnum.Refunded:
+        return <Badge color="orange">Refunded</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       {booking && (
@@ -229,60 +251,45 @@ const BookingModal = ({
               <Accordion.Control>
                 <Group>
                   <IconGiftCard color={theme.colors.indigo[5]} />{" "}
-                  <Text size="lg">
+                  <Text size="lg" mr={-8}>
                     Claim Voucher
-                    {isClaimed ||
-                    booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Fulfilled ||
-                    booking?.OrderItem.status ===
-                      OrderItemStatusEnum.PaidOut ? (
-                      <Badge color="green">Claimed</Badge>
-                    ) : booking?.OrderItem.status ===
-                      OrderItemStatusEnum.PendingFulfillment ? (
-                      <Badge color="red">Unclaimed</Badge>
-                    ) : booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Refunded ? (
-                      <Badge color="orange">Refunded</Badge>
-                    ) : booking?.OrderItem.status ===
-                      OrderItemStatusEnum.Expired ? (
-                      <Badge color="red">Expired</Badge>
-                    ) : null}
                   </Text>
+                  {claimVoucherBadge()}
                 </Group>
               </Accordion.Control>
               <Accordion.Panel>
                 <Grid>
                   <Grid.Col span={12}>
-                    <TextInput
-                      label="Voucher Code"
-                      placeholder="Enter customer's code"
-                      maxLength={6}
-                      disabled={
-                        isOrderItemClaimed(booking?.OrderItem.status) ||
-                        isClaimed
-                      }
-                      {...form.getInputProps("voucherCode")}
-                    />
+                    {isOrderItemClaimed(booking?.OrderItem.status) ||
+                    isClaimed ? (
+                      renderItemGroup("Voucher Code", form.values.voucherCode)
+                    ) : (
+                      <TextInput
+                        label="Voucher Code"
+                        placeholder="Enter customer's code"
+                        maxLength={6}
+                        {...form.getInputProps("voucherCode")}
+                      />
+                    )}
                   </Grid.Col>
                   <Grid.Col span={12}>
-                    <Button
-                      color="primary"
-                      disabled={
-                        isOrderItemClaimed(booking?.OrderItem.status) ||
-                        isClaimed
-                      }
-                      onClick={() => {
-                        const voucherCode = form.values.voucherCode;
-                        const payload: CompleteOrderItemPayload = {
-                          userId: booking ? booking.petOwnerId : null,
-                          voucherCode: voucherCode,
-                        };
-                        handleCompleteOrder(payload);
-                        onClose();
-                      }}
-                    >
-                      Claim
-                    </Button>
+                    {!isOrderItemClaimed(booking?.OrderItem.status) &&
+                      !isClaimed && (
+                        <Button
+                          onClick={() => {
+                            const voucherCode = form.values.voucherCode;
+                            const payload: CompleteOrderItemPayload = {
+                              userId: booking ? booking.petOwnerId : null,
+                              voucherCode: voucherCode,
+                            };
+                            handleCompleteOrder(payload);
+                          }}
+                          disabled={loading} // disable the button while loading
+                          rightIcon={loading ? <Loader size="xs" /> : null}
+                        >
+                          {loading ? "Claiming..." : "Claim"}
+                        </Button>
+                      )}
                   </Grid.Col>
                 </Grid>
               </Accordion.Panel>
