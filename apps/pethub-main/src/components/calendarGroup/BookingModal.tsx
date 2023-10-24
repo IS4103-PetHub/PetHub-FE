@@ -11,6 +11,7 @@ import {
   TextInput,
   Textarea,
   useMantineTheme,
+  Loader,
 } from "@mantine/core";
 import { TimeInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -58,6 +59,7 @@ const BookingModal = ({
     { open: openRescheduleModal, close: closeRescheduleModal },
   ] = useDisclosure(false);
   const [isClaimed, setIsClaimed] = useState(false);
+  const [loading, setLoading] = useState(false);
   const theme = useMantineTheme();
   const defaultValues = ["Claim Voucher"];
 
@@ -141,6 +143,7 @@ const BookingModal = ({
     booking ? booking.orderItemId : null,
   );
   const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
+    setLoading(true);
     try {
       await completeOrderMutation.mutateAsync(payload);
       notifications.show({
@@ -154,6 +157,9 @@ const BookingModal = ({
       notifications.show({
         ...getErrorMessageProps("Error claiming voucher", error),
       });
+    } finally {
+      setLoading(false);
+      onClose();
     }
   };
   function onUpdateBooking() {
@@ -251,36 +257,37 @@ const BookingModal = ({
               <Accordion.Panel>
                 <Grid>
                   <Grid.Col span={12}>
-                    <TextInput
-                      label="Voucher Code"
-                      placeholder="Enter customer's code"
-                      maxLength={6}
-                      disabled={
-                        isOrderItemClaimed(booking?.OrderItem.status) ||
-                        isClaimed
-                      }
-                      {...form.getInputProps("voucherCode")}
-                    />
+                    {isOrderItemClaimed(booking?.OrderItem.status) ||
+                    isClaimed ? (
+                      renderItemGroup("Voucher Code", form.values.voucherCode)
+                    ) : (
+                      <TextInput
+                        label="Voucher Code"
+                        placeholder="Enter customer's code"
+                        maxLength={6}
+                        {...form.getInputProps("voucherCode")}
+                      />
+                    )}
                   </Grid.Col>
                   <Grid.Col span={12}>
-                    <Button
-                      color="primary"
-                      disabled={
-                        isOrderItemClaimed(booking?.OrderItem.status) ||
-                        isClaimed
-                      }
-                      onClick={() => {
-                        const voucherCode = form.values.voucherCode;
-                        const payload: CompleteOrderItemPayload = {
-                          userId: booking ? booking.petOwnerId : null,
-                          voucherCode: voucherCode,
-                        };
-                        handleCompleteOrder(payload);
-                        onClose();
-                      }}
-                    >
-                      Claim
-                    </Button>
+                    {!isOrderItemClaimed(booking?.OrderItem.status) &&
+                      !isClaimed && (
+                        <Button
+                          color="primary"
+                          onClick={() => {
+                            const voucherCode = form.values.voucherCode;
+                            const payload: CompleteOrderItemPayload = {
+                              userId: booking ? booking.petOwnerId : null,
+                              voucherCode: voucherCode,
+                            };
+                            handleCompleteOrder(payload);
+                          }}
+                          disabled={loading} // disable the button while loading
+                          rightIcon={loading ? <Loader size="xs" /> : null}
+                        >
+                          {loading ? "Claiming..." : "Claim"}
+                        </Button>
+                      )}
                   </Grid.Col>
                 </Grid>
               </Accordion.Panel>
