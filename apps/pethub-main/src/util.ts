@@ -11,6 +11,8 @@ import {
   TimePeriod,
 } from "shared-utils";
 
+const TEXT_REGEX_PATTERN = /^[a-zA-Z0-9\s.,]+$/;
+
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
   if (!param) {
@@ -417,4 +419,47 @@ export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
     }
   }
   return CGCopy;
+}
+
+export function validateReviewTitle(title: string) {
+  if (!title) {
+    return "Title is required.";
+  }
+  if (title.length > 50) {
+    return "Title cannot exceed 50 characters";
+  }
+  if (!TEXT_REGEX_PATTERN.test(title)) {
+    return "Title must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
+  }
+  return null;
+}
+
+export function validateReviewComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 1000) {
+    return "Title cannot exceed 1000 characters";
+  }
+  if (!TEXT_REGEX_PATTERN.test(comment)) {
+    return "Comment must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
+  }
+  return null;
+}
+
+export function validateReviewRating(rating: number) {
+  if (!rating) {
+    return "Rating is required.";
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return "Rating must be between 1 and 5 stars inclusive.";
+  }
+  return null;
+}
+
+export function validateReviewFiles(files: string[]) {
+  if (files.length > 3) {
+    return "Maximum of 3 images allowed";
+  }
+  return null;
 }

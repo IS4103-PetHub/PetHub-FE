@@ -45,6 +45,7 @@ import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useCartOperations } from "@/hooks/cart";
 import { Booking, CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
+import CreateReviewModal from "../review/ReviewModal";
 import OrderItemBadge from "./OrderItemBadge";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -56,7 +57,14 @@ interface OrderItemCardProps {
 const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [
+    timeslotModalOpened,
+    { open: openTimeslotModal, close: closeTimeslotModal },
+  ] = useDisclosure(false);
+  const [
+    reviewModalOpened,
+    { open: openReviewModal, close: closeReviewModal },
+  ] = useDisclosure(false);
   const { addItemToCart } = useCartOperations(userId);
   const [visible, { toggle }] = useDisclosure(false);
 
@@ -90,7 +98,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   }
 
   function bookNowHandler() {
-    open();
+    openTimeslotModal();
   }
 
   function viewDetailsHandler() {
@@ -168,13 +176,8 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
             Buy again
           </Button>
-          <Button
-            variant="light"
-            size="xs"
-            miw={90}
-            onClick={triggerNotImplementedNotification}
-          >
-            Review
+          <Button variant="light" size="xs" miw={90} onClick={openReviewModal}>
+            {orderItem.review ? "View Review" : "Review"}
           </Button>
         </>
       )}
@@ -335,14 +338,20 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
       </Grid>
       <SelectTimeslotModal
         petOwnerId={userId}
-        opened={opened}
-        onClose={close}
+        opened={timeslotModalOpened}
+        onClose={closeTimeslotModal}
         orderItem={orderItem}
         serviceListing={orderItem?.serviceListing}
         isUpdating={!!orderItem?.booking}
         onCreateBooking={navToOrderDetailsPage}
         onUpdateBooking={navToOrderDetailsPage}
         booking={orderItem?.booking as any}
+      />
+      <CreateReviewModal
+        orderItem={orderItem}
+        userId={userId}
+        opened={reviewModalOpened}
+        onClose={closeReviewModal}
       />
     </Card>
   );

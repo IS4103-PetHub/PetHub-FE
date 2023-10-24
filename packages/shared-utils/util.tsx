@@ -170,3 +170,13 @@ export function generateRandomIntFromInterval(min: number, max: number) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+export const downloadFile = async (url: string, fileName: string) => {
+  try {
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    return new File([buffer], fileName);
+  } catch (error) {
+    console.log("Error:", error);
+  }
+};

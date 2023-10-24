@@ -244,3 +244,19 @@ export interface CompleteOrderItemPayload {
   userId: number;
   voucherCode: string;
 }
+
+export interface CreateReviewPayload {
+  orderItemId: number;
+  title: string;
+  comment: string;
+  rating: number;
+  files: File[];
+}
+
+export interface UpdateReviewPayload {
+  reviewId: number;
+  title: string;
+  comment: string;
+  rating: number;
+  files: File[];
+}
