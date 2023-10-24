@@ -171,8 +171,8 @@ const BookingModal = ({
   const modalTitle = (
     <Group>
       <Text size="lg" weight={500}>
-        {dayjs(booking.startTime).format("DD-MM-YYYY")}: {form.values.startTime}{" "}
-        - {form.values.endTime}
+        {booking ? dayjs(booking.startTime).format("DD-MM-YYYY") : ""}:{" "}
+        {form.values.startTime} - {form.values.endTime}
       </Text>
       <Button
         variant="filled"
