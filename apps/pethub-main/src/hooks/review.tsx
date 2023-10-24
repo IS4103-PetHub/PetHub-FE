@@ -57,3 +57,11 @@ export const useUpdateReview = () => {
     },
   });
 };
+
+export const useDeleteReview = () => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (await api.delete(`${REVIEW_API}/${id}`)).data;
+    },
+  });
+};

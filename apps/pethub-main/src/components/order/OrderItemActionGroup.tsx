@@ -14,7 +14,12 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCopy, IconFileDownload, IconPaw } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconCopy,
+  IconFileDownload,
+  IconPaw,
+} from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -24,8 +29,10 @@ import {
   formatISODateTimeShort,
   formatISODayDateTime,
   formatNumber2Decimals,
+  getErrorMessageProps,
 } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
+import { useDeleteReview } from "@/hooks/review";
 import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 import ReviewModal from "../review/ReviewModal";
@@ -33,7 +40,7 @@ import ReviewModal from "../review/ReviewModal";
 interface OrderItemStepperContentProps {
   userId: number;
   orderItem: OrderItem;
-  refetch: () => {};
+  refetch: () => Promise<void>;
 }
 
 const OrderItemStepperContent = ({
@@ -95,6 +102,28 @@ const OrderItemStepperContent = ({
       });
     }
   }
+
+  async function deleteReviewHandler() {
+    await handleDeleteReview(orderItem?.review?.reviewId);
+    await refetch();
+  }
+
+  const deleteReviewMutation = useDeleteReview();
+  const handleDeleteReview = async (id: number) => {
+    try {
+      await deleteReviewMutation.mutateAsync(id);
+      notifications.show({
+        title: "Review Removed",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Your review has been removed for this order.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps("Error Deleting Review", error),
+      });
+    }
+  };
 
   // ================================= FAKE REFUND STUFF ================================= //
   // Add 3 days from expiry date for now 2359
@@ -256,15 +285,39 @@ const OrderItemStepperContent = ({
       </Grid.Col>
       <Grid.Col span={1} />
       <Grid.Col span={4}>
-        <Button
-          fullWidth
-          variant="light"
-          color="orange"
-          sx={{ border: "1px solid #e0e0e0" }}
-          onClick={openReviewModal}
-        >
-          {orderItem?.review ? "Edit Review" : "Review"}
-        </Button>
+        {orderItem?.review ? (
+          <Center>
+            <Button
+              fullWidth
+              variant="light"
+              color="orange"
+              sx={{ border: "1px solid #e0e0e0" }}
+              onClick={openReviewModal}
+            >
+              Edit Review
+            </Button>
+            &nbsp;
+            <Button
+              fullWidth
+              variant="light"
+              color="pink"
+              sx={{ border: "1px solid #e0e0e0" }}
+              onClick={deleteReviewHandler}
+            >
+              Remove Review
+            </Button>
+          </Center>
+        ) : (
+          <Button
+            fullWidth
+            variant="light"
+            color="orange"
+            sx={{ border: "1px solid #e0e0e0" }}
+            onClick={openReviewModal}
+          >
+            Review
+          </Button>
+        )}
       </Grid.Col>
     </>
   );
