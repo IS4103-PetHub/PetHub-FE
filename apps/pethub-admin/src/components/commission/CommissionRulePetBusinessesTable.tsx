@@ -40,13 +40,15 @@ const CommissionRulePetBusinessesTable = ({
           textAlignment: "left",
         },
         {
-          accessor: "businessEmail",
-          width: "20vw",
+          accessor: "uen",
+          title: "UEN",
+          width: "15vw",
           ellipsis: true,
         },
         {
-          accessor: "uen",
-          width: "15vw",
+          accessor: "user.email",
+          title: "Email",
+          width: "20vw",
           ellipsis: true,
         },
       ]}
