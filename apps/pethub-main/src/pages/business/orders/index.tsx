@@ -17,11 +17,11 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
-import OrdersManagementTable from "web-ui/shared//order-management/ordersManagementTable";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
+import OrdersManagementTable from "web-ui/shared/order-management/OrdersManagementTable";
 import api from "@/api/axiosConfig";
 import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import { useGetOrderItemsByPBId } from "@/hooks/order";
