@@ -169,16 +169,26 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           </Center>
         </>
       )}
-      {/* In the future, review should be changed to "View review" if already reviewed */}
       {(orderItem?.status === OrderItemStatusEnum.Fulfilled ||
         orderItem?.status === OrderItemStatusEnum.PaidOut) && (
         <>
           <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
             Buy again
           </Button>
-          <Button variant="light" size="xs" miw={90} onClick={openReviewModal}>
-            {orderItem.review ? "Edit Review" : "Review"}
+          <Button
+            variant="light"
+            size="xs"
+            miw={90}
+            onClick={openReviewModal}
+            mr={-5}
+          >
+            {orderItem?.review ? "Edit Review" : "Review"}
           </Button>
+          {!orderItem?.review && (
+            <OrderItemPopover
+              text={`Please ensure that you remain respectful, truthful, and constructive in your review. Do not give irrelevant feedback, use offensive language or photos, or disclose any personal information. Failure to comply might result in your review getting removed.`}
+            />
+          )}
         </>
       )}
       {orderItem?.status === OrderItemStatusEnum.Expired && (
