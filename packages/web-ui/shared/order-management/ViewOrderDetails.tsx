@@ -55,6 +55,7 @@ export default function ViewOrderDetails({
     ["EXPIRED", "red"],
   ]);
   const [isClaimed, setIsClaimed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const isOrderItemClaimed = (status) => {
     return (
@@ -79,6 +80,7 @@ export default function ViewOrderDetails({
 
   const completeOrderMutation = useCompleteOrderItem(order.orderItemId);
   const handleCompleteOrder = async (payload: CompleteOrderItemPayload) => {
+    setLoading(true);
     try {
       await completeOrderMutation.mutateAsync(payload);
       notifications.show({
@@ -92,8 +94,36 @@ export default function ViewOrderDetails({
       notifications.show({
         ...getErrorMessageProps("Error claiming voucher", error),
       });
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleClaimVoucher = () => {
+    const voucherCode = form.values.voucherCode;
+    const payload: CompleteOrderItemPayload = {
+      userId: order.invoice.PetOwner.userId,
+      voucherCode: voucherCode,
+    };
+    handleCompleteOrder(payload);
+  };
+
+  const claimVoucherBadge = () => {
+    if (isClaimed) {
+      return <Badge color="green">Claimed</Badge>;
+    }
+    switch (order.status) {
+      case OrderItemStatusEnum.Fulfilled || OrderItemStatusEnum.PaidOut:
+        return <Badge color="green">Claimed</Badge>;
+      case OrderItemStatusEnum.PendingFulfillment:
+        return <Badge color="red">Unclaimed</Badge>;
+      case OrderItemStatusEnum.Refunded:
+        return <Badge color="orange">Refunded</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <Container mt="xl" mb="xl">
@@ -104,12 +134,11 @@ export default function ViewOrderDetails({
               display: "flex",
               alignItems: "center",
             }}
-            color={theme.primaryColor}
             onClick={() => {
               window.open(order.attachmentURL, "_blank");
             }}
+            leftIcon={<IconFileDownload size={"1.5rem"} />}
           >
-            <IconFileDownload size={"1.5rem"} />
             Download Invoice
           </Button>
         </Group>
@@ -422,59 +451,46 @@ export default function ViewOrderDetails({
               </Grid>
             </Accordion.Panel>
           </Accordion.Item>
-          {order.status !== OrderItemStatusEnum.PendingBooking && (
-            <Accordion.Item value="ClaimVoucher">
-              <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
-                <Group>
-                  <IconGiftCard color={theme.colors.indigo[5]} />{" "}
-                  <Text size="lg">
-                    Claim Voucher
-                    {isClaimed ||
-                    order.status === OrderItemStatusEnum.Fulfilled ||
-                    order.status === OrderItemStatusEnum.PaidOut ? (
-                      <Badge color="green">Claimed</Badge>
-                    ) : order.status ===
-                      OrderItemStatusEnum.PendingFulfillment ? (
-                      <Badge color="red">Unclaimed</Badge>
-                    ) : order.status === OrderItemStatusEnum.Refunded ? (
-                      <Badge color="orange">Refunded</Badge>
-                    ) : order.status === OrderItemStatusEnum.Expired ? (
-                      <Badge color="red">Expired</Badge>
-                    ) : null}
-                  </Text>
-                </Group>
-              </Accordion.Control>
-              <Accordion.Panel mb="xs">
-                <Grid>
-                  <Grid.Col span={12}>
-                    <TextInput
-                      label="Voucher Code"
-                      placeholder="Enter customer's code"
-                      maxLength={6}
-                      disabled={isClaimed || isOrderItemClaimed(order.status)}
-                      {...form.getInputProps("voucherCode")}
-                    />
-                  </Grid.Col>
-                  <Grid.Col span={12}>
-                    <Button
-                      color="primary"
-                      disabled={isClaimed || isOrderItemClaimed(order.status)}
-                      onClick={() => {
-                        const voucherCode = form.values.voucherCode;
-                        const payload: CompleteOrderItemPayload = {
-                          userId: order.invoice.PetOwner.userId,
-                          voucherCode: voucherCode,
-                        };
-                        handleCompleteOrder(payload);
-                      }}
-                    >
-                      Claim
-                    </Button>
-                  </Grid.Col>
-                </Grid>
-              </Accordion.Panel>
-            </Accordion.Item>
-          )}
+          {order.status !== OrderItemStatusEnum.PendingBooking &&
+            order.status !== OrderItemStatusEnum.Expired && (
+              <Accordion.Item value="ClaimVoucher">
+                <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
+                  <Group>
+                    <IconGiftCard color={theme.colors.indigo[5]} />{" "}
+                    <Text size="xl" weight={600} mr={-8}>
+                      Claim Voucher
+                    </Text>
+                    {claimVoucherBadge()}
+                  </Group>
+                </Accordion.Control>
+                <Accordion.Panel mb="xs">
+                  <Grid>
+                    <Grid.Col span={12}>
+                      {isOrderItemClaimed(order.status) || isClaimed ? (
+                        <Group position="apart" ml="xs" mr="xs" mb="md">
+                          <Text fw={600}>Voucher Code</Text>
+                          <Text>{form.values.voucherCode}</Text>
+                        </Group>
+                      ) : (
+                        <TextInput
+                          label="Voucher Code"
+                          placeholder="Enter customer's code"
+                          maxLength={6}
+                          {...form.getInputProps("voucherCode")}
+                        />
+                      )}
+                    </Grid.Col>
+                    <Grid.Col span={12}>
+                      {!isOrderItemClaimed(order.status) && !isClaimed && (
+                        <Button onClick={handleClaimVoucher} loading={loading}>
+                          {loading ? "Claiming..." : "Claim"}
+                        </Button>
+                      )}
+                    </Grid.Col>
+                  </Grid>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
           {/* <Accordion.Item value="RefundDetails">
             <Accordion.Control>
               <Text size="xl" weight={600}>

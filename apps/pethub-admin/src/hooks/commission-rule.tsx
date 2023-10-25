@@ -14,7 +14,7 @@ export const useGetAllCommissionRules = () => {
   });
 };
 
-export const useCreatCommissionRule = (queryClient: QueryClient) => {
+export const useCreateCommissionRule = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: any) => {
       return (await api.post(`${COMMISSION_RULE_API}`, payload)).data;

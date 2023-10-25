@@ -3,24 +3,29 @@ import { IconAlertCircle } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React from "react";
 
-const InactivePetBusinessMessage = () => {
+const InactiveServiceListingMessage = () => {
   const router = useRouter();
   return (
     <Container mt={50}>
       <Alert
         icon={<IconAlertCircle size="1rem" />}
-        title="Account Inactive"
+        title="Inactive Pet Business"
         color="red"
       >
-        This pet business account is inactive and cannot be viewed.
+        This service listing cannot be viewed at the moment as the pet business
+        account is inactive.
       </Alert>
       <Center>
-        <Button mt="md" color="dark" onClick={() => router.push("/")}>
-          Return to home
+        <Button
+          mt="md"
+          color="dark"
+          onClick={() => router.push("/service-listings")}
+        >
+          Browse other listings
         </Button>
       </Center>
     </Container>
   );
 };
 
-export default InactivePetBusinessMessage;
+export default InactiveServiceListingMessage;

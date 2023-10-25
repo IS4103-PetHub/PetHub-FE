@@ -166,7 +166,7 @@ export default function CommissionRuleDetails({
               title={`Are you sure you want to delete ${commissionRule?.name}?`}
               subtitle={
                 commissionRule && commissionRule.petBusinesses.length > 0
-                  ? "Are you sure you want to delete the commission rule? There are existing Pet businesses assigned to this Commission Rule. The pet businessses would be reassigned to the default rule."
+                  ? "Are you sure you want to delete the commission rule? There are existing pet businesses assigned to this Commission Rule. The pet businessses would be reassigned to the default rule."
                   : "The commission rule would no longer exists."
               }
               onDelete={() =>

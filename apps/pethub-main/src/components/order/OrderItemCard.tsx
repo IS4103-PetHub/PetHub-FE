@@ -81,14 +81,11 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   }
 
   async function buyAgainHandler() {
-    await addItemToCart(
-      {
-        serviceListing: orderItem?.serviceListing,
-        ...(orderItem?.serviceListing.calendarGroupId ? {} : { quantity: 1 }),
-        isSelected: true,
-      } as CartItem,
-      1,
-    );
+    await addItemToCart({
+      serviceListing: orderItem?.serviceListing,
+      quantity: 1,
+      isSelected: true,
+    } as CartItem);
     notifications.show({
       title: "Added to cart",
       color: "green",

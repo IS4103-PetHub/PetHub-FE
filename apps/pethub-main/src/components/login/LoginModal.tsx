@@ -100,8 +100,8 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       if (allowedRoutesAfterLogin.includes(originalPath)) {
         router.push(originalPath);
       }
+      close();
     }
-    close();
     const timer = setTimeout(() => {
       loginForm.reset();
     }, 800);

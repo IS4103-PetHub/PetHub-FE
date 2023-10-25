@@ -88,7 +88,6 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         message:
           "Please do not refresh the page or press Back as we process your payment.",
       });
-
       const result = await stripe.createPaymentMethod({
         type: "card",
         card: cardNumber,
@@ -117,11 +116,8 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
       };
       const response = await stripePaymentMethodMutation.mutateAsync(payload);
 
-      notifications.hide("payment");
       // remove checkouted items from cart
       removeSelectedCartItems();
-      setIsPaying(false);
-
       // redirect to success message
       router.push(
         {
@@ -130,7 +126,11 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         },
         "/customer/checkout/success",
       );
+      notifications.hide("payment");
+      setIsPaying(false);
     } catch (error: any) {
+      setIsPaying(false);
+      notifications.hide("payment");
       if (error instanceof TypeError) {
         notifications.show({
           title: "Error Checking Out",
@@ -140,7 +140,6 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
           autoClose: 5000,
         });
       } else {
-        setIsPaying(false);
         notifications.show({
           ...getErrorMessageProps("Error Checking Out", error),
         });
