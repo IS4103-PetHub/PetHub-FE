@@ -21,7 +21,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconPaw, IconPawFilled } from "@tabler/icons-react";
+import { IconCheck, IconPaw, IconPawFilled, IconX } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -134,6 +134,16 @@ const ReviewModal = ({
   // ik all these file stuff should probably be extracted somewhere but
   const handleFileInputChange = (files: File[] | null) => {
     if (files && files.length > 0) {
+      // enforce that there can only be 3 files max including the ones already "uploaded"
+      if (files.length + form.values.files.length > 3) {
+        notifications.show({
+          title: `Image Maximum Reached`,
+          color: "orange",
+          icon: <IconX />,
+          message: "Maximum of 3 images allowed per review.",
+        });
+        files = files.slice(0, 3 - form.values.files.length);
+      }
       const newImageUrls = files.map((file) => URL.createObjectURL(file));
       imagePreview.push(...newImageUrls);
       const updatedFiles = [...form.values.files, ...files];
