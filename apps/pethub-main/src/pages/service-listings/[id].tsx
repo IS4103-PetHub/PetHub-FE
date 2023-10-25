@@ -9,6 +9,8 @@ import {
   useMantineTheme,
   Box,
   Stack,
+  Rating,
+  Center,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -19,6 +21,7 @@ import {
   IconCheck,
   IconX,
   IconClock,
+  IconPaw,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -36,9 +39,11 @@ import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
 import FavouriteButton from "@/components/favourites/FavouriteButton";
+import StarRating from "@/components/review/StarRating";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
 import InactiveServiceListingMessage from "@/components/service-listing-discovery/InactiveServiceListingMessage";
+import ReviewAccordionItem from "@/components/service-listing-discovery/ReviewAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
@@ -280,6 +285,19 @@ export default function ServiceListingDetails({
                 onClick={async () => handleFavouriteToggle()}
               />
             </Group>
+
+            <Box display="flex" mt={-10} mb={10}>
+              <Text mr={5} fw={500} size="md">
+                {serviceListing.overallRating === 0
+                  ? "Listing not rated"
+                  : `${serviceListing.overallRating}/5 Paws`}
+              </Text>
+              <StarRating
+                value={serviceListing.overallRating}
+                viewOnly
+                allowFractions
+              />
+            </Box>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
             <ServiceListingCarousel
               attachmentURLs={serviceListing.attachmentURLs}
@@ -304,6 +322,16 @@ export default function ServiceListingDetails({
                 description={serviceListing.description}
                 showFullDescription={showFullDescription}
                 setShowFullDescription={setShowFullDescription}
+              />
+              <ReviewAccordionItem
+                title={
+                  serviceListing.reviews.length === 0
+                    ? "Reviews (no reviews yet)"
+                    : `Reviews (${serviceListing.reviews.length})`
+                }
+                reviews={serviceListing.reviews}
+                showFullReviews={true}
+                setShowFullReviews={() => {}}
               />
             </Accordion>
           </Grid.Col>
