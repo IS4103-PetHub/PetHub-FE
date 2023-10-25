@@ -44,7 +44,7 @@ interface ReviewModalProps {
   opened: boolean;
   onClose: () => void;
   userId: number;
-  onCreateOrUpdate?: () => void;
+  onCreateOrUpdate?: () => Promise<void>;
 }
 
 const ReviewModal = ({

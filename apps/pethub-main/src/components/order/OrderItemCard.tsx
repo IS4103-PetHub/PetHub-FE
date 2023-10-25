@@ -352,7 +352,6 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
         userId={userId}
         opened={reviewModalOpened}
         onClose={closeReviewModal}
-        onCreateOrUpdate={() => {}}
       />
     </Card>
   );
