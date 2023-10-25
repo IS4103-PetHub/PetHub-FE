@@ -40,7 +40,7 @@ import ReviewModal from "../review/ReviewModal";
 interface OrderItemStepperContentProps {
   userId: number;
   orderItem: OrderItem;
-  refetch: () => Promise<void>;
+  refetch: () => Promise<any>;
 }
 
 const OrderItemStepperContent = ({

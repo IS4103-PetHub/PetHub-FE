@@ -44,7 +44,7 @@ interface ReviewModalProps {
   opened: boolean;
   onClose: () => void;
   userId: number;
-  onCreateOrUpdate?: () => Promise<void>;
+  onCreateOrUpdate?: () => Promise<any>;
 }
 
 const ReviewModal = ({
@@ -169,6 +169,8 @@ const ReviewModal = ({
         await UpdateReviewMutation.mutateAsync(payload as UpdateReviewPayload);
       }
       if (onCreateOrUpdate) await onCreateOrUpdate();
+      handleModalClose();
+      router.push(`/customer/orders/${orderItem?.orderItemId}`);
       notifications.show({
         title: `Review ${isUpdate ? "Updated" : "Created"}`,
         color: "green",
@@ -208,8 +210,6 @@ const ReviewModal = ({
       } as UpdateReviewPayload;
     }
     createOrUpdateReview(payload);
-    handleModalClose();
-    router.push(`/customer/orders/${orderItem?.orderItemId}`);
   }
 
   return (

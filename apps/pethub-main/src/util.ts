@@ -428,9 +428,6 @@ export function validateReviewTitle(title: string) {
   if (title.length > 64) {
     return "Title cannot exceed 64 characters";
   }
-  if (!TEXT_REGEX_PATTERN.test(title)) {
-    return "Title must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
-  }
   return null;
 }
 
@@ -438,11 +435,8 @@ export function validateReviewComment(comment: string) {
   if (!comment) {
     return "Comment is required.";
   }
-  if (comment.length > 500) {
-    return "Title cannot exceed 500 characters";
-  }
-  if (!TEXT_REGEX_PATTERN.test(comment)) {
-    return "Comment must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
+  if (comment.length > 2000) {
+    return "Title cannot exceed 2000 characters";
   }
   return null;
 }
