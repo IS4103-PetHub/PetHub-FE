@@ -68,6 +68,48 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   const { addItemToCart } = useCartOperations(userId);
   const [visible, { toggle }] = useDisclosure(false);
 
+  const REVIEW_HOLDING_PERIOD_DAYS = 15;
+
+  // A user can only leave a review max 15 days after the order item has been fulfilled
+  const lastReviewCreateDate = formatISODateTimeShort(
+    // unused variable: this is not currently being displayed
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewCreate = dayjs().isBefore(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  // A user can only update/delete a review max 15 days after the review has been made
+  const lastReviewUpdateOrDeleteDate = formatISODateTimeShort(
+    // unused variable: this is not currently being displayed
+    dayjs(orderItem?.review?.dateCreated || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewUpdateOrDelete = dayjs().isBefore(
+    dayjs(orderItem?.review?.dateCreated || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  const isReviewButtonDisabled = orderItem?.review
+    ? !eligibleForReviewUpdateOrDelete
+    : !eligibleForReviewCreate;
+
+  const reviewButtonPopoverText = orderItem?.review
+    ? `You may only edit/delete your review by ${formatISODateTimeShort(
+        lastReviewUpdateOrDeleteDate,
+      )} (within 15 days of the review being made).`
+    : `You may only leave a review by ${formatISODateTimeShort(
+        lastReviewCreateDate,
+      )} (within 15 days of the order item being fulfilled).`;
+
   function triggerNotImplementedNotification() {
     notifications.show({
       title: "Not Implemented",
@@ -177,15 +219,12 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
             size="xs"
             miw={90}
             onClick={openReviewModal}
-            mr={-5}
+            mr={-10}
+            disabled={isReviewButtonDisabled}
           >
             {orderItem?.review ? "Edit Review" : "Review"}
           </Button>
-          {!orderItem?.review && (
-            <OrderItemPopover
-              text={`Please ensure that you remain respectful, truthful, and constructive in your review. Do not give irrelevant feedback, use offensive language or photos, or disclose any personal information. Failure to comply might result in your review getting removed.`}
-            />
-          )}
+          <OrderItemPopover text={reviewButtonPopoverText} />
         </>
       )}
       {orderItem?.status === OrderItemStatusEnum.Expired && (

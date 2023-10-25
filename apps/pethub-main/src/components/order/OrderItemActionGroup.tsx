@@ -36,6 +36,7 @@ import { useDeleteReview } from "@/hooks/review";
 import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 import ReviewModal from "../review/ReviewModal";
+import OrderItemPopover from "./OrderItemPopover";
 
 interface OrderItemStepperContentProps {
   userId: number;
@@ -62,6 +63,7 @@ const OrderItemStepperContent = ({
   ] = useDisclosure(false);
 
   const REFUND_HOLDING_PERIOD_DAYS = 7;
+  const REVIEW_HOLDING_PERIOD_DAYS = 15;
 
   function triggerNotImplementedNotification() {
     notifications.show({
@@ -124,19 +126,56 @@ const OrderItemStepperContent = ({
     }
   };
 
-  // ================================= FAKE REFUND STUFF ================================= //
-  // // Add the holding period to expiry date
+  // Add the holding period to expiry date, this is the last allowed refund date
   const fakeRefundDate = formatISODateTimeShort(
-    dayjs(orderItem?.expiryDate)
+    dayjs(orderItem?.expiryDate || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day")
       .toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem?.expiryDate)
+    dayjs(orderItem?.expiryDate || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day"),
   );
+
+  // A user can only leave a review max 15 days after the order item has been fulfilled
+  const lastReviewCreateDate = formatISODateTimeShort(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewCreate = dayjs().isBefore(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  // A user can only update/delete a review max 15 days after the review has been made
+  const lastReviewUpdateOrDeleteDate = formatISODateTimeShort(
+    dayjs(orderItem?.review?.dateCreated)
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewUpdateOrDelete = dayjs().isBefore(
+    dayjs(orderItem?.review?.dateCreated)
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  const isReviewButtonDisabled = orderItem?.review
+    ? !eligibleForReviewUpdateOrDelete
+    : !eligibleForReviewCreate;
+
+  const reviewButtonPopoverText = orderItem?.review
+    ? `You may only edit/delete your review by ${formatISODateTimeShort(
+        lastReviewUpdateOrDeleteDate,
+      )} (within 15 days of the review being made).`
+    : `You may only leave a review by ${formatISODateTimeShort(
+        lastReviewCreateDate,
+      )} (within 15 days of the order item being fulfilled).`;
 
   const dividerColumn = (
     <Grid.Col>
@@ -274,19 +313,21 @@ const OrderItemStepperContent = ({
           </>
         ) : (
           <Text size="xs">
-            🐾 Loved our products for your furry friend? We&apos;d be
-            purr-fectly delighted if you could{" "}
-            <strong>leave us a paw-sitive review</strong>! Your feedback helps
+            🐾 Loved our products for your furry friend?
+            <strong> Leave a paw-sitive review</strong>! Your feedback helps
             other pets find their new favorites. 🐾
           </Text>
         )}
       </Grid.Col>
-      <Grid.Col span={1} />
+      <Grid.Col span={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <OrderItemPopover text={reviewButtonPopoverText} />
+      </Grid.Col>
       <Grid.Col span={4}>
         {orderItem?.review ? (
           <Center>
             <Button
               fullWidth
+              disabled={isReviewButtonDisabled}
               variant="light"
               color="orange"
               sx={{ border: "1px solid #e0e0e0" }}
@@ -297,6 +338,7 @@ const OrderItemStepperContent = ({
             &nbsp;
             <Button
               fullWidth
+              disabled={isReviewButtonDisabled}
               variant="light"
               color="pink"
               sx={{ border: "1px solid #e0e0e0" }}
@@ -308,6 +350,7 @@ const OrderItemStepperContent = ({
         ) : (
           <Button
             fullWidth
+            disabled={isReviewButtonDisabled}
             variant="light"
             color="orange"
             sx={{ border: "1px solid #e0e0e0" }}

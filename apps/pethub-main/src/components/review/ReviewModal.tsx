@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  Center,
   CloseButton,
   FileInput,
   Grid,
@@ -38,6 +39,7 @@ import {
   validateReviewTitle,
 } from "@/util";
 import OrderItemCardMini from "../order/OrderItemCardMini";
+import OrderItemPopover from "../order/OrderItemPopover";
 
 interface ReviewModalProps {
   orderItem: OrderItem;
@@ -95,7 +97,14 @@ const ReviewModal = ({
 
   useEffect(() => {
     const fetchAndSetReviewFields = async () => {
-      if (orderItem?.review) await setReviewFields();
+      if (orderItem?.review) {
+        await setReviewFields();
+      } else {
+        // This is neccessary to have a blank form after deleting a review
+        form.reset();
+        setImagePreview([]);
+        setFileInputKey(0);
+      }
     };
     fetchAndSetReviewFields();
   }, [orderItem, opened]);
@@ -234,9 +243,14 @@ const ReviewModal = ({
         <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
           <Accordion.Item value="content" mt={-35} pl={30} pr={30} pt={15}>
             <Group mb="sm" position="apart">
-              <Text fw={600} size="xl">
-                Review Product
-              </Text>
+              <Center>
+                <Text fw={600} size="xl">
+                  Review Product
+                </Text>
+                <OrderItemPopover
+                  text={`Please ensure that you remain respectful, truthful, and constructive in your review. Do not give irrelevant feedback, use offensive language or photos, or disclose any personal information. Failure to comply might result in your review getting removed.`}
+                />
+              </Center>
               <Box>
                 <Text fw={400} size="sm" mb={3} align="center">
                   {ratingTextMap[form.values.rating] || ""}
@@ -292,7 +306,7 @@ const ReviewModal = ({
               <FileInput
                 placeholder={
                   imagePreview.length == 0
-                    ? "Upload an image or two to help others visualize your experience"
+                    ? "+ Upload an image or two to help others visualize your experience"
                     : `You have uploaded ${imagePreview.length} images`
                 }
                 accept="image/*"
