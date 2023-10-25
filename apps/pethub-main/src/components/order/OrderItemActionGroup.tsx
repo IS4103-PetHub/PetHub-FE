@@ -165,7 +165,7 @@ const OrderItemStepperContent = ({
       .endOf("day"),
   );
 
-  const isReviewButtonDisabled = orderItem?.review
+  const hideReviewButtons = orderItem?.review
     ? !eligibleForReviewUpdateOrDelete
     : !eligibleForReviewCreate;
 
@@ -282,35 +282,30 @@ const OrderItemStepperContent = ({
     <>
       <Grid.Col span={7}>
         {orderItem?.review ? (
-          <>
-            <Text size="xs">
-              Paw-some! Thank you for leaving your review below titled:
+          <Box>
+            <Rating
+              value={orderItem?.review?.rating}
+              readOnly
+              emptySymbol={
+                <IconPaw
+                  size="1.25rem"
+                  color={theme.colors.yellow[7]}
+                  strokeWidth={1.5}
+                />
+              }
+              fullSymbol={
+                <IconPaw
+                  size="1.25rem"
+                  color={theme.colors.yellow[7]}
+                  fill={theme.colors.yellow[5]}
+                  strokeWidth={1.5}
+                />
+              }
+            />
+            <Text size="xs" lineClamp={1}>
+              ~<strong>{orderItem?.review?.title}</strong>~&nbsp;
             </Text>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Text size="xs" lineClamp={1}>
-                ~<strong>{orderItem?.review?.title}</strong>~&nbsp;
-              </Text>
-              <Rating
-                value={orderItem?.review?.rating}
-                readOnly
-                emptySymbol={
-                  <IconPaw
-                    size="1.5rem"
-                    color={theme.colors.yellow[7]}
-                    strokeWidth={1.5}
-                  />
-                }
-                fullSymbol={
-                  <IconPaw
-                    size="1.5rem"
-                    color={theme.colors.yellow[7]}
-                    fill={theme.colors.yellow[5]}
-                    strokeWidth={1.5}
-                  />
-                }
-              />
-            </Box>
-          </>
+          </Box>
         ) : (
           <Text size="xs">
             🐾 Loved our products for your furry friend?
@@ -320,44 +315,47 @@ const OrderItemStepperContent = ({
         )}
       </Grid.Col>
       <Grid.Col span={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <OrderItemPopover text={reviewButtonPopoverText} />
+        {!hideReviewButtons && (
+          <OrderItemPopover text={reviewButtonPopoverText} />
+        )}
       </Grid.Col>
       <Grid.Col span={4}>
-        {orderItem?.review ? (
-          <Center>
-            <Button
-              fullWidth
-              disabled={isReviewButtonDisabled}
-              variant="light"
-              color="orange"
-              sx={{ border: "1px solid #e0e0e0" }}
-              onClick={openReviewModal}
-            >
-              Edit Review
-            </Button>
-            &nbsp;
-            <Button
-              fullWidth
-              disabled={isReviewButtonDisabled}
-              variant="light"
-              color="pink"
-              sx={{ border: "1px solid #e0e0e0" }}
-              onClick={deleteReviewHandler}
-            >
-              Remove Review
-            </Button>
-          </Center>
-        ) : (
-          <Button
-            fullWidth
-            disabled={isReviewButtonDisabled}
-            variant="light"
-            color="orange"
-            sx={{ border: "1px solid #e0e0e0" }}
-            onClick={openReviewModal}
-          >
-            Review
-          </Button>
+        {!hideReviewButtons && (
+          <>
+            {orderItem?.review ? (
+              <Center>
+                <Button
+                  fullWidth
+                  variant="light"
+                  color="orange"
+                  sx={{ border: "1px solid #e0e0e0" }}
+                  onClick={openReviewModal}
+                >
+                  Edit Review
+                </Button>
+                &nbsp;
+                <Button
+                  fullWidth
+                  variant="light"
+                  color="pink"
+                  sx={{ border: "1px solid #e0e0e0" }}
+                  onClick={deleteReviewHandler}
+                >
+                  Remove Review
+                </Button>
+              </Center>
+            ) : (
+              <Button
+                fullWidth
+                variant="light"
+                color="orange"
+                sx={{ border: "1px solid #e0e0e0" }}
+                onClick={openReviewModal}
+              >
+                Review
+              </Button>
+            )}
+          </>
         )}
       </Grid.Col>
     </>

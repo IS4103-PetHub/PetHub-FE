@@ -239,6 +239,7 @@ const ReviewModal = ({
       size="80vh"
       closeOnEscape={false}
       closeOnClickOutside={false}
+      title={<Text size="sm">Order Item No. {orderItem.orderItemId}</Text>}
     >
       <Accordion
         multiple
@@ -292,7 +293,7 @@ const ReviewModal = ({
               <TextInput
                 data-autofocus
                 withAsterisk
-                placeholder="What&#39;s most important to know?"
+                placeholder="Give a summary of your review."
                 {...form.getInputProps("title")}
               />
             </Box>
