@@ -131,9 +131,7 @@ const LostAndFoundPostModal = ({
 
       if (post.attachmentURLs?.length > 0) {
         const newFile: File = await downloadPromise();
-        console.log(newFile);
         const imageObjectUrl = URL.createObjectURL(newFile);
-        console.log(imageObjectUrl);
         setImagePreviewUrl(imageObjectUrl);
         form.setFieldValue("file", newFile);
       }
@@ -144,13 +142,8 @@ const LostAndFoundPostModal = ({
   };
 
   useEffect(() => {
-    // console.log(post);
     setFormFields();
   }, [petOwner, post]);
-
-  // useEffect(() => {
-  //   console.log(imagePreviewUrl);
-  // }, [imagePreviewUrl]);
 
   type FormValues = typeof form.values;
 

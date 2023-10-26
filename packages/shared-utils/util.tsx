@@ -174,9 +174,7 @@ export function generateRandomIntFromInterval(min: number, max: number) {
 // handling file download and file name extraction
 export const downloadFile = async (url: string, fileName: string) => {
   try {
-    const response = await fetch(url, {
-      mode: "no-cors",
-    });
+    const response = await fetch(url);
     const buffer = await response.arrayBuffer();
     return new File([buffer], fileName);
   } catch (error) {
