@@ -22,11 +22,7 @@ import {
   useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
 import { PetBusiness } from "@/types/types";
-import {
-  validateCGDescription,
-  validateCGName,
-  validateCGSettings,
-} from "@/util";
+import { validateCGName, validateCGSettings } from "@/util";
 
 interface CreateCalendarGroupProps {
   userId: number;
@@ -67,7 +63,6 @@ export default function CreateCalendarGroup({
     },
     validate: {
       name: validateCGName,
-      description: validateCGDescription,
       scheduleSettings: validateCGSettings as any,
     },
   });
