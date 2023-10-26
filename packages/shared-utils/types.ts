@@ -102,6 +102,9 @@ export interface ServiceListing {
   defaultExpiryDays: number;
   lastPossibleDate?: string;
   requiresBooking: boolean;
+
+  reviews: Review[];
+  overallRating: number;
 }
 export interface OrderItem {
   orderItemId: number;
@@ -146,6 +149,8 @@ export interface OrderItem {
   attachmentURL: string;
   commissionRate: number;
   dateFulfilled?: string;
+
+  review?: Review;
 }
 
 export interface OrderBarCounts {
@@ -229,4 +234,22 @@ export interface Pet {
   attachmentURLs: string[];
   dateCreated: string;
   dateUpdated: string;
+}
+
+export interface Review {
+  reviewId: number;
+  title: string;
+  comment: string;
+  reply: string;
+  rating: number;
+  dateCreated: string;
+  lastUpdated: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  orderItemId: number;
+  orderItem: OrderItem;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
+  reportedBy: any;
+  likedBy: any;
 }

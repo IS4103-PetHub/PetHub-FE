@@ -19,6 +19,7 @@ import {
   IconLogout,
   IconBusinessplan,
   IconFileInvoice,
+  IconMessageReport,
 } from "@tabler/icons-react";
 import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
@@ -111,6 +112,11 @@ const data = [
     link: "/admin/orders",
     label: "Orders",
     icon: IconFileInvoice,
+  },
+  {
+    link: "/admin/review",
+    label: "Reported Reviews",
+    icon: IconMessageReport,
   },
 ];
 
