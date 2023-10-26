@@ -2,7 +2,6 @@ import { Badge, Group, ActionIcon, useMantineTheme } from "@mantine/core";
 import { IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import { Router } from "next/router";
 import {
   OrderItem,
   TABLE_PAGE_SIZE,

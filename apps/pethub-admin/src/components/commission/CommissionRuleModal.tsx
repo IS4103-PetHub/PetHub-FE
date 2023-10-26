@@ -11,8 +11,8 @@ import {
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
-import { getErrorMessageProps } from "shared-utils";
-import { useCreatCommissionRule } from "@/hooks/commission-rule";
+import { formatNumberCustomDecimals, getErrorMessageProps } from "shared-utils";
+import { useCreateCommissionRule } from "@/hooks/commission-rule";
 
 interface CommissionRuleModalProps {
   opened: boolean;
@@ -39,8 +39,8 @@ const CommissionRuleModal = ({
   const form = useForm({
     initialValues: formDefaultValues,
     validate: {
-      name: isNotEmpty("Name is required"),
-      commissionRate: isNotEmpty("Commission Rate is required"),
+      name: isNotEmpty("Name is required."),
+      commissionRate: isNotEmpty("Commission Rate is required."),
     },
   });
 
@@ -48,19 +48,22 @@ const CommissionRuleModal = ({
    * Service Handlers
    */
   const queryClient = useQueryClient();
-  const createCommissionRule = useCreatCommissionRule(queryClient);
-  const handleAction = async (values) => {
+  const createCommissionRule = useCreateCommissionRule(queryClient);
+
+  type FormValues = typeof form.values;
+  const handleAction = async (values: FormValues) => {
     try {
       const payload = {
         ...values,
-        commissionRate: Number((values.commissionRate / 100).toFixed(4)),
+        commissionRate: Number(
+          formatNumberCustomDecimals(Number(values.commissionRate / 100), 4),
+        ),
       };
       await createCommissionRule.mutateAsync(payload);
       notifications.show({
         message: "Commission Rule Successfully Created",
         color: "green",
       });
-      refetch();
       closeAndResetForm();
     } catch (error) {
       notifications.show({

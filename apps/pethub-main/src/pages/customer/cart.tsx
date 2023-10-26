@@ -58,10 +58,8 @@ export default function Cart({ userId }: CartProps) {
     const updatedCartItems = getCartItems();
     setCartItems(updatedCartItems);
     const initialCheckedState = {};
-    const initialExpiredState = {};
     updatedCartItems.forEach((item) => {
       initialCheckedState[item.cartItemId] = item.isSelected;
-      initialExpiredState[item.cartItemId] = false; // default is all items not expired
     });
     setCheckedItems(initialCheckedState);
     if (cartItems.length === 0) {
@@ -99,8 +97,7 @@ export default function Cart({ userId }: CartProps) {
     let totalBuyables = 0;
     cartItems.forEach((item) => {
       if (checkedItems[item.cartItemId]) {
-        // Check if item is not expired and is checked
-        totalBuyables += item.quantity || 1; // Rmr some items got quantity
+        totalBuyables += item.quantity || 1;
       }
     });
     return totalBuyables;
@@ -113,7 +110,6 @@ export default function Cart({ userId }: CartProps) {
     }
     cartItems.forEach((item) => {
       if (checkedItems[item.cartItemId]) {
-        // Check if item is not expired and is checked
         totalPrice += item.quantity * item.serviceListing.basePrice;
       }
     });
@@ -168,7 +164,6 @@ export default function Cart({ userId }: CartProps) {
     notifications.hide("checkout");
   }
 
-  // As long as all non-expired items are checked, this will be true
   const areAllChecked = cartItems.every(
     (item) => checkedItems[item.cartItemId],
   );
@@ -335,8 +330,9 @@ export default function Cart({ userId }: CartProps) {
                     leftIcon={<IconX size="1rem" />}
                     color="red"
                     variant="subtle"
-                    subtitle="Are you sure you want to clear all cart items? All existing chosen appointment time slots will be removed."
+                    subtitle="Are you sure you want to clear all cart items?"
                     title="Clear cart"
+                    overrideDeleteButtonText="Clear"
                   />
                 </Group>
               </Card>
