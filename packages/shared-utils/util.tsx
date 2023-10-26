@@ -132,6 +132,7 @@ export function searchServiceListingsForPB(
   searchStr: string,
 ) {
   return serviceListings.filter((serviceListing: ServiceListing) => {
+    const search = searchStr.toLowerCase();
     const formattedCategory = formatEnumValueToLowerCase(
       serviceListing.category,
     );
@@ -139,9 +140,9 @@ export function searchServiceListingsForPB(
       tag.name.toLowerCase(),
     );
     return (
-      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      formattedCategory.includes(searchStr.toLowerCase()) ||
-      formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
+      serviceListing.title.toLowerCase().includes(search) ||
+      formattedCategory.includes(search) ||
+      formattedTags.some((tag) => tag.includes(search))
     );
   });
 }
