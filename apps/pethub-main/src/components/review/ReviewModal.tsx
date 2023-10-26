@@ -256,7 +256,7 @@ const ReviewModal = ({
             <Group mb="sm" position="apart">
               <Center>
                 <Text fw={600} size="xl">
-                  Review Product
+                  Review Order
                 </Text>
                 <OrderItemPopover
                   text={`Please ensure that you remain respectful, truthful, and constructive in your review. Do not give irrelevant feedback, use offensive language or photos, or disclose any personal information. Failure to comply might result in your review getting removed.`}
@@ -287,10 +287,8 @@ const ReviewModal = ({
               </Box>
             </Group>
             <Box mb="sm">
-              <Text fw={500} size="md" mb={3}>
-                Title
-              </Text>
               <TextInput
+                label="Title"
                 data-autofocus
                 withAsterisk
                 placeholder="Give a summary of your review."
@@ -298,10 +296,8 @@ const ReviewModal = ({
               />
             </Box>
             <Box mb="sm">
-              <Text fw={500} size="md" mb={3}>
-                Comment
-              </Text>
               <Textarea
+                label="Comment"
                 withAsterisk
                 autosize
                 minRows={3}
@@ -311,10 +307,8 @@ const ReviewModal = ({
               />
             </Box>
             <Box>
-              <Text fw={500} size="md" mb={3}>
-                Add photos
-              </Text>
               <FileInput
+                label="Add photos"
                 placeholder={
                   imagePreview.length == 0
                     ? "+ Upload an image or two to help others visualize your experience"
