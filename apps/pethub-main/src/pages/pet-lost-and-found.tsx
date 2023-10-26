@@ -2,8 +2,10 @@ import {
   Box,
   Chip,
   Container,
+  Grid,
   Group,
   MantineProvider,
+  Select,
   Transition,
   useMantineTheme,
 } from "@mantine/core";
@@ -18,6 +20,7 @@ import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
+import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import LostAndFoundMasonryGrid from "@/components/pet-lost-and-found/LostAndFoundMasonryGrid";
 import LostAndFoundPostModal from "@/components/pet-lost-and-found/LostAndFoundPostModal";
@@ -27,7 +30,7 @@ import {
   petLostAndFoundSortOptions,
 } from "@/types/constants";
 import { PetLostAndFound } from "@/types/types";
-import { sortRecords } from "@/util";
+import { searchPetLostAndFoundPosts, sortRecords } from "@/util";
 
 interface PetLostAndFoundProps {
   userId: number;
@@ -45,7 +48,9 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
   const [sortStatus, setSortStatus] = useState<string>("newest");
+  const [filterStatus, setFilterStatus] = useState<string>("unresolved");
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+  const [isSearching, setIsSearching] = useToggle();
 
   // get selected category from router query
   const activeType = router.query?.requestType as string;
@@ -57,15 +62,28 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
   } = useGetPetLostAndFoundPostsByRequestTypeAndUserId(activeType, userId);
   const [records, setRecords] = useState<PetLostAndFound[]>(posts);
 
+  const filterByStatus = () => {
+    switch (filterStatus) {
+      case "resolved":
+        return posts.filter((post) => post.isResolved);
+      case "unresolved":
+        return posts.filter((post) => !post.isResolved);
+      default:
+        return posts;
+    }
+  };
+
   useEffect(() => {
+    // handle filter by status if any
+    const filtered = filterByStatus();
     // handle sort
     const newRecords = sortRecords(
       petLostAndFoundSortOptions,
-      posts,
+      filtered,
       sortStatus,
     );
     setRecords(newRecords);
-  }, [posts, sortStatus]);
+  }, [posts, sortStatus, filterStatus]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -96,6 +114,18 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
     });
   }
 
+  const handleSearch = (searchStr: string) => {
+    if (searchStr.length === 0) {
+      setIsSearching(false);
+      setRecords(filterByStatus());
+      return;
+    }
+    setIsSearching(true);
+    const filtered = filterByStatus();
+    const results = searchPetLostAndFoundPosts(filtered, searchStr);
+    setRecords(results);
+  };
+
   function renderContent() {
     if (posts.length === 0) {
       if (isLoading) {
@@ -121,8 +151,20 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
         </Transition>
       );
     }
+
+    if (records.length === 0 && (filterStatus || isSearching)) {
+      return (
+        <div style={{ opacity: 0.7 }}>
+          <SadDimmedMessage
+            title="No matching posts"
+            subtitle="Please remove any existing search filters and try again!"
+          />
+        </div>
+      );
+    }
+
     return (
-      <Box mt="lg">
+      <Box mt="xs">
         <LostAndFoundMasonryGrid
           posts={records}
           sessionUserId={userId}
@@ -162,7 +204,7 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
             value={activeType}
             onChange={(value) => handleChangeSelectedType(value)}
           >
-            <Group position="left" w="75%">
+            <Group position="left" w="50%">
               <Chip
                 value=""
                 variant="filled"
@@ -204,10 +246,45 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
               fontFamily: inter.style.fontFamily,
             }}
           >
-            <SortBySelect
-              data={petLostAndFoundSortOptions}
-              value={sortStatus}
-              onChange={setSortStatus}
+            <Grid>
+              <Grid.Col span={6}>
+                <Select
+                  dropdownPosition="bottom"
+                  size="md"
+                  w="100%"
+                  mt={-25}
+                  label="Filter by status"
+                  placeholder="Select status"
+                  data={[
+                    {
+                      value: "unresolved",
+                      label: "Unresolved",
+                    },
+                    {
+                      value: "resolved",
+                      label: "Resolved",
+                    },
+                  ]}
+                  clearable
+                  value={filterStatus}
+                  onChange={setFilterStatus}
+                />
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <SortBySelect
+                  w="100%"
+                  data={petLostAndFoundSortOptions}
+                  value={sortStatus}
+                  onChange={setSortStatus}
+                />
+              </Grid.Col>
+            </Grid>
+            <SearchBar
+              mt={10}
+              size="md"
+              w="100%"
+              text="Search by title, description, author name"
+              onSearch={(searchStr) => handleSearch(searchStr)}
             />
           </MantineProvider>
         </Group>

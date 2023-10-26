@@ -11,6 +11,7 @@ import {
   FileInput,
   Image,
   Group,
+  Checkbox,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -76,6 +77,7 @@ const LostAndFoundPostModal = ({
       contactNumber: petOwner ? petOwner.contactNumber : "",
       petId: post ? post.petId?.toString() : "",
       file: null,
+      isResolved: post ? post.isResolved : false,
     },
 
     validate: {
@@ -127,13 +129,17 @@ const LostAndFoundPostModal = ({
         lastSeenLocation: post ? post.lastSeenLocation : "",
         contactNumber: post ? post.contactNumber : "",
         petId: post ? post.petId?.toString() : "",
+        isResolved: post ? post.isResolved : false,
       });
 
       if (post.attachmentURLs?.length > 0) {
         const newFile: File = await downloadPromise();
-        const imageObjectUrl = URL.createObjectURL(newFile);
-        setImagePreviewUrl(imageObjectUrl);
-        form.setFieldValue("file", newFile);
+
+        if (newFile) {
+          const imageObjectUrl = URL.createObjectURL(newFile);
+          setImagePreviewUrl(imageObjectUrl);
+          form.setFieldValue("file", newFile);
+        }
       }
 
       return;
@@ -141,14 +147,11 @@ const LostAndFoundPostModal = ({
     form.setFieldValue("contactNumber", petOwner?.contactNumber);
   };
 
-  useEffect(() => {
-    setFormFields();
-  }, [petOwner, post]);
-
   type FormValues = typeof form.values;
 
   async function handleClose() {
     if (isUpdating) {
+      setImagePreviewUrl("");
       await setFormFields();
     } else {
       form.reset();
@@ -159,6 +162,7 @@ const LostAndFoundPostModal = ({
 
   async function handleSubmit(values: FormValues) {
     setIsLoading(true);
+    console.log(values);
 
     if (isUpdating) {
       try {
@@ -337,6 +341,15 @@ const LostAndFoundPostModal = ({
               </Card>
             )}
           </Grid.Col>
+          {isUpdating && (
+            <Grid.Col span={12}>
+              <Checkbox
+                size="md"
+                label="Mark post as resolved"
+                {...form.getInputProps("isResolved", { type: "checkbox" })}
+              />
+            </Grid.Col>
+          )}
         </Grid>
         <Group position="apart">
           {isUpdating && (

@@ -80,6 +80,7 @@ export const useUpdatePetLostAndFoundPost = () => {
       formData.append("lastSeenDate", payload.lastSeenDate);
       formData.append("lastSeenLocation", payload.lastSeenLocation);
       formData.append("contactNumber", payload.contactNumber);
+      formData.append("isResolved", payload.isResolved);
       if (payload.petId) {
         formData.append("petId", payload.petId);
       }

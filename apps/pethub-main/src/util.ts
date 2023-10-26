@@ -45,12 +45,11 @@ export function searchServiceListingsForCustomer(
   serviceListings: ServiceListing[],
   searchStr: string,
 ) {
+  const search = searchStr.toLowerCase();
   return serviceListings.filter(
     (serviceListing: ServiceListing) =>
-      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      serviceListing.petBusiness?.companyName
-        .toLowerCase()
-        .includes(searchStr.toLowerCase()),
+      serviceListing.title.toLowerCase().includes(search) ||
+      serviceListing.petBusiness?.companyName.toLowerCase().includes(search),
   );
 }
 
@@ -59,13 +58,27 @@ export function searchOrderItemsForCustomer(
   searchStr: string,
 ) {
   const search = searchStr.toLowerCase();
-
   return orderItems.filter(
     (orderItem: OrderItem) =>
       orderItem.itemName?.toLowerCase().includes(search) ||
       orderItem.orderItemId?.toString() === search ||
       orderItem.serviceListing?.petBusiness?.companyName
         ?.toLowerCase()
+        .includes(search),
+  );
+}
+
+export function searchPetLostAndFoundPosts(
+  posts: PetLostAndFound[],
+  searchStr: string,
+) {
+  const search = searchStr.toLowerCase();
+  return posts.filter(
+    (post: PetLostAndFound) =>
+      post.title.toLowerCase().includes(search) ||
+      post.description.toLowerCase().includes(search) ||
+      `${post.petOwner.firstName} ${post.petOwner.lastName}`
+        .toLowerCase()
         .includes(search),
   );
 }
