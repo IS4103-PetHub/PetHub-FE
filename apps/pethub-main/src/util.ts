@@ -10,6 +10,7 @@ import {
   ServiceListing,
   TimePeriod,
 } from "shared-utils";
+import { PetLostAndFound } from "./types/types";
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -44,12 +45,11 @@ export function searchServiceListingsForCustomer(
   serviceListings: ServiceListing[],
   searchStr: string,
 ) {
+  const search = searchStr.toLowerCase();
   return serviceListings.filter(
     (serviceListing: ServiceListing) =>
-      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      serviceListing.petBusiness?.companyName
-        .toLowerCase()
-        .includes(searchStr.toLowerCase()),
+      serviceListing.title.toLowerCase().includes(search) ||
+      serviceListing.petBusiness?.companyName.toLowerCase().includes(search),
   );
 }
 
@@ -58,13 +58,27 @@ export function searchOrderItemsForCustomer(
   searchStr: string,
 ) {
   const search = searchStr.toLowerCase();
-
   return orderItems.filter(
     (orderItem: OrderItem) =>
       orderItem.itemName?.toLowerCase().includes(search) ||
       orderItem.orderItemId?.toString() === search ||
       orderItem.serviceListing?.petBusiness?.companyName
         ?.toLowerCase()
+        .includes(search),
+  );
+}
+
+export function searchPetLostAndFoundPosts(
+  posts: PetLostAndFound[],
+  searchStr: string,
+) {
+  const search = searchStr.toLowerCase();
+  return posts.filter(
+    (post: PetLostAndFound) =>
+      post.title.toLowerCase().includes(search) ||
+      post.description.toLowerCase().includes(search) ||
+      `${post.petOwner.firstName} ${post.petOwner.lastName}`
+        .toLowerCase()
         .includes(search),
   );
 }
@@ -226,31 +240,11 @@ export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
 }
 
 export function validateCGName(name: string) {
-  if (!name || name.length > 72) {
-    return "Name is required and should be at most 72 characters long.";
+  if (!name) {
+    return "Name is required for calendar group.";
   }
-  const validPattern = /^[a-zA-Z0-9\s.,]+$/;
-  const alphabetPresence = /[a-zA-Z]+/;
-  if (!validPattern.test(name)) {
-    return "Name must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
-  }
-  if (!alphabetPresence.test(name)) {
-    return "Name must contain at least one alphabet character.";
-  }
-  return null;
-}
-
-export function validateCGDescription(description: string) {
-  if (!description) {
-    return "Description is required.";
-  }
-  const validPattern = /^[a-zA-Z0-9\s.,]+$/;
-  const alphabetPresence = /[a-zA-Z]+/;
-  if (!validPattern.test(description)) {
-    return "Description must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
-  }
-  if (!alphabetPresence.test(description)) {
-    return "Description must contain at least one alphabet character.";
+  if (name.length > 72) {
+    return "Calendar Group Name should be at most 72 characters long.";
   }
   return null;
 }
@@ -418,3 +412,16 @@ export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
   }
   return CGCopy;
 }
+
+// for pet
+export const calculateAge = (dateOfBirth: any) => {
+  const currentDate = new Date();
+  const dob = new Date(dateOfBirth);
+  let age = dayjs(currentDate).diff(dob, "years");
+
+  if (age == 0) {
+    age = dayjs(currentDate).diff(dob, "months");
+    return `${age} month${age !== 1 ? "s" : ""}`;
+  }
+  return `${age} year${age > 1 ? "s" : ""}`;
+};

@@ -42,7 +42,7 @@ const useStyles = createStyles((theme) => ({
   favouriteButton: {
     position: "absolute",
     top: theme.spacing.md,
-    right: theme.spacing.md,
+    right: 2,
     zIndex: 2, // Above the overlay and image
   },
 }));
