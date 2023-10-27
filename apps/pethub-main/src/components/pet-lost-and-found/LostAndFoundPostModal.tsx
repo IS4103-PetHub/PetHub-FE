@@ -18,7 +18,7 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconMapPin } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AccountTypeEnum,
   downloadFile,
@@ -108,14 +108,24 @@ const LostAndFoundPostModal = ({
     },
   });
 
-  const downloadPromise = () => {
+  const downloadPromise = (fileKey: string, url: string) => {
     try {
-      const fileName = extractFileName(post.attachmentKeys[0]);
-      const url = post.attachmentURLs[0];
+      const fileName = extractFileName(fileKey);
       return downloadFile(url, fileName);
     } catch (error) {
       console.error(`Error downloading file:`, error);
       return null;
+    }
+  };
+
+  const handleFileInputChange = (newFile: File) => {
+    if (newFile) {
+      const imageObjectUrl = URL.createObjectURL(newFile);
+      setImagePreviewUrl(imageObjectUrl);
+      form.setFieldValue("file", newFile);
+    } else {
+      setImagePreviewUrl("");
+      form.setFieldValue("file", null);
     }
   };
 
@@ -132,31 +142,34 @@ const LostAndFoundPostModal = ({
         isResolved: post.isResolved,
       });
 
-      if (post.attachmentURLs?.length > 0) {
-        const newFile: File = await downloadPromise();
-
+      if (post.attachmentURLs.length > 0) {
+        const newFile: File = await downloadPromise(
+          post.attachmentKeys[0],
+          post.attachmentURLs[0],
+        );
         if (newFile) {
-          const imageObjectUrl = URL.createObjectURL(newFile);
-          setImagePreviewUrl(imageObjectUrl);
-          form.setFieldValue("file", newFile);
+          handleFileInputChange(newFile);
         }
       }
-
       return;
     }
     form.setFieldValue("contactNumber", petOwner?.contactNumber);
+    form.setFieldValue("file", null);
   };
+
+  useEffect(() => {
+    setFormFields();
+  }, [post]);
 
   type FormValues = typeof form.values;
 
   async function handleClose() {
     if (isUpdating) {
-      setImagePreviewUrl("");
       await setFormFields();
     } else {
       form.reset();
-      setImagePreviewUrl("");
     }
+    setImagePreviewUrl("");
     close();
   }
 
@@ -205,17 +218,6 @@ const LostAndFoundPostModal = ({
     }
     setIsLoading(false);
   }
-
-  const handleFileInputChange = (newFile: File) => {
-    if (newFile) {
-      const imageObjectUrl = URL.createObjectURL(newFile);
-      setImagePreviewUrl(imageObjectUrl);
-      form.setFieldValue("file", newFile);
-    } else {
-      setImagePreviewUrl("");
-      form.setFieldValue("file", null);
-    }
-  };
 
   return (
     <Modal
@@ -329,7 +331,7 @@ const LostAndFoundPostModal = ({
               onChange={(file) => handleFileInputChange(file)}
               capture={false}
             />
-            {form.values.file && imagePreviewUrl && (
+            {imagePreviewUrl && (
               <Card sx={{ maxWidth: "100%" }}>
                 <Image
                   src={imagePreviewUrl}
