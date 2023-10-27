@@ -295,12 +295,16 @@ const ReviewModal = ({
                 autosize
                 minRows={3}
                 maxRows={3}
+                maxLength={2000}
                 placeholder="What did you like or dislike? Share your thoughts!"
                 {...form.getInputProps("comment")}
               />
+              <Text color="dimmed" size="sm" align="right">
+                {form.values.comment.length} / 2000 characters
+              </Text>
             </Box>
             <Box>
-              <Text fw={500} size="md" mb={3}>
+              <Text fw={500} size="md" mb={3} mt={-20}>
                 Add photos
               </Text>
               <FileInput

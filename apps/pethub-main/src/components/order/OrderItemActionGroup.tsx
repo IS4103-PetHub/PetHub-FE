@@ -465,9 +465,20 @@ const OrderItemStepperContent = ({
     </>
   );
 
-  const expiredAndRefundedGroup = (
+  const expiredGroup = (
     <>
       {buyAgainColumn}
+      {dividerColumn}
+      {invoiceColumn}
+      {orderItem?.serviceListing.requiresBooking && displayBookingColumn()}
+    </>
+  );
+
+  const refundedGroup = (
+    <>
+      {buyAgainColumn}
+      {dividerColumn}
+      {reviewColumn}
       {dividerColumn}
       {invoiceColumn}
       {orderItem?.serviceListing.requiresBooking && displayBookingColumn()}
@@ -487,8 +498,10 @@ const OrderItemStepperContent = ({
         return fulfilledGroup;
 
       case OrderItemStatusEnum.Expired:
+        return expiredGroup;
+
       case OrderItemStatusEnum.Refunded:
-        return expiredAndRefundedGroup;
+        return refundedGroup;
 
       default:
         return null;

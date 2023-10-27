@@ -8,17 +8,11 @@ import ReviewCard from "../review/ReviewCard";
 interface ReviewAccordionItemProps {
   title: string;
   reviews: Review[];
-  showFullReviews: boolean;
-  setShowFullReviews(): void;
 }
 
-const ReviewAccordionItem = ({
-  title,
-  reviews,
-  showFullReviews,
-  setShowFullReviews,
-}: ReviewAccordionItemProps) => {
+const ReviewAccordionItem = ({ title, reviews }: ReviewAccordionItemProps) => {
   const theme = useMantineTheme();
+
   return (
     <Accordion.Item value="description" p="sm" mt="xl">
       <Accordion.Control
@@ -33,12 +27,6 @@ const ReviewAccordionItem = ({
         {reviews.map((review) => (
           <ReviewCard key={review.reviewId} review={review} />
         ))}
-        <Group position="right" mt="md">
-          <SimpleOutlineButton
-            text={showFullReviews ? "View less" : "View more"}
-            onClick={() => setShowFullReviews()}
-          />
-        </Group>
       </Accordion.Panel>
     </Accordion.Item>
   );

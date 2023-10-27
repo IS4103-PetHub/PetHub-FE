@@ -38,6 +38,7 @@ import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
+import ImageCarousel from "@/components/common/file/ImageCarousel";
 import FavouriteButton from "@/components/favourites/FavouriteButton";
 import StarRating from "@/components/review/StarRating";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
@@ -46,7 +47,6 @@ import InactiveServiceListingMessage from "@/components/service-listing-discover
 import ReviewAccordionItem from "@/components/service-listing-discovery/ReviewAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
-import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
 import { useCartOperations } from "@/hooks/cart";
@@ -299,8 +299,10 @@ export default function ServiceListingDetails({
               />
             </Box>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
-            <ServiceListingCarousel
+            <ImageCarousel
               attachmentURLs={serviceListing.attachmentURLs}
+              altText="Service Listing Photo"
+              imageHeight={500}
             />
             <Accordion
               radius="md"
@@ -330,8 +332,6 @@ export default function ServiceListingDetails({
                     : `Reviews (${serviceListing.reviews.length})`
                 }
                 reviews={serviceListing.reviews}
-                showFullReviews={true}
-                setShowFullReviews={() => {}}
               />
             </Accordion>
           </Grid.Col>

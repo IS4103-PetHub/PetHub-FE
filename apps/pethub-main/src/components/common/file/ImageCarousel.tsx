@@ -2,29 +2,35 @@ import { Carousel } from "@mantine/carousel";
 import { Image } from "@mantine/core";
 import React from "react";
 
-const IMAGE_HEIGHT = 500;
-
-interface ServiceListingCarouselProps {
+interface ImageCarouselProps {
   attachmentURLs: string[];
+  imageHeight: number;
+  altText: string;
+  focusedImage?: number; // The index of the image in the list to focus on
+  setFocusedImage?: (index: number) => void;
 }
 
-const ServiceListingCarousel = ({
+const ImageCarousel = ({
   attachmentURLs,
-}: ServiceListingCarouselProps) => {
+  imageHeight,
+  altText,
+  focusedImage,
+  setFocusedImage,
+}: ImageCarouselProps) => {
   const hasMultipleImages = attachmentURLs.length > 1;
   const slides =
     attachmentURLs.length > 0 ? (
       attachmentURLs.map((url) => (
         <Carousel.Slide key={url}>
-          <Image src={url} height={IMAGE_HEIGHT} alt="Service Listing Photo" />
+          <Image src={url} height={imageHeight} alt={altText} />
         </Carousel.Slide>
       ))
     ) : (
       <Carousel.Slide key="placeholder">
         <Image
           src="/pethub-placeholder.png"
-          height={500}
-          alt="Service Listing Photo"
+          height={imageHeight}
+          alt={altText}
         />
       </Carousel.Slide>
     );
@@ -33,6 +39,12 @@ const ServiceListingCarousel = ({
     <Carousel
       withControls={hasMultipleImages}
       withIndicators={hasMultipleImages}
+      initialSlide={focusedImage}
+      onSlideChange={(index) => {
+        if (setFocusedImage) {
+          setFocusedImage(index);
+        }
+      }}
       loop
     >
       {slides}
@@ -40,4 +52,4 @@ const ServiceListingCarousel = ({
   );
 };
 
-export default ServiceListingCarousel;
+export default ImageCarousel;
