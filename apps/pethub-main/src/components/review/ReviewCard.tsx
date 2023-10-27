@@ -1,57 +1,25 @@
 import {
   useMantineTheme,
   Text,
-  Divider,
   Card,
   Button,
   Group,
   Box,
-  Badge,
-  Checkbox,
   Grid,
   Image,
-  Stack,
-  CopyButton,
   Center,
-  Alert,
-  LoadingOverlay,
   Avatar,
   ActionIcon,
   Flex,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconBuildingStore,
-  IconCopy,
-  IconFlag,
-  IconMapPin,
-  IconPaw,
-  IconThumbUp,
-  IconTrash,
-} from "@tabler/icons-react";
-import dayjs from "dayjs";
-import Link from "next/link";
+import { IconFlag, IconThumbUp } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Invoice,
-  OrderItem,
-  OrderItemStatusEnum,
-  Review,
-  ServiceListing,
-  convertMinsToDurationString,
-  formatISODateLong,
-  formatISODateOnly,
-  formatISODateTimeShort,
-  formatISODayDateTime,
-} from "shared-utils";
-import { formatNumber2Decimals } from "shared-utils";
-import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
-import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
-import { useCartOperations } from "@/hooks/cart";
-import { Booking, CartItem } from "@/types/types";
+import { Review, formatISODateTimeShort } from "shared-utils";
 import ImageCarousel from "../common/file/ImageCarousel";
+import ReportModal from "./ReportModal";
 import StarRating from "./StarRating";
 
 interface ReviewCardProps {
@@ -61,6 +29,10 @@ interface ReviewCardProps {
 const ReviewCard = ({ review }: ReviewCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
+  const [
+    reportModalOpened,
+    { open: openReportModal, close: closeReportModal },
+  ] = useDisclosure(false);
 
   const [showFullReview, toggleShowFullReview] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
@@ -70,6 +42,12 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   const [showImageCarousel, setShowImageCarousel] = useState(false);
 
   const flaggedPlaceholder = false;
+
+  // function hasUserAlreadyReportedReview() {
+  //   return review?.reportReviews?.some((report) => report?.reporterId === router?.query?.petOwnerId);
+  // }
+
+  console.log("review", review);
 
   // This is a hacky way to check if the text exceeds 2 lines in the DOM
   useEffect(() => {
@@ -129,7 +107,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
                 {...(flaggedPlaceholder ? { filled: "gray" } : {})}
               />
             </ActionIcon>
-            <ActionIcon onClick={() => alert("Open report modal")}>
+            <ActionIcon onClick={openReportModal}>
               <IconFlag
                 size="1rem"
                 {...(flaggedPlaceholder ? { filled: "gray" } : {})}
@@ -239,6 +217,12 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           </Grid.Col>
         )}
       </Grid>
+
+      <ReportModal
+        reviewId={review?.reviewId}
+        opened={reportModalOpened}
+        onClose={closeReportModal}
+      />
     </Card>
   );
 };

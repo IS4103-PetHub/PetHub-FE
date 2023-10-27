@@ -11,6 +11,7 @@ import {
   PetTypeEnum,
   Pet,
   OrderItem,
+  ReviewReportReasonEnum,
 } from "shared-utils";
 
 /*
@@ -259,4 +260,9 @@ export interface UpdateReviewPayload {
   comment: string;
   rating: number;
   files: File[];
+}
+
+export interface ReportReviewPayload {
+  reviewId: number;
+  reportReason: ReviewReportReasonEnum;
 }
