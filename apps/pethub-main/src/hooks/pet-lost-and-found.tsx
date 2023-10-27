@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/api/axiosConfig";
-import { CreatePetLostAndFoundPayload, PetLostAndFound } from "@/types/types";
+import {
+  CreatePetLostAndFoundPayload,
+  PetLostAndFound,
+  UpdatePetLostAndFoundPayload,
+} from "@/types/types";
 
 const PET_LOST_AND_FOUND_API = "/lost-and-found";
 
@@ -72,7 +76,7 @@ export const useDeletePetLostAndFoundPostById = () => {
 
 export const useUpdatePetLostAndFoundPost = () => {
   return useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: UpdatePetLostAndFoundPayload) => {
       const formData = new FormData();
       formData.append("title", payload.title);
       formData.append("description", payload.description);
@@ -80,7 +84,7 @@ export const useUpdatePetLostAndFoundPost = () => {
       formData.append("lastSeenDate", payload.lastSeenDate);
       formData.append("lastSeenLocation", payload.lastSeenLocation);
       formData.append("contactNumber", payload.contactNumber);
-      formData.append("isResolved", payload.isResolved);
+      formData.append("isResolved", payload.isResolved.toString());
       if (payload.petId) {
         formData.append("petId", payload.petId);
       }

@@ -18,7 +18,7 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconMapPin } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   AccountTypeEnum,
   downloadFile,
@@ -59,7 +59,7 @@ const LostAndFoundPostModal = ({
   );
 
   // pet lost and found object is passed in, hence is updating
-  const isUpdating = post;
+  const isUpdating = !!post;
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useToggle();
@@ -122,14 +122,14 @@ const LostAndFoundPostModal = ({
   const setFormFields = async () => {
     if (isUpdating) {
       form.setValues({
-        title: post ? post.title : "",
-        description: post ? post.description : "",
-        requestType: post ? post.requestType : PetRequestTypeEnum.LostPet,
-        lastSeenDate: post ? new Date(post.lastSeenDate) : "",
-        lastSeenLocation: post ? post.lastSeenLocation : "",
-        contactNumber: post ? post.contactNumber : "",
-        petId: post ? post.petId?.toString() : "",
-        isResolved: post ? post.isResolved : false,
+        title: post.title,
+        description: post.description,
+        requestType: post.requestType,
+        lastSeenDate: new Date(post.lastSeenDate),
+        lastSeenLocation: post.lastSeenLocation,
+        contactNumber: post.contactNumber,
+        petId: post.petId?.toString() ?? "",
+        isResolved: post.isResolved,
       });
 
       if (post.attachmentURLs?.length > 0) {
@@ -162,8 +162,6 @@ const LostAndFoundPostModal = ({
 
   async function handleSubmit(values: FormValues) {
     setIsLoading(true);
-    console.log(values);
-
     if (isUpdating) {
       try {
         const payload: UpdatePetLostAndFoundPayload = {

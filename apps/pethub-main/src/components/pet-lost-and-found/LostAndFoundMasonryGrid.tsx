@@ -1,13 +1,9 @@
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { uniqueId } from "lodash";
 import { Masonry } from "masonic";
 import React, { useState } from "react";
 import { getErrorMessageProps } from "shared-utils";
-import {
-  useDeletePetLostAndFoundPostById,
-  useUpdatePetLostAndFoundPost,
-} from "@/hooks/pet-lost-and-found";
+import { useDeletePetLostAndFoundPostById } from "@/hooks/pet-lost-and-found";
 import { PetLostAndFound } from "@/types/types";
 import LostAndFoundPostModal from "./LostAndFoundPostModal";
 import PostCard from "./PostCard";
@@ -66,23 +62,9 @@ const LostAndFoundMasonryGrid = ({
     }
   };
 
-  const updatePetLostAndFoundPostMutation = useUpdatePetLostAndFoundPost();
   const handleUpdatePost = (id: number) => {
     setSelectedPost(posts.find((post) => post.petLostAndFoundId === id));
     open();
-    // try {
-    //   // const payload = {};
-    //   // await updatePetLostAndFoundPostMutation.mutateAsync(payload);
-    //   // refetch();
-    //   notifications.show({
-    //     message: "Pet Lost and Found Post Updated",
-    //     color: "green",
-    //   });
-    // } catch (error) {
-    //   notifications.show({
-    //     ...getErrorMessageProps("Error Updating Post", error),
-    //   });
-    // }
   };
 
   const MasonryPostCard = ({

@@ -8,7 +8,6 @@ import {
   Badge,
   Box,
   Paper,
-  Button,
 } from "@mantine/core";
 import {
   IconUserCircle,

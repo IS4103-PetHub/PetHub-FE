@@ -287,4 +287,5 @@ export interface UpdatePetLostAndFoundPayload {
   contactNumber: string;
   file: File;
   petId: string;
+  isResolved: boolean;
 }
