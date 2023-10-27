@@ -14,10 +14,21 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconFlag, IconThumbUp } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconFlag,
+  IconThumbDown,
+  IconThumbUp,
+} from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import { Review, formatISODateTimeShort } from "shared-utils";
+import {
+  Review,
+  formatISODateTimeShort,
+  getErrorMessageProps,
+} from "shared-utils";
+import { useToggleLikedReview } from "@/hooks/review";
 import ImageCarousel from "../common/file/ImageCarousel";
 import ReportModal from "./ReportModal";
 import StarRating from "./StarRating";
@@ -72,6 +83,28 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     }
   };
 
+  const createToggleLikedReviewMutation = useToggleLikedReview();
+  const toggleLikedReview = async () => {
+    try {
+      const res = await createToggleLikedReviewMutation.mutateAsync(
+        review?.reviewId,
+      );
+      console.log("res", res);
+      notifications.show({
+        title: `Review ${res.liked ? "Liked" : "Unliked"}`,
+        color: "green",
+        icon: res.liked ? <IconThumbUp /> : <IconThumbDown />,
+        message: res.liked
+          ? "Your like helps other pet owners easily discover this review"
+          : "You have unliked this review",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Toggling Liked Review`, error),
+      });
+    }
+  };
+
   return (
     <Card withBorder radius="md" shadow="xs" mb="md">
       <Grid columns={12}>
@@ -101,7 +134,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           }}
         >
           <Center>
-            <ActionIcon onClick={() => alert("Mark as helpful")}>
+            <ActionIcon onClick={toggleLikedReview}>
               <IconThumbUp
                 size="1rem"
                 {...(flaggedPlaceholder ? { filled: "gray" } : {})}

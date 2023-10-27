@@ -82,3 +82,12 @@ export const useReportReview = () => {
     },
   });
 };
+
+export const useToggleLikedReview = () => {
+  return useMutation({
+    mutationFn: async (reviewId: number) => {
+      return (await api.post(`${REVIEW_API}/toggle-liked-review/${reviewId}`))
+        .data;
+    },
+  });
+};
