@@ -179,7 +179,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           </Box>
         </Grid.Col>
 
-        <Grid.Col span={12}>
+        <Grid.Col span={12} {...(textExceedsLineClamp ? { mt: -30 } : {})}>
           <Box ml="md">
             {review?.attachmentURLs?.length > 0 ? (
               <Flex wrap="wrap" justify="start" align="center" gap="xs">
@@ -226,7 +226,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
         </Grid.Col>
 
         {showImageCarousel && (
-          <Grid.Col span={6}>
+          <Grid.Col span={6} mt={10}>
             <Box ml="md">
               <ImageCarousel
                 attachmentURLs={review?.attachmentURLs}
