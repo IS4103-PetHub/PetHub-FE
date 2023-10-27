@@ -25,11 +25,7 @@ import {
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
 import { PetBusiness } from "@/types/types";
-import {
-  validateCGDescription,
-  validateCGName,
-  validateCGSettings,
-} from "@/util";
+import { validateCGName, validateCGSettings } from "@/util";
 
 interface ViewCalendarGroupProps {
   userId: number;
