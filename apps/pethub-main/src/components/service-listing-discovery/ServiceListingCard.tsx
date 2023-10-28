@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 import FavouriteButton from "../favourites/FavouriteButton";
+import StarRating from "../review/StarRating";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
 import ServiceListingTags from "./ServiceListingTags";
 
@@ -113,6 +114,20 @@ const ServiceListingCard = ({
         <Text weight={600} size="md" lineClamp={1} sx={{ lineHeight: 1.4 }}>
           {serviceListing.title}
         </Text>
+      </Box>
+
+      <Box mb="xs" display="flex">
+        <Text mr={5} fw={500} size="xs">
+          {serviceListing?.overallRating === 0
+            ? "Not rated yet"
+            : `${serviceListing.overallRating.toFixed(1)}/5`}
+        </Text>
+        <StarRating
+          value={serviceListing.overallRating}
+          viewOnly
+          allowFractions
+          iconSize="1.15rem"
+        />
       </Box>
 
       <ServiceListingTags tags={serviceListing.tags} />
