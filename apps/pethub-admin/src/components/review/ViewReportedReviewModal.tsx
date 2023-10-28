@@ -2,6 +2,7 @@ import { Carousel } from "@mantine/carousel";
 import {
   Accordion,
   Badge,
+  Box,
   Button,
   Card,
   Container,
@@ -16,9 +17,11 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { IconFileReport, IconPaw } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Review,
+  downloadFile,
+  extractFileName,
   formatEnumValueToLowerCase,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -40,8 +43,10 @@ const ViewReportedReviewModal = ({
   const theme = useMantineTheme();
   const [opened, { open, close }] = useDisclosure(false);
   const [imagePreview, setImagePreview] = useState([]);
-  const [showFullDescription, setShowFullDescription] = useToggle();
   const defaultValues = ["Review Details"];
+  const [showFullReview, toggleShowFullReview] = useToggle();
+  const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
+  const textRef = useRef(null);
   const reportedReasons = Array.from(
     new Set(
       review.reportedBy.map((report) =>
@@ -51,6 +56,14 @@ const ViewReportedReviewModal = ({
   );
 
   useEffect(() => {
+    if (textRef.current) {
+      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight);
+      const textHeight = textRef.current.clientHeight;
+      // Check if text exceeds 2 lines
+      if (textHeight > lineHeight * 2) {
+        setTextExceedsLineClamp(true);
+      }
+    }
     const fetchAndSetImages = async () => {
       if (review) {
         await setImages();
@@ -75,20 +88,6 @@ const ViewReportedReviewModal = ({
     const downloadedFiles: File[] = await Promise.all(downloadPromises);
     const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
     setImagePreview(imageUrls);
-  };
-
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
   };
 
   function renderItemGroup(label: string, value: string | any[]) {
@@ -126,29 +125,6 @@ const ViewReportedReviewModal = ({
     }
     return null;
   }
-
-  const descriptionSection = (
-    <>
-      <Text
-        align="justify"
-        sx={{ whiteSpace: "pre-line" }}
-        lineClamp={showFullDescription ? 0 : 4}
-      >
-        {review.comment}
-      </Text>
-      <Group mt="md" display={review.comment?.length < 350 ? "none" : "block"}>
-        <Group position="right">
-          <Button
-            variant="outline"
-            sx={{ border: "1.5px solid" }}
-            onClick={() => setShowFullDescription()}
-          >
-            {showFullDescription ? "View less" : "View more"}
-          </Button>
-        </Group>
-      </Group>
-    </>
-  );
 
   return (
     <>
@@ -190,7 +166,33 @@ const ViewReportedReviewModal = ({
                   <Grid.Col span={2}>
                     <Text fw={600}>Comment:</Text>
                   </Grid.Col>
-                  <Grid.Col span={10}>{descriptionSection}</Grid.Col>
+                  <Grid.Col span={10}>
+                    <Box>
+                      <Text
+                        sx={{ whiteSpace: "pre-line" }}
+                        lineClamp={showFullReview ? 0 : 2}
+                        size="xs"
+                        mt="xs"
+                        ref={textRef}
+                      >
+                        {review.comment}
+                      </Text>
+                      <Group position="right">
+                        <Button
+                          compact
+                          variant="subtle"
+                          color="blue"
+                          size="xs"
+                          onClick={() => toggleShowFullReview()}
+                          mt="xs"
+                          mr="xs"
+                          display={textExceedsLineClamp ? "block" : "none"}
+                        >
+                          {showFullReview ? "View less" : "View more"}
+                        </Button>
+                      </Group>
+                    </Box>
+                  </Grid.Col>
                   <Grid.Col span={2}>
                     <Text fw={600}>Rating:</Text>
                   </Grid.Col>
