@@ -425,3 +425,14 @@ export const calculateAge = (dateOfBirth: any) => {
   }
   return `${age} year${age > 1 ? "s" : ""}`;
 };
+
+export const flattenFeaturedListingsResponse = (response: any) => {
+  return response.map((res: any) => {
+    const { serviceListing, description, ...rest } = res;
+    return {
+      ...rest,
+      ...serviceListing,
+      featuredDescription: description,
+    };
+  });
+};

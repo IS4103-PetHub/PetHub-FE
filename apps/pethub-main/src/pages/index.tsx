@@ -1,4 +1,4 @@
-import { Container } from "@mantine/core";
+import { Container, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
@@ -11,15 +11,32 @@ import ServicesSection from "@/components/common/landing/ServicesSection";
 import SimpleFooter from "@/components/common/landing/SimpleFooter";
 import WhyPetHub from "@/components/common/landing/WhyPetHub";
 import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
+import { FeaturedServiceListing } from "@/types/types";
+import { flattenFeaturedListingsResponse } from "@/util";
 
 const LIMIT_SIZE = 6;
 interface HomeProps {
-  newServiceListings: ServiceListing[];
+  hottestListings: FeaturedServiceListing[];
+  almostGoneListings: FeaturedServiceListing[];
+  allTimeFavsListings: FeaturedServiceListing[];
+  risingListings: FeaturedServiceListing[];
 }
-export default function Home({ newServiceListings }: HomeProps) {
+export default function Home({
+  hottestListings,
+  almostGoneListings,
+  allTimeFavsListings,
+  risingListings,
+}: HomeProps) {
   // for appointment reminder modal
   const [opened, { open, close }] = useDisclosure(false);
   useEffect(() => open(), []);
+
+  // useEffect(() => {
+  //   console.log(hottestListings);
+  //   console.log(almostGoneListings);
+  //   console.log(allTimeFavsListings);
+  //   console.log(risingListings);
+  // }, []);
 
   return (
     <>
@@ -31,10 +48,28 @@ export default function Home({ newServiceListings }: HomeProps) {
       <main>
         <Banner />
         <ServicesSection />
-        <ServiceListingScrollCarousel
-          serviceListings={newServiceListings}
-          title="New listings"
-        />
+        <Stack spacing={0} mb={80}>
+          <ServiceListingScrollCarousel
+            serviceListings={hottestListings}
+            title="Hottest listings"
+            description="Check out these top active service listings bought by PetHub users last week!"
+          />
+          <ServiceListingScrollCarousel
+            serviceListings={almostGoneListings}
+            title="Almost gone listings"
+            description="These listings are expiring soon, catch them before they disappear!"
+          />
+          <ServiceListingScrollCarousel
+            serviceListings={allTimeFavsListings}
+            title="All time favourite listings"
+            description="Check out these most favourited service listings loved by the PetHub community!"
+          />
+          <ServiceListingScrollCarousel
+            serviceListings={risingListings}
+            title="Rising listings"
+            description="Discover these up and coming new service listings!"
+          />
+        </Stack>
         <WhyPetHub />
         <AppointmentReminderModal opened={opened} close={close} />
       </main>
@@ -49,10 +84,27 @@ export async function getServerSideProps(context) {
     maxAge: 30 * 24 * 60 * 60,
     path: "/",
   });
-  const newServiceListings =
-    ((await (
-      await api.get(`/service-listings/active?limit=${LIMIT_SIZE}`)
-    ).data) as ServiceListing[]) ?? [];
-
-  return { props: { newServiceListings } };
+  const featuredServiceListings =
+    (await (await api.get(`/service-listings/get-featured-listings`)).data) ??
+    [];
+  let hottestListings = flattenFeaturedListingsResponse(
+    featuredServiceListings["HOTTEST_LISTINGS"].featuredListings,
+  );
+  const almostGoneListings = flattenFeaturedListingsResponse(
+    featuredServiceListings["ALMOST_GONE"].featuredListings,
+  );
+  const allTimeFavsListings = flattenFeaturedListingsResponse(
+    featuredServiceListings["ALL_TIME_FAVS"].featuredListings,
+  );
+  const risingListings = flattenFeaturedListingsResponse(
+    featuredServiceListings["RISING_LISTINGS"].featuredListings,
+  );
+  return {
+    props: {
+      hottestListings,
+      almostGoneListings,
+      allTimeFavsListings,
+      risingListings,
+    },
+  };
 }

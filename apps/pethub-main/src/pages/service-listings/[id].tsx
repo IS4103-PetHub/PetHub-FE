@@ -253,7 +253,7 @@ export default function ServiceListingDetails({
         <title>{serviceListing.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+      <Container mt={50} mb={80} size="70vw" sx={{ overflow: "hidden" }}>
         <Grid gutter="xl">
           <Grid.Col span={9}>
             <ServiceListingBreadcrumbs
