@@ -11,7 +11,7 @@ import SimpleFooter from "@/components/common/landing/SimpleFooter";
 import WhyPetHub from "@/components/common/landing/WhyPetHub";
 import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import { FeaturedServiceListing } from "@/types/types";
-import { flattenFeaturedListingsResponse } from "@/util";
+import { flattenAndFilterFeaturedListingsResponse } from "@/util";
 
 interface HomeProps {
   hottestListings: FeaturedServiceListing[];
@@ -75,19 +75,20 @@ export async function getServerSideProps(context) {
     maxAge: 30 * 24 * 60 * 60,
     path: "/",
   });
+
   const featuredServiceListings =
     (await (await api.get(`/service-listings/get-featured-listings`)).data) ??
     [];
-  const hottestListings = flattenFeaturedListingsResponse(
+  const hottestListings = flattenAndFilterFeaturedListingsResponse(
     featuredServiceListings["HOTTEST_LISTINGS"].featuredListings,
   );
-  const almostGoneListings = flattenFeaturedListingsResponse(
+  const almostGoneListings = flattenAndFilterFeaturedListingsResponse(
     featuredServiceListings["ALMOST_GONE"].featuredListings,
   );
-  const allTimeFavsListings = flattenFeaturedListingsResponse(
+  const allTimeFavsListings = flattenAndFilterFeaturedListingsResponse(
     featuredServiceListings["ALL_TIME_FAVS"].featuredListings,
   );
-  const risingListings = flattenFeaturedListingsResponse(
+  const risingListings = flattenAndFilterFeaturedListingsResponse(
     featuredServiceListings["RISING_LISTINGS"].featuredListings,
   );
   return {
