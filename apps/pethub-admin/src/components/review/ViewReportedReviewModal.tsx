@@ -198,6 +198,7 @@ const ViewReportedReviewModal = ({
                   </Grid.Col>
                   <Grid.Col span={10}>
                     <Rating
+                      readOnly
                       emptySymbol={
                         <IconPaw
                           size="2rem"
