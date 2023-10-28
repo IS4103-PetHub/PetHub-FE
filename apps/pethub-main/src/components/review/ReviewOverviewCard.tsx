@@ -8,39 +8,15 @@ import {
   Grid,
   Image,
   Center,
-  Avatar,
-  ActionIcon,
-  Flex,
-  Alert,
-  Divider,
   Stack,
-  SegmentedControl,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconAlertCircle,
-  IconCheck,
-  IconClockHour8,
-  IconFlag,
-  IconMessageCircle,
-  IconMessageCircle2,
-  IconPhoto,
-  IconThumbDown,
-  IconThumbUp,
-} from "@tabler/icons-react";
+import { IconMessageCircle, IconPhoto } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Review,
-  ServiceListing,
-  formatISODateTimeShort,
-  getErrorMessageProps,
-} from "shared-utils";
-import { useToggleLikedReview } from "@/hooks/review";
-import ImageCarousel from "../common/file/ImageCarousel";
-import ReportModal from "./ReportModal";
+import { Review, ServiceListing } from "shared-utils";
 import StarRating from "./StarRating";
 
 interface ReviewOverviewCardProps {
@@ -57,6 +33,8 @@ const ReviewOverviewCard = ({
   const [activeStarFilter, setActiveStarFilter] = useState(null); // null means ALL
   const [withMedia, setWithMedia] = useState(false);
   const [withReply, setWithReply] = useState(false);
+
+  const starCounts = computeStarCounts();
 
   const FILTER_BUTTON_PROPS = {
     variant: "filled",
@@ -102,14 +80,14 @@ const ReviewOverviewCard = ({
       >
         All
       </Button>
-      {[1, 2, 3, 4, 5].map((star) => (
+      {[1, 2, 3, 4, 5].map((star, index) => (
         <Button
           key={star}
           {...FILTER_BUTTON_PROPS}
           onClick={() => handleStarFilter(star)}
           variant={activeStarFilter === star ? "filled" : "outline"}
         >
-          {star} Paw
+          {star} Paw&nbsp;<Text size={11}>({starCounts[index]})</Text>
         </Button>
       ))}
     </Center>
@@ -166,6 +144,16 @@ const ReviewOverviewCard = ({
       return;
     }
     setActiveStarFilter(star); // Set filled filter to the respective star buttons
+  }
+
+  function computeStarCounts() {
+    const counts = [0, 0, 0, 0, 0];
+    serviceListing?.reviews.forEach((review) => {
+      if (review.rating >= 1 && review.rating <= 5) {
+        counts[review.rating - 1]++;
+      }
+    });
+    return counts;
   }
 
   return (
