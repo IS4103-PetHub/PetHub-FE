@@ -273,12 +273,14 @@ export default function ServiceListingDetails({
                 size="2.25rem"
                 weight={700}
               />
-              <FavouriteButton
-                text={isFavourite ? "Remove Favourite" : "Favourite"}
-                isFavourite={isFavourite}
-                size={20}
-                onClick={async () => handleFavouriteToggle()}
-              />
+              {userId && (
+                <FavouriteButton
+                  text={isFavourite ? "Remove Favourite" : "Favourite"}
+                  isFavourite={isFavourite}
+                  size={20}
+                  onClick={async () => handleFavouriteToggle()}
+                />
+              )}
             </Group>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
             <ServiceListingCarousel

@@ -30,7 +30,7 @@ const SearchBar = ({ text, onSearch, ...props }: SearchBarProps) => {
       onChange={(event) => handleSearch(event.currentTarget.value)}
       rightSection={
         <ActionIcon onClick={handleClear}>
-          <IconX size={"1.25rem"} />
+          <IconX size={"1.25rem"} color="gray" />
         </ActionIcon>
       }
       {...props}

@@ -18,6 +18,8 @@ import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
 import {
   ServiceListing,
+  downloadFile,
+  extractFileName,
   formatNumber2Decimals,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -48,20 +50,6 @@ const ViewServiceListingModal = ({
 
     fetchAndSetServiceListingFields(); // Immediately invoke the async function
   }, [serviceListing]);
-
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
 
   const getFilesFromServiceListing = async () => {
     const fileNames = serviceListing.attachmentKeys.map((keys) =>
