@@ -35,7 +35,14 @@ const ReviewAccordionItem = ({
   const [filteredReviews, setFilteredReviews] = useState(
     serviceListing?.reviews,
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState("latest"); // This is the default sorting returned by the BE
+
+  const itemsPerPage = 5;
+
+  useEffect(() => {
+    setCurrentPage(1); // reset pagination if something is filtered for
+  }, [filteredReviews]);
 
   useEffect(() => {
     if (sorting === "latest") {
@@ -91,6 +98,9 @@ const ReviewAccordionItem = ({
     </Group>
   );
 
+  // This is for the one-way pagination (not rly pagination but more like next-ination to show/add the next x items)
+  const reviewsToDisplay = filteredReviews.slice(0, currentPage * itemsPerPage);
+
   return (
     <Accordion.Item value="description" p="sm" mt="xl">
       <Accordion.Control
@@ -113,9 +123,19 @@ const ReviewAccordionItem = ({
             replaceClass="center-vertically-but-shorter"
           />
         )}
-        {filteredReviews.map((review) => (
+        {reviewsToDisplay.map((review) => (
           <ReviewItem key={review.reviewId} review={review} />
         ))}
+        <Group position="right">
+          {filteredReviews.length > currentPage * itemsPerPage && (
+            <SimpleOutlineButton
+              compact
+              mt="xs"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              text={`View next ${itemsPerPage} reviews`}
+            />
+          )}
+        </Group>
       </Accordion.Panel>
     </Accordion.Item>
   );

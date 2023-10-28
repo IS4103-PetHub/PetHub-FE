@@ -253,6 +253,7 @@ export interface Review {
   serviceListingId: number;
   serviceListing: ServiceListing;
   likedByCount?: number;
+  replyDate?: string;
 }
 
 export interface ReportReview {

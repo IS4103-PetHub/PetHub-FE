@@ -40,7 +40,7 @@ const ReviewOverviewCard = ({
     variant: "filled",
     size: "xs",
     radius: "xs",
-    miw: 50,
+    miw: 65,
     compact: true,
     mr: "xs",
   };

@@ -214,7 +214,12 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           color="violet"
           radius="md"
         >
-          {review?.reply}
+          <Box display="flex">
+            <Text fw={500} mr={4}>
+              {formatISODateTimeShort(review?.replyDate)} {">"}
+            </Text>
+            <Text>{review?.reply}</Text>
+          </Box>
         </Alert>
       </Box>
     </Grid.Col>
