@@ -425,3 +425,23 @@ export const calculateAge = (dateOfBirth: any) => {
   }
   return `${age} year${age > 1 ? "s" : ""}`;
 };
+
+export const flattenAndFilterFeaturedListingsResponse = (response: any) => {
+  // filter out expired SLs
+  const now = new Date();
+  return (
+    response
+      .filter((res: any) =>
+        dayjs(res.serviceListing.lastPossibleDate).isAfter(now),
+      )
+      // flatten the SL object as featured listing should extend SL
+      .map((res: any) => {
+        const { serviceListing, description, ...rest } = res;
+        return {
+          ...rest,
+          ...serviceListing,
+          featuredDescription: description,
+        };
+      })
+  );
+};

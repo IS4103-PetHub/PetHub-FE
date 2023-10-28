@@ -289,3 +289,9 @@ export interface UpdatePetLostAndFoundPayload {
   petId: string;
   isResolved: boolean;
 }
+
+export interface FeaturedServiceListing extends ServiceListing {
+  id: number;
+  featuredListingSetId: number;
+  description: string;
+}
