@@ -31,13 +31,6 @@ export default function Home({
   const [opened, { open, close }] = useDisclosure(false);
   useEffect(() => open(), []);
 
-  // useEffect(() => {
-  //   console.log(hottestListings);
-  //   console.log(almostGoneListings);
-  //   console.log(allTimeFavsListings);
-  //   console.log(risingListings);
-  // }, []);
-
   return (
     <>
       <Head>
