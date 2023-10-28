@@ -11,12 +11,16 @@ import {
   Avatar,
   ActionIcon,
   Flex,
+  Alert,
+  Divider,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
+  IconAlertCircle,
   IconCheck,
   IconFlag,
+  IconMessageCircle2,
   IconThumbDown,
   IconThumbUp,
 } from "@tabler/icons-react";
@@ -105,11 +109,122 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     }
   };
 
+  const reviewContentCol = (
+    <Grid.Col span={12}>
+      <Box ml="md" mr="md">
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <StarRating
+            value={review?.rating}
+            viewOnly
+            allowFractions
+            iconSize="1.25rem"
+          />
+          <Text fw={600} size={16} ml={3}>
+            {review?.title}
+          </Text>
+        </Box>
+        <Box>
+          <Text
+            sx={{ whiteSpace: "pre-line" }}
+            lineClamp={showFullReview ? 0 : 2}
+            size="xs"
+            mt="xs"
+            ref={textRef}
+          >
+            {review?.comment}
+          </Text>
+          <Group position="right">
+            <Button
+              compact
+              variant="subtle"
+              color="blue"
+              size="xs"
+              onClick={() => toggleShowFullReview()}
+              mt="xs"
+              mr="xs"
+              display={textExceedsLineClamp ? "block" : "none"}
+            >
+              {showFullReview ? "View less" : "View more"}
+            </Button>
+          </Group>
+        </Box>
+      </Box>
+    </Grid.Col>
+  );
+
+  const reviewImageCol = (
+    <Grid.Col span={12} {...(textExceedsLineClamp ? { mt: -30 } : {})}>
+      <Box ml="md" mr="md">
+        {review?.attachmentURLs?.length > 0 && (
+          <Flex wrap="wrap" justify="start" align="center" gap="xs">
+            {review.attachmentURLs.map((url, index) => (
+              <div
+                key={index}
+                style={{
+                  width: "100px",
+                  height: "60px",
+                  position: "relative",
+                  border: index === focusedImage ? "1.5px red solid" : "",
+                  overflow: "hidden",
+                  marginRight: "10px",
+                }}
+              >
+                <>
+                  <Image
+                    radius="md"
+                    src={url}
+                    fit="cover"
+                    w="full"
+                    h="full"
+                    alt="Review Image Thumbnail"
+                    onClick={() => handleImageThumbnailClick(index)}
+                    style={{
+                      cursor: focusedImage === index ? "zoom-out" : "zoom-in",
+                    }}
+                  />
+                </>
+              </div>
+            ))}
+          </Flex>
+        )}
+      </Box>
+    </Grid.Col>
+  );
+
+  const reviewImageCarouselCol = (
+    <Grid.Col span={6} mt={10}>
+      <Box ml="md" mr="md">
+        <ImageCarousel
+          attachmentURLs={review?.attachmentURLs}
+          altText="Review Image"
+          imageHeight={250}
+          focusedImage={focusedImage}
+          setFocusedImage={setFocusedImage}
+        />
+      </Box>
+    </Grid.Col>
+  );
+
+  const sellerReplyCol = (
+    <Grid.Col span={12} mt={10}>
+      <Box ml="md" mr="md">
+        <Alert
+          icon={<IconMessageCircle2 size="1rem" />}
+          title="Seller&#39;s Response"
+          color="violet"
+          radius="md"
+        >
+          {review?.reply}
+        </Alert>
+      </Box>
+    </Grid.Col>
+  );
+
   return (
-    <Card withBorder radius="md" shadow="xs" mb="md">
+    <Box mt="md">
       <Grid columns={12}>
         <Grid.Col span={1}>
-          <Avatar radius="xl" />
+          <Avatar radius="xl" ml="md" />
         </Grid.Col>
 
         <Grid.Col span={9}>
@@ -133,12 +248,17 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             alignItems: "flex-end",
           }}
         >
-          <Center>
+          <Center mr="md">
             <ActionIcon onClick={toggleLikedReview}>
               <IconThumbUp
                 size="1rem"
                 {...(flaggedPlaceholder ? { filled: "gray" } : {})}
               />
+              {review?.likedByCount ? (
+                <Text size="xs" mt="xs">
+                  {review?.likedByCount}
+                </Text>
+              ) : null}
             </ActionIcon>
             <ActionIcon onClick={openReportModal}>
               <IconFlag
@@ -149,114 +269,23 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           </Center>
         </Grid.Col>
 
-        <Grid.Col span={12}>
-          <Box ml="md">
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <StarRating
-                value={review?.rating}
-                viewOnly
-                allowFractions
-                iconSize="1.25rem"
-              />
-              <Text fw={600} size={16} ml={3}>
-                {review?.title}
-              </Text>
-            </Box>
-            <Box>
-              <Text
-                sx={{ whiteSpace: "pre-line" }}
-                lineClamp={showFullReview ? 0 : 2}
-                size="xs"
-                mt="xs"
-                ref={textRef}
-              >
-                {review?.comment}
-              </Text>
-              <Group position="right">
-                <Button
-                  compact
-                  variant="subtle"
-                  color="blue"
-                  size="xs"
-                  onClick={() => toggleShowFullReview()}
-                  mt="xs"
-                  mr="xs"
-                  display={textExceedsLineClamp ? "block" : "none"}
-                >
-                  {showFullReview ? "View less" : "View more"}
-                </Button>
-              </Group>
-            </Box>
-          </Box>
-        </Grid.Col>
+        {reviewContentCol}
 
-        <Grid.Col span={12} {...(textExceedsLineClamp ? { mt: -30 } : {})}>
-          <Box ml="md">
-            {review?.attachmentURLs?.length > 0 ? (
-              <Flex wrap="wrap" justify="start" align="center" gap="xs">
-                {review.attachmentURLs.map((url, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      width: "100px",
-                      height: "60px",
-                      position: "relative",
-                      border: index === focusedImage ? "1.5px red solid" : "",
-                      overflow: "hidden",
-                      marginRight: "10px",
-                    }}
-                  >
-                    <>
-                      <Image
-                        radius="md"
-                        src={url}
-                        fit="cover"
-                        w="full"
-                        h="full"
-                        alt="Review Image Thumbnail"
-                        onClick={() => handleImageThumbnailClick(index)}
-                        style={{
-                          cursor:
-                            focusedImage === index ? "zoom-out" : "zoom-in",
-                        }}
-                      />
-                    </>
-                  </div>
-                ))}
-              </Flex>
-            ) : (
-              <Image
-                radius="md"
-                src="/pethub-placeholder.png"
-                fit="contain"
-                w="auto"
-                alt="Review Photo"
-              />
-            )}
-          </Box>
-        </Grid.Col>
+        {reviewImageCol}
 
-        {showImageCarousel && (
-          <Grid.Col span={6} mt={10}>
-            <Box ml="md">
-              <ImageCarousel
-                attachmentURLs={review?.attachmentURLs}
-                altText="Review Image"
-                imageHeight={250}
-                focusedImage={focusedImage}
-                setFocusedImage={setFocusedImage}
-              />
-            </Box>
-          </Grid.Col>
-        )}
+        {showImageCarousel && reviewImageCarouselCol}
+
+        {review?.reply && sellerReplyCol}
       </Grid>
+
+      <Divider mt="xl" />
 
       <ReportModal
         reviewId={review?.reviewId}
         opened={reportModalOpened}
         onClose={closeReportModal}
       />
-    </Card>
+    </Box>
   );
 };
 

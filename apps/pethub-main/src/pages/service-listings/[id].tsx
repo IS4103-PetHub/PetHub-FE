@@ -64,12 +64,16 @@ interface ServiceListingDetailsProps {
   userId: number;
   serviceListing: ServiceListing;
   recommendedListings: ServiceListing[];
+  likedBy: number[];
+  reportedBy: number[];
 }
 
 export default function ServiceListingDetails({
   userId,
   serviceListing,
   recommendedListings,
+  likedBy,
+  reportedBy,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -93,6 +97,10 @@ export default function ServiceListingDetails({
       setIsFavourite(false);
     }
   }, [favouritedListings, serviceListing]);
+
+  console.log("servicelisting", serviceListing);
+  console.log("likedBy", likedBy);
+  console.log("reportedBy", reportedBy);
 
   const ACCORDION_VALUES = ["description", "business"];
 
@@ -290,7 +298,9 @@ export default function ServiceListingDetails({
               <Text mr={5} fw={500} size="md">
                 {serviceListing.overallRating === 0
                   ? "Listing not rated"
-                  : `${serviceListing.overallRating}/5 Paws`}
+                  : `${serviceListing.overallRating.toFixed(1)}/5 (${
+                      serviceListing.reviews.length
+                    } reviews)`}
               </Text>
               <StarRating
                 value={serviceListing.overallRating}
@@ -331,7 +341,7 @@ export default function ServiceListingDetails({
                     ? "Reviews (no reviews yet)"
                     : `Reviews (${serviceListing.reviews.length})`
                 }
-                reviews={serviceListing.reviews}
+                serviceListing={serviceListing}
               />
             </Accordion>
           </Grid.Col>
@@ -427,6 +437,18 @@ export async function getServerSideProps(context) {
   const serviceListing = (await (
     await api.get(`/service-listings/${id}`)
   ).data) as ServiceListing;
+
+  let likedBy = [];
+  let reportedBy = [];
+
+  try {
+    const data = await (await api.get(`/reviews/liked-reported/${id}`)).data;
+    likedBy = data.likedBy;
+    reportedBy = data.reportedBy;
+  } catch (e) {
+    console.log(e);
+  }
+
   const session = await getSession(context);
 
   if (!session) return { props: { serviceListing } };
@@ -439,5 +461,7 @@ export async function getServerSideProps(context) {
     (listing) => serviceListing.serviceListingId !== listing.serviceListingId,
   );
 
-  return { props: { userId, serviceListing, recommendedListings } };
+  return {
+    props: { userId, serviceListing, recommendedListings, likedBy, reportedBy },
+  };
 }

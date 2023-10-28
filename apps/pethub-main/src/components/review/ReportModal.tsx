@@ -111,7 +111,7 @@ const ReportModal = ({ reviewId, opened, onClose }: ReportModalProps) => {
         </Text>
       )}
       <Group position="right" mt="sm">
-        <Button variant="light" mr={-5} onClick={handleCloseModal}>
+        <Button variant="light" mr={-5} onClick={handleCloseModal} color="gray">
           Cancel
         </Button>
         <Button color="red" onClick={async () => handleReportClick()}>

@@ -22,7 +22,7 @@ const StarRating = ({
     <Rating
       mt={-2}
       value={value}
-      {...(allowFractions ? { fractions: 3 } : {})}
+      {...(allowFractions ? { fractions: 8 } : {})}
       readOnly={viewOnly}
       emptySymbol={
         <IconPaw

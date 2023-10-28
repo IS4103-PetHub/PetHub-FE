@@ -5,6 +5,7 @@ import {
   OrderItemStatusEnum,
   PetTypeEnum,
   RecurrencePatternEnum,
+  ReviewReportReasonEnum,
   ServiceCategoryEnum,
 } from "./constants";
 
@@ -251,4 +252,14 @@ export interface Review {
   orderItem: OrderItem;
   serviceListingId: number;
   serviceListing: ServiceListing;
+  likedByCount?: number;
+}
+
+export interface ReportReview {
+  reportReviewId: number;
+  petOwnerId: number;
+  reportedBy: PetOwner;
+  reportReason: ReviewReportReasonEnum;
+  reviewId: number;
+  review: Review;
 }
