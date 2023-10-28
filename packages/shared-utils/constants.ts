@@ -83,4 +83,14 @@ export enum PetTypeEnum {
   Others = "OTHERS",
 }
 
+export enum ReviewReportReason {
+  RudeAbusive = "RUDE_ABUSIVE",
+  Pornographic = "PORNOGRAPHIC",
+  Spam = "SPAM",
+  ExposingPersonalInformation = "EXPOSING_PERSONAL_INFORMATION",
+  UnauthorizedAdvertisement = "UNAUTHORIZED_ADVERTISEMENT",
+  InaccurateMisleading = "INACCURATE_MISLEADING",
+  Others = "OTHERS",
+}
+
 export const PLATFORM_FEE_PERCENT = 0.07;

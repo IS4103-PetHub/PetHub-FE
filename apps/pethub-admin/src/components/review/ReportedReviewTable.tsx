@@ -80,7 +80,6 @@ const ReportedReviewTable = ({
           title: "Date Created",
           textAlignment: "left",
           sortable: true,
-          ellipsis: true,
           width: "10vw",
           render: (review) => {
             return `${dayjs(review.dateCreated).format("DD-MM-YYYY")}`;
@@ -88,7 +87,7 @@ const ReportedReviewTable = ({
         },
         {
           accessor: "serviceListing.title",
-          title: "Service",
+          title: "Service Listing",
           textAlignment: "left",
           sortable: true,
           ellipsis: true,
