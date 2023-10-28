@@ -62,8 +62,6 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   //   return review?.reportReviews?.some((report) => report?.reporterId === router?.query?.petOwnerId);
   // }
 
-  console.log("review", review);
-
   // This is a hacky way to check if the text exceeds 2 lines in the DOM
   useEffect(() => {
     if (textRef.current) {

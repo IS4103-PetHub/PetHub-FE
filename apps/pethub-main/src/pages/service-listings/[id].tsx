@@ -98,9 +98,9 @@ export default function ServiceListingDetails({
     }
   }, [favouritedListings, serviceListing]);
 
-  console.log("servicelisting", serviceListing);
-  console.log("likedBy", likedBy);
-  console.log("reportedBy", reportedBy);
+  // console.log("servicelisting", serviceListing);
+  // console.log("likedBy", likedBy);
+  // console.log("reportedBy", reportedBy);
 
   const ACCORDION_VALUES = ["description", "business"];
 
@@ -297,7 +297,7 @@ export default function ServiceListingDetails({
             <Box display="flex" mt={-10} mb={10}>
               <Text mr={5} fw={500} size="md">
                 {serviceListing.overallRating === 0
-                  ? "Listing not rated"
+                  ? "Not rated yet"
                   : `${serviceListing.overallRating.toFixed(1)}/5 (${
                       serviceListing.reviews.length
                     } reviews)`}
