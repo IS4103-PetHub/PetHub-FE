@@ -37,13 +37,22 @@ import ImageCarousel from "../common/file/ImageCarousel";
 import ReportModal from "./ReportModal";
 import StarRating from "./StarRating";
 
-interface ReviewCardProps {
+interface ReviewItemProps {
   review: Review;
+  isLikedByUser: boolean;
+  isReportedByUser: boolean;
+  refetchLikedAndReportedReviewIds?: () => Promise<any>;
 }
 
-const ReviewCard = ({ review }: ReviewCardProps) => {
+const ReviewItem = ({
+  review,
+  isLikedByUser,
+  isReportedByUser,
+  refetchLikedAndReportedReviewIds,
+}: ReviewItemProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
+  const [likedCount, setLikedCount] = useState(review.likedByCount || 0);
   const [
     reportModalOpened,
     { open: openReportModal, close: closeReportModal },
@@ -56,11 +65,8 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
   const [focusedImage, setFocusedImage] = useState(null);
   const [showImageCarousel, setShowImageCarousel] = useState(false);
 
-  const flaggedPlaceholder = false;
-
-  // function hasUserAlreadyReportedReview() {
-  //   return review?.reportReviews?.some((report) => report?.reporterId === router?.query?.petOwnerId);
-  // }
+  console.log(`isLikedByUser for review ${review.title}`, isLikedByUser);
+  console.log(`isReportedByUser for review ${review.title}`, isReportedByUser);
 
   // This is a hacky way to check if the text exceeds 2 lines in the DOM
   useEffect(() => {
@@ -85,13 +91,26 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     }
   };
 
+  const handleReport = () => {
+    if (isReportedByUser) {
+      notifications.show({
+        title: `Review Already Reported`,
+        color: "orange",
+        icon: <IconAlertCircle />,
+        message:
+          "You have already reported this review. Please wait for PetHub staff to investigate this review and take the appropriate action.",
+      });
+      return;
+    }
+    openReportModal();
+  };
+
   const createToggleLikedReviewMutation = useToggleLikedReview();
   const toggleLikedReview = async () => {
     try {
       const res = await createToggleLikedReviewMutation.mutateAsync(
         review?.reviewId,
       );
-      console.log("res", res);
       notifications.show({
         title: `Review ${res.liked ? "Liked" : "Unliked"}`,
         color: "green",
@@ -100,6 +119,14 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           ? "Your like helps other pet owners easily discover this review"
           : "You have unliked this review",
       });
+      if (refetchLikedAndReportedReviewIds)
+        await refetchLikedAndReportedReviewIds();
+      if (res.liked) {
+        // update the count
+        setLikedCount((prevCount) => prevCount + 1);
+      } else {
+        setLikedCount((prevCount) => prevCount - 1);
+      }
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(`Error Toggling Liked Review`, error),
@@ -255,18 +282,18 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             <ActionIcon onClick={toggleLikedReview}>
               <IconThumbUp
                 size="1rem"
-                {...(flaggedPlaceholder ? { filled: "gray" } : {})}
+                {...(isLikedByUser ? { fill: "gray" } : {})}
               />
-              {review?.likedByCount ? (
+              {likedCount ? (
                 <Text size="xs" mt="xs">
-                  {review?.likedByCount}
+                  {likedCount}
                 </Text>
               ) : null}
             </ActionIcon>
-            <ActionIcon onClick={openReportModal}>
+            <ActionIcon onClick={handleReport}>
               <IconFlag
                 size="1rem"
-                {...(flaggedPlaceholder ? { filled: "gray" } : {})}
+                {...(isReportedByUser ? { fill: "gray" } : {})}
               />
             </ActionIcon>
           </Center>
@@ -287,9 +314,10 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
         reviewId={review?.reviewId}
         opened={reportModalOpened}
         onClose={closeReportModal}
+        onReported={refetchLikedAndReportedReviewIds}
       />
     </Box>
   );
 };
 
-export default ReviewCard;
+export default ReviewItem;

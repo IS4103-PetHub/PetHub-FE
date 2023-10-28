@@ -55,6 +55,7 @@ import {
   useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
+import { useGetLikedAndReportedReviews } from "@/hooks/review";
 import {
   AddRemoveFavouriteServiceListingPayload,
   CartItem,
@@ -64,16 +65,12 @@ interface ServiceListingDetailsProps {
   userId: number;
   serviceListing: ServiceListing;
   recommendedListings: ServiceListing[];
-  likedBy: number[];
-  reportedBy: number[];
 }
 
 export default function ServiceListingDetails({
   userId,
   serviceListing,
   recommendedListings,
-  likedBy,
-  reportedBy,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -84,6 +81,12 @@ export default function ServiceListingDetails({
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for view timeslot modal
+
+  const {
+    data: likedAndReportedReviewIds,
+    isLoading,
+    refetch: refetchLikedAndReportedReviews,
+  } = useGetLikedAndReportedReviews(serviceListing?.serviceListingId);
 
   useEffect(() => {
     if (
@@ -97,10 +100,6 @@ export default function ServiceListingDetails({
       setIsFavourite(false);
     }
   }, [favouritedListings, serviceListing]);
-
-  // console.log("servicelisting", serviceListing);
-  // console.log("likedBy", likedBy);
-  // console.log("reportedBy", reportedBy);
 
   const ACCORDION_VALUES = ["description", "business"];
 
@@ -342,6 +341,11 @@ export default function ServiceListingDetails({
                     : `Reviews (${serviceListing.reviews.length})`
                 }
                 serviceListing={serviceListing}
+                likedReviewIds={likedAndReportedReviewIds?.likesBy}
+                reportedReviewIds={likedAndReportedReviewIds?.reportsBy}
+                refetchLikedAndReportedReviewIds={
+                  refetchLikedAndReportedReviews
+                }
               />
             </Accordion>
           </Grid.Col>
@@ -438,17 +442,6 @@ export async function getServerSideProps(context) {
     await api.get(`/service-listings/${id}`)
   ).data) as ServiceListing;
 
-  let likedBy = [];
-  let reportedBy = [];
-
-  try {
-    const data = await (await api.get(`/reviews/liked-reported/${id}`)).data;
-    likedBy = data.likedBy;
-    reportedBy = data.reportedBy;
-  } catch (e) {
-    console.log(e);
-  }
-
   const session = await getSession(context);
 
   if (!session) return { props: { serviceListing } };
@@ -462,6 +455,6 @@ export async function getServerSideProps(context) {
   );
 
   return {
-    props: { userId, serviceListing, recommendedListings, likedBy, reportedBy },
+    props: { userId, serviceListing, recommendedListings },
   };
 }

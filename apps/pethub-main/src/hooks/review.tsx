@@ -91,3 +91,16 @@ export const useToggleLikedReview = () => {
     },
   });
 };
+
+// GET the liked and reported review IDs for a PetOwner filtered by a ServiceListing
+export const useGetLikedAndReportedReviews = (serviceListingId: number) => {
+  return useQuery({
+    queryKey: ["liked-reported", serviceListingId],
+    queryFn: async () => {
+      const response = await api.get(
+        `${REVIEW_API}/liked-reported/${serviceListingId}`,
+      );
+      return response.data as { likesBy: number[]; reportsBy: number[] };
+    },
+  });
+};

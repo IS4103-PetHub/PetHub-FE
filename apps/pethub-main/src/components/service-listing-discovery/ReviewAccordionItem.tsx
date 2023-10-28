@@ -25,11 +25,17 @@ import ReviewOverviewCard from "../review/ReviewOverviewCard";
 interface ReviewAccordionItemProps {
   title: string;
   serviceListing: ServiceListing;
+  likedReviewIds: number[];
+  reportedReviewIds: number[];
+  refetchLikedAndReportedReviewIds?: () => Promise<any>;
 }
 
 const ReviewAccordionItem = ({
   title,
   serviceListing,
+  likedReviewIds = [],
+  reportedReviewIds = [],
+  refetchLikedAndReportedReviewIds,
 }: ReviewAccordionItemProps) => {
   const theme = useMantineTheme();
   const [filteredReviews, setFilteredReviews] = useState(
@@ -66,35 +72,37 @@ const ReviewAccordionItem = ({
       <Text size="xl" weight={600}>
         {title}
       </Text>
-      <SegmentedControl
-        transitionDuration={300}
-        transitionTimingFunction="ease"
-        size="xs"
-        color="indigo"
-        radius="lg"
-        value={sorting}
-        onChange={setSorting}
-        data={[
-          {
-            label: (
-              <Center w={100}>
-                <IconClockHour8 size="1rem" style={{ marginRight: -5 }} />
-                <Box ml={10}>Latest</Box>
-              </Center>
-            ),
-            value: "latest",
-          },
-          {
-            label: (
-              <Center w={100}>
-                <IconThumbUp size="1rem" />
-                <Box ml={10}>Most liked</Box>
-              </Center>
-            ),
-            value: "Most liked",
-          },
-        ]}
-      />
+      {serviceListing?.reviews && serviceListing?.reviews.length !== 0 && (
+        <SegmentedControl
+          transitionDuration={300}
+          transitionTimingFunction="ease"
+          size="xs"
+          color="indigo"
+          radius="lg"
+          value={sorting}
+          onChange={setSorting}
+          data={[
+            {
+              label: (
+                <Center w={100}>
+                  <IconClockHour8 size="1rem" style={{ marginRight: -5 }} />
+                  <Box ml={10}>Latest</Box>
+                </Center>
+              ),
+              value: "latest",
+            },
+            {
+              label: (
+                <Center w={100}>
+                  <IconThumbUp size="1rem" />
+                  <Box ml={10}>Most liked</Box>
+                </Center>
+              ),
+              value: "Most liked",
+            },
+          ]}
+        />
+      )}
     </Group>
   );
 
@@ -111,31 +119,41 @@ const ReviewAccordionItem = ({
       </Accordion.Control>
       <Accordion.Panel ml={5} mr={5}>
         {serviceListing?.reviews && serviceListing?.reviews.length !== 0 && (
-          <ReviewOverviewCard
-            serviceListing={serviceListing}
-            setFilteredReviews={setFilteredReviews}
-          />
-        )}
-        {filteredReviews.length === 0 && (
-          <SadDimmedMessage
-            title="No Reviews Available"
-            subtitle="Please choose another filter"
-            replaceClass="center-vertically-but-shorter"
-          />
-        )}
-        {reviewsToDisplay.map((review) => (
-          <ReviewItem key={review.reviewId} review={review} />
-        ))}
-        <Group position="right">
-          {filteredReviews.length > currentPage * itemsPerPage && (
-            <SimpleOutlineButton
-              compact
-              mt="xs"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              text={`View next ${itemsPerPage} reviews`}
+          <>
+            <ReviewOverviewCard
+              serviceListing={serviceListing}
+              setFilteredReviews={setFilteredReviews}
             />
-          )}
-        </Group>
+            {filteredReviews.length === 0 && (
+              <SadDimmedMessage
+                title="No Reviews Available"
+                subtitle="Please choose another filter"
+                replaceClass="center-vertically-but-shorter"
+              />
+            )}
+            {reviewsToDisplay.map((review) => (
+              <ReviewItem
+                key={review.reviewId}
+                review={review}
+                isLikedByUser={likedReviewIds.includes(review.reviewId)}
+                isReportedByUser={reportedReviewIds.includes(review.reviewId)}
+                refetchLikedAndReportedReviewIds={
+                  refetchLikedAndReportedReviewIds
+                }
+              />
+            ))}
+            <Group position="right">
+              {filteredReviews.length > currentPage * itemsPerPage && (
+                <SimpleOutlineButton
+                  compact
+                  mt="xs"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  text={`View next ${itemsPerPage} reviews`}
+                />
+              )}
+            </Group>
+          </>
+        )}
       </Accordion.Panel>
     </Accordion.Item>
   );

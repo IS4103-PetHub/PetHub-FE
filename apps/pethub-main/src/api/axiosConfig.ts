@@ -6,7 +6,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    console.log("INTERCEPTING FOR", config.url);
+    // console.log("INTERCEPTING FOR", config.url);
     try {
       const { data } = await axios.get("/api/auth/jwt");
       if (data.token) {
@@ -14,11 +14,11 @@ api.interceptors.request.use(
         config.headers.Authorization = `Bearer ${data.token}`;
       }
     } catch (error) {
-      console.log(
-        "\napi/axiosConfig: Error fetching token in interceptor, this is likely due to there being no active session",
-      );
+      // console.log(
+      //   "\napi/axiosConfig: Error fetching token in interceptor, this is likely due to there being no active session",
+      // );
     }
-    console.log(`\nSent headers for url ${config.url}`, config.headers);
+    // console.log(`\nSent headers for url ${config.url}`, config.headers);
     return config;
   },
   (error) => {

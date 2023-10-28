@@ -23,9 +23,15 @@ interface ReportModalProps {
   reviewId: number;
   opened: boolean;
   onClose: () => void;
+  onReported?: () => Promise<any>;
 }
 
-const ReportModal = ({ reviewId, opened, onClose }: ReportModalProps) => {
+const ReportModal = ({
+  reviewId,
+  opened,
+  onClose,
+  onReported,
+}: ReportModalProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
   const [reportReason, setReportReason] =
@@ -61,6 +67,7 @@ const ReportModal = ({ reviewId, opened, onClose }: ReportModalProps) => {
         message:
           "PetHub staff will investigate this review and take the appropriate action.",
       });
+      if (onReported) onReported();
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(`Error Reporting Review`, error),
