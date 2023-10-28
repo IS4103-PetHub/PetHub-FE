@@ -47,7 +47,7 @@ export function formatISODateLong(dateString: string) {
 
 export function formatISODateOnly(dateString: string) {
   // e.g. 1/9/2023
-  return dayjs(dateString).format("D/M/YYYY");
+  return dayjs(dateString).format("DD-MM-YYYY");
 }
 
 export function formatISOTimeOnly(dateString: string) {
@@ -57,7 +57,7 @@ export function formatISOTimeOnly(dateString: string) {
 
 export function formatISODayDateTime(dateString: string) {
   // e.g. Sat
-  return dayjs(dateString).format("ddd D/M/YYYY h:mma");
+  return dayjs(dateString).format("ddd DD-MM-YYYY h:mma");
 }
 
 export function formatISODateTimeShort(dateString: string) {
@@ -135,6 +135,7 @@ export function searchServiceListingsForPB(
   searchStr: string,
 ) {
   return serviceListings.filter((serviceListing: ServiceListing) => {
+    const search = searchStr.toLowerCase();
     const formattedCategory = formatEnumValueToLowerCase(
       serviceListing.category,
     );
@@ -142,9 +143,9 @@ export function searchServiceListingsForPB(
       tag.name.toLowerCase(),
     );
     return (
-      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      formattedCategory.includes(searchStr.toLowerCase()) ||
-      formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
+      serviceListing.title.toLowerCase().includes(search) ||
+      formattedCategory.includes(search) ||
+      formattedTags.some((tag) => tag.includes(search))
     );
   });
 }
@@ -173,3 +174,18 @@ export function generateRandomIntFromInterval(min: number, max: number) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+// handling file download and file name extraction
+export const downloadFile = async (url: string, fileName: string) => {
+  try {
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    return new File([buffer], fileName);
+  } catch (error) {
+    console.log("Error:", error);
+  }
+};
+
+export const extractFileName = (attachmentKeys: string) => {
+  return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
+};

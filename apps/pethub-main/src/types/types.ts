@@ -12,6 +12,7 @@ import {
   Pet,
   OrderItem,
 } from "shared-utils";
+import { PetRequestTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -243,4 +244,48 @@ export interface CheckoutSummary {
 export interface CompleteOrderItemPayload {
   userId: number;
   voucherCode: string;
+}
+
+export interface PetLostAndFound {
+  petLostAndFoundId: number;
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  contactNumber: string;
+  userId: number;
+  petOwner?: PetOwner;
+  petId?: number;
+  pet?: Pet;
+  dateCreated: string;
+  dateUpdated?: string;
+  isResolved: boolean;
+}
+
+export interface CreatePetLostAndFoundPayload {
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  contactNumber: string;
+  file: File;
+  petOwnerId: number;
+  petId: string;
+}
+
+export interface UpdatePetLostAndFoundPayload {
+  petLostAndFoundId: number;
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  contactNumber: string;
+  file: File;
+  petId: string;
+  isResolved: boolean;
 }

@@ -1,5 +1,5 @@
 import { Center, Container, Group, LoadingOverlay } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import Head from "next/head";
@@ -25,11 +25,7 @@ import {
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
 import { PetBusiness } from "@/types/types";
-import {
-  validateCGDescription,
-  validateCGName,
-  validateCGSettings,
-} from "@/util";
+import { validateCGName, validateCGSettings } from "@/util";
 
 interface ViewCalendarGroupProps {
   userId: number;
@@ -69,7 +65,7 @@ export default function ViewCalendarGroup({
     },
     validate: {
       name: validateCGName,
-      description: validateCGDescription,
+      description: isNotEmpty("Description is required."),
       scheduleSettings: validateCGSettings as any,
     },
   });
