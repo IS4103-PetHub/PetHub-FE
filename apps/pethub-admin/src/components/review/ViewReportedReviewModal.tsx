@@ -9,12 +9,13 @@ import {
   Group,
   Image,
   Modal,
+  Rating,
   Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
-import { IconFileReport } from "@tabler/icons-react";
+import { IconFileReport, IconPaw } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   Review,
@@ -190,8 +191,29 @@ const ViewReportedReviewModal = ({
                     <Text fw={600}>Comment:</Text>
                   </Grid.Col>
                   <Grid.Col span={10}>{descriptionSection}</Grid.Col>
-                  {/* change to the paws thingy */}
-                  {renderItemGroup("Rating:", `${review.rating}`)}
+                  <Grid.Col span={2}>
+                    <Text fw={600}>Rating:</Text>
+                  </Grid.Col>
+                  <Grid.Col span={10}>
+                    <Rating
+                      emptySymbol={
+                        <IconPaw
+                          size="2rem"
+                          color={theme.colors.yellow[7]}
+                          strokeWidth={1.5}
+                        />
+                      }
+                      fullSymbol={
+                        <IconPaw
+                          size="2rem"
+                          color={theme.colors.yellow[7]}
+                          fill={theme.colors.yellow[4]}
+                          strokeWidth={1.5}
+                        />
+                      }
+                      value={review.rating}
+                    />
+                  </Grid.Col>
                   {review.reply && renderItemGroup("Reply:", `${review.reply}`)}
                   {renderItemGroup("Reasons:", reportedReasons.join(", "))}
                   <Grid.Col span={12}>

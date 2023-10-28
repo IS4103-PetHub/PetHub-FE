@@ -168,7 +168,7 @@ export default function ReportedReview({ permissions }: ReportedReviewProps) {
         >
           {(styles) => (
             <div style={styles}>
-              <SadDimmedMessage title="No Order Items found" subtitle="" />
+              <SadDimmedMessage title="No Reported Reviews found" subtitle="" />
             </div>
           )}
         </Transition>
