@@ -1,9 +1,8 @@
-import { Container, Stack } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
 import { useEffect } from "react";
-import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
 import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
@@ -14,7 +13,6 @@ import ServiceListingScrollCarousel from "@/components/service-listing-discovery
 import { FeaturedServiceListing } from "@/types/types";
 import { flattenFeaturedListingsResponse } from "@/util";
 
-const LIMIT_SIZE = 6;
 interface HomeProps {
   hottestListings: FeaturedServiceListing[];
   almostGoneListings: FeaturedServiceListing[];
@@ -80,7 +78,7 @@ export async function getServerSideProps(context) {
   const featuredServiceListings =
     (await (await api.get(`/service-listings/get-featured-listings`)).data) ??
     [];
-  let hottestListings = flattenFeaturedListingsResponse(
+  const hottestListings = flattenFeaturedListingsResponse(
     featuredServiceListings["HOTTEST_LISTINGS"].featuredListings,
   );
   const almostGoneListings = flattenFeaturedListingsResponse(

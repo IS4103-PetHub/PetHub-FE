@@ -2,7 +2,6 @@ import { Carousel } from "@mantine/carousel";
 import { Box, Container, useMantineTheme, Text } from "@mantine/core";
 import React from "react";
 import { ServiceListing } from "shared-utils";
-import { PageTitle } from "web-ui";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
 import { FeaturedServiceListing } from "@/types/types";
 
@@ -41,11 +40,13 @@ const ServiceListingScrollCarousel = ({
           loop
           controlSize={18}
         >
-          {serviceListings.map((serviceListing) => (
-            <Carousel.Slide size="30%" key={serviceListing.serviceListingId}>
-              <ServiceListingCard serviceListing={serviceListing} />
-            </Carousel.Slide>
-          ))}
+          {serviceListings.map(
+            (serviceListing: ServiceListing | FeaturedServiceListing) => (
+              <Carousel.Slide size="30%" key={serviceListing.serviceListingId}>
+                <ServiceListingCard serviceListing={serviceListing} />
+              </Carousel.Slide>
+            ),
+          )}
         </Carousel>
       </Container>
     </Box>
