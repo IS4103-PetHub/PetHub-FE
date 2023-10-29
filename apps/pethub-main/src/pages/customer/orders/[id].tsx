@@ -39,6 +39,7 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import OrderItemActionGroup from "@/components/order/OrderItemActionGroup";
 import OrderItemBadge from "@/components/order/OrderItemBadge";
+import OrderItemCardMini from "@/components/order/OrderItemCardMini";
 import OrderItemStepper from "@/components/order/OrderItemStepper";
 import {
   useGetOrderItemByOrderId,
@@ -107,8 +108,6 @@ export default function OrderDetails({ userId }: OrderDetailsProps) {
 
   function goBack() {
     setBackButtonLoading(true);
-    // router.push("/customer/orders");
-    // refetch();
     window.location.href = "/customer/orders";
   }
 
@@ -221,100 +220,7 @@ export default function OrderDetails({ userId }: OrderDetailsProps) {
 
   const orderItemDetailsAccordionItem = (
     <Accordion.Item value="stepper" {...ACCORDION_ITEM_PROPS}>
-      <Box m="lg">
-        <Group position="apart" mb={5} mt={-5}>
-          <Center>
-            <Text fw={500} mr={2} size="sm">
-              {orderItem?.serviceListing?.petBusiness?.companyName}
-            </Text>
-            <Button
-              size="xs"
-              variant="subtle"
-              leftIcon={
-                <IconBuildingStore
-                  size="1rem"
-                  style={{ marginRight: "-5px" }}
-                />
-              }
-              onClick={() =>
-                router.push(
-                  "/pet-businesses/" + orderItem?.serviceListing?.petBusinessId,
-                )
-              }
-            >
-              Visit Shop
-            </Button>
-          </Center>
-          <Center>
-            <Box>
-              <Badge
-                radius="xl"
-                c="dark"
-                sx={{ fontWeight: 600 }}
-                variant="dot"
-              >
-                Ordered on: {formatISODayDateTime(orderItem?.invoice.createdAt)}
-              </Badge>
-            </Box>
-          </Center>
-        </Group>
-        <Grid columns={24}>
-          <Grid.Col span={4} mih={125}>
-            {orderItem?.serviceListing?.attachmentURLs?.length > 0 ? (
-              <Image
-                radius="md"
-                src={orderItem?.serviceListing.attachmentURLs[0]}
-                fit="contain"
-                w="auto"
-                alt="Cart Item Photo"
-              />
-            ) : (
-              <Image
-                radius="md"
-                src="/pethub-placeholder.png"
-                fit="contain"
-                w="auto"
-                alt="Cart Item Photo"
-              />
-            )}
-          </Grid.Col>
-
-          <Grid.Col span={16}>
-            <Box>
-              <Link href={`/service-listings/${orderItem?.serviceListingId}`}>
-                <Text fw={600} size={16}>
-                  {orderItem?.serviceListing.title}
-                </Text>
-              </Link>
-              <Text lineClamp={2} size="xs">
-                {orderItem?.serviceListing.description}
-              </Text>
-              {orderItem?.serviceListing.duration && (
-                <Badge variant="dot" radius="xs">
-                  Duration:{" "}
-                  {convertMinsToDurationString(
-                    orderItem?.serviceListing.duration,
-                  )}
-                </Badge>
-              )}
-            </Box>
-          </Grid.Col>
-
-          <Grid.Col
-            span={4}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "flex-end",
-            }}
-          >
-            <Text size="sm" fw={500} color="dimmed">
-              ${formatNumber2Decimals(orderItem?.itemPrice)}
-            </Text>
-          </Grid.Col>
-        </Grid>
-      </Box>
+      <OrderItemCardMini orderItem={orderItem} />
     </Accordion.Item>
   );
 

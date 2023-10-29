@@ -2,9 +2,11 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   CopyButton,
   Divider,
   Grid,
+  Rating,
   Stack,
   Stepper,
   Text,
@@ -12,7 +14,12 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCopy, IconFileDownload } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconCopy,
+  IconFileDownload,
+  IconPaw,
+} from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -22,15 +29,19 @@ import {
   formatISODateTimeShort,
   formatISODayDateTime,
   formatNumber2Decimals,
+  getErrorMessageProps,
 } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
+import { useDeleteReview } from "@/hooks/review";
 import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
+import ReviewModal from "../review/ReviewModal";
+import OrderItemPopover from "./OrderItemPopover";
 
 interface OrderItemStepperContentProps {
   userId: number;
   orderItem: OrderItem;
-  refetch: () => {};
+  refetch: () => Promise<any>;
 }
 
 const OrderItemStepperContent = ({
@@ -42,9 +53,17 @@ const OrderItemStepperContent = ({
   const theme = useMantineTheme();
   const router = useRouter();
   const { addItemToCart } = useCartOperations(userId);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [
+    timeslotModalOpened,
+    { open: openTimeslotModal, close: closeTimeslotModal },
+  ] = useDisclosure(false);
+  const [
+    reviewModalOpened,
+    { open: openReviewModal, close: closeReviewModal },
+  ] = useDisclosure(false);
 
   const REFUND_HOLDING_PERIOD_DAYS = 7;
+  const REVIEW_HOLDING_PERIOD_DAYS = 15;
 
   function triggerNotImplementedNotification() {
     notifications.show({
@@ -69,7 +88,7 @@ const OrderItemStepperContent = ({
   }
 
   function bookNowHandler() {
-    open();
+    openTimeslotModal();
   }
 
   function viewInvoiceHandler() {
@@ -85,18 +104,74 @@ const OrderItemStepperContent = ({
     }
   }
 
-  // Add the holding period to expiry date
+  async function deleteReviewHandler() {
+    await handleDeleteReview(orderItem?.review?.reviewId);
+    await refetch();
+  }
+
+  const deleteReviewMutation = useDeleteReview();
+  const handleDeleteReview = async (id: number) => {
+    try {
+      await deleteReviewMutation.mutateAsync(id);
+      notifications.show({
+        title: "Review Removed",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Your review has been removed for this order.`,
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps("Error Deleting Review", error),
+      });
+    }
+  };
+
+  // Add the holding period to expiry date, this is the last allowed refund date
   const fakeRefundDate = formatISODateTimeShort(
-    dayjs(orderItem?.expiryDate)
+    dayjs(orderItem?.expiryDate || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day")
       .toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem?.expiryDate)
+    dayjs(orderItem?.expiryDate || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day"),
   );
+
+  // A user can only leave a review max 15 days after the order item has been fulfilled
+  const lastReviewCreateDate = formatISODateTimeShort(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewCreate = dayjs().isBefore(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  // A user can only update/delete a review max 15 days after the review has been made
+  const lastReviewUpdateOrDeleteDate = formatISODateTimeShort(
+    dayjs(orderItem?.review?.dateCreated || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewUpdateOrDelete = dayjs().isBefore(
+    dayjs(orderItem?.review?.dateCreated || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  const hideReviewButtons = orderItem?.review
+    ? !eligibleForReviewUpdateOrDelete
+    : !eligibleForReviewCreate;
+
+  const reviewButtonPopoverText = orderItem?.review
+    ? `You may only edit/delete your review by ${lastReviewUpdateOrDeleteDate} (within 15 days of the review being made).`
+    : `You may only leave a review by ${lastReviewCreateDate} (within 15 days of the order item being fulfilled).`;
 
   const dividerColumn = (
     <Grid.Col>
@@ -202,23 +277,82 @@ const OrderItemStepperContent = ({
   const reviewColumn = (
     <>
       <Grid.Col span={7}>
-        <Text size="xs">
-          🐾 Loved our products for your furry friend? We&apos;d be purr-fectly
-          delighted if you could <strong>leave us a paw-sitive review</strong>!
-          Your feedback helps other pets find their new favorites. 🐾
-        </Text>
+        {orderItem?.review ? (
+          <Box>
+            <Rating
+              value={orderItem?.review?.rating}
+              readOnly
+              emptySymbol={
+                <IconPaw
+                  size="1.25rem"
+                  color={theme.colors.yellow[7]}
+                  strokeWidth={1.5}
+                />
+              }
+              fullSymbol={
+                <IconPaw
+                  size="1.25rem"
+                  color={theme.colors.yellow[7]}
+                  fill={theme.colors.yellow[5]}
+                  strokeWidth={1.5}
+                />
+              }
+            />
+            <Text size="xs" lineClamp={1}>
+              ~<strong>{orderItem?.review?.title}</strong>~&nbsp;
+            </Text>
+          </Box>
+        ) : (
+          <Text size="xs">
+            🐾 Loved our products for your furry friend?
+            <strong> Leave a paw-sitive review</strong>! Your feedback helps
+            other pets find their new favorites. 🐾
+          </Text>
+        )}
       </Grid.Col>
-      <Grid.Col span={1} />
+      <Grid.Col span={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
+        {!hideReviewButtons && (
+          <OrderItemPopover text={reviewButtonPopoverText} />
+        )}
+      </Grid.Col>
       <Grid.Col span={4}>
-        <Button
-          fullWidth
-          variant="light"
-          color="orange"
-          sx={{ border: "1px solid #e0e0e0" }}
-          onClick={triggerNotImplementedNotification}
-        >
-          Review
-        </Button>
+        {!hideReviewButtons && (
+          <>
+            {orderItem?.review ? (
+              <Center>
+                <Button
+                  fullWidth
+                  variant="light"
+                  color="orange"
+                  sx={{ border: "1px solid #e0e0e0" }}
+                  onClick={openReviewModal}
+                >
+                  Edit Review
+                </Button>
+                &nbsp;
+                <Button
+                  fullWidth
+                  variant="light"
+                  color="pink"
+                  sx={{ border: "1px solid #e0e0e0" }}
+                  onClick={deleteReviewHandler}
+                >
+                  Remove Review
+                </Button>
+              </Center>
+            ) : (
+              <Button
+                fullWidth
+                variant="light"
+                color="orange"
+                sx={{ border: "1px solid #e0e0e0" }}
+                onClick={openReviewModal}
+              >
+                Review
+              </Button>
+            )}
+          </>
+        )}
       </Grid.Col>
     </>
   );
@@ -362,12 +496,19 @@ const OrderItemStepperContent = ({
         petOwnerId={userId}
         orderItem={orderItem}
         serviceListing={orderItem?.serviceListing}
-        opened={opened}
-        onClose={close}
+        opened={timeslotModalOpened}
+        onClose={closeTimeslotModal}
         isUpdating={!!orderItem?.booking}
         onCreateBooking={refetch}
         onUpdateBooking={refetch}
         booking={orderItem?.booking as any}
+      />
+      <ReviewModal
+        orderItem={orderItem}
+        userId={userId}
+        opened={reviewModalOpened}
+        onClose={closeReviewModal}
+        onCreateOrUpdate={refetch}
       />
     </Grid>
   );

@@ -9,6 +9,7 @@ import {
   IconMenu2,
   IconStar,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import React, { useEffect, useRef } from "react";
 import {
   OrderItem,
@@ -33,6 +34,9 @@ const OrderItemStepper = ({
   ...props
 }: OrderItemStepperProps) => {
   const activeStepIndexRef = useRef<number | null>(null);
+
+  // A user can only make a review 15 days after the order item has been fulfilled
+  const REVIEW_HOLDING_PERIOD_DAYS = 15;
 
   useEffect(() => {
     if (activeStepIndexRef.current !== null) {
@@ -101,6 +105,27 @@ const OrderItemStepper = ({
     ["Refunded", <IconCreditCard key="IconCreditCard" />],
   ]);
 
+  // A user can only leave a review max 15 days after the order item has been fulfilled
+  const lastReviewDate = formatISODateTimeShort(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReview = dayjs().isBefore(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+  const pendingReviewString = () => {
+    if (orderItem.status !== OrderItemStatusEnum.Fulfilled)
+      return "Pending review";
+    if (eligibleForReview) {
+      return `Review by ${lastReviewDate}`;
+    }
+    return "Review window expired";
+  };
+
   // Get the appropriate text for a stepper step based on the step group and current index
   function getStepText(type: string, stepIndex: number) {
     const isBookingStep = stepGroups.happyBooking.includes(type);
@@ -123,6 +148,8 @@ const OrderItemStepper = ({
         ? 4
         : 3
       : -1;
+
+    // const pendingReviewText = orderItem?.review ? `Review by ${}` : "Review has been made";
 
     const steps = {
       Ordered: {
@@ -147,8 +174,8 @@ const OrderItemStepper = ({
         label: stepIndex < ReviewedStepNumber ? "Not Reviewed" : "Reviewed",
         description:
           stepIndex < ReviewedStepNumber
-            ? "Pending review"
-            : "Order has been Reviewed",
+            ? pendingReviewString()
+            : "Review has been made",
       },
       Expired: {
         label: "Expired",
@@ -171,7 +198,7 @@ const OrderItemStepper = ({
     let icon = mapStepTypeToIcon.get(stepType); // default icon
     let stepDetails = getStepText(stepType, activeStepIndexRef.current);
 
-    // Override step color and text if the order item is not booked
+    // Override step color and text if the order item is not booked, fulfilled or reviewed
     if (
       stepType === "Booked" &&
       !orderItem?.booking &&
@@ -185,7 +212,6 @@ const OrderItemStepper = ({
       };
     }
 
-    // RIGHT NOW THERE IS NO WAY TO CHECK IF AN ORDER IS FULFILLED, IT WILL ALWAYS SAY NOT FULFILLED (thats what the `true` represents below)
     if (
       stepType === "Fulfilled" &&
       !orderItem?.dateFulfilled &&
@@ -196,6 +222,20 @@ const OrderItemStepper = ({
         color: "red",
         label: "Not Fulfilled",
         description: "Order not fulfilled",
+      };
+    }
+
+    if (
+      stepType === "Reviewed" &&
+      orderItem?.review &&
+      group !== stepGroups.expiredBooking &&
+      group !== stepGroups.expiredNoBooking
+    ) {
+      stepDetails = {
+        label: "Reviewed",
+        description: orderItem?.review?.lastUpdated
+          ? formatISODateTimeShort(orderItem?.review?.lastUpdated)
+          : formatISODateTimeShort(orderItem?.review?.dateCreated),
       };
     }
 
@@ -226,6 +266,14 @@ const OrderItemStepper = ({
         orderItem,
         group,
       );
+
+      // If item has a review and the focused step is before the reviewed step
+      if (
+        orderItem?.review &&
+        activeStepIndexRef.current < group.indexOf("Reviewed") + 1
+      ) {
+        activeStepIndexRef.current = group.indexOf("Reviewed") + 1;
+      }
 
       return (
         <Stepper.Step

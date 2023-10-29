@@ -12,6 +12,8 @@ import {
 } from "shared-utils";
 import { PetLostAndFound } from "./types/types";
 
+const TEXT_REGEX_PATTERN = /^[a-zA-Z0-9\s.,]+$/;
+
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
   if (!param) {
@@ -413,6 +415,42 @@ export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
   return CGCopy;
 }
 
+export function validateReviewTitle(title: string) {
+  if (!title) {
+    return "Title is required.";
+  }
+  if (title.length > 64) {
+    return "Title cannot exceed 64 characters";
+  }
+  return null;
+}
+
+export function validateReviewComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 2000) {
+    return "Title cannot exceed 2000 characters";
+  }
+  return null;
+}
+
+export function validateReviewRating(rating: number) {
+  if (!rating) {
+    return "Rating is required.";
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return "Rating must be between 1 and 5 stars inclusive.";
+  }
+  return null;
+}
+
+export function validateReviewFiles(files: string[]) {
+  if (files.length > 3) {
+    return "Maximum of 3 images allowed";
+  }
+  return null;
+}
 // for pet
 export const calculateAge = (dateOfBirth: any) => {
   const currentDate = new Date();
