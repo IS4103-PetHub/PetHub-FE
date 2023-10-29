@@ -154,13 +154,13 @@ const OrderItemStepperContent = ({
 
   // A user can only update/delete a review max 15 days after the review has been made
   const lastReviewUpdateOrDeleteDate = formatISODateTimeShort(
-    dayjs(orderItem?.review?.dateCreated)
+    dayjs(orderItem?.review?.dateCreated || new Date())
       .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
       .endOf("day")
       .toISOString(),
   );
   const eligibleForReviewUpdateOrDelete = dayjs().isBefore(
-    dayjs(orderItem?.review?.dateCreated)
+    dayjs(orderItem?.review?.dateCreated || new Date())
       .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
       .endOf("day"),
   );
@@ -170,12 +170,8 @@ const OrderItemStepperContent = ({
     : !eligibleForReviewCreate;
 
   const reviewButtonPopoverText = orderItem?.review
-    ? `You may only edit/delete your review by ${formatISODateTimeShort(
-        lastReviewUpdateOrDeleteDate,
-      )} (within 15 days of the review being made).`
-    : `You may only leave a review by ${formatISODateTimeShort(
-        lastReviewCreateDate,
-      )} (within 15 days of the order item being fulfilled).`;
+    ? `You may only edit/delete your review by ${lastReviewUpdateOrDeleteDate} (within 15 days of the review being made).`
+    : `You may only leave a review by ${lastReviewCreateDate} (within 15 days of the order item being fulfilled).`;
 
   const dividerColumn = (
     <Grid.Col>
