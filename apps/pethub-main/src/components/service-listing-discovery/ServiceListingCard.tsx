@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
+import { FeaturedServiceListing } from "@/types/types";
 import FavouriteButton from "../favourites/FavouriteButton";
 import StarRating from "../review/StarRating";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
@@ -43,13 +44,13 @@ const useStyles = createStyles((theme) => ({
   favouriteButton: {
     position: "absolute",
     top: theme.spacing.md,
-    right: theme.spacing.md,
+    right: 2,
     zIndex: 2, // Above the overlay and image
   },
 }));
 
 interface ServiceListingCardProps {
-  serviceListing: ServiceListing;
+  serviceListing: ServiceListing | FeaturedServiceListing;
   isFavourite?: boolean;
   onFavourite?(serviceListing: ServiceListing, isFavourite: boolean): void;
 }
@@ -64,6 +65,8 @@ const ServiceListingCard = ({
   const { classes } = useStyles();
   const router = useRouter();
   const [isFavourite, setIsFavourite] = useState(initialFavourite);
+
+  const isFeaturedListing = "featuredDescription" in serviceListing;
 
   if (!serviceListing) return null;
 
@@ -129,8 +132,13 @@ const ServiceListingCard = ({
           iconSize="1.15rem"
         />
       </Box>
-
-      <ServiceListingTags tags={serviceListing.tags} />
+      {isFeaturedListing ? (
+        <Text color="dimmed" size="sm" lineClamp={1}>
+          {serviceListing.featuredDescription.toString()}
+        </Text>
+      ) : (
+        <ServiceListingTags tags={serviceListing.tags} />
+      )}
 
       <Group position="apart" align="center" mt="md">
         <Text size="sm" color="dimmed" lineClamp={1} maw={180}>

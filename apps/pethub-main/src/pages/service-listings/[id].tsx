@@ -23,6 +23,7 @@ import {
   IconClock,
   IconPaw,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -43,12 +44,12 @@ import FavouriteButton from "@/components/favourites/FavouriteButton";
 import StarRating from "@/components/review/StarRating";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
-import InactiveServiceListingMessage from "@/components/service-listing-discovery/InactiveServiceListingMessage";
 import ReviewAccordionItem from "@/components/service-listing-discovery/ReviewAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
 import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
+import ViewServiceListingErrorMessage from "@/components/service-listing-discovery/ViewServiceListingErrorMessage";
 import { useCartOperations } from "@/hooks/cart";
 import {
   useAddServiceListingToFavourites,
@@ -210,7 +211,23 @@ export default function ServiceListingDetails({
   if (
     serviceListing.petBusiness.user.accountStatus !== AccountStatusEnum.Active
   ) {
-    return <InactiveServiceListingMessage />;
+    return (
+      <ViewServiceListingErrorMessage
+        title="Inactive Pet Business"
+        description="This service listing cannot be viewed at the moment as the pet business
+    account is inactive."
+      />
+    );
+  }
+
+  // prevent user from viewing expired service listing
+  if (!dayjs(serviceListing.lastPossibleDate).isAfter(new Date())) {
+    return (
+      <ViewServiceListingErrorMessage
+        title="Expired Service Listing"
+        description="This service listing cannot be viewed as it is expired."
+      />
+    );
   }
 
   const businessSection = (
@@ -265,7 +282,7 @@ export default function ServiceListingDetails({
         <title>{serviceListing.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+      <Container mt={50} mb={80} size="70vw" sx={{ overflow: "hidden" }}>
         <Grid gutter="xl">
           <Grid.Col span={9}>
             <ServiceListingBreadcrumbs
@@ -285,12 +302,14 @@ export default function ServiceListingDetails({
                 size="2.25rem"
                 weight={700}
               />
-              <FavouriteButton
-                text={isFavourite ? "Remove Favourite" : "Favourite"}
-                isFavourite={isFavourite}
-                size={20}
-                onClick={async () => handleFavouriteToggle()}
-              />
+              {userId && (
+                <FavouriteButton
+                  text={isFavourite ? "Remove Favourite" : "Favourite"}
+                  isFavourite={isFavourite}
+                  size={20}
+                  onClick={async () => handleFavouriteToggle()}
+                />
+              )}
             </Group>
 
             <Box display="flex" mt={-10} mb={10}>

@@ -27,6 +27,8 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   Tag,
+  downloadFile,
+  extractFileName,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
@@ -226,20 +228,6 @@ const ServiceListingModal = ({
     }),
   );
 
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
-
   const setServiceListingFields = async () => {
     const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
     const addressIds = serviceListing.addresses.map((address) =>
@@ -406,7 +394,7 @@ const ServiceListingModal = ({
             disabled={isViewing}
             label="Last Operational Date"
             placeholder="Input last possible date"
-            valueFormat="DD/MM/YYYY"
+            valueFormat="DD-MM-YYYY"
             minDate={new Date()}
             clearable
             {...serviceListingForm.getInputProps("lastPossibleDate")}
@@ -538,49 +526,31 @@ const ServiceListingModal = ({
               ))}
           </div>
 
-          {!isViewing && (
-            <>
-              {/* TODO: link to page with terms and conditions  */}
-              {/* {!isUpdating && (
-                  <Checkbox
-                    mt="md"
-                    label={"I agree to all the terms and conditions."}
-                    {...serviceListingForm.getInputProps("confirmation", {
-                      type: "checkbox",
-                    })}
-                    />
-                  )} */}
-              <Group position="right">
-                {!isViewing && (
-                  <Button
-                    type="reset"
-                    color="gray"
-                    onClick={() => {
-                      closeAndResetForm();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                )}
-                <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
-              </Group>
-            </>
-          )}
-
-          {isViewing && (
-            <>
-              <Group position="right">
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setUpdating(true);
-                    setViewing(false);
-                  }}
-                >
-                  Edit
-                </Button>
-              </Group>
-            </>
+          {!isViewing ? (
+            <Group position="right">
+              <Button
+                type="reset"
+                color="gray"
+                onClick={() => {
+                  closeAndResetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
+            </Group>
+          ) : (
+            <Group position="right">
+              <Button
+                type="button"
+                onClick={() => {
+                  setUpdating(true);
+                  setViewing(false);
+                }}
+              >
+                Edit
+              </Button>
+            </Group>
           )}
         </Stack>
       </form>

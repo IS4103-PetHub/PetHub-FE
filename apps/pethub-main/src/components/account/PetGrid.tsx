@@ -16,10 +16,8 @@ import {
   IconGenderFemale,
   IconGenderMale,
   IconPlus,
-  IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
@@ -29,12 +27,12 @@ import {
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
-import CenterLoader from "web-ui/shared/CenterLoader";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
+import { calculateAge } from "@/util";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
@@ -106,18 +104,6 @@ const PetGrid = ({ userId }: PetGridProps) => {
       return <img src={iconPath} alt={petType} />;
     }
     return null; // Return null if no icon is found for the pet type
-  };
-
-  const calculateAge = (dateOfBirth: any) => {
-    const currentDate = new Date();
-    const dob = new Date(dateOfBirth);
-    let age = dayjs(currentDate).diff(dob, "years");
-
-    if (age == 0) {
-      age = dayjs(currentDate).diff(dob, "months");
-      return `${age} month${age !== 1 ? "s" : ""}`;
-    }
-    return `${age} year${age > 1 ? "s" : ""}`;
   };
 
   const renderNoPetContent = () => {

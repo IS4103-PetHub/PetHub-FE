@@ -98,7 +98,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
       .endOf("day"),
   );
 
-  const isReviewButtonDisabled = orderItem?.review
+  const hideReviewButton = orderItem?.review
     ? !eligibleForReviewUpdateOrDelete
     : !eligibleForReviewCreate;
 
@@ -214,17 +214,21 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
             Buy again
           </Button>
-          <Button
-            variant="light"
-            size="xs"
-            miw={90}
-            onClick={openReviewModal}
-            mr={-10}
-            disabled={isReviewButtonDisabled}
-          >
-            {orderItem?.review ? "Edit Review" : "Review"}
-          </Button>
-          <OrderItemPopover text={reviewButtonPopoverText} />
+          {!hideReviewButton && (
+            <>
+              {" "}
+              <Button
+                variant="light"
+                size="xs"
+                miw={90}
+                onClick={openReviewModal}
+                mr={-10}
+              >
+                {orderItem?.review ? "Edit Review" : "Review"}
+              </Button>
+              <OrderItemPopover text={reviewButtonPopoverText} />
+            </>
+          )}
         </>
       )}
       {orderItem?.status === OrderItemStatusEnum.Expired && (

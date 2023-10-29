@@ -21,7 +21,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconPaw, IconPawFilled } from "@tabler/icons-react";
+import { IconCheck, IconPaw, IconPawFilled, IconX } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -134,6 +134,16 @@ const ReviewModal = ({
   // ik all these file stuff should probably be extracted somewhere but
   const handleFileInputChange = (files: File[] | null) => {
     if (files && files.length > 0) {
+      // enforce that there can only be 3 files max including the ones already "uploaded"
+      if (files.length + form.values.files.length > 3) {
+        notifications.show({
+          title: `Image Maximum Reached`,
+          color: "orange",
+          icon: <IconX />,
+          message: "Maximum of 3 images allowed per review.",
+        });
+        files = files.slice(0, 3 - form.values.files.length);
+      }
       const newImageUrls = files.map((file) => URL.createObjectURL(file));
       imagePreview.push(...newImageUrls);
       const updatedFiles = [...form.values.files, ...files];
@@ -229,6 +239,7 @@ const ReviewModal = ({
       size="80vh"
       closeOnEscape={false}
       closeOnClickOutside={false}
+      title={<Text size="sm">Order Item No. {orderItem.orderItemId}</Text>}
     >
       <Accordion
         multiple
@@ -245,7 +256,7 @@ const ReviewModal = ({
             <Group mb="sm" position="apart">
               <Center>
                 <Text fw={600} size="xl">
-                  Review Product
+                  Review Order
                 </Text>
                 <OrderItemPopover
                   text={`Please ensure that you remain respectful, truthful, and constructive in your review. Do not give irrelevant feedback, use offensive language or photos, or disclose any personal information. Failure to comply might result in your review getting removed.`}
@@ -276,21 +287,17 @@ const ReviewModal = ({
               </Box>
             </Group>
             <Box mb="sm">
-              <Text fw={500} size="md" mb={3}>
-                Title
-              </Text>
               <TextInput
+                label="Title"
                 data-autofocus
                 withAsterisk
-                placeholder="What&#39;s most important to know?"
+                placeholder="Give a summary of your review."
                 {...form.getInputProps("title")}
               />
             </Box>
             <Box mb="sm">
-              <Text fw={500} size="md" mb={3}>
-                Comment
-              </Text>
               <Textarea
+                label="Comment"
                 withAsterisk
                 autosize
                 minRows={3}
@@ -308,6 +315,7 @@ const ReviewModal = ({
                 Add photos
               </Text>
               <FileInput
+                label="Add photos"
                 placeholder={
                   imagePreview.length == 0
                     ? "+ Upload an image or two to help others visualize your experience"
