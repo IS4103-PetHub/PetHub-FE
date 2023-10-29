@@ -45,6 +45,7 @@ import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useCartOperations } from "@/hooks/cart";
 import { Booking, CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
+import ReviewModal from "../review/ReviewModal";
 import OrderItemBadge from "./OrderItemBadge";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -56,9 +57,58 @@ interface OrderItemCardProps {
 const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [
+    timeslotModalOpened,
+    { open: openTimeslotModal, close: closeTimeslotModal },
+  ] = useDisclosure(false);
+  const [
+    reviewModalOpened,
+    { open: openReviewModal, close: closeReviewModal },
+  ] = useDisclosure(false);
   const { addItemToCart } = useCartOperations(userId);
   const [visible, { toggle }] = useDisclosure(false);
+
+  const REVIEW_HOLDING_PERIOD_DAYS = 15;
+
+  // A user can only leave a review max 15 days after the order item has been fulfilled
+  const lastReviewCreateDate = formatISODateTimeShort(
+    // unused variable: this is not currently being displayed
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewCreate = dayjs().isBefore(
+    dayjs(orderItem?.dateFulfilled || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  // A user can only update/delete a review max 15 days after the review has been made
+  const lastReviewUpdateOrDeleteDate = formatISODateTimeShort(
+    // unused variable: this is not currently being displayed
+    dayjs(orderItem?.review?.dateCreated || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day")
+      .toISOString(),
+  );
+  const eligibleForReviewUpdateOrDelete = dayjs().isBefore(
+    dayjs(orderItem?.review?.dateCreated || new Date())
+      .add(REVIEW_HOLDING_PERIOD_DAYS, "day")
+      .endOf("day"),
+  );
+
+  const hideReviewButton = orderItem?.review
+    ? !eligibleForReviewUpdateOrDelete
+    : !eligibleForReviewCreate;
+
+  const reviewButtonPopoverText = orderItem?.review
+    ? `You may only edit/delete your review by ${formatISODateTimeShort(
+        lastReviewUpdateOrDeleteDate,
+      )} (within 15 days of the review being made).`
+    : `You may only leave a review by ${formatISODateTimeShort(
+        lastReviewCreateDate,
+      )} (within 15 days of the order item being fulfilled).`;
 
   function triggerNotImplementedNotification() {
     notifications.show({
@@ -87,7 +137,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   }
 
   function bookNowHandler() {
-    open();
+    openTimeslotModal();
   }
 
   function viewDetailsHandler() {
@@ -158,21 +208,27 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           </Center>
         </>
       )}
-      {/* In the future, review should be changed to "View review" if already reviewed */}
       {(orderItem?.status === OrderItemStatusEnum.Fulfilled ||
         orderItem?.status === OrderItemStatusEnum.PaidOut) && (
         <>
           <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
             Buy again
           </Button>
-          <Button
-            variant="light"
-            size="xs"
-            miw={90}
-            onClick={triggerNotImplementedNotification}
-          >
-            Review
-          </Button>
+          {!hideReviewButton && (
+            <>
+              {" "}
+              <Button
+                variant="light"
+                size="xs"
+                miw={90}
+                onClick={openReviewModal}
+                mr={-10}
+              >
+                {orderItem?.review ? "Edit Review" : "Review"}
+              </Button>
+              <OrderItemPopover text={reviewButtonPopoverText} />
+            </>
+          )}
         </>
       )}
       {orderItem?.status === OrderItemStatusEnum.Expired && (
@@ -332,14 +388,20 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
       </Grid>
       <SelectTimeslotModal
         petOwnerId={userId}
-        opened={opened}
-        onClose={close}
+        opened={timeslotModalOpened}
+        onClose={closeTimeslotModal}
         orderItem={orderItem}
         serviceListing={orderItem?.serviceListing}
         isUpdating={!!orderItem?.booking}
         onCreateBooking={navToOrderDetailsPage}
         onUpdateBooking={navToOrderDetailsPage}
         booking={orderItem?.booking as any}
+      />
+      <ReviewModal
+        orderItem={orderItem}
+        userId={userId}
+        opened={reviewModalOpened}
+        onClose={closeReviewModal}
       />
     </Card>
   );

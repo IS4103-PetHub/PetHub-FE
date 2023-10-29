@@ -246,6 +246,22 @@ export interface CompleteOrderItemPayload {
   voucherCode: string;
 }
 
+export interface CreateReviewPayload {
+  orderItemId: number;
+  title: string;
+  comment: string;
+  rating: number;
+  files: File[];
+}
+
+export interface UpdateReviewPayload {
+  reviewId: number;
+  title: string;
+  comment: string;
+  rating: number;
+  files: File[];
+}
+
 export interface PetLostAndFound {
   petLostAndFoundId: number;
   title: string;
@@ -288,4 +304,10 @@ export interface UpdatePetLostAndFoundPayload {
   file: File;
   petId: string;
   isResolved: boolean;
+}
+
+export interface FeaturedServiceListing extends ServiceListing {
+  id: number;
+  featuredListingSetId: number;
+  description: string;
 }

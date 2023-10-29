@@ -263,3 +263,20 @@ export interface ReportReview {
   reviewId: number;
   review: Review;
 }
+
+export interface Review {
+  reviewId: number;
+  title: string;
+  comment: string;
+  reply: string;
+  rating: number;
+  isHidden: boolean;
+  dateCreated: string;
+  lastUpdated: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  orderItemId: number;
+  orderItem: OrderItem;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
+}

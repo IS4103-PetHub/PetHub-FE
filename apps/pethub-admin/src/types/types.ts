@@ -3,6 +3,7 @@ import {
   AccountTypeEnum,
   Address,
   PetBusinessTypeEnum,
+  ServiceListing,
 } from "shared-utils";
 
 import {
@@ -153,4 +154,10 @@ export interface CommissionRule {
   createdAt?: string;
   updatedAt?: string;
   petBusinesses?: PetBusiness[];
+}
+
+export interface FeaturedServiceListing extends ServiceListing {
+  featuredListingSetId: number;
+  id: number;
+  featuredDescription: string;
 }

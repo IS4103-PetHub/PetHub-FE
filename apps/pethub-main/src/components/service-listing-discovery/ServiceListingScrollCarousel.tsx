@@ -2,11 +2,11 @@ import { Carousel } from "@mantine/carousel";
 import { Box, Container, useMantineTheme, Text } from "@mantine/core";
 import React from "react";
 import { ServiceListing } from "shared-utils";
-import { PageTitle } from "web-ui";
 import ServiceListingCard from "@/components/service-listing-discovery/ServiceListingCard";
+import { FeaturedServiceListing } from "@/types/types";
 
 interface ServiceListingScrollCarouselProps {
-  serviceListings: ServiceListing[];
+  serviceListings: ServiceListing[] | FeaturedServiceListing[];
   title: string;
   description?: string;
 }
@@ -23,10 +23,10 @@ const ServiceListingScrollCarousel = ({
   }
 
   return (
-    <Box h={600} sx={{ backgroundColor: "white" }}>
+    <Box sx={{ backgroundColor: "white" }}>
       <Container fluid w="80vw" h="100%" pt={50}>
         <Box>
-          <Text fw={600} pt="xl" size="1.5rem" color={theme.colors.dark[9]}>
+          <Text fw={600} size="1.5rem" color={theme.colors.dark[9]}>
             {title}
           </Text>
           {description && <Text color="dimmed">{description}</Text>}
@@ -40,11 +40,13 @@ const ServiceListingScrollCarousel = ({
           loop
           controlSize={18}
         >
-          {serviceListings.map((serviceListing) => (
-            <Carousel.Slide size="30%" key={serviceListing.serviceListingId}>
-              <ServiceListingCard serviceListing={serviceListing} />
-            </Carousel.Slide>
-          ))}
+          {serviceListings.map(
+            (serviceListing: ServiceListing | FeaturedServiceListing) => (
+              <Carousel.Slide size="30%" key={serviceListing.serviceListingId}>
+                <ServiceListingCard serviceListing={serviceListing} />
+              </Carousel.Slide>
+            ),
+          )}
         </Carousel>
       </Container>
     </Box>
