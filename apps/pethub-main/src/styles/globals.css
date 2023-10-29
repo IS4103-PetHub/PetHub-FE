@@ -17,6 +17,13 @@ a {
   height: 80vh;
 }
 
+.center-vertically-but-shorter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40vh;
+}
+
 .gradient-hover {
   border: 0px solid;
   background-size: 0 100%;
