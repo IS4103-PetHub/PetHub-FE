@@ -65,9 +65,6 @@ const ReviewItem = ({
   const [focusedImage, setFocusedImage] = useState(null);
   const [showImageCarousel, setShowImageCarousel] = useState(false);
 
-  console.log(`isLikedByUser for review ${review.title}`, isLikedByUser);
-  console.log(`isReportedByUser for review ${review.title}`, isReportedByUser);
-
   // This is a hacky way to check if the text exceeds 2 lines in the DOM
   useEffect(() => {
     if (textRef.current) {

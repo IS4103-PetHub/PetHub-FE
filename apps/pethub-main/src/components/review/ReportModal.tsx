@@ -40,7 +40,7 @@ const ReportModal = ({
 
   const ReviewReportReasonLabelMap = {
     [ReviewReportReasonEnum.RudeOrAbusive]: "Rude or abusive review",
-    [ReviewReportReasonEnum.Pornographic]: "Pornopgraphic content",
+    [ReviewReportReasonEnum.Pornographic]: "Pornographic content",
     [ReviewReportReasonEnum.Spam]: "Spam review",
     [ReviewReportReasonEnum.ExposingPersonalInformation]:
       "Exposes personal information",
