@@ -1,4 +1,12 @@
-import { Container, Paper, Title, Text, Box } from "@mantine/core";
+import {
+  Container,
+  Paper,
+  Title,
+  Text,
+  Box,
+  Image,
+  Center,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -12,6 +20,7 @@ import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
 import { LoginBox } from "@/components/login/LoginBox";
+import PetHubLogo from "../../public/pethub-logo.png";
 
 export default function Login() {
   const { data: session, status } = useSession();
@@ -128,7 +137,15 @@ export default function Login() {
           {type === "login" ? (
             <div className="center-vertically">
               <Box>
-                <Title align="center">PetHub</Title>
+                <Center>
+                  <Image
+                    src={PetHubLogo.src}
+                    height={60}
+                    mb="md"
+                    width="auto"
+                    alt="PetHub Logo"
+                  />
+                </Center>
                 <Text size="md" align="center" mt={5}>
                   Admin Management Portal
                 </Text>
