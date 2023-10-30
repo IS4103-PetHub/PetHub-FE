@@ -184,7 +184,7 @@ export default function Rbac({ permissions }: RbacProps) {
       </Head>
       <Container fluid>
         <Group position="apart" mb="xl">
-          <PageTitle title="Role-based Access Control" />
+          <PageTitle title="Role-based Access Control Management" />
           {canWrite && (
             <LargeCreateButton
               text="Create User Group"

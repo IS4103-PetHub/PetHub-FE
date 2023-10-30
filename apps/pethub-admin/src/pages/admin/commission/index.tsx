@@ -157,7 +157,7 @@ export default function Commission({ permissions }: CommissionProps) {
       <main>
         <Container fluid>
           <Group position="apart">
-            <PageTitle title="Commission Rule" />
+            <PageTitle title="Commission Rule Management" />
             {canWrite && (
               <LargeCreateButton
                 text="Create Commission Rule"

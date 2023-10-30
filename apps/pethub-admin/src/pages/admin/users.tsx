@@ -138,7 +138,7 @@ export default function UsersManagement({
       </Head>
       <main>
         <Container fluid>
-          <PageTitle title="Users Management" />
+          <PageTitle title="User Management" />
           <AccountTabs
             sessionUserId={userId}
             canWriteInternalUsers={canWriteInternalUsers}

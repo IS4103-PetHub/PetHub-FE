@@ -19,6 +19,9 @@ import {
   IconLogout,
   IconBusinessplan,
   IconFileInvoice,
+  IconNews,
+  IconMessage,
+  IconChartBar,
 } from "@tabler/icons-react";
 import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
@@ -111,6 +114,21 @@ const data = [
     link: "/admin/orders",
     label: "Orders",
     icon: IconFileInvoice,
+  },
+  {
+    link: "/admin/revenue",
+    label: "Revenue Tracking",
+    icon: IconChartBar,
+  },
+  {
+    link: "/admin/articles",
+    label: "Articles",
+    icon: IconNews,
+  },
+  {
+    link: "/admin/support",
+    label: "Support",
+    icon: IconMessage,
   },
 ];
 

@@ -2,7 +2,6 @@ import {
   Popover,
   Text,
   Button,
-  Card,
   ScrollArea,
   Group,
   useMantineTheme,
@@ -12,11 +11,8 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { IconMoodSad } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 import { formatNumber2Decimals } from "shared-utils";
-import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import { useCartOperations } from "@/hooks/cart";
-import { useCart } from "./CartContext";
 import CartIcon from "./CartIcon";
 import MiniCartItemCard from "./MiniCartItemCard";
 
@@ -49,6 +45,8 @@ const CartDisplayPopover = ({ size, userId }: CartDisplayPopoverProps) => {
           onMouseLeave={close}
           variant="subtle"
           compact
+          pl={0}
+          pr={0}
           sx={{ color: "white", ":hover": { backgroundColor: "transparent" } }}
         >
           <CartIcon size={size} />
