@@ -20,7 +20,7 @@ import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import { forgotPasswordService } from "@/api/userService";
 import { ForgotPasswordBox } from "@/components/login/ForgotPasswordBox";
 import { LoginBox } from "@/components/login/LoginBox";
-import PetHubLogo from "../../public/pethub-logo.png";
+import PetHubLogo from "../../../pethub-main/public/pethub-logo-black.png";
 
 export default function Login() {
   const { data: session, status } = useSession();
