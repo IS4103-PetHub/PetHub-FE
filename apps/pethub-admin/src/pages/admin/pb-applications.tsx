@@ -88,7 +88,7 @@ export default function PetBusinessApplications({
       </Head>
       <Container fluid>
         <Group position="apart" mb="md">
-          <PageTitle title="Pet Business Applications" />
+          <PageTitle title="Pet Business Application Management" />
         </Group>
         <ApplicationStatusBar setActiveTab={setActiveTab} />
         <ApplicationsTable applicationStatus={activeTab} />

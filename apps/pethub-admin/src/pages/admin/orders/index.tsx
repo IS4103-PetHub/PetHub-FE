@@ -208,7 +208,7 @@ export default function Orders({ permissions }: OrdersProps) {
       </Head>
       <Container fluid>
         <Group position="apart">
-          <PageTitle title="Orders Management" />
+          <PageTitle title="Order Management" />
         </Group>
         <Grid>
           <Grid.Col span={6}>
