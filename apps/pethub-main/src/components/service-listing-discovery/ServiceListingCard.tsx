@@ -5,6 +5,7 @@ import { ServiceListing } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 import { FeaturedServiceListing } from "@/types/types";
 import FavouriteButton from "../favourites/FavouriteButton";
+import StarRating from "../review/StarRating";
 import ServiceCategoryBadge from "./ServiceCategoryBadge";
 import ServiceListingTags from "./ServiceListingTags";
 
@@ -118,6 +119,19 @@ const ServiceListingCard = ({
         </Text>
       </Box>
 
+      <Box mb="xs" display="flex">
+        <Text mr={5} fw={500} size="xs">
+          {serviceListing?.overallRating === 0
+            ? "Not rated yet"
+            : `${serviceListing.overallRating.toFixed(1)}/5`}
+        </Text>
+        <StarRating
+          value={serviceListing.overallRating}
+          viewOnly
+          allowFractions
+          iconSize="1.15rem"
+        />
+      </Box>
       {isFeaturedListing ? (
         <Text color="dimmed" size="sm" lineClamp={1}>
           {serviceListing.featuredDescription.toString()}

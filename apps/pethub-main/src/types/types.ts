@@ -11,6 +11,7 @@ import {
   PetTypeEnum,
   Pet,
   OrderItem,
+  ReviewReportReasonEnum,
 } from "shared-utils";
 import { PetRequestTypeEnum } from "./constants";
 
@@ -262,6 +263,10 @@ export interface UpdateReviewPayload {
   files: File[];
 }
 
+export interface ReportReviewPayload {
+  reviewId: number;
+  reportReason: ReviewReportReasonEnum;
+}
 export interface PetLostAndFound {
   petLostAndFoundId: number;
   title: string;

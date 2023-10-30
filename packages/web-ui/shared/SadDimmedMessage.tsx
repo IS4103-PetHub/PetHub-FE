@@ -15,6 +15,7 @@ interface SadDimmedMessageProps {
   disabled?: boolean;
   replaceIcon?: ReactNode;
   button?: ReactNode;
+  replaceClass?: string;
 }
 
 const SadDimmedMessage = ({
@@ -23,13 +24,14 @@ const SadDimmedMessage = ({
   disabled,
   replaceIcon,
   button,
+  replaceClass,
 }: SadDimmedMessageProps) => {
   const theme = useMantineTheme();
 
   if (disabled) return null;
 
   return (
-    <Container fluid className="center-vertically">
+    <Container fluid className={replaceClass || "center-vertically"}>
       <Box>
         <Center mb={15}>
           {replaceIcon ? (

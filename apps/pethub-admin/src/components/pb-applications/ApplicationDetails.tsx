@@ -131,9 +131,8 @@ export default function ApplicationDetails({
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
             <Textarea
-              minRows={3}
-              maxRows={5}
-              disabled
+              minRows={5}
+              maxRows={8}
               value={application.businessDescription}
             />
           </Accordion.Panel>

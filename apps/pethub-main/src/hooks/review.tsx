@@ -1,7 +1,11 @@
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import { Review } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { CreateReviewPayload, UpdateReviewPayload } from "@/types/types";
+import {
+  CreateReviewPayload,
+  ReportReviewPayload,
+  UpdateReviewPayload,
+} from "@/types/types";
 const REVIEW_API = "/reviews";
 
 export const useCreateReview = () => {
@@ -62,6 +66,41 @@ export const useDeleteReview = () => {
   return useMutation({
     mutationFn: async (id: number) => {
       return (await api.delete(`${REVIEW_API}/${id}`)).data;
+    },
+  });
+};
+
+export const useReportReview = () => {
+  return useMutation({
+    mutationFn: async (payload: ReportReviewPayload) => {
+      const { reviewId, reportReason } = payload;
+      return (
+        await api.post(
+          `${REVIEW_API}/report-review/${reviewId}?reportReason=${reportReason}`,
+        )
+      ).data;
+    },
+  });
+};
+
+export const useToggleLikedReview = () => {
+  return useMutation({
+    mutationFn: async (reviewId: number) => {
+      return (await api.post(`${REVIEW_API}/toggle-liked-review/${reviewId}`))
+        .data;
+    },
+  });
+};
+
+// GET the liked and reported review IDs for a PetOwner filtered by a ServiceListing
+export const useGetLikedAndReportedReviews = (serviceListingId: number) => {
+  return useQuery({
+    queryKey: ["liked-reported", serviceListingId],
+    queryFn: async () => {
+      const response = await api.get(
+        `${REVIEW_API}/liked-reported/${serviceListingId}`,
+      );
+      return response.data as { likesBy: number[]; reportsBy: number[] };
     },
   });
 };

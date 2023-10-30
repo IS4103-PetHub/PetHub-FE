@@ -5,7 +5,7 @@ import {
   OrderItemStatusEnum,
   PetTypeEnum,
   RecurrencePatternEnum,
-  ReviewReportReason,
+  ReviewReportReasonEnum,
   ServiceCategoryEnum,
 } from "./constants";
 
@@ -243,33 +243,6 @@ export interface Review {
   comment: string;
   reply: string;
   rating: number;
-  dateCreated: string;
-  lastUpdated: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  orderItemId: number;
-  orderItem: OrderItem;
-  serviceListingId: number;
-  serviceListing: ServiceListing;
-  reportedBy: ReportReview[];
-  likedBy: any;
-}
-
-export interface ReportReview {
-  reportReviewId: number;
-  petOwnerId: number;
-  reportedBy: PetOwner;
-  reportReason: ReviewReportReason;
-  reviewId: number;
-  review: Review;
-}
-
-export interface Review {
-  reviewId: number;
-  title: string;
-  comment: string;
-  reply: string;
-  rating: number;
   isHidden: boolean;
   dateCreated: string;
   lastUpdated: string;
@@ -279,4 +252,15 @@ export interface Review {
   orderItem: OrderItem;
   serviceListingId: number;
   serviceListing: ServiceListing;
+  likedByCount?: number;
+  replyDate?: string;
+}
+
+export interface ReportReview {
+  reportReviewId: number;
+  petOwnerId: number;
+  reportedBy: PetOwner;
+  reportReason: ReviewReportReasonEnum;
+  reviewId: number;
+  review: Review;
 }

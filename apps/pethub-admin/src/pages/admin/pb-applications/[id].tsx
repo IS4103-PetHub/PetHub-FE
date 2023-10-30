@@ -233,6 +233,7 @@ export default function PetBusinessApplicationDetails({
         <LargeBackButton
           text="Back to applications"
           size="sm"
+          mb="xs"
           onClick={() => {
             window.location.href = "/admin/pb-applications";
           }}

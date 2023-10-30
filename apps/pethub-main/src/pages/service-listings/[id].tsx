@@ -9,6 +9,8 @@ import {
   useMantineTheme,
   Box,
   Stack,
+  Rating,
+  Center,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -19,6 +21,7 @@ import {
   IconCheck,
   IconX,
   IconClock,
+  IconPaw,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Head from "next/head";
@@ -36,12 +39,14 @@ import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
+import ImageCarousel from "@/components/common/file/ImageCarousel";
 import FavouriteButton from "@/components/favourites/FavouriteButton";
+import StarRating from "@/components/review/StarRating";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
+import ReviewAccordionItem from "@/components/service-listing-discovery/ReviewAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
-import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
 import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
 import ViewServiceListingErrorMessage from "@/components/service-listing-discovery/ViewServiceListingErrorMessage";
@@ -51,6 +56,7 @@ import {
   useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
+import { useGetLikedAndReportedReviews } from "@/hooks/review";
 import {
   AddRemoveFavouriteServiceListingPayload,
   CartItem,
@@ -76,6 +82,12 @@ export default function ServiceListingDetails({
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for view timeslot modal
+
+  const {
+    data: likedAndReportedReviewIds,
+    isLoading,
+    refetch: refetchLikedAndReportedReviews,
+  } = useGetLikedAndReportedReviews(serviceListing?.serviceListingId);
 
   useEffect(() => {
     if (
@@ -299,9 +311,26 @@ export default function ServiceListingDetails({
                 />
               )}
             </Group>
+
+            <Box display="flex" mt={-10} mb={10}>
+              <Text mr={5} fw={500} size="md">
+                {serviceListing.overallRating === 0
+                  ? "Not rated yet"
+                  : `${serviceListing.overallRating.toFixed(1)}/5 (${
+                      serviceListing.reviews.length
+                    } reviews)`}
+              </Text>
+              <StarRating
+                value={serviceListing.overallRating}
+                viewOnly
+                allowFractions
+              />
+            </Box>
             <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
-            <ServiceListingCarousel
+            <ImageCarousel
               attachmentURLs={serviceListing.attachmentURLs}
+              altText="Service Listing Photo"
+              imageHeight={500}
             />
             <Accordion
               radius="md"
@@ -323,6 +352,19 @@ export default function ServiceListingDetails({
                 description={serviceListing.description}
                 showFullDescription={showFullDescription}
                 setShowFullDescription={setShowFullDescription}
+              />
+              <ReviewAccordionItem
+                title={
+                  serviceListing.reviews.length === 0
+                    ? "Reviews (no reviews yet)"
+                    : `Reviews (${serviceListing.reviews.length})`
+                }
+                serviceListing={serviceListing}
+                likedReviewIds={likedAndReportedReviewIds?.likesBy}
+                reportedReviewIds={likedAndReportedReviewIds?.reportsBy}
+                refetchLikedAndReportedReviewIds={
+                  refetchLikedAndReportedReviews
+                }
               />
             </Accordion>
           </Grid.Col>
@@ -418,6 +460,7 @@ export async function getServerSideProps(context) {
   const serviceListing = (await (
     await api.get(`/service-listings/${id}`)
   ).data) as ServiceListing;
+
   const session = await getSession(context);
 
   if (!session) return { props: { serviceListing } };
@@ -430,5 +473,7 @@ export async function getServerSideProps(context) {
     (listing) => serviceListing.serviceListingId !== listing.serviceListingId,
   );
 
-  return { props: { userId, serviceListing, recommendedListings } };
+  return {
+    props: { userId, serviceListing, recommendedListings },
+  };
 }
