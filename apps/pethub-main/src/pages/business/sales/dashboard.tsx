@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Card,
   Chip,
   Container,
@@ -9,6 +10,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { IconReport } from "@tabler/icons-react";
 import { DataTable } from "mantine-datatable";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
@@ -53,6 +55,13 @@ export default function SalesDashboard({
         <Container fluid mb="xl">
           <Group position="apart" mb="lg">
             <PageTitle title="Sales Dashboard" />
+            <Button
+              size="md"
+              leftIcon={<IconReport />}
+              className="gradient-hover"
+            >
+              View Monthly Sales Reports
+            </Button>
           </Group>
           <Stack spacing={30}>
             <BusinesssSalesSummarySection summary={summary} />
