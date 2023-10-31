@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   Address,
@@ -52,12 +53,8 @@ const ServiceListTable = ({
   /*
    * Component State
    */
+  const router = useRouter();
   const [selectedService, setSelectedService] = useState(null);
-  const [isServiceModalOpen, { close: closeView, open: openView }] =
-    useDisclosure(false);
-  const [isUpdateModalOpen, { close: closeUpdate, open: openUpdate }] =
-    useDisclosure(false);
-
   const queryClient = useQueryClient();
   const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
 
@@ -136,16 +133,11 @@ const ServiceListTable = ({
             render: (service) => (
               <Group position="right">
                 <ViewActionButton
-                  onClick={function (): void {
-                    setSelectedService(service);
-                    openView();
-                  }}
-                />
-                <EditActionButton
-                  onClick={function (): void {
-                    setSelectedService(service);
-                    openUpdate();
-                  }}
+                  onClick={() =>
+                    router.push(
+                      `/business/listings/${service.serviceListingId}`,
+                    )
+                  }
                 />
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${service.title}?`}
@@ -181,34 +173,6 @@ const ServiceListTable = ({
             ? undefined
             : { color: "red" }
         }
-      />
-
-      {/* View */}
-      <ServiceListingModal
-        opened={isServiceModalOpen}
-        onClose={closeView}
-        isView={true}
-        isUpdate={false}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-        addresses={addresses ? addresses : []}
-        calendarGroups={calendarGroups}
-      />
-
-      {/* Update */}
-      <ServiceListingModal
-        opened={isUpdateModalOpen}
-        onClose={closeUpdate}
-        isView={false}
-        isUpdate={true}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-        addresses={addresses ? addresses : []}
-        calendarGroups={calendarGroups}
       />
     </>
   );
