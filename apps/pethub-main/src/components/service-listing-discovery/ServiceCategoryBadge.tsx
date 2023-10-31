@@ -8,7 +8,7 @@ interface ServiceCategoryBadgeProps extends BadgeProps {
 
 const categoryColourMap = new Map([
   [ServiceCategoryEnum.PetBoarding, "pink"],
-  [ServiceCategoryEnum.PetGrooming, "green"],
+  [ServiceCategoryEnum.PetGrooming, "blue"],
   [ServiceCategoryEnum.Dining, "orange"],
   [ServiceCategoryEnum.Veterinary, "cyan"],
   [ServiceCategoryEnum.PetRetail, "violet"],

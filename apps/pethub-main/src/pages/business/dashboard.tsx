@@ -1,8 +1,6 @@
-import { Container, Group, LoadingOverlay } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Container, Group } from "@mantine/core";
 import dayjs from "dayjs";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import {
@@ -33,7 +31,6 @@ export default function Dashboard({
 }: DashboardProps) {
   const [applicationStatus, setApplicationStatus] = useState(null);
   const { showOverlay, hideOverlay } = useLoadingOverlay();
-  const router = useRouter();
 
   const {
     data: petBusinessApplication,
@@ -58,7 +55,7 @@ export default function Dashboard({
         <title>Dashboard - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid>
+      <Container fluid m="lg">
         {applicationStatus !== BusinessApplicationStatusEnum.Approved ? (
           // PB application is not yet approved
           <ApplicationStatusAlert

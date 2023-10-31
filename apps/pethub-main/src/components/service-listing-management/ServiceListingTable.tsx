@@ -91,6 +91,7 @@ const ServiceListTable = ({
             width: "25vw",
             sortable: true,
             ellipsis: true,
+            render: (record) => <Text fw={500}>{record.title}</Text>,
           },
           {
             accessor: "category",
