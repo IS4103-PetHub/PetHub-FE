@@ -17,15 +17,27 @@ import {
   Text,
   Button,
   MultiSelect,
+  Grid,
+  Divider,
+  rem,
+  Badge,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconCircleX, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconCircleX,
+  IconListDetails,
+  IconPhotoPlus,
+  IconUserExclamation,
+  IconX,
+} from "@tabler/icons-react";
+import { IconCalendarTime } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { set } from "lodash";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   Address,
   CalendarGroup,
@@ -34,6 +46,7 @@ import {
   Tag,
   downloadFile,
   extractFileName,
+  formatISODateLong,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
@@ -126,18 +139,6 @@ const ServiceListingDetailsAccordionItem = ({
     const imageUrls = downloadedFiles.map((file) => URL.createObjectURL(file));
     setImagePreview(imageUrls);
   };
-
-  //   const closeAndResetForm = async () => {
-  //     if (isUpdating || isEditingDisabled) {
-  //       await setServiceListingFields();
-  //     } else {
-  //       form.reset();
-  //       setImagePreview([]);
-  //     }
-  //     setUpdating(isUpdate);
-  //     setViewing(isView);
-  //     onClose();
-  //   };
 
   const handleFileInputChange = (files: File[] | null) => {
     if (files && files.length > 0) {
@@ -235,18 +236,337 @@ const ServiceListingDetailsAccordionItem = ({
     await handleUpdateServiceListing(payload);
   }
 
+  const generateItemGroup = (title: string, content: ReactNode) => {
+    return (
+      <>
+        <Grid.Col span={7}>
+          <Text fw={500}>{title}</Text>
+        </Grid.Col>
+        <Grid.Col span={17}>{content}</Grid.Col>
+      </>
+    );
+  };
+
+  const serviceOverviewGrid = (
+    <Box>
+      <Divider mb="lg" mt="lg" />
+      <Text fw={600} size="md">
+        <IconListDetails size="1rem" color="blue" /> Service Overview
+      </Text>
+      <Grid columns={24} mt="xs">
+        {generateItemGroup(
+          "Title",
+          isEditingDisabled ? (
+            <Text>{form.values.title}</Text>
+          ) : (
+            <TextInput
+              placeholder="Input Service Listing Title"
+              {...form.getInputProps("title")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Description",
+          isEditingDisabled ? (
+            <Text>{form.values.description}</Text>
+          ) : (
+            <Textarea
+              placeholder="Input Service Listing Description"
+              minRows={1}
+              maxRows={3}
+              autosize
+              {...form.getInputProps("description")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Category",
+          isEditingDisabled ? (
+            <>
+              {form.values.category ? (
+                <Badge ml={-2}>
+                  {formatStringToLetterCase(form.values.category)}
+                </Badge>
+              ) : (
+                "-"
+              )}
+            </>
+          ) : (
+            <Select
+              placeholder="Pick one"
+              data={categoryOptions}
+              {...form.getInputProps("category")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Price",
+          isEditingDisabled ? (
+            <Text>$ {formatNumber2Decimals(form.values.basePrice)}</Text>
+          ) : (
+            <NumberInput
+              defaultValue={0.0}
+              min={0}
+              precision={2}
+              parser={(value) => {
+                const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
+                return isNaN(floatValue) ? "" : floatValue.toString();
+              }}
+              formatter={(value) => {
+                const formattedValue = formatNumber2Decimals(
+                  parseFloat(value.replace(/\$\s?/, "")),
+                );
+                return `$ ${formattedValue}`;
+              }}
+              {...form.getInputProps("basePrice")}
+            />
+          ),
+        )}
+      </Grid>
+      <Divider mt="lg" mb="lg" />
+    </Box>
+  );
+
+  const schedulingGrid = (
+    <Box>
+      <Text fw={600} size="md">
+        <IconCalendarTime size="1rem" color="blue" /> Scheduling
+      </Text>
+      <Grid columns={24} mt="xs">
+        {generateItemGroup(
+          "Default Expiry Days",
+          isEditingDisabled ? (
+            <Text>{`${form.values.defaultExpiryDays} ${
+              form.values.defaultExpiryDays === 1 ? "day" : "days"
+            }`}</Text>
+          ) : (
+            <NumberInput
+              placeholder="Input number of days for vouchers to expire"
+              min={0}
+              {...form.getInputProps("defaultExpiryDays")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Last Operational Date",
+          isEditingDisabled ? (
+            <Text>
+              {form.values.lastPossibleDate
+                ? formatISODateLong(form.values.lastPossibleDate)
+                : "No date selected"}
+            </Text>
+          ) : (
+            <DateInput
+              placeholder="Input last possible date"
+              valueFormat="DD-MM-YYYY"
+              minDate={new Date()}
+              clearable
+              {...form.getInputProps("lastPossibleDate")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Requires Booking",
+          isEditingDisabled ? (
+            form.values.requiresBooking ? (
+              <Badge color="green" ml={-2}>
+                REQUIRED
+              </Badge>
+            ) : (
+              <Badge color="red" ml={-2}>
+                NOT REQUIRED
+              </Badge>
+            )
+          ) : (
+            <Checkbox
+              {...form.getInputProps("requiresBooking", {
+                type: "checkbox",
+              })}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Duration",
+          !form.values.requiresBooking ? (
+            <Text>Requires booking is not checked</Text>
+          ) : isEditingDisabled ? (
+            <Text>
+              {form.values.duration ? form.values.duration + " minutes" : "-"}
+            </Text>
+          ) : (
+            <Autocomplete
+              placeholder="Select Service duration"
+              data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
+              onChange={(selectedValue) => {
+                const selectedDuration = parseInt(selectedValue, 10);
+                if (!isNaN(selectedDuration)) {
+                  form.setValues({
+                    duration: selectedDuration,
+                  });
+                } else {
+                  form.setValues({ duration: 0 });
+                }
+              }}
+              value={
+                form.values.duration ? form.values.duration.toString() : ""
+              }
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Calendar Group",
+          !form.values.requiresBooking ? (
+            <Text>Requires booking is not checked</Text>
+          ) : isEditingDisabled ? (
+            <Text>
+              {
+                calendarGroups.find(
+                  (group) =>
+                    group.calendarGroupId.toString() ===
+                    form.values.calendarGroupId,
+                )?.name
+              }
+            </Text>
+          ) : (
+            <Select
+              placeholder="Select a Calendar Group"
+              data={
+                calendarGroups
+                  ? [
+                      {
+                        value: null,
+                        label: "",
+                      },
+                      ...calendarGroups.map((group) => ({
+                        value: group.calendarGroupId.toString(),
+                        label: group.name,
+                      })),
+                    ]
+                  : []
+              }
+              {...form.getInputProps("calendarGroupId")}
+            />
+          ),
+        )}
+      </Grid>
+      <Divider mt="lg" mb="lg" />
+    </Box>
+  );
+
+  const othersGrid = (
+    <Box>
+      <Text fw={600} size="md">
+        <IconPhotoPlus size="1rem" color="blue" /> Other Details
+      </Text>
+      <Grid columns={24} mt="xs">
+        {generateItemGroup(
+          "Locations",
+          isEditingDisabled ? (
+            <Text>
+              {form.values.addresses
+                ? form.values.addresses?.map((a) => a.addressName).join(", ")
+                : "No addresses selected"}
+            </Text>
+          ) : (
+            <MultiSelect
+              placeholder="Select address"
+              data={
+                serviceListing?.petBusiness?.businessAddresses
+                  ? serviceListing?.petBusiness?.businessAddresses.map(
+                      (address) => ({
+                        value: address.addressId.toString(),
+                        label: address.addressName,
+                      }),
+                    )
+                  : []
+              }
+              {...form.getInputProps("addresses")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Tags",
+          isEditingDisabled ? (
+            <Text>
+              {form.values.tags
+                ? form.values.tags?.map((tag) => tag.name).join(", ")
+                : "No tags selected"}
+            </Text>
+          ) : (
+            <MultiSelect
+              placeholder="Select your Tags"
+              data={
+                serviceListing?.tags
+                  ? serviceListing?.tags.map((tag) => ({
+                      value: tag.tagId.toString(),
+                      label: tag.name,
+                    }))
+                  : []
+              }
+              {...form.getInputProps("tags")}
+            />
+          ),
+        )}
+        {generateItemGroup(
+          "Display Images",
+          isEditingDisabled ? (
+            <Text>Replace this with carousel later</Text>
+          ) : (
+            <>
+              <FileInput
+                placeholder={
+                  imagePreview.length == 0
+                    ? "No file selected"
+                    : "Upload new images"
+                }
+                accept="image/*"
+                name="images"
+                multiple
+                onChange={(files) => handleFileInputChange(files)}
+                capture={false}
+                key={fileInputKey}
+              />
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {imagePreview &&
+                  imagePreview.length > 0 &&
+                  imagePreview.map((imageUrl, index) => (
+                    <div
+                      key={index}
+                      style={{ flex: "0 0 calc(33.33% - 10px)" }}
+                    >
+                      <Card style={{ maxWidth: "100%" }}>
+                        {!isEditingDisabled && (
+                          <Group position="right">
+                            <CloseButton
+                              size="md"
+                              color="red"
+                              onClick={() => removeImage(index)}
+                            />
+                          </Group>
+                        )}
+                        <Image
+                          src={imageUrl}
+                          alt={`Image Preview ${index}`}
+                          style={{ maxWidth: "100%", display: "block" }}
+                        />
+                      </Card>
+                    </div>
+                  ))}
+              </div>
+            </>
+          ),
+        )}
+      </Grid>
+      <Divider mt="lg" mb="md" />
+    </Box>
+  );
+
   return (
-    <Accordion.Item
-      value="details"
-      pl={30}
-      pr={30}
-      pt={15}
-      title="Service Listing Details"
-    >
+    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-        <Group position="apart" mt={5} mb={5}>
+        <Group position="apart" mt={5}>
           <Text fw={600} size="xl">
-            Service Listing Details
+            Service Listing Details | ID. {form.values.serviceListingId}
           </Text>
           {isEditingDisabled ? (
             <Group>
@@ -296,199 +616,11 @@ const ServiceListingDetailsAccordionItem = ({
           )}
         </Group>
 
-        <Stack>
-          <TextInput
-            withAsterisk
-            disabled={isEditingDisabled}
-            label="Title"
-            placeholder="Input Service Listing Title"
-            {...form.getInputProps("title")}
-          />
+        {serviceOverviewGrid}
 
-          <Textarea
-            withAsterisk
-            disabled={isEditingDisabled}
-            label="Description"
-            placeholder="Input Service Listing Description"
-            autosize
-            {...form.getInputProps("description")}
-          />
+        {schedulingGrid}
 
-          <Select
-            withAsterisk
-            disabled={isEditingDisabled}
-            label="Category"
-            placeholder="Pick one"
-            // need change to this to use enums
-            data={categoryOptions}
-            {...form.getInputProps("category")}
-          />
-
-          <NumberInput
-            withAsterisk
-            disabled={isEditingDisabled}
-            label="Price"
-            defaultValue={0.0}
-            min={0}
-            precision={2}
-            parser={(value) => {
-              const floatValue = parseFloat(value.replace(/\$\s?|(,*)/g, ""));
-              return isNaN(floatValue) ? "" : floatValue.toString();
-            }}
-            formatter={(value) => {
-              const formattedValue = formatNumber2Decimals(
-                parseFloat(value.replace(/\$\s?/, "")),
-              );
-              return `$ ${formattedValue}`;
-            }}
-            {...form.getInputProps("basePrice")}
-          />
-
-          <NumberInput
-            withAsterisk
-            disabled={isEditingDisabled}
-            label="Default Expiry Days"
-            placeholder="Input number of days for vouchers to expire"
-            min={0}
-            {...form.getInputProps("defaultExpiryDays")}
-          />
-
-          <DateInput
-            disabled={isEditingDisabled}
-            label="Last Operational Date"
-            placeholder="Input last possible date"
-            valueFormat="DD-MM-YYYY"
-            minDate={new Date()}
-            clearable
-            {...form.getInputProps("lastPossibleDate")}
-          />
-
-          <MultiSelect
-            disabled={isEditingDisabled}
-            label="Address"
-            placeholder="Select your address"
-            data={
-              serviceListing?.petBusiness?.businessAddresses
-                ? serviceListing?.petBusiness?.businessAddresses.map(
-                    (address) => ({
-                      value: address.addressId.toString(),
-                      label: address.addressName,
-                    }),
-                  )
-                : []
-            }
-            {...form.getInputProps("addresses")}
-          />
-
-          <MultiSelect
-            disabled={isEditingDisabled}
-            label="Tags"
-            placeholder="Select your Tags"
-            data={
-              serviceListing?.tags
-                ? serviceListing?.tags.map((tag) => ({
-                    value: tag.tagId.toString(),
-                    label: tag.name,
-                  }))
-                : []
-            }
-            {...form.getInputProps("tags")}
-          />
-
-          <Checkbox
-            disabled={isEditingDisabled}
-            label="Requires Booking"
-            {...form.getInputProps("requiresBooking", {
-              type: "checkbox",
-            })}
-          />
-
-          {form.values.requiresBooking && (
-            <>
-              <Autocomplete
-                disabled={isEditingDisabled}
-                placeholder="Select Service duration"
-                label="Duration (minutes)"
-                data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
-                onChange={(selectedValue) => {
-                  const selectedDuration = parseInt(selectedValue, 10);
-                  if (!isNaN(selectedDuration)) {
-                    form.setValues({
-                      duration: selectedDuration,
-                    });
-                  } else {
-                    form.setValues({ duration: 0 });
-                  }
-                }}
-                value={
-                  form.values.duration ? form.values.duration.toString() : ""
-                }
-              />
-
-              <Select
-                disabled={isEditingDisabled}
-                label="Calendar Group"
-                placeholder="Select a Calendar Group"
-                data={
-                  calendarGroups
-                    ? [
-                        {
-                          value: null,
-                          label: "",
-                        },
-                        ...calendarGroups.map((group) => ({
-                          value: group.calendarGroupId.toString(),
-                          label: group.name,
-                        })),
-                      ]
-                    : []
-                }
-                {...form.getInputProps("calendarGroupId")}
-              />
-            </>
-          )}
-
-          <FileInput
-            disabled={isEditingDisabled}
-            label="Upload Display Images"
-            placeholder={
-              imagePreview.length == 0
-                ? "No file selected"
-                : "Upload new images"
-            }
-            accept="image/*"
-            name="images"
-            multiple
-            onChange={(files) => handleFileInputChange(files)}
-            capture={false}
-            key={fileInputKey}
-          />
-
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-            {imagePreview &&
-              imagePreview.length > 0 &&
-              imagePreview.map((imageUrl, index) => (
-                <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
-                  <Card style={{ maxWidth: "100%" }}>
-                    {!isEditingDisabled && (
-                      <Group position="right">
-                        <CloseButton
-                          size="md"
-                          color="red"
-                          onClick={() => removeImage(index)}
-                        />
-                      </Group>
-                    )}
-                    <Image
-                      src={imageUrl}
-                      alt={`Image Preview ${index}`}
-                      style={{ maxWidth: "100%", display: "block" }}
-                    />
-                  </Card>
-                </div>
-              ))}
-          </div>
-        </Stack>
+        {othersGrid}
       </form>
     </Accordion.Item>
   );
