@@ -120,7 +120,7 @@ const nonPendingLinks = [
   },
   {
     link: "/business/sales/dashboard",
-    label: "Sales Dashboard",
+    label: "Business Sales",
     icon: IconReportAnalytics,
   },
 ];

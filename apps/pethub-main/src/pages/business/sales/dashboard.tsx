@@ -48,13 +48,13 @@ export default function SalesDashboard({
   return (
     <>
       <Head>
-        <title>Sales Dashboard - PetHub Business</title>
+        <title>Business Sales Dashboard - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid p="lg" h="100%" w="100%" bg={theme.colors.gray[0]}>
         <Container fluid mb="xl">
           <Group position="apart" mb="lg">
-            <PageTitle title="Sales Dashboard" />
+            <PageTitle title="Business Sales Dashboard" />
             <Button
               size="md"
               leftIcon={<IconReport />}
