@@ -24,6 +24,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconCheck,
@@ -37,7 +38,7 @@ import { IconCalendarTime } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { set } from "lodash";
 import { useRouter } from "next/router";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Address,
   CalendarGroup,
@@ -64,6 +65,7 @@ import {
   CreateServiceListingPayload,
   UpdateServiceListingPayload,
 } from "@/types/types";
+import ImageCarousel from "../common/file/ImageCarousel";
 
 interface ServiceListingDetailsAccordionItemProps {
   form: any;
@@ -83,6 +85,11 @@ const ServiceListingDetailsAccordionItem = ({
   const [imagePreview, setImagePreview] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
   const [isEditingDisabled, setIsEditingDisabled] = useState(true);
+
+  const [showFullDescription, toggleShowFullDescription] = useToggle();
+  const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
+  const textRef = useRef(null);
+
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -101,6 +108,18 @@ const ServiceListingDetailsAccordionItem = ({
     };
     fetchAndSetServiceListingFields();
   }, [serviceListing, isEditingDisabled]);
+
+  // This is a hacky way to check if the text exceeds 2 lines in the DOM
+  useEffect(() => {
+    if (textRef.current) {
+      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight);
+      const textHeight = textRef.current.clientHeight;
+      // Check if text exceeds 2 lines
+      if (textHeight > lineHeight * 2) {
+        setTextExceedsLineClamp(true);
+      }
+    }
+  }, [serviceListing?.description]);
 
   const setServiceListingFields = async () => {
     const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
@@ -142,6 +161,17 @@ const ServiceListingDetailsAccordionItem = ({
 
   const handleFileInputChange = (files: File[] | null) => {
     if (files && files.length > 0) {
+      // enforce that there can only be 6 files max including the ones already "uploaded"
+      if (files.length + form.values.files.length > 6) {
+        notifications.show({
+          title: `Image Maximum Reached`,
+          color: "orange",
+          icon: <IconX />,
+          message: "Maximum of 6 images allowed per review.",
+        });
+        files = files.slice(0, 6 - form.values.files.length);
+      }
+
       const newImageUrls = files.map((file) => URL.createObjectURL(file));
       imagePreview.push(...newImageUrls);
       const updatedFiles = [...form.values.files, ...files];
@@ -236,13 +266,19 @@ const ServiceListingDetailsAccordionItem = ({
     await handleUpdateServiceListing(payload);
   }
 
-  const generateItemGroup = (title: string, content: ReactNode) => {
+  const generateItemGroup = (
+    title: string,
+    content: ReactNode,
+    colProps: any = {},
+  ) => {
     return (
       <>
-        <Grid.Col span={7}>
+        <Grid.Col span={7} {...colProps}>
           <Text fw={500}>{title}</Text>
         </Grid.Col>
-        <Grid.Col span={17}>{content}</Grid.Col>
+        <Grid.Col span={17} {...colProps}>
+          {content}
+        </Grid.Col>
       </>
     );
   };
@@ -251,13 +287,13 @@ const ServiceListingDetailsAccordionItem = ({
     <Box>
       <Divider mb="lg" mt="lg" />
       <Text fw={600} size="md">
-        <IconListDetails size="1rem" color="blue" /> Service Overview
+        <IconListDetails size="1rem" color="blue" /> &nbsp;Service Overview
       </Text>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Title",
           isEditingDisabled ? (
-            <Text>{form.values.title}</Text>
+            <Text>{serviceListing?.title}</Text>
           ) : (
             <TextInput
               placeholder="Input Service Listing Title"
@@ -268,7 +304,25 @@ const ServiceListingDetailsAccordionItem = ({
         {generateItemGroup(
           "Description",
           isEditingDisabled ? (
-            <Text>{form.values.description}</Text>
+            <Box>
+              <Text lineClamp={showFullDescription ? 0 : 2} ref={textRef}>
+                {serviceListing?.description}
+              </Text>
+              <Group position="right">
+                <Button
+                  compact
+                  variant="subtle"
+                  color="blue"
+                  size="xs"
+                  onClick={() => toggleShowFullDescription()}
+                  mt="xs"
+                  mr="xs"
+                  display={textExceedsLineClamp ? "block" : "none"}
+                >
+                  {showFullDescription ? "View less" : "View more"}
+                </Button>
+              </Group>
+            </Box>
           ) : (
             <Textarea
               placeholder="Input Service Listing Description"
@@ -283,9 +337,9 @@ const ServiceListingDetailsAccordionItem = ({
           "Category",
           isEditingDisabled ? (
             <>
-              {form.values.category ? (
+              {serviceListing?.category ? (
                 <Badge ml={-2}>
-                  {formatStringToLetterCase(form.values.category)}
+                  {formatStringToLetterCase(serviceListing?.category)}
                 </Badge>
               ) : (
                 "-"
@@ -298,11 +352,12 @@ const ServiceListingDetailsAccordionItem = ({
               {...form.getInputProps("category")}
             />
           ),
+          { mt: isEditingDisabled ? -30 : undefined },
         )}
         {generateItemGroup(
           "Price",
           isEditingDisabled ? (
-            <Text>$ {formatNumber2Decimals(form.values.basePrice)}</Text>
+            <Text>$ {formatNumber2Decimals(serviceListing?.basePrice)}</Text>
           ) : (
             <NumberInput
               defaultValue={0.0}
@@ -330,14 +385,14 @@ const ServiceListingDetailsAccordionItem = ({
   const schedulingGrid = (
     <Box>
       <Text fw={600} size="md">
-        <IconCalendarTime size="1rem" color="blue" /> Scheduling
+        <IconCalendarTime size="1rem" color="blue" /> &nbsp;Scheduling
       </Text>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Default Expiry Days",
           isEditingDisabled ? (
-            <Text>{`${form.values.defaultExpiryDays} ${
-              form.values.defaultExpiryDays === 1 ? "day" : "days"
+            <Text>{`${serviceListing?.defaultExpiryDays} ${
+              serviceListing?.defaultExpiryDays === 1 ? "day" : "days"
             }`}</Text>
           ) : (
             <NumberInput
@@ -351,9 +406,9 @@ const ServiceListingDetailsAccordionItem = ({
           "Last Operational Date",
           isEditingDisabled ? (
             <Text>
-              {form.values.lastPossibleDate
-                ? formatISODateLong(form.values.lastPossibleDate)
-                : "No date selected"}
+              {serviceListing?.lastPossibleDate
+                ? formatISODateLong(serviceListing?.lastPossibleDate)
+                : "None selected"}
             </Text>
           ) : (
             <DateInput
@@ -368,7 +423,7 @@ const ServiceListingDetailsAccordionItem = ({
         {generateItemGroup(
           "Requires Booking",
           isEditingDisabled ? (
-            form.values.requiresBooking ? (
+            serviceListing?.requiresBooking ? (
               <Badge color="green" ml={-2}>
                 REQUIRED
               </Badge>
@@ -387,11 +442,11 @@ const ServiceListingDetailsAccordionItem = ({
         )}
         {generateItemGroup(
           "Duration",
-          !form.values.requiresBooking ? (
-            <Text>Requires booking is not checked</Text>
-          ) : isEditingDisabled ? (
+          isEditingDisabled ? (
             <Text>
-              {form.values.duration ? form.values.duration + " minutes" : "-"}
+              {serviceListing?.duration
+                ? `${serviceListing.duration} minutes`
+                : "-"}
             </Text>
           ) : (
             <Autocomplete
@@ -412,12 +467,11 @@ const ServiceListingDetailsAccordionItem = ({
               }
             />
           ),
+          { display: form.values.requiresBooking ? "block" : "none" },
         )}
         {generateItemGroup(
           "Calendar Group",
-          !form.values.requiresBooking ? (
-            <Text>Requires booking is not checked</Text>
-          ) : isEditingDisabled ? (
+          isEditingDisabled ? (
             <Text>
               {
                 calendarGroups.find(
@@ -447,6 +501,7 @@ const ServiceListingDetailsAccordionItem = ({
               {...form.getInputProps("calendarGroupId")}
             />
           ),
+          { display: form.values.requiresBooking ? "block" : "none" },
         )}
       </Grid>
       <Divider mt="lg" mb="lg" />
@@ -456,23 +511,33 @@ const ServiceListingDetailsAccordionItem = ({
   const othersGrid = (
     <Box>
       <Text fw={600} size="md">
-        <IconPhotoPlus size="1rem" color="blue" /> Other Details
+        <IconPhotoPlus size="1rem" color="blue" /> &nbsp;Other Details
       </Text>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Locations",
           isEditingDisabled ? (
-            <Text>
-              {form.values.addresses
-                ? form.values.addresses?.map((a) => a.addressName).join(", ")
-                : "No addresses selected"}
-            </Text>
+            serviceListing?.addresses && serviceListing.addresses.length > 0 ? (
+              serviceListing.addresses.map((address) => (
+                <Badge
+                  key={address.addressId}
+                  color="violet"
+                  radius="xs"
+                  mr={4}
+                  variant="dot"
+                >
+                  {address.addressName}
+                </Badge>
+              ))
+            ) : (
+              <Text>None selected</Text>
+            )
           ) : (
             <MultiSelect
               placeholder="Select address"
               data={
                 serviceListing?.petBusiness?.businessAddresses
-                  ? serviceListing?.petBusiness?.businessAddresses.map(
+                  ? serviceListing.petBusiness.businessAddresses.map(
                       (address) => ({
                         value: address.addressId.toString(),
                         label: address.addressName,
@@ -484,14 +549,19 @@ const ServiceListingDetailsAccordionItem = ({
             />
           ),
         )}
+
         {generateItemGroup(
           "Tags",
           isEditingDisabled ? (
-            <Text>
-              {form.values.tags
-                ? form.values.tags?.map((tag) => tag.name).join(", ")
-                : "No tags selected"}
-            </Text>
+            serviceListing?.tags && serviceListing.tags.length > 0 ? (
+              serviceListing.tags.map((tag) => (
+                <Badge key={tag.tagId} color="violet" radius="xs" mr={4}>
+                  {tag.name}
+                </Badge>
+              ))
+            ) : (
+              <Text>None selected</Text>
+            )
           ) : (
             <MultiSelect
               placeholder="Select your Tags"
@@ -510,7 +580,11 @@ const ServiceListingDetailsAccordionItem = ({
         {generateItemGroup(
           "Display Images",
           isEditingDisabled ? (
-            <Text>Replace this with carousel later</Text>
+            <ImageCarousel
+              attachmentURLs={imagePreview}
+              altText="Service listing image"
+              imageHeight={400}
+            />
           ) : (
             <>
               <FileInput
@@ -534,7 +608,7 @@ const ServiceListingDetailsAccordionItem = ({
                       key={index}
                       style={{ flex: "0 0 calc(33.33% - 10px)" }}
                     >
-                      <Card style={{ maxWidth: "100%" }}>
+                      <Card style={{ maxWidth: "100%" }} mt="xs">
                         {!isEditingDisabled && (
                           <Group position="right">
                             <CloseButton
@@ -565,8 +639,9 @@ const ServiceListingDetailsAccordionItem = ({
     <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Group position="apart" mt={5}>
-          <Text fw={600} size="xl">
-            Service Listing Details | ID. {form.values.serviceListingId}
+          <Text size="xl">
+            <b>Service Listing Details</b> | ID.{" "}
+            {serviceListing?.serviceListingId}
           </Text>
           {isEditingDisabled ? (
             <Group>

@@ -149,7 +149,7 @@ export default function ViewServiceListing({
           ) : (
             <>
               <Group position="apart">
-                <PageTitle title={form.values.title} />
+                <PageTitle title={serviceListing?.title} />
                 <Box>
                   <LargeBackButton
                     text="Back to Service Listings"
@@ -158,7 +158,6 @@ export default function ViewServiceListing({
                       router.push("/business/listings");
                     }}
                     size="sm"
-                    mb="md"
                   />
                 </Box>
               </Group>
