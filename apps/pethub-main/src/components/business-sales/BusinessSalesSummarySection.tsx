@@ -4,13 +4,13 @@ import { formatNumber2Decimals, formatISODateLong } from "shared-utils";
 import MiniSummaryCard from "web-ui/shared/dashboard/MiniSummaryCard";
 import { SalesDashboardSummary } from "@/types/types";
 
-interface BusinesssSalesSummarySectionProps {
+interface BusinessSalesSummarySectionProps {
   summary: SalesDashboardSummary;
 }
 
-const BusinesssSalesSummarySection = ({
+const BusinessSalesSummarySection = ({
   summary,
-}: BusinesssSalesSummarySectionProps) => {
+}: BusinessSalesSummarySectionProps) => {
   const summaryMap = new Map<string, any>([
     ["Total Number of Orders", summary.totalNumOrders],
     ["Total Sales", `$${formatNumber2Decimals(summary.totalSales)}`],
@@ -39,4 +39,4 @@ const BusinesssSalesSummarySection = ({
   return <Grid>{renderSummarySection()}</Grid>;
 };
 
-export default BusinesssSalesSummarySection;
+export default BusinessSalesSummarySection;
