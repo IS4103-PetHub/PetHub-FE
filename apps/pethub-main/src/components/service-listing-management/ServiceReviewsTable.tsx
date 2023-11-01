@@ -32,6 +32,8 @@ interface ServiceReviewsTableProps {
   refetch(): Promise<any>;
   page: number;
   onPageChange(p: number): void;
+  sortStatus: DataTableSortStatus;
+  onSortStatusChange(status: DataTableSortStatus): void;
 }
 
 const ServiceReviewsTable = ({
@@ -39,6 +41,8 @@ const ServiceReviewsTable = ({
   refetch,
   page,
   onPageChange,
+  sortStatus,
+  onSortStatusChange,
 }: ServiceReviewsTableProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -48,6 +52,7 @@ const ServiceReviewsTable = ({
     { open: openReviewModal, close: closeReviewModal },
   ] = useDisclosure(false);
   const [selectedReview, setSelectedReview] = useState(null);
+  const [sortedRecords, setSortedRecords] = useState(records);
 
   const viewReviewDetails = (review: Review) => {
     setSelectedReview(review);
@@ -69,10 +74,35 @@ const ServiceReviewsTable = ({
     }
   };
 
+  useEffect(() => {
+    // Set smooth scroll when component mounts
+    const prevScrollBehavior = document.documentElement.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = "smooth";
+
+    // Reset to previous scroll behavior when component unmounts
+    return () => {
+      document.documentElement.style.scrollBehavior = prevScrollBehavior;
+    };
+  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+
   return (
     <>
       <DataTable
         minHeight={getMinTableHeight(records)}
+        records={records}
+        sortStatus={sortStatus}
+        onSortStatusChange={onSortStatusChange}
+        withBorder
+        withColumnBorders
+        striped
+        verticalSpacing="xs"
+        highlightOnHover
+        onRowClick={(record) => viewReviewDetails(record)}
+        idAccessor="reviewId"
+        totalRecords={records.length}
+        recordsPerPage={TABLE_PAGE_SIZE}
+        page={page}
+        onPageChange={(p) => onPageChange(p)}
         columns={[
           {
             accessor: "reviewId",
@@ -141,18 +171,6 @@ const ServiceReviewsTable = ({
             ),
           },
         ]}
-        records={records}
-        withBorder
-        withColumnBorders
-        striped
-        verticalSpacing="sm"
-        highlightOnHover
-        onRowClick={(record) => viewReviewDetails(record)}
-        idAccessor="reviewId"
-        totalRecords={records.length}
-        recordsPerPage={TABLE_PAGE_SIZE}
-        page={page}
-        onPageChange={(p) => onPageChange(p)}
       />
       <ViewReviewModal
         onClose={closeReviewModal}

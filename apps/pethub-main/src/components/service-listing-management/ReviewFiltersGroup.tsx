@@ -9,11 +9,20 @@ import {
   Image,
   Center,
   Stack,
+  SegmentedControl,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconMessageCircle, IconPhoto } from "@tabler/icons-react";
+import {
+  IconList,
+  IconMessage,
+  IconMessage2Off,
+  IconMessageCircle,
+  IconPhoto,
+  IconThumbUp,
+} from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
+import { IconClockHour8 } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { Review, ServiceListing } from "shared-utils";
@@ -28,11 +37,8 @@ const ReviewFiltersGroup = ({
   reviews,
   setFilteredReviews,
 }: ReviewFiltersGroupProps) => {
-  const theme = useMantineTheme();
-  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("All");
   const [activeStarFilter, setActiveStarFilter] = useState(null); // null means ALL
-  const [withMedia, setWithMedia] = useState(false);
-  const [withReply, setWithReply] = useState(false);
 
   const starCounts = computeStarCounts();
 
@@ -67,50 +73,66 @@ const ReviewFiltersGroup = ({
     </Center>
   );
 
-  const otherFiltersDisplay = (
-    <Center>
-      <Button
-        {...FILTER_BUTTON_PROPS}
-        variant={withMedia ? "filled" : "outline"}
-        onClick={() => setWithMedia((prev) => !prev)}
-        leftIcon={<IconPhoto size="1rem" style={{ marginRight: -5 }} />}
-      >
-        Only with media
-      </Button>
-
-      <Button
-        {...FILTER_BUTTON_PROPS}
-        variant={withReply ? "filled" : "outline"}
-        onClick={() => setWithReply((prev) => !prev)}
-        leftIcon={<IconMessageCircle size="1rem" style={{ marginRight: -5 }} />}
-      >
-        Only with replies
-      </Button>
-    </Center>
+  const tabsDisplay = (
+    <SegmentedControl
+      value={activeTab}
+      size="xs"
+      radius="xs"
+      onChange={setActiveTab}
+      data={[
+        {
+          label: (
+            <Center w={100}>
+              <IconList size="1rem" />
+              <Box ml={10}>All</Box>
+            </Center>
+          ),
+          value: "All",
+        },
+        {
+          label: (
+            <Center w={100}>
+              <IconMessage size="1rem" />
+              <Box ml={10}>To Reply</Box>
+            </Center>
+          ),
+          value: "To Reply",
+        },
+        {
+          label: (
+            <Center w={100}>
+              <IconMessage2Off size="1rem" />
+              <Box ml={10}>Replied</Box>
+            </Center>
+          ),
+          value: "Replied",
+        },
+      ]}
+    />
   );
 
   useEffect(() => {
     let filteredReviews = reviews;
-    // First filter by stars if not ALL
+
     if (activeStarFilter !== null) {
       filteredReviews = filteredReviews.filter(
         (review) => review.rating === activeStarFilter,
       );
-    } else {
-      setFilteredReviews(reviews); // For the ALL filter
     }
-    // Then filter by those with media only if selected
-    if (withMedia) {
-      filteredReviews = filteredReviews.filter(
-        (review) => review.attachmentURLs?.length > 0,
-      );
+
+    switch (activeTab) {
+      case "To Reply":
+        filteredReviews = filteredReviews.filter((review) => !review.reply);
+        break;
+      case "Replied":
+        filteredReviews = filteredReviews.filter((review) => !!review.reply);
+        break;
+      default:
+        break; // For "All", no additional filtering
     }
-    // Then filter by those with replies only if selected
-    if (withReply) {
-      filteredReviews = filteredReviews.filter((review) => !!review.reply);
-    }
+
     setFilteredReviews(filteredReviews);
-  }, [activeStarFilter, withMedia, withReply]);
+  }, [activeStarFilter, activeTab]);
 
   function handleStarFilter(star: number | null) {
     if (!star) {
@@ -132,8 +154,8 @@ const ReviewFiltersGroup = ({
 
   return (
     <Group position="apart" mb="md">
+      {tabsDisplay}
       {starFiltersDisplay}
-      {otherFiltersDisplay}
     </Group>
   );
 };

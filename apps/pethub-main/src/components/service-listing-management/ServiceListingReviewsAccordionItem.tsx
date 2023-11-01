@@ -36,7 +36,8 @@ import {
 } from "@tabler/icons-react";
 import { IconCalendarTime } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { set } from "lodash";
+import { filter, set, sortBy } from "lodash";
+import { DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
@@ -52,6 +53,7 @@ import {
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
+  sortInvalidServiceListings,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
@@ -83,6 +85,23 @@ const ServiceListingReviewsAccordionItem = ({
   const [filteredReviews, setFilteredReviews] = useState(
     serviceListing?.reviews,
   );
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+    columnAccessor: "reviewId",
+    direction: "asc",
+  });
+
+  const REVIEW_TABLE_SIZE = 6;
+
+  useEffect(() => {
+    const from = (page - 1) * REVIEW_TABLE_SIZE;
+    const to = from + REVIEW_TABLE_SIZE;
+    const sortedReviews = sortBy(filteredReviews, sortStatus.columnAccessor);
+    if (sortStatus.direction === "desc") {
+      sortedReviews.reverse();
+    }
+    const newRecords = sortedReviews.slice(from, to);
+    setFilteredReviews(newRecords);
+  }, [page, sortStatus, serviceListing]);
 
   return (
     <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10} mt={20}>
@@ -102,6 +121,8 @@ const ServiceListingReviewsAccordionItem = ({
         page={page}
         onPageChange={setPage}
         refetch={refetchServiceListing}
+        sortStatus={sortStatus}
+        onSortStatusChange={setSortStatus}
       />
     </Accordion.Item>
   );
