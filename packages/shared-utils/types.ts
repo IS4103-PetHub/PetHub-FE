@@ -254,6 +254,7 @@ export interface Review {
   serviceListing: ServiceListing;
   likedByCount?: number;
   replyDate?: string;
+  reportedBy: ReportReview[];
 }
 
 export interface ReportReview {
