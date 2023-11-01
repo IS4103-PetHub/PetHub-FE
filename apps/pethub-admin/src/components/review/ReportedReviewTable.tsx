@@ -1,5 +1,5 @@
-import { ActionIcon, Group, useMantineTheme } from "@mantine/core";
-import { IconFileDownload } from "@tabler/icons-react";
+import { ActionIcon, Group, Rating, useMantineTheme } from "@mantine/core";
+import { IconFileDownload, IconPaw } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { Review, TABLE_PAGE_SIZE, getMinTableHeight } from "shared-utils";
@@ -54,7 +54,7 @@ const ReportedReviewTable = ({
           title: "ID",
           textAlignment: "left",
           sortable: true,
-          width: "4vw",
+          width: "50px",
         },
         {
           accessor: "orderItem.invoice.petOwner.firstName", // Access the first name
@@ -62,25 +62,25 @@ const ReportedReviewTable = ({
           textAlignment: "left",
           sortable: true,
           ellipsis: true,
-          width: "7vw",
+          width: "100px",
           render: (review) => {
             return `${review.orderItem.invoice.PetOwner.firstName} ${review.orderItem.invoice.PetOwner.lastName}`;
           },
         },
         {
           accessor: "title",
-          title: "Title",
+          title: "Review Title",
           textAlignment: "left",
           sortable: true,
           ellipsis: true,
-          width: "10vw",
+          width: "180px",
         },
         {
           accessor: "dateCreated",
           title: "Date Created",
           textAlignment: "left",
           sortable: true,
-          width: "10vw",
+          width: "130px",
           render: (review) => {
             return `${dayjs(review.dateCreated).format("DD-MM-YYYY")}`;
           },
@@ -91,26 +91,50 @@ const ReportedReviewTable = ({
           textAlignment: "left",
           sortable: true,
           ellipsis: true,
-          width: "18vw",
+          width: "300px",
         },
         {
           accessor: "rating",
           title: "Rating",
           textAlignment: "left",
-          width: "6vw",
+          width: "150px",
+          render: (value) => {
+            return (
+              <Rating
+                mt={-2}
+                value={Number(value.rating)}
+                readOnly={true}
+                emptySymbol={
+                  <IconPaw
+                    size="1.5rem"
+                    color={theme.colors.yellow[7]}
+                    strokeWidth={1.5}
+                  />
+                }
+                fullSymbol={
+                  <IconPaw
+                    size="1.5rem"
+                    color={theme.colors.yellow[7]}
+                    fill={theme.colors.yellow[4]}
+                    strokeWidth={1.5}
+                  />
+                }
+              />
+            );
+          },
         },
         {
           accessor: "reportedBy.length",
           title: "No. of reports",
           textAlignment: "left",
           sortable: true,
-          width: "10vw",
+          width: "120px",
         },
         {
           accessor: "actions",
           title: "Actions",
           textAlignment: "right",
-          width: "5vw",
+          width: "60px",
           render: (review) => (
             <Group position="right">
               <ViewReportedReviewModal

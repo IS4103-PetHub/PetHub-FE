@@ -33,9 +33,10 @@ import StarRating from "./StarRating";
 interface ReviewItemProps {
   review: Review;
   refetch(): void;
+  canWrite: boolean;
 }
 
-const ReviewItem = ({ review, refetch }: ReviewItemProps) => {
+const ReviewItem = ({ review, refetch, canWrite }: ReviewItemProps) => {
   const queryClient = useQueryClient();
   const [showFullReview, toggleShowFullReview] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
@@ -219,26 +220,27 @@ const ReviewItem = ({ review, refetch }: ReviewItemProps) => {
             </Text>
           </Box>
         </Grid.Col>
-
-        <Grid.Col
-          span={2}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "flex-end",
-          }}
-        >
-          <Center mr="md">
-            <DeleteActionButtonModal
-              title={`Are you sure you want to delete this review?`}
-              subtitle={
-                "Are you sure you want to delete this review? Please note that once deleted, the review will be permanently removed and cannot be recovered."
-              }
-              onDelete={() => handleDeleteReview(review.reviewId)}
-            />
-          </Center>
-        </Grid.Col>
+        {canWrite && (
+          <Grid.Col
+            span={2}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "flex-end",
+            }}
+          >
+            <Center mr="md">
+              <DeleteActionButtonModal
+                title={`Are you sure you want to delete this review?`}
+                subtitle={
+                  "Are you sure you want to delete this review? Please note that once deleted, the review will be permanently removed and cannot be recovered."
+                }
+                onDelete={() => handleDeleteReview(review.reviewId)}
+              />
+            </Center>
+          </Grid.Col>
+        )}
 
         {reviewContentCol}
 

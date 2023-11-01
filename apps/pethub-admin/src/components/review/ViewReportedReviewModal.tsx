@@ -201,14 +201,14 @@ const ViewReportedReviewModal = ({
                       readOnly
                       emptySymbol={
                         <IconPaw
-                          size="2rem"
+                          size="1.5rem"
                           color={theme.colors.yellow[7]}
                           strokeWidth={1.5}
                         />
                       }
                       fullSymbol={
                         <IconPaw
-                          size="2rem"
+                          size="1.5rem"
                           color={theme.colors.yellow[7]}
                           fill={theme.colors.yellow[4]}
                           strokeWidth={1.5}
@@ -232,7 +232,7 @@ const ViewReportedReviewModal = ({
                               key={index}
                               style={{ flex: "0 0 calc(33.33% - 10px)" }}
                             >
-                              <Card style={{ width: "100%" }}>
+                              <Card style={{ width: "60%" }}>
                                 <Image
                                   src={imageUrl}
                                   alt={`Image Preview ${index}`}
@@ -253,15 +253,27 @@ const ViewReportedReviewModal = ({
                       )}
                     </Stack>
                   </Grid.Col>
-                  <Grid.Col span={12}>
-                    <Group position="right">
-                      <Button onClick={() => onDelete()} color="red">
-                        Remove
-                      </Button>
-                      <Button onClick={() => onResolve()} color="teal">
-                        Resolve
-                      </Button>
-                    </Group>
+                  <Grid.Col span={6}>
+                    <Button
+                      fullWidth
+                      variant="light"
+                      size="lg"
+                      color="red"
+                      onClick={() => onDelete()}
+                    >
+                      Remove this review
+                    </Button>
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                    <Button
+                      fullWidth
+                      variant="light"
+                      size="lg"
+                      color="green"
+                      onClick={() => onResolve()}
+                    >
+                      Resolve and retain review
+                    </Button>
                   </Grid.Col>
                 </Grid>
               </Accordion.Panel>

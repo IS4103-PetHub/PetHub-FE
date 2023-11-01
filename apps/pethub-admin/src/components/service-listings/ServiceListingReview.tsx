@@ -61,7 +61,7 @@ const ServiceListingReview = ({
 
   return (
     <>
-      <Group position="apart">
+      <Group position="apart" mb={20}>
         <Text size="xl" weight={600}>
           {serviceListing?.reviews.length === 0
             ? "Reviews (no reviews yet)"
@@ -98,37 +98,43 @@ const ServiceListingReview = ({
                 },
               ]}
             />
-            <ReviewOverviewCard
-              serviceListing={serviceListing}
-              setFilteredReviews={setFilteredReviews}
-            />
-            {filteredReviews.length === 0 && (
-              <SadDimmedMessage
-                title="No Reviews Available"
-                subtitle="Please choose another filter"
-                replaceClass="center-vertically-but-shorter"
-              />
-            )}
-            {reviewsToDisplay.map((review) => (
-              <ReviewItem
-                key={review.reviewId}
-                review={review}
-                refetch={refetch}
-              />
-            ))}
-            <Group position="right">
-              {filteredReviews.length > currentPage * itemsPerPage && (
-                <SimpleOutlineButton
-                  compact
-                  mt="xs"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  text={`View next ${itemsPerPage} reviews`}
-                />
-              )}
-            </Group>
           </>
         )}
       </Group>
+      {serviceListing?.reviews && serviceListing?.reviews.length !== 0 && (
+        <>
+          <ReviewOverviewCard
+            serviceListing={serviceListing}
+            setFilteredReviews={setFilteredReviews}
+          />
+          {filteredReviews.length === 0 && (
+            <SadDimmedMessage
+              title="No Reviews Available"
+              subtitle="Please choose another filter"
+              replaceClass="center-vertically-but-shorter"
+              removeWidth={true}
+            />
+          )}
+          {reviewsToDisplay.map((review) => (
+            <ReviewItem
+              key={review.reviewId}
+              review={review}
+              refetch={refetch}
+              canWrite={canWrite}
+            />
+          ))}
+          <Group position="right">
+            {filteredReviews.length > currentPage * itemsPerPage && (
+              <SimpleOutlineButton
+                compact
+                mt="xs"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                text={`View next ${itemsPerPage} reviews`}
+              />
+            )}
+          </Group>
+        </>
+      )}
     </>
   );
 };

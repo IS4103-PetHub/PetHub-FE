@@ -54,6 +54,9 @@ export default function ServiceListingDetails({
   const canWrite = permissionCodes.includes(
     PermissionsCodeEnum.WriteServiceListings,
   );
+  const canWriteReportReview = permissionCodes.includes(
+    PermissionsCodeEnum.WriteReportedReview,
+  );
   const canRead = permissionCodes.includes(
     PermissionsCodeEnum.ReadServiceListings,
   );
@@ -350,7 +353,7 @@ export default function ServiceListingDetails({
           </Stack>
           <Divider my="lg" />
           <ServiceListingReview
-            canWrite={canWrite}
+            canWrite={canWriteReportReview}
             serviceListing={serviceListing}
             refetch={refetch}
           />

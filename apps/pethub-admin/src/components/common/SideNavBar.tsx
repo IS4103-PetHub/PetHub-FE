@@ -117,7 +117,7 @@ const data = [
     icon: IconFileInvoice,
   },
   {
-    link: "/admin/review",
+    link: "/admin/reported-reviews",
     label: "Reported Reviews",
     icon: IconMessageReport,
   },
