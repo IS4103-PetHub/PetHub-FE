@@ -35,11 +35,11 @@ import {
 } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
+import ImageCarousel from "web-ui/shared/ImageCarousel";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
-import ImageCarousel from "@/components/common/file/ImageCarousel";
 import FavouriteButton from "@/components/favourites/FavouriteButton";
 import StarRating from "@/components/review/StarRating";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";

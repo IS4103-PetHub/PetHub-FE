@@ -189,3 +189,40 @@ export const downloadFile = async (url: string, fileName: string) => {
 export const extractFileName = (attachmentKeys: string) => {
   return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
 };
+
+export function validateReviewTitle(title: string) {
+  if (!title) {
+    return "Title is required.";
+  }
+  if (title.length > 64) {
+    return "Title cannot exceed 64 characters";
+  }
+  return null;
+}
+
+export function validateReviewComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 2000) {
+    return "Title cannot exceed 2000 characters";
+  }
+  return null;
+}
+
+export function validateReviewRating(rating: number) {
+  if (!rating) {
+    return "Rating is required.";
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return "Rating must be between 1 and 5 stars inclusive.";
+  }
+  return null;
+}
+
+export function validateReviewFiles(files: string[]) {
+  if (files.length > 3) {
+    return "Maximum of 3 images allowed";
+  }
+  return null;
+}

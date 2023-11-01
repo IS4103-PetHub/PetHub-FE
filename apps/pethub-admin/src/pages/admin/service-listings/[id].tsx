@@ -31,6 +31,7 @@ import {
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
+import ServiceListingReview from "@/components/service-listings/ServiceListingReview";
 import {
   useDeleteServiceListingById,
   useGetServiceListingById,
@@ -174,7 +175,6 @@ export default function ServiceListingDetails({
             <Grid.Col span={9}>
               <Text>{serviceListing?.title}</Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Description:</Text>
             </Grid.Col>
@@ -206,7 +206,6 @@ export default function ServiceListingDetails({
                 </Group>
               </Box>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Category:</Text>
             </Grid.Col>
@@ -217,7 +216,6 @@ export default function ServiceListingDetails({
                   : ""}
               </Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Price:</Text>
             </Grid.Col>
@@ -235,7 +233,6 @@ export default function ServiceListingDetails({
                   .join(", ")}
               </Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Tags:</Text>
             </Grid.Col>
@@ -262,7 +259,6 @@ export default function ServiceListingDetails({
                 {new Date(serviceListing?.dateCreated).toLocaleDateString()}
               </Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Last Updated:</Text>
             </Grid.Col>
@@ -273,7 +269,6 @@ export default function ServiceListingDetails({
                   : "-"}
               </Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Requires Bookings:</Text>
             </Grid.Col>
@@ -284,7 +279,6 @@ export default function ServiceListingDetails({
                 <Badge color="red">No</Badge>
               )}
             </Grid.Col>
-
             {serviceListing?.requiresBooking && (
               <>
                 <Grid.Col span={3}>
@@ -295,7 +289,6 @@ export default function ServiceListingDetails({
                 </Grid.Col>
               </>
             )}
-
             <Grid.Col span={3}>
               <Text fw={700}>Default Expiry Days:</Text>
             </Grid.Col>
@@ -306,7 +299,6 @@ export default function ServiceListingDetails({
                   : "-"}
               </Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Last Possible Date:</Text>
             </Grid.Col>
@@ -319,7 +311,6 @@ export default function ServiceListingDetails({
                   : "-"}
               </Text>
             </Grid.Col>
-
             <Grid.Col span={3}>
               <Text fw={700}>Pet Business Company Name:</Text>
             </Grid.Col>
@@ -331,9 +322,7 @@ export default function ServiceListingDetails({
               </Text>
             </Grid.Col>
           </Grid>
-
           <Divider my="lg" />
-
           <Stack spacing="md">
             {imagePreview && imagePreview.length > 0 ? (
               <Carousel slideSize="33.333333%" loop slidesToScroll={3}>
@@ -359,11 +348,12 @@ export default function ServiceListingDetails({
               </Text>
             )}
           </Stack>
-
           <Divider my="lg" />
-
-          {/* reviews */}
-          {/* TODO: add in reviews */}
+          <ServiceListingReview
+            canWrite={canWrite}
+            serviceListing={serviceListing}
+            refetch={refetch}
+          />
         </Paper>
       </Container>
     </>
