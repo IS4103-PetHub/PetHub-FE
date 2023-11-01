@@ -35,6 +35,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { IconCalendarTime } from "@tabler/icons-react";
+import { IconChartBar } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { filter, set, sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
@@ -70,7 +71,9 @@ import {
   UpdateServiceListingPayload,
 } from "@/types/types";
 import ImageCarousel from "../common/file/ImageCarousel";
+import StarRating from "../review/StarRating";
 import ReviewFiltersGroup from "./ReviewFiltersGroup";
+import ReviewStatisticsGroup from "./ReviewStatisticsGroup";
 import ServiceReviewsTable from "./ServiceReviewsTable";
 
 interface ServiceListingReviewsAccordionItemProps {
@@ -86,6 +89,7 @@ const ServiceListingReviewsAccordionItem = ({
   const [filteredReviews, setFilteredReviews] = useState(
     serviceListing?.reviews,
   );
+  const [statisticsVisible, toggleStatisticsVisibility] = useToggle();
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: "reviewId",
     direction: "asc",
@@ -105,15 +109,42 @@ const ServiceListingReviewsAccordionItem = ({
   const to = from + REVIEW_TABLE_SIZE;
   const currentReviews = sortedReviews.slice(from, to);
 
+  const overallRatingDisplay = (
+    <Center>
+      <Stack>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          mb={-10}
+        >
+          <Text mr={5} fw={600} size="xl">
+            {serviceListing?.overallRating?.toFixed(1)}{" "}
+          </Text>
+          <Text mr="sm">out of 5</Text>
+          <StarRating
+            value={serviceListing?.overallRating}
+            iconSize="1.85rem"
+            allowFractions
+            viewOnly
+          />
+        </Box>
+      </Stack>
+    </Center>
+  );
+
   return (
     <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10} mt={20}>
       <Group position="apart" mt={5}>
         <Text size="xl">
           <b>Reviews ({serviceListing?.reviews?.length})</b>
         </Text>
-        <Button>Toggle statistics</Button>
+        {serviceListing?.reviews?.length !== 0 && overallRatingDisplay}
       </Group>
       <Divider mt="lg" mb="lg" />
+
       {serviceListing?.reviews?.length !== 0 ? (
         <>
           <ReviewFiltersGroup

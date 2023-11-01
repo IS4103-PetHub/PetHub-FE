@@ -26,6 +26,7 @@ import api from "@/api/axiosConfig";
 import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import ServiceListingDetailsAccordionItem from "@/components/service-listing-management/ServiceListingDetailsAccordionItem";
 import ServiceListingReviewsAccordionItem from "@/components/service-listing-management/ServiceListingReviewsAccordionItem";
+import ServiceListingStatsAccordionItem from "@/components/service-listing-management/ServiceListingStatsAccordionItem";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import {
   useGetServiceListingById,
@@ -170,6 +171,10 @@ export default function ViewServiceListing({
                 <ServiceListingReviewsAccordionItem
                   serviceListing={serviceListing}
                   refetchServiceListing={refetchServiceListing}
+                />
+
+                <ServiceListingStatsAccordionItem
+                  serviceListing={serviceListing}
                 />
               </Accordion>
             </>
