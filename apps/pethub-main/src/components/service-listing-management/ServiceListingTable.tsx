@@ -132,18 +132,25 @@ const ServiceListTable = ({
             textAlignment: "right",
             render: (service) => (
               <Group position="right">
-                <ViewActionButton
-                  onClick={() =>
-                    router.push(
-                      `/business/listings/${service.serviceListingId}`,
-                    )
-                  }
-                />
-                <DeleteActionButtonModal
-                  title={`Are you sure you want to delete ${service.title}?`}
-                  subtitle="The customer would no longer be able to view this service listing."
-                  onDelete={() => handleDeleteService(service.serviceListingId)}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  {" "}
+                  <ViewActionButton
+                    onClick={() => {
+                      router.push(
+                        `/business/listings/${service.serviceListingId}`,
+                      );
+                    }}
+                  />
+                </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <DeleteActionButtonModal
+                    title={`Are you sure you want to delete ${service.title}?`}
+                    subtitle="The customer would no longer be able to view this service listing."
+                    onDelete={() =>
+                      handleDeleteService(service.serviceListingId)
+                    }
+                  />
+                </div>
               </Group>
             ),
           },
@@ -153,6 +160,10 @@ const ServiceListTable = ({
         withColumnBorders
         striped
         verticalSpacing="sm"
+        highlightOnHover
+        onRowClick={(record) =>
+          router.push(`/business/listings/${record.serviceListingId}`)
+        }
         idAccessor="serviceListingId"
         //sorting
         sortStatus={sortStatus}
@@ -167,12 +178,15 @@ const ServiceListTable = ({
           calendarGroupId,
           duration,
           lastPossibleDate,
-        }) =>
-          (requiresBooking ? calendarGroupId && duration : true) &&
-          (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true)
-            ? undefined
-            : { color: "red" }
-        }
+        }) => {
+          const isValid =
+            (requiresBooking ? calendarGroupId && duration : true) &&
+            (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true);
+
+          return isValid
+            ? { cursor: "pointer" }
+            : { color: "red", cursor: "pointer" };
+        }}
       />
     </>
   );

@@ -37,6 +37,7 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import ServiceListingDetailsAccordionItem from "@/components/service-listing-management/ServiceListingDetailsAccordionItem";
+import ServiceListingReviewsAccordionItem from "@/components/service-listing-management/ServiceListingReviewsAccordionItem";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import {
   useDeleteServiceListingById,
@@ -45,6 +46,7 @@ import {
   useGetServiceListingByPetBusinessIdAndAccountStatus,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
+import { useGetAllTags } from "@/hooks/tags";
 import { PetBusiness, UpdateServiceListingPayload } from "@/types/types";
 import { validateCGName, validateCGSettings } from "@/util";
 
@@ -66,15 +68,19 @@ export default function ViewServiceListing({
 
   const OPEN_FOREVER = ["details", "review"];
 
+  // Used to refetch service listings upon backward navigation
   const { data: serviceListings = [], refetch: refetchServiceListings } =
     useGetServiceListingByPetBusinessId(userId);
 
+  // Fetch service listing
   const { data: serviceListing, refetch: refetchServiceListing } =
     useGetServiceListingById(serviceListingId);
 
+  // Fetch all calendar groups for this business
   const { data: calendarGroups = [] } = useGetCalendarGroupByPBId(userId);
 
-  console.log("serviceLising", serviceListing);
+  // Fetch all available tags
+  const { data: tags } = useGetAllTags();
 
   const initialValues = {
     serviceListingId: null,
@@ -93,7 +99,7 @@ export default function ViewServiceListing({
     lastPossibleDate: null,
   };
 
-  const form = useForm({
+  const serviceListingForm = useForm({
     initialValues: initialValues,
     validate: {
       title: (value) => {
@@ -170,11 +176,18 @@ export default function ViewServiceListing({
                 mt="md"
               >
                 <ServiceListingDetailsAccordionItem
-                  form={form}
+                  form={serviceListingForm}
                   serviceListing={serviceListing}
                   refetchServiceListing={refetchServiceListing}
                   refetchServiceListings={refetchServiceListings}
                   calendarGroups={calendarGroups}
+                  tags={tags}
+                />
+
+                <ServiceListingReviewsAccordionItem
+                  serviceListing={serviceListing}
+                  refetchServiceListing={refetchServiceListing}
+                  refetchServiceListings={refetchServiceListings}
                 />
               </Accordion>
             </>

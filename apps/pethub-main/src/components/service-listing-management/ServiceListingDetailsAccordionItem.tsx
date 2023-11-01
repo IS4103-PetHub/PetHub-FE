@@ -73,6 +73,7 @@ interface ServiceListingDetailsAccordionItemProps {
   refetchServiceListings: () => Promise<any>;
   refetchServiceListing: () => Promise<any>;
   calendarGroups: CalendarGroup[];
+  tags: Tag[];
 }
 
 const ServiceListingDetailsAccordionItem = ({
@@ -81,6 +82,7 @@ const ServiceListingDetailsAccordionItem = ({
   refetchServiceListing,
   refetchServiceListings,
   calendarGroups,
+  tags,
 }: ServiceListingDetailsAccordionItemProps) => {
   const [imagePreview, setImagePreview] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
@@ -352,7 +354,7 @@ const ServiceListingDetailsAccordionItem = ({
               {...form.getInputProps("category")}
             />
           ),
-          { mt: isEditingDisabled ? -30 : undefined },
+          { mt: isEditingDisabled && textExceedsLineClamp ? -30 : undefined },
         )}
         {generateItemGroup(
           "Price",
@@ -566,8 +568,8 @@ const ServiceListingDetailsAccordionItem = ({
             <MultiSelect
               placeholder="Select your Tags"
               data={
-                serviceListing?.tags
-                  ? serviceListing?.tags.map((tag) => ({
+                tags
+                  ? tags.map((tag) => ({
                       value: tag.tagId.toString(),
                       label: tag.name,
                     }))
