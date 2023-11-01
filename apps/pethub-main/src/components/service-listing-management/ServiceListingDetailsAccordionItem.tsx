@@ -511,7 +511,7 @@ const ServiceListingDetailsAccordionItem = ({
   );
 
   const othersGrid = (
-    <Box>
+    <Box mb="md">
       <Text fw={600} size="md">
         <IconPhotoPlus size="1rem" color="blue" /> &nbsp;Other Details
       </Text>
@@ -582,11 +582,15 @@ const ServiceListingDetailsAccordionItem = ({
         {generateItemGroup(
           "Display Images",
           isEditingDisabled ? (
-            <ImageCarousel
-              attachmentURLs={imagePreview}
-              altText="Service listing image"
-              imageHeight={400}
-            />
+            imagePreview.length == 0 ? (
+              <Text>No images uploaded</Text>
+            ) : (
+              <ImageCarousel
+                attachmentURLs={imagePreview}
+                altText="Service listing image"
+                imageHeight={400}
+              />
+            )
           ) : (
             <>
               <FileInput
@@ -633,7 +637,6 @@ const ServiceListingDetailsAccordionItem = ({
           ),
         )}
       </Grid>
-      <Divider mt="lg" mb="md" />
     </Box>
   );
 

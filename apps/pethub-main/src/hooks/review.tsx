@@ -3,6 +3,7 @@ import { Review } from "shared-utils";
 import api from "@/api/axiosConfig";
 import {
   CreateReviewPayload,
+  ReplyReviewPayload,
   ReportReviewPayload,
   UpdateReviewPayload,
 } from "@/types/types";
@@ -78,6 +79,17 @@ export const useReportReview = () => {
         await api.post(
           `${REVIEW_API}/report-review/${reviewId}?reportReason=${reportReason}`,
         )
+      ).data;
+    },
+  });
+};
+
+export const useReplyReview = () => {
+  return useMutation({
+    mutationFn: async (payload: ReplyReviewPayload) => {
+      const { reviewId, reply } = payload;
+      return (
+        await api.patch(`${REVIEW_API}/reply-review/${reviewId}`, { reply })
       ).data;
     },
   });

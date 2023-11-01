@@ -187,7 +187,6 @@ export default function ViewServiceListing({
                 <ServiceListingReviewsAccordionItem
                   serviceListing={serviceListing}
                   refetchServiceListing={refetchServiceListing}
-                  refetchServiceListings={refetchServiceListings}
                 />
               </Accordion>
             </>

@@ -267,6 +267,12 @@ export interface ReportReviewPayload {
   reviewId: number;
   reportReason: ReviewReportReasonEnum;
 }
+
+export interface ReplyReviewPayload {
+  reviewId: number;
+  reply: string;
+}
+
 export interface PetLostAndFound {
   petLostAndFoundId: number;
   title: string;
