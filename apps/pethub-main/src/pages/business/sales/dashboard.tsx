@@ -18,7 +18,7 @@ import { useState } from "react";
 import { formatNumber2Decimals, formatStringToLetterCase } from "shared-utils";
 import { PageTitle } from "web-ui";
 import api from "@/api/axiosConfig";
-import BusinesssSalesSummarySection from "@/components/business-sales/BusinessSalesSummarySection";
+import BusinessSalesSummarySection from "@/components/business-sales/BusinessSalesSummarySection";
 import MonthlySalesChart from "@/components/business-sales/MonthlySalesChart";
 import TopServiceListingsTable from "@/components/business-sales/TopServiceListingsTable";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
@@ -64,7 +64,7 @@ export default function SalesDashboard({
             </Button>
           </Group>
           <Stack spacing={30}>
-            <BusinesssSalesSummarySection summary={summary} />
+            <BusinessSalesSummarySection summary={summary} />
             <Box>
               <Text size="xl" fw={600} mb="md">
                 Top 5 Service Listings with Highest Sales
