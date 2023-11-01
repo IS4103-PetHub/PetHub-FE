@@ -2,9 +2,6 @@ import {
   Accordion,
   Box,
   Button,
-  Card,
-  Center,
-  CloseButton,
   Container,
   FileInput,
   Group,
@@ -18,20 +15,11 @@ import {
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import {
-  AccountStatusEnum,
-  ServiceCategoryEnum,
-  ServiceListing,
-  downloadFile,
-  extractFileName,
-  formatStringToLetterCase,
-  getErrorMessageProps,
-} from "shared-utils";
+import { AccountStatusEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
@@ -40,15 +28,11 @@ import ServiceListingDetailsAccordionItem from "@/components/service-listing-man
 import ServiceListingReviewsAccordionItem from "@/components/service-listing-management/ServiceListingReviewsAccordionItem";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import {
-  useDeleteServiceListingById,
   useGetServiceListingById,
   useGetServiceListingByPetBusinessId,
-  useGetServiceListingByPetBusinessIdAndAccountStatus,
-  useUpdateServiceListing,
 } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
 import { PetBusiness, UpdateServiceListingPayload } from "@/types/types";
-import { validateCGName, validateCGSettings } from "@/util";
 
 interface ViewServiceListingProps {
   userId: number;
@@ -61,7 +45,6 @@ export default function ViewServiceListing({
 }: ViewServiceListingProps) {
   const theme = useMantineTheme();
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const serviceListingId = Number(router.query.id);

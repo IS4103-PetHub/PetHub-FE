@@ -26,41 +26,26 @@ import ServiceListingModal from "./ServiceListingModal";
 interface ServiceListTableProps {
   records: ServiceListing[];
   totalNumServiceListing: number;
-  userId: number;
   refetch(): void;
   page: number;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
-  tags: Tag[];
-  addresses: Address[];
-  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
   records,
   totalNumServiceListing,
-  userId,
   refetch,
   page,
   sortStatus,
   onSortStatusChange,
   onPageChange,
-  tags,
-  addresses,
-  calendarGroups,
 }: ServiceListTableProps) => {
-  /*
-   * Component State
-   */
   const router = useRouter();
-  const [selectedService, setSelectedService] = useState(null);
   const queryClient = useQueryClient();
   const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
 
-  /*
-   * Service Handlers
-   */
   const handleDeleteService = async (serviceListingId: number) => {
     try {
       await deleteServiceListingMutation.mutateAsync(serviceListingId);

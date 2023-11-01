@@ -29,6 +29,7 @@ import ViewReviewModal from "./ViewReviewModal";
 
 interface ServiceReviewsTableProps {
   records: Review[];
+  totalRecords: number;
   refetch(): Promise<any>;
   page: number;
   onPageChange(p: number): void;
@@ -38,6 +39,7 @@ interface ServiceReviewsTableProps {
 
 const ServiceReviewsTable = ({
   records,
+  totalRecords,
   refetch,
   page,
   onPageChange,
@@ -46,32 +48,17 @@ const ServiceReviewsTable = ({
 }: ServiceReviewsTableProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
   const [
     reviewModalOpened,
     { open: openReviewModal, close: closeReviewModal },
   ] = useDisclosure(false);
   const [selectedReview, setSelectedReview] = useState(null);
-  const [sortedRecords, setSortedRecords] = useState(records);
+
+  const REVIEW_TABLE_SIZE = 6;
 
   const viewReviewDetails = (review: Review) => {
     setSelectedReview(review);
     openReviewModal();
-  };
-
-  const handleDeleteService = async (serviceListingId: number) => {
-    try {
-      await deleteServiceListingMutation.mutateAsync(serviceListingId);
-      refetch();
-      notifications.show({
-        message: "Service Successfully Deleted",
-        color: "green",
-      });
-    } catch (error) {
-      notifications.show({
-        ...getErrorMessageProps("Error Deleting Service Listing", error),
-      });
-    }
   };
 
   useEffect(() => {
@@ -99,8 +86,8 @@ const ServiceReviewsTable = ({
         highlightOnHover
         onRowClick={(record) => viewReviewDetails(record)}
         idAccessor="reviewId"
-        totalRecords={records.length}
-        recordsPerPage={TABLE_PAGE_SIZE}
+        totalRecords={totalRecords}
+        recordsPerPage={REVIEW_TABLE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
         columns={[
@@ -152,20 +139,13 @@ const ServiceReviewsTable = ({
           {
             // actions
             accessor: "actions",
-            title: "Actions",
+            title: "View and Reply",
             width: 150,
             textAlignment: "right",
             render: (review) => (
               <Group position="right">
                 <div onClick={(e) => e.stopPropagation()}>
                   <ViewActionButton onClick={() => viewReviewDetails(review)} />
-                </div>
-                <div onClick={(e) => e.stopPropagation()}>
-                  <DeleteActionButtonModal
-                    title={`Are you sure you want to delete ${review.title}?`}
-                    subtitle="The customer would no longer be able to view this service listing."
-                    onDelete={() => {}}
-                  />
                 </div>
               </Group>
             ),

@@ -59,6 +59,7 @@ import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
 import LargeSaveButton from "web-ui/shared/LargeSaveButton";
+import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import {
   useCreateServiceListing,
   useDeleteServiceListingById,
@@ -93,15 +94,16 @@ const ServiceListingReviewsAccordionItem = ({
   const REVIEW_TABLE_SIZE = 6;
 
   useEffect(() => {
-    const from = (page - 1) * REVIEW_TABLE_SIZE;
-    const to = from + REVIEW_TABLE_SIZE;
-    const sortedReviews = sortBy(filteredReviews, sortStatus.columnAccessor);
-    if (sortStatus.direction === "desc") {
-      sortedReviews.reverse();
-    }
-    const newRecords = sortedReviews.slice(from, to);
-    setFilteredReviews(newRecords);
-  }, [page, sortStatus, serviceListing]);
+    setFilteredReviews(serviceListing?.reviews);
+  }, [serviceListing]);
+
+  const sortedReviews = sortBy(filteredReviews, sortStatus.columnAccessor);
+  if (sortStatus.direction === "desc") {
+    sortedReviews.reverse();
+  }
+  const from = (page - 1) * REVIEW_TABLE_SIZE;
+  const to = from + REVIEW_TABLE_SIZE;
+  const currentReviews = sortedReviews.slice(from, to);
 
   return (
     <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10} mt={20}>
@@ -112,18 +114,29 @@ const ServiceListingReviewsAccordionItem = ({
         <Button>Toggle statistics</Button>
       </Group>
       <Divider mt="lg" mb="lg" />
-      <ReviewFiltersGroup
-        reviews={serviceListing?.reviews}
-        setFilteredReviews={setFilteredReviews}
-      />
-      <ServiceReviewsTable
-        records={filteredReviews}
-        page={page}
-        onPageChange={setPage}
-        refetch={refetchServiceListing}
-        sortStatus={sortStatus}
-        onSortStatusChange={setSortStatus}
-      />
+      {serviceListing?.reviews?.length !== 0 ? (
+        <>
+          <ReviewFiltersGroup
+            reviews={serviceListing?.reviews}
+            setFilteredReviews={setFilteredReviews}
+            setPage={setPage}
+          />
+          <ServiceReviewsTable
+            records={currentReviews}
+            totalRecords={filteredReviews.length}
+            page={page}
+            onPageChange={setPage}
+            refetch={refetchServiceListing}
+            sortStatus={sortStatus}
+            onSortStatusChange={setSortStatus}
+          />
+        </>
+      ) : (
+        <SadDimmedMessage
+          title="No reviews yet"
+          subtitle="Please be patient, our furry friends' parents will be sure to leave some paw-sitive reviews soon."
+        />
+      )}
     </Accordion.Item>
   );
 };

@@ -31,11 +31,13 @@ import StarRating from "../review/StarRating";
 interface ReviewFiltersGroupProps {
   reviews: Review[];
   setFilteredReviews: (reviews: Review[]) => void;
+  setPage: (page: number) => void;
 }
 
 const ReviewFiltersGroup = ({
   reviews,
   setFilteredReviews,
+  setPage,
 }: ReviewFiltersGroupProps) => {
   const [activeTab, setActiveTab] = useState("All");
   const [activeStarFilter, setActiveStarFilter] = useState(null); // null means ALL
@@ -78,7 +80,10 @@ const ReviewFiltersGroup = ({
       value={activeTab}
       size="xs"
       radius="xs"
-      onChange={setActiveTab}
+      onChange={(tab) => {
+        setActiveTab(tab);
+        setPage(1); // Reset page to 1
+      }}
       data={[
         {
           label: (
@@ -128,7 +133,7 @@ const ReviewFiltersGroup = ({
         filteredReviews = filteredReviews.filter((review) => !!review.reply);
         break;
       default:
-        break; // For "All", no additional filtering
+        break; // no filtering for ALL
     }
 
     setFilteredReviews(filteredReviews);
