@@ -53,13 +53,15 @@ const ServiceListingStatsAccordionItem = ({
         <Text size="xl">
           <b>Review Statistics</b>
         </Text>
-        <Button
-          onClick={() => toggleStatsVisibility()}
-          leftIcon={<IconChartBar size="1rem" />}
-          variant="gradient"
-        >
-          {areStatsHidden ? "Show" : "Hide"}
-        </Button>
+        {serviceListing?.reviews?.length !== 0 && (
+          <Button
+            onClick={() => toggleStatsVisibility()}
+            leftIcon={<IconChartBar size="1rem" />}
+            variant="gradient"
+          >
+            {areStatsHidden ? "Show" : "Hide"}
+          </Button>
+        )}
       </Group>
       <Divider mt="lg" mb="lg" />
 
@@ -67,7 +69,7 @@ const ServiceListingStatsAccordionItem = ({
         <ReviewStatisticsGroup serviceListing={serviceListing} />
       ) : serviceListing?.reviews?.length === 0 ? (
         <Text color="dimmed" size="sm">
-          No reviews yet
+          There are no reviews for this service listing.
         </Text>
       ) : (
         <Text color="dimmed" size="sm">

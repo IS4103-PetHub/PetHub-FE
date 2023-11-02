@@ -354,11 +354,7 @@ export default function ServiceListingDetails({
                 setShowFullDescription={setShowFullDescription}
               />
               <ReviewAccordionItem
-                title={
-                  serviceListing.reviews.length === 0
-                    ? "Reviews (no reviews yet)"
-                    : `Reviews (${serviceListing.reviews.length})`
-                }
+                title={`Reviews (${serviceListing.reviews.length})`}
                 serviceListing={serviceListing}
                 likedReviewIds={likedAndReportedReviewIds?.likesBy}
                 reportedReviewIds={likedAndReportedReviewIds?.reportsBy}

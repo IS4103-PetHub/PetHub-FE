@@ -145,7 +145,7 @@ const ServiceListingReviewsAccordionItem = ({
       </Group>
       <Divider mt="lg" mb="lg" />
 
-      {serviceListing?.reviews?.length !== 0 ? (
+      {serviceListing?.reviews && serviceListing?.reviews?.length !== 0 ? (
         <>
           <ReviewFiltersGroup
             reviews={serviceListing?.reviews}
@@ -163,10 +163,9 @@ const ServiceListingReviewsAccordionItem = ({
           />
         </>
       ) : (
-        <SadDimmedMessage
-          title="No reviews yet"
-          subtitle="Please be patient, our furry friends' parents will be sure to leave some paw-sitive reviews soon."
-        />
+        <Text color="dimmed" size="sm">
+          There are no reviews for this service listing.
+        </Text>
       )}
     </Accordion.Item>
   );

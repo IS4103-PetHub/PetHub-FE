@@ -21,6 +21,7 @@ import {
   Divider,
   rem,
   Badge,
+  useMantineTheme,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
@@ -94,6 +95,7 @@ const ServiceListingDetailsAccordionItem = ({
 
   const queryClient = useQueryClient();
   const router = useRouter();
+  const theme = useMantineTheme();
 
   const categoryOptions = Object.values(ServiceCategoryEnum).map(
     (categoryValue) => ({
@@ -289,7 +291,8 @@ const ServiceListingDetailsAccordionItem = ({
     <Box>
       <Divider mb="lg" mt="lg" />
       <Text fw={600} size="md">
-        <IconListDetails size="1rem" color="blue" /> &nbsp;Service Overview
+        <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
+        &nbsp;Service Overview
       </Text>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
@@ -387,7 +390,8 @@ const ServiceListingDetailsAccordionItem = ({
   const schedulingGrid = (
     <Box>
       <Text fw={600} size="md">
-        <IconCalendarTime size="1rem" color="blue" /> &nbsp;Scheduling
+        <IconCalendarTime size="1rem" color={theme.colors.indigo[5]} />{" "}
+        &nbsp;Scheduling
       </Text>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
@@ -513,7 +517,8 @@ const ServiceListingDetailsAccordionItem = ({
   const othersGrid = (
     <Box mb="md">
       <Text fw={600} size="md">
-        <IconPhotoPlus size="1rem" color="blue" /> &nbsp;Other Details
+        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} /> &nbsp;Other
+        Details
       </Text>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
