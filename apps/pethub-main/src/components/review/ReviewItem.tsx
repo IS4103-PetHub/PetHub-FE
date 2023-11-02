@@ -42,6 +42,7 @@ interface ReviewItemProps {
   isLikedByUser: boolean;
   isReportedByUser: boolean;
   refetchLikedAndReportedReviewIds?: () => Promise<any>;
+  hideIconButtons?: boolean;
 }
 
 const ReviewItem = ({
@@ -49,6 +50,7 @@ const ReviewItem = ({
   isLikedByUser,
   isReportedByUser,
   refetchLikedAndReportedReviewIds,
+  hideIconButtons,
 }: ReviewItemProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
@@ -219,7 +221,7 @@ const ReviewItem = ({
         <ImageCarousel
           attachmentURLs={review?.attachmentURLs}
           altText="Review Image"
-          imageHeight={250}
+          imageHeight={350}
           focusedImage={focusedImage}
           setFocusedImage={setFocusedImage}
         />
@@ -275,25 +277,27 @@ const ReviewItem = ({
             alignItems: "flex-end",
           }}
         >
-          <Center mr="md">
-            <ActionIcon onClick={toggleLikedReview}>
-              <IconThumbUp
-                size="1rem"
-                {...(isLikedByUser ? { fill: "gray" } : {})}
-              />
-              {likedCount ? (
-                <Text size="xs" mt="xs">
-                  {likedCount}
-                </Text>
-              ) : null}
-            </ActionIcon>
-            <ActionIcon onClick={handleReport}>
-              <IconFlag
-                size="1rem"
-                {...(isReportedByUser ? { fill: "gray" } : {})}
-              />
-            </ActionIcon>
-          </Center>
+          {!hideIconButtons && (
+            <Center mr="md">
+              <ActionIcon onClick={toggleLikedReview}>
+                <IconThumbUp
+                  size="1rem"
+                  {...(isLikedByUser ? { fill: "gray" } : {})}
+                />
+                {likedCount ? (
+                  <Text size="xs" mt="xs">
+                    {likedCount}
+                  </Text>
+                ) : null}
+              </ActionIcon>
+              <ActionIcon onClick={handleReport}>
+                <IconFlag
+                  size="1rem"
+                  {...(isReportedByUser ? { fill: "gray" } : {})}
+                />
+              </ActionIcon>
+            </Center>
+          )}
         </Grid.Col>
 
         {reviewContentCol}

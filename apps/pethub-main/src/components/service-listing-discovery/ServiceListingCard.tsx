@@ -122,7 +122,7 @@ const ServiceListingCard = ({
       <Box mb="xs" display="flex">
         <Text mr={5} fw={500} size="xs">
           {serviceListing?.overallRating === 0
-            ? "Not rated yet"
+            ? "No reviews"
             : `${serviceListing.overallRating.toFixed(1)}/5`}
         </Text>
         <StarRating

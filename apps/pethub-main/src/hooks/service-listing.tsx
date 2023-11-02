@@ -85,6 +85,16 @@ export const useGetServiceListingByPetBusinessId = (userId: number) => {
   });
 };
 
+export const useGetServiceListingById = (userId: number) => {
+  return useQuery({
+    queryKey: ["service-listing", userId],
+    queryFn: async () => {
+      const response = await api.get(`${SERVICE_LISTING_API}/${userId}`);
+      return response.data as ServiceListing;
+    },
+  });
+};
+
 // GET Service Listing by Business Id and Account Status, ensure PB is ACTIVE
 export const useGetServiceListingByPetBusinessIdAndAccountStatus = (
   userId: number,
