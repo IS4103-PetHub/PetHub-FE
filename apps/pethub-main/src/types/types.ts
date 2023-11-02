@@ -316,3 +316,10 @@ export interface FeaturedServiceListing extends ServiceListing {
   featuredListingSetId: number;
   description: string;
 }
+
+export interface userDemographicData {
+  POCount: number;
+  PBCount: number;
+  ReportedReviewCount: number;
+  PBApplicationCount: number;
+}
