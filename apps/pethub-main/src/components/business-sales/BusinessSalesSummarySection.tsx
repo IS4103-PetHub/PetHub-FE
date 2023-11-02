@@ -27,7 +27,7 @@ const BusinessSalesSummarySection = ({
       <Grid.Col span={3}>
         <MiniSummaryCard
           key={summary.mostSalesDate}
-          title={"Most Sales Date"}
+          title={"Date with Most Sales"}
           body={`$${formatNumber2Decimals(summary.mostSalesAmount)}`}
           subbody={formatISODateLong(summary.mostSalesDate)}
         />

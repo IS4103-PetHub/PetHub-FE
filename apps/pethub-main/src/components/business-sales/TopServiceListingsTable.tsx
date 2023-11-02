@@ -24,7 +24,6 @@ const TopServiceListingsTable = ({ records }: TopServiceListingsTableProps) => {
             width: 80,
             render: (record) => records.indexOf(record) + 1,
           },
-          { accessor: "serviceListingId", title: "ID", width: 80 },
           {
             accessor: "title",
             ellipsis: true,

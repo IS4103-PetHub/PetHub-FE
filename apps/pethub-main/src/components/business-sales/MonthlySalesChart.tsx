@@ -1,27 +1,34 @@
 import { Card, useMantineTheme } from "@mantine/core";
 import React from "react";
-import Chart from "react-google-charts";
+import Chart, { GoogleChartWrapperChartType } from "react-google-charts";
 
 interface MonthlySalesChartProps {
-  monthlySales: [string, any][];
+  data: [string, any][];
+  chartType: string;
 }
 
-const MonthlySalesChart = ({ monthlySales }: MonthlySalesChartProps) => {
+const MonthlySalesChart = ({ data, chartType }: MonthlySalesChartProps) => {
   const theme = useMantineTheme();
+
   const options = {
-    hAxis: { title: "Month" },
-    vAxis: { title: "Sales ($)" },
+    hAxis: { title: chartType === "ColumnChart" ? "Month" : "Sales ($)" },
+    vAxis: { title: chartType === "ColumnChart" ? "Sales ($)" : "Month" },
     legend: "none",
     colors: [theme.colors.indigo[4]],
+    animation: {
+      startup: true,
+      easing: "out",
+      duration: 1500,
+    },
   };
 
   return (
     <Card shadow="sm" radius="md">
       <Chart
-        chartType="ColumnChart"
+        chartType={chartType as GoogleChartWrapperChartType}
         width="100%"
         height="600px"
-        data={monthlySales}
+        data={data}
         options={options}
       />
     </Card>

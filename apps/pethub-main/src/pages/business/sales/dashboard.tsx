@@ -1,27 +1,26 @@
 import {
-  Badge,
   Box,
   Button,
-  Card,
+  Center,
   Chip,
   Container,
   Group,
+  SegmentedControl,
   Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconReport } from "@tabler/icons-react";
-import { DataTable } from "mantine-datatable";
+import { IconChartBar, IconReport } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
-import { formatNumber2Decimals, formatStringToLetterCase } from "shared-utils";
 import { PageTitle } from "web-ui";
+import CustomPopover from "web-ui/shared/CustomPopover";
 import api from "@/api/axiosConfig";
 import BusinessSalesSummarySection from "@/components/business-sales/BusinessSalesSummarySection";
 import MonthlySalesChart from "@/components/business-sales/MonthlySalesChart";
+import ProjectedSalesLineChart from "@/components/business-sales/ProjectedSalesLineChart";
 import TopServiceListingsTable from "@/components/business-sales/TopServiceListingsTable";
-import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import {
   SalesDashboardServiceListing,
   SalesDashboardSummary,
@@ -33,6 +32,8 @@ interface SalesDashboardProps {
   top5ServiceListingsWithin30Days: SalesDashboardServiceListing[];
   // Month, Sales
   monthlySales: [string, any][];
+  // Month, Sales, Projected
+  aggregatedAndProjectedSales: [string, any][];
 }
 
 export default function SalesDashboard({
@@ -40,10 +41,18 @@ export default function SalesDashboard({
   allTimeTop5ServiceListings,
   top5ServiceListingsWithin30Days,
   monthlySales,
+  aggregatedAndProjectedSales,
 }: SalesDashboardProps) {
   const theme = useMantineTheme();
   const [selectedChipValue, setSelectedChipValue] =
     useState<string>("all-time");
+  const [monthlySalesChartType, setMonthlySalesChartType] =
+    useState("ColumnChart");
+
+  const projectedFirstMonth =
+    aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 3][0];
+  const projectedLastMonth =
+    aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 1][0];
 
   return (
     <>
@@ -53,7 +62,7 @@ export default function SalesDashboard({
       </Head>
       <Container fluid p="lg" h="100%" w="100%" bg={theme.colors.gray[0]}>
         <Container fluid mb="xl">
-          <Group position="apart" mb="lg">
+          <Group position="apart" mb="xl">
             <PageTitle title="Business Sales Dashboard" />
             <Button
               size="md"
@@ -66,9 +75,11 @@ export default function SalesDashboard({
           <Stack spacing={30}>
             <BusinessSalesSummarySection summary={summary} />
             <Box>
-              <Text size="xl" fw={600} mb="md">
-                Top 5 Service Listings with Highest Sales
-              </Text>
+              <Group>
+                <Text size="xl" fw={600} mb="md">
+                  Top 5 Service Listings with the Highest Number of Orders
+                </Text>
+              </Group>
               <Chip.Group
                 multiple={false}
                 value={selectedChipValue}
@@ -92,10 +103,58 @@ export default function SalesDashboard({
               />
             </Box>
             <Box>
-              <Text size="xl" fw={600} mb="md">
-                Monthly Sales for Last 12 Months ($ / month)
-              </Text>
-              <MonthlySalesChart monthlySales={monthlySales} />
+              <Group position="apart" mb="md">
+                <Text size="xl" fw={600}>
+                  Monthly Sales for Last 12 Months ($ / month)
+                </Text>
+                <SegmentedControl
+                  data={[
+                    {
+                      value: "ColumnChart",
+                      label: (
+                        <Center>
+                          <IconChartBar size="1rem" color="gray" />
+                          <Box ml={5}>Vertical</Box>
+                        </Center>
+                      ),
+                    },
+                    {
+                      value: "BarChart",
+                      label: (
+                        <Center>
+                          <IconChartBar
+                            size="1rem"
+                            color="gray"
+                            style={{ transform: "rotate(90deg)" }}
+                          />
+                          <Box ml={5}>Horizontal</Box>
+                        </Center>
+                      ),
+                    },
+                  ]}
+                  value={monthlySalesChartType}
+                  onChange={setMonthlySalesChartType}
+                />
+              </Group>
+              <MonthlySalesChart
+                data={monthlySales}
+                chartType={monthlySalesChartType}
+              />
+            </Box>
+            <Box>
+              <Group align="flex-start">
+                <Text size="xl" fw={600} mb="md">
+                  Projected Sales ($ / month) for {projectedFirstMonth} to{" "}
+                  {projectedLastMonth}
+                </Text>
+                <CustomPopover
+                  text="Projected sales for the upcoming month is computed using the average of the past 3 months sales. Subsequent projected sales are computed taking into account the projected sales of the past months."
+                  iconSize="1.3rem"
+                >
+                  {""}
+                </CustomPopover>
+              </Group>
+              <ProjectedSalesLineChart data={aggregatedAndProjectedSales} />
             </Box>
           </Stack>
         </Container>
@@ -120,6 +179,8 @@ export async function getServerSideProps(context) {
       top5ServiceListingsWithin30Days:
         salesDashboardData.lists["top5ServiceListingsWithin30Days"],
       monthlySales: salesDashboardData.charts["monthlySales"],
+      aggregatedAndProjectedSales:
+        salesDashboardData.charts["aggregatedAndProjectedSales"],
     },
   };
 }
