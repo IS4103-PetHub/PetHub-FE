@@ -29,7 +29,6 @@ const ReviewOverviewCard = ({
   setFilteredReviews,
 }: ReviewOverviewCardProps) => {
   const theme = useMantineTheme();
-  const router = useRouter();
   const [activeStarFilter, setActiveStarFilter] = useState(null); // null means ALL
   const [withMedia, setWithMedia] = useState(false);
   const [withReply, setWithReply] = useState(false);

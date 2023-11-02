@@ -10,7 +10,7 @@ const CreateButton = ({ text, onClick, ...props }: CreateButtonProps) => {
   return (
     <Button
       size="md"
-      leftIcon={<IconPlus size="1.25rem" />}
+      leftIcon={<IconPlus size="1rem" />}
       onClick={onClick}
       {...props}
     >

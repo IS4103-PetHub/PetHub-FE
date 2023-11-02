@@ -189,15 +189,11 @@ export default function Listings({
           <ServiceListTable
             records={records}
             totalNumServiceListing={searchResults.length}
-            userId={userId}
             refetch={refetchServiceListings}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             onPageChange={setPage}
-            tags={tags}
-            addresses={petBusiness ? petBusiness.businessAddresses : []}
-            calendarGroups={calendarGroups}
           />
         )}
       </>

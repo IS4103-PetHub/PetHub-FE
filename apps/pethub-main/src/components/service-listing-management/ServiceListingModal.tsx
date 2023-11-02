@@ -20,6 +20,7 @@ import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   Address,
@@ -75,6 +76,7 @@ const ServiceListingModal = ({
   const [isViewing, setViewing] = useState(isView);
   // used to force reload the fileinput after each touch
   const [fileInputKey, setFileInputKey] = useState(0);
+  const router = useRouter();
 
   /*
    * Component Form
@@ -194,11 +196,14 @@ const ServiceListingModal = ({
           defaultExpiryDays: values.defaultExpiryDays,
           lastPossibleDate: values.lastPossibleDate,
         };
-        await createServiceListingMutation.mutateAsync(payload);
+        const res = await createServiceListingMutation.mutateAsync(payload);
+        console.log("res", res);
         notifications.show({
-          message: "Service Successfully Created",
+          title: "Service Listing Created",
+          message: `Service listing successfully created with ID: ${res.serviceListingId}`,
           color: "green",
         });
+        router.push(`/business/listings/${res.serviceListingId}`);
       }
       refetch();
       serviceListingForm.reset();
