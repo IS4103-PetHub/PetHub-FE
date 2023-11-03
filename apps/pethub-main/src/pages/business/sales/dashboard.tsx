@@ -5,17 +5,21 @@ import {
   Chip,
   Container,
   Group,
+  LoadingOverlay,
   SegmentedControl,
   Select,
   Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { IconChartBar, IconReport } from "@tabler/icons-react";
+import { useToggle } from "@mantine/hooks";
+import { IconChartBar, IconRefresh, IconReport } from "@tabler/icons-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { PageTitle } from "web-ui";
+import { formatISODateTimeShort } from "shared-utils";
+import { PageTitle, useLoadingOverlay } from "web-ui";
 import CustomPopover from "web-ui/shared/CustomPopover";
 import api from "@/api/axiosConfig";
 import BusinessSalesSummarySection from "@/components/business-sales/BusinessSalesSummarySection";
@@ -49,6 +53,7 @@ export default function SalesDashboard({
   aggregatedAndProjectedSales,
 }: SalesDashboardProps) {
   const theme = useMantineTheme();
+  const router = useRouter();
   const [selectedChipValue, setSelectedChipValue] =
     useState<string>("order-count");
   const [selectedTimePeriod, setSelectedTimePeriod] =
@@ -61,6 +66,8 @@ export default function SalesDashboard({
   >(allTimeTop5ByOrderCount);
   const [monthlySalesChartType, setMonthlySalesChartType] =
     useState("ColumnChart");
+  const [updatedDate, setUpdatedDate] = useState<Date>(new Date());
+  const { showOverlay, hideOverlay } = useLoadingOverlay();
 
   const projectedFirstMonth =
     aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 3][0];
@@ -111,6 +118,13 @@ export default function SalesDashboard({
     settop5ServiceListings(getListingsByFilters());
   }, [selectedChipValue, selectedTimePeriod]);
 
+  const handleRefresh = async () => {
+    showOverlay();
+    await router.replace(router.asPath);
+    setUpdatedDate(new Date());
+    hideOverlay();
+  };
+
   return (
     <>
       <Head>
@@ -120,13 +134,22 @@ export default function SalesDashboard({
       <Container fluid p="lg" h="100%" w="100%" bg={theme.colors.gray[0]}>
         <Container fluid mb="xl">
           <Group position="apart" mb="xl">
-            <PageTitle title="Business Sales Dashboard" />
+            <Group>
+              <PageTitle title="Business Sales Dashboard" />
+              <Text
+                size="sm"
+                color="dimmed"
+              >{`Last Updated: ${formatISODateTimeShort(
+                updatedDate.toISOString(),
+              )}`}</Text>
+            </Group>
             <Button
               size="md"
-              leftIcon={<IconReport />}
+              leftIcon={<IconRefresh />}
               className="gradient-hover"
+              onClick={handleRefresh}
             >
-              View Monthly Sales Reports
+              Refresh
             </Button>
           </Group>
           <Stack spacing={30}>
