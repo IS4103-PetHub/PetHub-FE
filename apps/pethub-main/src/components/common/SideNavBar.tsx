@@ -17,6 +17,7 @@ import {
   IconCalendar,
   IconLogout,
   IconFileInvoice,
+  IconReportAnalytics,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -116,6 +117,11 @@ const nonPendingLinks = [
     link: "/business/appointments",
     label: "Appointments",
     icon: IconCalendar,
+  },
+  {
+    link: "/business/sales/dashboard",
+    label: "Business Sales",
+    icon: IconReportAnalytics,
   },
 ];
 

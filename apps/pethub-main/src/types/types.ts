@@ -322,3 +322,19 @@ export interface FeaturedServiceListing extends ServiceListing {
   featuredListingSetId: number;
   description: string;
 }
+
+export interface SalesDashboardSummary {
+  totalNumOrders: number;
+  totalSales: number;
+  last30DaySales: number;
+  mostSalesDate: string;
+  mostSalesAmount: number;
+}
+
+export interface SalesDashboardServiceListing {
+  serviceListingId: number;
+  title: string;
+  category: ServiceCategoryEnum;
+  totalOrders: number;
+  totalSales: number;
+}

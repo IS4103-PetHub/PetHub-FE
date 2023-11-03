@@ -94,7 +94,7 @@ export function App({ Component, pageProps }: AppProps) {
               <AppShell
                 header={headerBarCheck()}
                 navbar={sideBarCheck()}
-                padding={sideBarCheck() ? "lg" : 0}
+                padding={0}
               >
                 {status === "loading" ? (
                   <Container

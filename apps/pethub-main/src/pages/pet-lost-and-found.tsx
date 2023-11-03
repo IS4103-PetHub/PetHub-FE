@@ -12,6 +12,7 @@ import {
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import localFont from "next/font/local";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -175,122 +176,128 @@ export default function PetLostAndFound({ userId }: PetLostAndFoundProps) {
   }
 
   return (
-    <Container fluid h="100%" w="100%" bg={theme.colors.dark[6]}>
-      <Container fluid pt={50} pb={50} w="90%">
-        <Group position="apart">
-          <PageTitle title="Pet Lost & Found Board" color="white" />
-          {userId && (
-            <>
-              <LargeCreateButton
-                mt={-10}
-                text="New post"
-                // variant="white"
-                className="gradient-hover"
-                onClick={handleClickNewPost}
-              />
-              <LostAndFoundPostModal
-                petOwnerId={userId}
-                opened={opened}
-                close={close}
-                refetch={refetch}
-              />
-            </>
-          )}
-        </Group>
+    <>
+      <Head>
+        <title>Pet Lost and Found - PetHub</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Container fluid h="100%" w="100%" bg={theme.colors.dark[6]}>
+        <Container fluid pt={50} pb={50} w="90%">
+          <Group position="apart">
+            <PageTitle title="Pet Lost & Found Board" color="white" />
+            {userId && (
+              <>
+                <LargeCreateButton
+                  mt={-10}
+                  text="New post"
+                  // variant="white"
+                  className="gradient-hover"
+                  onClick={handleClickNewPost}
+                />
+                <LostAndFoundPostModal
+                  petOwnerId={userId}
+                  opened={opened}
+                  close={close}
+                  refetch={refetch}
+                />
+              </>
+            )}
+          </Group>
 
-        <Group position="apart" mt="xl">
-          <Chip.Group
-            multiple={false}
-            value={activeType}
-            onChange={(value) => handleChangeSelectedType(value)}
-          >
-            <Group position="left" w="50%">
-              <Chip
-                value=""
-                variant="filled"
-                size="lg"
-                style={{ opacity: !activeType ? 1 : 0.8 }}
-              >
-                All
-              </Chip>
-
-              {Object.values(PetRequestTypeEnum).map((requestType) => (
+          <Group position="apart" mt="xl">
+            <Chip.Group
+              multiple={false}
+              value={activeType}
+              onChange={(value) => handleChangeSelectedType(value)}
+            >
+              <Group position="left" w="50%">
                 <Chip
+                  value=""
                   variant="filled"
                   size="lg"
-                  value={requestType}
-                  key={requestType}
-                  style={{
-                    opacity:
-                      router.query?.requestType === requestType ? 1 : 0.8,
-                  }}
+                  style={{ opacity: !activeType ? 1 : 0.8 }}
                 >
-                  {formatStringToLetterCase(requestType)}
+                  All
                 </Chip>
-              ))}
-              {userId && (
-                <Chip
-                  value={MY_POSTS_VALUE}
-                  variant="filled"
-                  size="lg"
-                  style={{ opacity: activeType === MY_POSTS_VALUE ? 1 : 0.8 }}
-                >
-                  My posts
-                </Chip>
-              )}
-            </Group>
-          </Chip.Group>
-          <MantineProvider
-            theme={{
-              colorScheme: "dark",
-              fontFamily: inter.style.fontFamily,
-            }}
-          >
-            <Grid>
-              <Grid.Col span={6}>
-                <Select
-                  dropdownPosition="bottom"
-                  size="md"
-                  w="100%"
-                  mt={-25}
-                  label="Filter by status"
-                  placeholder="Select status"
-                  data={[
-                    {
-                      value: "unresolved",
-                      label: "Unresolved",
-                    },
-                    {
-                      value: "resolved",
-                      label: "Resolved",
-                    },
-                  ]}
-                  clearable
-                  value={filterStatus}
-                  onChange={setFilterStatus}
-                />
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <SortBySelect
-                  w="100%"
-                  data={petLostAndFoundSortOptions}
-                  value={sortStatus}
-                  onChange={setSortStatus}
-                />
-              </Grid.Col>
-            </Grid>
-            <SearchBar
-              mt={10}
-              size="md"
-              w="100%"
-              text="Search by title, description, author name"
-              onSearch={(searchStr) => handleSearch(searchStr)}
-            />
-          </MantineProvider>
-        </Group>
-        {renderContent()}
+
+                {Object.values(PetRequestTypeEnum).map((requestType) => (
+                  <Chip
+                    variant="filled"
+                    size="lg"
+                    value={requestType}
+                    key={requestType}
+                    style={{
+                      opacity:
+                        router.query?.requestType === requestType ? 1 : 0.8,
+                    }}
+                  >
+                    {formatStringToLetterCase(requestType)}
+                  </Chip>
+                ))}
+                {userId && (
+                  <Chip
+                    value={MY_POSTS_VALUE}
+                    variant="filled"
+                    size="lg"
+                    style={{ opacity: activeType === MY_POSTS_VALUE ? 1 : 0.8 }}
+                  >
+                    My posts
+                  </Chip>
+                )}
+              </Group>
+            </Chip.Group>
+            <MantineProvider
+              theme={{
+                colorScheme: "dark",
+                fontFamily: inter.style.fontFamily,
+              }}
+            >
+              <Grid>
+                <Grid.Col span={6}>
+                  <Select
+                    dropdownPosition="bottom"
+                    size="md"
+                    w="100%"
+                    mt={-25}
+                    label="Filter by status"
+                    placeholder="Select status"
+                    data={[
+                      {
+                        value: "unresolved",
+                        label: "Unresolved",
+                      },
+                      {
+                        value: "resolved",
+                        label: "Resolved",
+                      },
+                    ]}
+                    clearable
+                    value={filterStatus}
+                    onChange={setFilterStatus}
+                  />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                  <SortBySelect
+                    w="100%"
+                    data={petLostAndFoundSortOptions}
+                    value={sortStatus}
+                    onChange={setSortStatus}
+                  />
+                </Grid.Col>
+              </Grid>
+              <SearchBar
+                mt={10}
+                size="md"
+                w="100%"
+                text="Search by title, description, author name"
+                onSearch={(searchStr) => handleSearch(searchStr)}
+              />
+            </MantineProvider>
+          </Group>
+          {renderContent()}
+        </Container>
       </Container>
-    </Container>
+    </>
   );
 }
 
