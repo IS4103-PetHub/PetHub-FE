@@ -93,6 +93,7 @@ export default function SalesDashboard({
       }
       return top5Within30DaysByOrderCount;
     }
+    aggregatedAndProjectedSales;
     // by sales
     if (selectedTimePeriod === "all-time") {
       return allTimeTop5BySales;
