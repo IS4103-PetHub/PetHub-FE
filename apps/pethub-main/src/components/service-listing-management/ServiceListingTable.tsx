@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   Address,
@@ -25,45 +26,26 @@ import ServiceListingModal from "./ServiceListingModal";
 interface ServiceListTableProps {
   records: ServiceListing[];
   totalNumServiceListing: number;
-  userId: number;
   refetch(): void;
   page: number;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
-  tags: Tag[];
-  addresses: Address[];
-  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
   records,
   totalNumServiceListing,
-  userId,
   refetch,
   page,
   sortStatus,
   onSortStatusChange,
   onPageChange,
-  tags,
-  addresses,
-  calendarGroups,
 }: ServiceListTableProps) => {
-  /*
-   * Component State
-   */
-  const [selectedService, setSelectedService] = useState(null);
-  const [isServiceModalOpen, { close: closeView, open: openView }] =
-    useDisclosure(false);
-  const [isUpdateModalOpen, { close: closeUpdate, open: openUpdate }] =
-    useDisclosure(false);
-
+  const router = useRouter();
   const queryClient = useQueryClient();
   const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
 
-  /*
-   * Service Handlers
-   */
   const handleDeleteService = async (serviceListingId: number) => {
     try {
       await deleteServiceListingMutation.mutateAsync(serviceListingId);
@@ -136,23 +118,25 @@ const ServiceListTable = ({
             textAlignment: "right",
             render: (service) => (
               <Group position="right">
-                <ViewActionButton
-                  onClick={function (): void {
-                    setSelectedService(service);
-                    openView();
-                  }}
-                />
-                <EditActionButton
-                  onClick={function (): void {
-                    setSelectedService(service);
-                    openUpdate();
-                  }}
-                />
-                <DeleteActionButtonModal
-                  title={`Are you sure you want to delete ${service.title}?`}
-                  subtitle="The customer would no longer be able to view this service listing."
-                  onDelete={() => handleDeleteService(service.serviceListingId)}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  {" "}
+                  <ViewActionButton
+                    onClick={() => {
+                      router.push(
+                        `/business/listings/${service.serviceListingId}`,
+                      );
+                    }}
+                  />
+                </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <DeleteActionButtonModal
+                    title={`Are you sure you want to delete ${service.title}?`}
+                    subtitle="The customer would no longer be able to view this service listing."
+                    onDelete={() =>
+                      handleDeleteService(service.serviceListingId)
+                    }
+                  />
+                </div>
               </Group>
             ),
           },
@@ -162,6 +146,10 @@ const ServiceListTable = ({
         withColumnBorders
         striped
         verticalSpacing="sm"
+        highlightOnHover
+        onRowClick={(record) =>
+          router.push(`/business/listings/${record.serviceListingId}`)
+        }
         idAccessor="serviceListingId"
         //sorting
         sortStatus={sortStatus}
@@ -176,40 +164,15 @@ const ServiceListTable = ({
           calendarGroupId,
           duration,
           lastPossibleDate,
-        }) =>
-          (requiresBooking ? calendarGroupId && duration : true) &&
-          (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true)
-            ? undefined
-            : { color: "red" }
-        }
-      />
+        }) => {
+          const isValid =
+            (requiresBooking ? calendarGroupId && duration : true) &&
+            (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true);
 
-      {/* View */}
-      <ServiceListingModal
-        opened={isServiceModalOpen}
-        onClose={closeView}
-        isView={true}
-        isUpdate={false}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-        addresses={addresses ? addresses : []}
-        calendarGroups={calendarGroups}
-      />
-
-      {/* Update */}
-      <ServiceListingModal
-        opened={isUpdateModalOpen}
-        onClose={closeUpdate}
-        isView={false}
-        isUpdate={true}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-        addresses={addresses ? addresses : []}
-        calendarGroups={calendarGroups}
+          return isValid
+            ? { cursor: "pointer" }
+            : { color: "red", cursor: "pointer" };
+        }}
       />
     </>
   );

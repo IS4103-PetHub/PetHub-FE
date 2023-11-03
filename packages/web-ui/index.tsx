@@ -6,6 +6,7 @@ export * from "./shared/PasswordBar";
 export * from "./shared/LightDarkModeToggle";
 export * from "./shared/AccountStatusBadge";
 export * from "./shared/LargeCreateButton";
+export * from "./shared/LargeSaveButton";
 export * from "./shared/SadDimmedMessage";
 export * from "./shared/CenterLoader";
 export * from "./shared/SimpleDeleteActionButton";

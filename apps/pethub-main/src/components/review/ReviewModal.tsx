@@ -311,9 +311,6 @@ const ReviewModal = ({
               </Text>
             </Box>
             <Box>
-              <Text fw={500} size="md" mb={3} mt={-20}>
-                Add photos
-              </Text>
               <FileInput
                 label="Add photos"
                 placeholder={
@@ -327,6 +324,7 @@ const ReviewModal = ({
                 onChange={(files) => handleFileInputChange(files)}
                 capture={false}
                 key={fileInputKey}
+                mt={-20}
                 mb="md"
                 error={form.errors?.files}
               />

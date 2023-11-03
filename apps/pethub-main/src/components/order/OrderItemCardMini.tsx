@@ -133,14 +133,15 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
             <Text lineClamp={2} size="xs">
               {orderItem?.serviceListing.description}
             </Text>
-            {orderItem?.serviceListing.duration && (
-              <Badge variant="dot" radius="xs">
-                Duration:{" "}
-                {convertMinsToDurationString(
-                  orderItem?.serviceListing.duration,
-                )}
-              </Badge>
-            )}
+            {orderItem?.serviceListing?.requiresBooking &&
+              orderItem?.serviceListing.duration && (
+                <Badge variant="dot" radius="xs">
+                  Duration:{" "}
+                  {convertMinsToDurationString(
+                    orderItem?.serviceListing.duration,
+                  )}
+                </Badge>
+              )}
           </Box>
         </Grid.Col>
 

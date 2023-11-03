@@ -118,7 +118,7 @@ const ReviewAccordionItem = ({
         {titleGroup}
       </Accordion.Control>
       <Accordion.Panel ml={5} mr={5}>
-        {serviceListing?.reviews && serviceListing?.reviews.length !== 0 && (
+        {serviceListing?.reviews && serviceListing?.reviews.length !== 0 ? (
           <>
             <ReviewOverviewCard
               serviceListing={serviceListing}
@@ -153,6 +153,10 @@ const ReviewAccordionItem = ({
               )}
             </Group>
           </>
+        ) : (
+          <Text color="dimmed">
+            There are no reviews for this service listing.
+          </Text>
         )}
       </Accordion.Panel>
     </Accordion.Item>
