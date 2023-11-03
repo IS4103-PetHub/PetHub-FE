@@ -6,6 +6,7 @@ import {
   Container,
   Group,
   SegmentedControl,
+  Select,
   Stack,
   Text,
   useMantineTheme,
@@ -13,7 +14,7 @@ import {
 import { IconChartBar, IconReport } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PageTitle } from "web-ui";
 import CustomPopover from "web-ui/shared/CustomPopover";
 import api from "@/api/axiosConfig";
@@ -28,8 +29,10 @@ import {
 
 interface SalesDashboardProps {
   summary: SalesDashboardSummary;
-  allTimeTop5ServiceListings: SalesDashboardServiceListing[];
-  top5ServiceListingsWithin30Days: SalesDashboardServiceListing[];
+  allTimeTop5ByOrderCount: SalesDashboardServiceListing[];
+  top5Within30DaysByOrderCount: SalesDashboardServiceListing[];
+  allTimeTop5BySales: SalesDashboardServiceListing[];
+  top5Within30DaysBySales: SalesDashboardServiceListing[];
   // Month, Sales
   monthlySales: [string, any][];
   // Month, Sales, Projected
@@ -38,14 +41,24 @@ interface SalesDashboardProps {
 
 export default function SalesDashboard({
   summary,
-  allTimeTop5ServiceListings,
-  top5ServiceListingsWithin30Days,
+  allTimeTop5ByOrderCount,
+  top5Within30DaysByOrderCount,
+  allTimeTop5BySales,
+  top5Within30DaysBySales,
   monthlySales,
   aggregatedAndProjectedSales,
 }: SalesDashboardProps) {
   const theme = useMantineTheme();
   const [selectedChipValue, setSelectedChipValue] =
+    useState<string>("order-count");
+  const [selectedTimePeriod, setSelectedTimePeriod] =
     useState<string>("all-time");
+  const [top5Title, setTop5Title] = useState<string>(
+    "All Time Top 5 Service Listings by Order Count",
+  );
+  const [top5ServiceListings, settop5ServiceListings] = useState<
+    SalesDashboardServiceListing[]
+  >(allTimeTop5ByOrderCount);
   const [monthlySalesChartType, setMonthlySalesChartType] =
     useState("ColumnChart");
 
@@ -53,6 +66,49 @@ export default function SalesDashboard({
     aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 3][0];
   const projectedLastMonth =
     aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 1][0];
+
+  const top5TitleMap = new Map([
+    ["order-count all-time", "All Time Top 5 Service Listings by Order Count"],
+    [
+      "order-count last-30-days",
+      " Top 5 Service Listings by Last 30 Days Order Count",
+    ],
+    [
+      "sales-amount all-time",
+      "All Time Top 5 Service Listings by Sales Amount",
+    ],
+    [
+      "sales-amount last-30-days",
+      "Top 5 Service Listings by Last 30 Days  Sales Amount",
+    ],
+  ]);
+
+  // for filtering of top 5 service listings
+
+  function getListingsByFilters() {
+    // by order count
+    if (selectedChipValue === "order-count") {
+      if (selectedTimePeriod === "all-time") {
+        return allTimeTop5ByOrderCount;
+      }
+      return top5Within30DaysByOrderCount;
+    }
+    // by sales
+    if (selectedTimePeriod === "all-time") {
+      return allTimeTop5BySales;
+    }
+    return top5Within30DaysBySales;
+  }
+
+  useEffect(() => {
+    // set title
+    const title = top5TitleMap.get(
+      `${selectedChipValue} ${selectedTimePeriod}`,
+    );
+    setTop5Title(title);
+    // set records
+    settop5ServiceListings(getListingsByFilters());
+  }, [selectedChipValue, selectedTimePeriod]);
 
   return (
     <>
@@ -76,31 +132,37 @@ export default function SalesDashboard({
             <BusinessSalesSummarySection summary={summary} />
             <Box>
               <Group>
-                <Text size="xl" fw={600} mb="md">
-                  Top 5 Service Listings with the Highest Number of Orders
+                <Text size="xl" fw={600} mb={-10}>
+                  {top5Title}
                 </Text>
               </Group>
-              <Chip.Group
-                multiple={false}
-                value={selectedChipValue}
-                onChange={setSelectedChipValue}
-              >
-                <Group position="left">
-                  <Chip value="all-time" size="md">
-                    All time
-                  </Chip>
-                  <Chip value="last-30-days" size="md">
-                    Last 30 days
-                  </Chip>
-                </Group>
-              </Chip.Group>
-              <TopServiceListingsTable
-                records={
-                  selectedChipValue === "all-time"
-                    ? allTimeTop5ServiceListings
-                    : top5ServiceListingsWithin30Days
-                }
-              />
+              <Group position="apart" align="end">
+                <Chip.Group
+                  multiple={false}
+                  value={selectedChipValue}
+                  onChange={setSelectedChipValue}
+                >
+                  <Group position="left">
+                    <Chip value="order-count" size="md">
+                      By Order Count
+                    </Chip>
+                    <Chip value="sales-amount" size="md">
+                      By Sales Amount
+                    </Chip>
+                  </Group>
+                </Chip.Group>
+                <Select
+                  label="Temporal Period"
+                  placeholder="Select period"
+                  data={[
+                    { value: "all-time", label: "All time" },
+                    { value: "last-30-days", label: "Last 30 days" },
+                  ]}
+                  value={selectedTimePeriod}
+                  onChange={setSelectedTimePeriod}
+                />
+              </Group>
+              <TopServiceListingsTable records={top5ServiceListings} />
             </Box>
             <Box>
               <Group position="apart" mb="md">
@@ -174,10 +236,14 @@ export async function getServerSideProps(context) {
   return {
     props: {
       summary: salesDashboardData.summary,
-      allTimeTop5ServiceListings:
-        salesDashboardData.lists["allTimeTop5ServiceListings"],
-      top5ServiceListingsWithin30Days:
-        salesDashboardData.lists["top5ServiceListingsWithin30Days"],
+      allTimeTop5ByOrderCount:
+        salesDashboardData.lists.byOrderCount["allTimeTop5ByOrders"],
+      top5Within30DaysByOrderCount:
+        salesDashboardData.lists.byOrderCount["top5Within30DaysByOrders"],
+      allTimeTop5BySales:
+        salesDashboardData.lists.bySaleAmount["allTimeTop5BySales"],
+      top5Within30DaysBySales:
+        salesDashboardData.lists.bySaleAmount["allTimeTop5BySales"],
       monthlySales: salesDashboardData.charts["monthlySales"],
       aggregatedAndProjectedSales:
         salesDashboardData.charts["aggregatedAndProjectedSales"],
