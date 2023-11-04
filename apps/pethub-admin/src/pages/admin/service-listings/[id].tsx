@@ -296,7 +296,7 @@ export default function ServiceListingDetails({
                         : "-"}
                     </Text>,
                     {
-                      display: serviceListing.requiresBooking
+                      display: serviceListing?.requiresBooking
                         ? "block"
                         : "none",
                     },
