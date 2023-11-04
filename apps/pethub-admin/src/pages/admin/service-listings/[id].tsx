@@ -1,5 +1,6 @@
 import { Carousel } from "@mantine/carousel";
 import {
+  Accordion,
   Badge,
   Box,
   Button,
@@ -12,23 +13,32 @@ import {
   Paper,
   Stack,
   Text,
+  useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
+import {
+  IconCalendarTime,
+  IconCheck,
+  IconListDetails,
+  IconPhotoPlus,
+} from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
   downloadFile,
   extractFileName,
+  formatISODateLong,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
+import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import ImageCarousel from "web-ui/shared/ImageCarousel";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import ServiceListingReview from "@/components/service-listings/ServiceListingReview";
@@ -48,24 +58,20 @@ export default function ServiceListingDetails({
   serviceListingId,
   permissions,
 }: ServiceListingDetailsProps) {
+  const theme = useMantineTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
   const permissionCodes = permissions.map((permission) => permission.code);
   const canWrite = permissionCodes.includes(
     PermissionsCodeEnum.WriteServiceListings,
   );
-  const canWriteReportReview = permissionCodes.includes(
-    PermissionsCodeEnum.WriteReportedReview,
-  );
-  const canRead = permissionCodes.includes(
-    PermissionsCodeEnum.ReadServiceListings,
-  );
   const [imagePreview, setImagePreview] = useState([]);
-  const [showFullReview, toggleShowFullReview] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
   const textRef = useRef(null);
   const { data: serviceListing, refetch } =
     useGetServiceListingById(serviceListingId);
+  const OPEN_FOREVER = ["details", "review"];
+  const [showFullDescription, toggleShowFullDescription] = useToggle();
 
   useEffect(() => {
     if (textRef.current) {
@@ -124,6 +130,23 @@ export default function ServiceListingDetails({
     }
   };
 
+  const generateItemGroup = (
+    title: string,
+    content: ReactNode,
+    colProps: any = {},
+  ) => {
+    return (
+      <>
+        <Grid.Col span={7} {...colProps}>
+          <Text fw={500}>{title}</Text>
+        </Grid.Col>
+        <Grid.Col span={17} {...colProps}>
+          {content}
+        </Grid.Col>
+      </>
+    );
+  };
+
   return (
     <>
       <Head>
@@ -131,233 +154,230 @@ export default function ServiceListingDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <LargeBackButton
-        text="Back to Service Listing Management"
-        onClick={() => {
-          router.push("/admin/service-listings");
-        }}
-        size="sm"
-        mb="md"
-      />
+      <Container mt="xl" mb="xl" size="70vw">
+        <Group position="apart">
+          <PageTitle title={serviceListing?.title} />
+          <Box>
+            <LargeBackButton
+              text="Back to Service Listings"
+              onClick={async () => {
+                router.push("/business/listings");
+              }}
+              size="sm"
+            />
+          </Box>
+        </Group>
 
-      <Container fluid>
-        <Paper style={{ width: "100%", margin: "0 auto" }}>
-          <Group
-            style={{
-              width: "100%",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <div style={{ flexGrow: 1, textAlign: "center" }}>
-              <Text
-                align="center"
-                size="xl"
-                weight={500}
-                style={{ width: "100%" }}
-                fw={700}
-              >
-                Service Listing Details
+        <Accordion
+          multiple
+          variant="filled"
+          value={OPEN_FOREVER}
+          onChange={() => {}}
+          chevronSize={0}
+          mt="md"
+        >
+          <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
+            <Group position="apart" mt={5}>
+              <Text size="xl">
+                <b>Service Listing Details</b> | ID.{" "}
+                {serviceListing?.serviceListingId}
               </Text>
-            </div>
-            {canWrite && (
-              <DeleteActionButtonModal
-                title={`Are you sure you want to delete ${serviceListing?.title}?`}
-                subtitle="Pet Owners would no longer be able to view this service listing."
-                onDelete={() => {
-                  handleDeleteServiceListing(serviceListingId);
-                }}
-              />
-            )}
-          </Group>
-          <Divider />
-          <Grid gutter="md" style={{ marginTop: "20px" }}>
-            <Grid.Col span={3}>
-              <Text fw={700}>Title:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>{serviceListing?.title}</Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Description:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              {/* {descriptionSection} */}
-              <Box>
-                <Text
-                  sx={{ whiteSpace: "pre-line" }}
-                  lineClamp={showFullReview ? 0 : 2}
-                  size="xs"
-                  mt="xs"
-                  ref={textRef}
-                >
-                  {serviceListing?.description}
-                </Text>
-                <Group position="right">
-                  <Button
-                    compact
-                    variant="subtle"
-                    color="blue"
-                    size="xs"
-                    onClick={() => toggleShowFullReview()}
-                    mt="xs"
-                    mr="xs"
-                    display={textExceedsLineClamp ? "block" : "none"}
-                  >
-                    {showFullReview ? "View less" : "View more"}
-                  </Button>
+
+              {canWrite && (
+                <Group>
+                  <DeleteActionButtonModal
+                    title="Delete Service Listing"
+                    subtitle="Are you sure you want to delete this service listing?"
+                    onDelete={async () =>
+                      handleDeleteServiceListing(serviceListingId)
+                    }
+                    large
+                    miw={120}
+                    variant="light"
+                    sx={{ border: "1.5px  solid" }}
+                  />
                 </Group>
-              </Box>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Category:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.category
-                  ? formatStringToLetterCase(serviceListing?.category)
-                  : ""}
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Price:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>${formatNumber2Decimals(serviceListing?.basePrice)}</Text>
-            </Grid.Col>
-
-            <Grid.Col span={3}>
-              <Text fw={700}>Addresses:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.addresses
-                  .map((addr) => addr.addressName)
-                  .join(", ")}
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Tags:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.tags && serviceListing.tags.length > 0 ? (
-                  serviceListing.tags.map((tag, index) => (
-                    <React.Fragment key={tag.tagId}>
-                      <Badge color="blue">{tag.name}</Badge>
-                      {index < serviceListing.tags.length - 1 && "\u00A0"}
-                      {/* Add space if not the last tag */}
-                    </React.Fragment>
-                  ))
-                ) : (
-                  <Text>-</Text>
-                )}
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Date Created:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {new Date(serviceListing?.dateCreated).toLocaleDateString()}
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Last Updated:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.lastUpdated
-                  ? new Date(serviceListing.lastUpdated).toLocaleDateString()
-                  : "-"}
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Requires Bookings:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              {serviceListing?.requiresBooking ? (
-                <Badge color="green">Yes</Badge>
-              ) : (
-                <Badge color="red">No</Badge>
               )}
-            </Grid.Col>
-            {serviceListing?.requiresBooking && (
-              <>
-                <Grid.Col span={3}>
-                  <Text fw={700}>Duration:</Text>
-                </Grid.Col>
-                <Grid.Col span={9}>
-                  <Text>{serviceListing.duration} mins</Text>
-                </Grid.Col>
-              </>
-            )}
-            <Grid.Col span={3}>
-              <Text fw={700}>Default Expiry Days:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.defaultExpiryDays
-                  ? `${serviceListing.defaultExpiryDays} Days`
-                  : "-"}
+            </Group>
+            <Box mb="md">
+              <Divider mb="lg" mt="lg" />
+              <Text fw={600} size="md">
+                <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
+                &nbsp;Service Overview
               </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Last Possible Date:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.lastPossibleDate
-                  ? new Date(
-                      serviceListing.lastPossibleDate,
-                    ).toLocaleDateString()
-                  : "-"}
-              </Text>
-            </Grid.Col>
-            <Grid.Col span={3}>
-              <Text fw={700}>Pet Business Company Name:</Text>
-            </Grid.Col>
-            <Grid.Col span={9}>
-              <Text>
-                {serviceListing?.petBusiness
-                  ? serviceListing.petBusiness.companyName
-                  : "-"}
-              </Text>
-            </Grid.Col>
-          </Grid>
-          <Divider my="lg" />
-          <Stack spacing="md">
-            {imagePreview && imagePreview.length > 0 ? (
-              <Carousel slideSize="33.333333%" loop slidesToScroll={3}>
-                {imagePreview.map((imageUrl, index) => (
-                  <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
-                    <Card style={{ width: "100%" }}>
-                      <Image
-                        src={imageUrl}
-                        alt={`Image Preview ${index}`}
-                        style={{
-                          maxWidth: "100%",
-                          //maxHeight: "800px",
-                          display: "block",
-                        }}
+              <Grid columns={24} mt="xs">
+                {generateItemGroup(
+                  "Title",
+                  <Text>{serviceListing?.title}</Text>,
+                )}
+                {generateItemGroup(
+                  "Description",
+                  <Box>
+                    <Text lineClamp={showFullDescription ? 0 : 2} ref={textRef}>
+                      {serviceListing?.description}
+                    </Text>
+                    <Group position="right">
+                      <Button
+                        compact
+                        variant="subtle"
+                        color="blue"
+                        size="xs"
+                        onClick={() => toggleShowFullDescription()}
+                        mt="xs"
+                        mr="xs"
+                        display={textExceedsLineClamp ? "block" : "none"}
+                      >
+                        {showFullDescription ? "View less" : "View more"}
+                      </Button>
+                    </Group>
+                  </Box>,
+                )}
+                {generateItemGroup(
+                  "Category",
+                  <>
+                    {serviceListing?.category ? (
+                      <Badge ml={-2}>
+                        {formatStringToLetterCase(serviceListing?.category)}
+                      </Badge>
+                    ) : (
+                      "-"
+                    )}
+                  </>,
+                )}
+                {generateItemGroup(
+                  "Price",
+                  <Text>
+                    $ {formatNumber2Decimals(serviceListing?.basePrice)}
+                  </Text>,
+                )}
+              </Grid>
+              <Divider mt="lg" mb="lg" />
+
+              <Box mb="md">
+                <Text fw={600} size="md">
+                  <IconCalendarTime
+                    size="1rem"
+                    color={theme.colors.indigo[5]}
+                  />{" "}
+                  &nbsp;Scheduling
+                </Text>
+                <Grid columns={24} mt="xs">
+                  {generateItemGroup(
+                    "Default Expiry Days",
+                    <Text>{`${serviceListing?.defaultExpiryDays} ${
+                      serviceListing?.defaultExpiryDays === 1 ? "day" : "days"
+                    }`}</Text>,
+                  )}
+                  {generateItemGroup(
+                    "Last Operational Date",
+                    <Text>
+                      {serviceListing?.lastPossibleDate
+                        ? formatISODateLong(serviceListing?.lastPossibleDate)
+                        : "None selected"}
+                    </Text>,
+                  )}
+                  {generateItemGroup(
+                    "Requires Booking",
+                    serviceListing?.requiresBooking ? (
+                      <Badge color="green" ml={-2}>
+                        REQUIRED
+                      </Badge>
+                    ) : (
+                      <Badge color="red" ml={-2}>
+                        NOT REQUIRED
+                      </Badge>
+                    ),
+                  )}
+                  {generateItemGroup(
+                    "Duration",
+                    <Text>
+                      {serviceListing?.duration
+                        ? `${serviceListing.duration} minutes`
+                        : "-"}
+                    </Text>,
+                    {
+                      display: serviceListing.requiresBooking
+                        ? "block"
+                        : "none",
+                    },
+                  )}
+                </Grid>
+                <Divider mt="lg" mb="lg" />
+              </Box>
+
+              <Box mb="md">
+                <Text fw={600} size="md">
+                  <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+                  &nbsp;Other Details
+                </Text>
+                <Grid columns={24} mt="xs">
+                  {generateItemGroup(
+                    "Locations",
+                    serviceListing?.addresses &&
+                      serviceListing.addresses.length > 0 ? (
+                      serviceListing.addresses.map((address) => (
+                        <Badge
+                          key={address.addressId}
+                          color="violet"
+                          radius="xs"
+                          mr={4}
+                          variant="dot"
+                        >
+                          {address.addressName}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Text>None selected</Text>
+                    ),
+                  )}
+                  {generateItemGroup(
+                    "Tags",
+                    serviceListing?.tags && serviceListing.tags.length > 0 ? (
+                      serviceListing.tags.map((tag) => (
+                        <Badge
+                          key={tag.tagId}
+                          color="violet"
+                          radius="xs"
+                          mr={4}
+                        >
+                          {tag.name}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Text>None selected</Text>
+                    ),
+                  )}
+                  {generateItemGroup(
+                    "Display Images",
+                    imagePreview.length == 0 ? (
+                      <Text>No images uploaded</Text>
+                    ) : (
+                      <ImageCarousel
+                        attachmentURLs={imagePreview}
+                        altText="Service listing image"
+                        imageHeight={400}
                       />
-                    </Card>
-                  </div>
-                ))}
-              </Carousel>
-            ) : (
-              <Text mt="sm" mb="sm" ta="center" c="dimmed">
-                No images available for this listing.
-              </Text>
-            )}
-          </Stack>
-          <Divider my="lg" />
-          <ServiceListingReview
-            canWrite={canWriteReportReview}
-            serviceListing={serviceListing}
-            refetch={refetch}
-          />
-        </Paper>
+                    ),
+                  )}
+                </Grid>
+              </Box>
+            </Box>
+          </Accordion.Item>
+          <Accordion.Item
+            value="details"
+            pl={30}
+            pr={30}
+            pt={15}
+            pb={10}
+            mt={20}
+          >
+            <ServiceListingReview
+              canWrite={canWrite}
+              serviceListing={serviceListing}
+              refetch={refetch}
+            />
+          </Accordion.Item>
+        </Accordion>
       </Container>
     </>
   );

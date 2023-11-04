@@ -152,7 +152,9 @@ const ViewReportedReviewModal = ({
                   <IconFileReport color={theme.colors.indigo[5]} />
                   <Text size="lg">Review Details</Text>
                   <Badge color="red">
-                    Reported by {review.reportedBy.length} users
+                    {`Reported by ${review.reportedBy.length} ${
+                      review.reportedBy.length == 1 ? "user" : "users"
+                    }`}
                   </Badge>
                 </Group>
               </Accordion.Control>
