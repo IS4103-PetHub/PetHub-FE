@@ -59,7 +59,7 @@ const ReviewStatisticsGroup = ({ reviewStats }: ReviewStatisticsGroupProps) => {
     animation: {
       startup: true,
       easing: "out",
-      duration: 3000,
+      duration: 5000,
     },
     colors: themeColors,
   };
@@ -79,18 +79,13 @@ const ReviewStatisticsGroup = ({ reviewStats }: ReviewStatisticsGroupProps) => {
     animation: {
       startup: true,
       easing: "out",
-      duration: 3000,
+      duration: 5000,
     },
   };
 
   const ratingCountOptions = {
     title: "Ratings Distribution (past 6 months)",
     is3D: true,
-    animation: {
-      startup: true,
-      easing: "out",
-      duration: 3000,
-    },
     colors: themeColors,
   };
 
