@@ -17,13 +17,13 @@ export default function UserDemographic({ data }: UserDemographicProps) {
       <Grid>
         <Grid.Col span={3}>
           <MiniSummaryCard
-            title={`New Pet Owner for ${currentMonth}`}
+            title={`New Pet Owners for ${currentMonth}`}
             body={data.POCount.toString()}
           />
         </Grid.Col>
         <Grid.Col span={3}>
           <MiniSummaryCard
-            title={`New Pet Business for ${currentMonth}`}
+            title={`New Pet Businesses for ${currentMonth}`}
             body={data.PBCount.toString()}
           />
         </Grid.Col>
