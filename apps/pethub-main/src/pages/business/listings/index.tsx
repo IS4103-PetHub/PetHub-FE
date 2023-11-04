@@ -209,7 +209,7 @@ export default function Listings({
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container fluid>
+        <Container fluid m="lg">
           <Group position="apart">
             <PageTitle title="Service Listing Management" />
             <LargeCreateButton

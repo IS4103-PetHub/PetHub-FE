@@ -10,9 +10,10 @@ import { IconInfoCircle } from "@tabler/icons-react";
 
 interface CustomPopoverProps extends PopoverProps {
   text: string;
+  iconSize?: string;
 }
 
-const CustomPopover = ({ text, ...props }: CustomPopoverProps) => {
+const CustomPopover = ({ text, iconSize, ...props }: CustomPopoverProps) => {
   const theme = useMantineTheme();
   const [opened, { close, open }] = useDisclosure(false);
 
@@ -28,7 +29,7 @@ const CustomPopover = ({ text, ...props }: CustomPopoverProps) => {
     >
       <Popover.Target>
         <ActionIcon onMouseEnter={open} onMouseLeave={close} variant="subtle">
-          <IconInfoCircle size="1rem" />
+          <IconInfoCircle size={iconSize ?? "1rem"} />
         </ActionIcon>
       </Popover.Target>
       <Popover.Dropdown

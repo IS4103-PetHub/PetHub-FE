@@ -1,4 +1,4 @@
-import { Badge, Group, ActionIcon, useMantineTheme } from "@mantine/core";
+import { Badge, Group, ActionIcon, useMantineTheme, Text } from "@mantine/core";
 import { IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
@@ -47,13 +47,12 @@ const OrdersManagementTable = ({
     {
       accessor: "orderItemId",
       title: "ID",
-      textAlignment: "left",
       sortable: true,
+      width: 80,
     },
     {
       accessor: "petBusiness",
       title: "Pet Business",
-      textAlignment: "left",
       sortable: true,
       render: (record) => {
         return `${record.serviceListing.petBusiness.companyName}`;
@@ -63,8 +62,9 @@ const OrdersManagementTable = ({
     {
       accessor: "itemName",
       title: "Name",
-      textAlignment: "left",
       sortable: true,
+      render: (record) => <Text fw={500}>{record.itemName}</Text>,
+      width: "30vw",
     },
     {
       accessor: "itemPrice",
@@ -78,7 +78,6 @@ const OrdersManagementTable = ({
     {
       accessor: "invoice.createdAt",
       title: "Date Created",
-      textAlignment: "left",
       render: (record) => {
         return record.invoice
           ? dayjs(record.invoice.createdAt).format("DD-MM-YYYY")
@@ -90,7 +89,6 @@ const OrdersManagementTable = ({
     {
       accessor: "status",
       title: "Status",
-      textAlignment: "left",
       render: (record) => {
         return (
           <Badge color={orderStatusColorMap.get(record.status)}>
@@ -132,15 +130,16 @@ const OrdersManagementTable = ({
     {
       accessor: "orderItemId",
       title: "ID",
-      textAlignment: "left",
       sortable: true,
+      width: 80,
     },
     // item name
     {
       accessor: "itemName",
       title: "Name",
-      textAlignment: "left",
       sortable: true,
+      render: (record) => <Text fw={500}>{record.itemName}</Text>,
+      width: "30vw",
     },
     {
       accessor: "itemPrice",
@@ -154,7 +153,6 @@ const OrdersManagementTable = ({
     {
       accessor: "invoice.createdAt",
       title: "Date Created",
-      textAlignment: "left",
       render: (record) => {
         return record.invoice
           ? dayjs(record.invoice.createdAt).format("DD-MM-YYYY")
@@ -165,7 +163,6 @@ const OrdersManagementTable = ({
     {
       accessor: "booking.startTime",
       title: "Appointment Date",
-      textAlignment: "left",
       render: (record) => {
         return record.booking
           ? dayjs(record.booking.startTime).format("DD-MM-YYYY")
@@ -177,7 +174,6 @@ const OrdersManagementTable = ({
     {
       accessor: "status",
       title: "Status",
-      textAlignment: "left",
       render: (record) => {
         return (
           <Badge color={orderStatusColorMap.get(record.status)}>

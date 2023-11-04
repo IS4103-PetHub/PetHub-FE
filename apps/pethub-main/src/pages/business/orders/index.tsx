@@ -188,9 +188,9 @@ export default function Orders({ userId, canView }: OrdersProps) {
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container fluid>
+        <Container fluid m="lg">
           <Group position="apart">
-            <PageTitle title="Orders Management" />
+            <PageTitle title="Order Management" />
           </Group>
           <Grid>
             <Grid.Col span={6}>
