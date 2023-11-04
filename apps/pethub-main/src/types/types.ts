@@ -345,3 +345,10 @@ export interface userDemographicData {
   ReportedReviewCount: number;
   PBApplicationCount: number;
 }
+
+export interface pbDashboardData {
+  unrepliedReviewCount: number;
+  invalidSLCount: number;
+  openRefundRequestsCount: number;
+  openSupportRequestsCount: number;
+}
