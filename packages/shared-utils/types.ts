@@ -265,3 +265,24 @@ export interface ReportReview {
   reviewId: number;
   review: Review;
 }
+
+interface AverageReviewData {
+  averageReviewData: [string[], [string, number][]]; // First element: Header list, Other elements: Data
+}
+
+interface RatingCountDistributionData {
+  ratingCountDistributionData: [
+    string[],
+    [string, number, number, number, number, number][],
+  ]; // First element: Header list, Other elements: Data
+}
+
+interface RatingCountData {
+  ratingCountData: [string[], [string, number][]]; // Corrected syntax error // First element: Header list, Other elements: Data
+}
+
+export interface ReviewStatsResponse {
+  averageReviewData: AverageReviewData;
+  ratingCountDistributionData: RatingCountDistributionData;
+  ratingCountData: RatingCountData;
+}

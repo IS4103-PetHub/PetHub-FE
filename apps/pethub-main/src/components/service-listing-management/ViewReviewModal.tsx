@@ -66,10 +66,7 @@ const ViewReviewModal = ({
   onClose,
   refetch,
 }: ViewReviewModalProps) => {
-  const theme = useMantineTheme();
-  const router = useRouter();
   const [isReplying, toggleIsReplying] = useToggle();
-  const queryClient = useQueryClient();
 
   const isUpdate = !!review?.reply;
 
@@ -83,10 +80,6 @@ const ViewReviewModal = ({
       reply: (value) => validateReviewComment(value),
     },
   });
-
-  useEffect(() => {
-    console.log("Review data:", review);
-  }, [review]);
 
   useEffect(() => {
     if (review?.reply) {
@@ -112,9 +105,7 @@ const ViewReviewModal = ({
           : "Congratulations! You have left a reply.",
       });
       toggleIsReplying();
-      // WHY IT NO WORK
-      //   await refetch();
-      window.location.reload();
+      await refetch();
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(
