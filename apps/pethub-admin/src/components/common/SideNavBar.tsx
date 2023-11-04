@@ -19,6 +19,7 @@ import {
   IconLogout,
   IconBusinessplan,
   IconFileInvoice,
+  IconMessageReport,
   IconNews,
   IconMessage,
   IconChartBar,
@@ -114,6 +115,11 @@ const data = [
     link: "/admin/orders",
     label: "Orders",
     icon: IconFileInvoice,
+  },
+  {
+    link: "/admin/reported-reviews",
+    label: "Reported Reviews",
+    icon: IconMessageReport,
   },
   {
     link: "/admin/revenue",

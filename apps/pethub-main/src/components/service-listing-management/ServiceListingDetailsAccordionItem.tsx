@@ -55,6 +55,7 @@ import {
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
+import ImageCarousel from "web-ui/shared/ImageCarousel";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
 import LargeSaveButton from "web-ui/shared/LargeSaveButton";
 import {
@@ -66,7 +67,6 @@ import {
   CreateServiceListingPayload,
   UpdateServiceListingPayload,
 } from "@/types/types";
-import ImageCarousel from "../common/file/ImageCarousel";
 
 interface ServiceListingDetailsAccordionItemProps {
   form: any;
