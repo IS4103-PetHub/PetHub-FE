@@ -1,9 +1,9 @@
 import { Box, Grid, useMantineTheme } from "@mantine/core";
 import MiniSummaryCard from "web-ui/shared/dashboard/MiniSummaryCard";
-import { pbDashboardData } from "@/types/types";
+import { PbDashboardData } from "@/types/types";
 
 interface pbDashboardDataProps {
-  data: pbDashboardData;
+  data: PbDashboardData;
 }
 
 export default function PBDashboardCharts({ data }: pbDashboardDataProps) {
