@@ -35,6 +35,7 @@ import { useCartOperations } from "@/hooks/cart";
 import { useDeleteReview } from "@/hooks/review";
 import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
+import RefundModal from "../refund/RefundModal";
 import ReviewModal from "../review/ReviewModal";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -61,17 +62,13 @@ const OrderItemStepperContent = ({
     reviewModalOpened,
     { open: openReviewModal, close: closeReviewModal },
   ] = useDisclosure(false);
+  const [
+    refundModalOpened,
+    { open: openRefundModal, close: closeRefundModal },
+  ] = useDisclosure(false);
 
   const REFUND_HOLDING_PERIOD_DAYS = 7;
   const REVIEW_HOLDING_PERIOD_DAYS = 15;
-
-  function triggerNotImplementedNotification() {
-    notifications.show({
-      title: "Not Implemented",
-      color: "orange",
-      message: "This function will be implemented in SR4",
-    });
-  }
 
   async function buyAgainHandler() {
     await addItemToCart({
@@ -373,10 +370,10 @@ const OrderItemStepperContent = ({
           color="red"
           variant="light"
           sx={{ border: "1px solid #e0e0e0" }}
-          onClick={triggerNotImplementedNotification}
+          onClick={openRefundModal}
           disabled={eligibleForRefund ? false : true}
         >
-          Refund
+          {orderItem?.RefundRequest ? "View Refund Request" : "Refund"}
         </Button>
       </Grid.Col>
     </>
@@ -522,6 +519,13 @@ const OrderItemStepperContent = ({
         opened={reviewModalOpened}
         onClose={closeReviewModal}
         onCreateOrUpdate={refetch}
+      />
+      <RefundModal
+        orderItem={orderItem}
+        userId={userId}
+        opened={refundModalOpened}
+        onClose={closeRefundModal}
+        refetch={refetch}
       />
     </Grid>
   );

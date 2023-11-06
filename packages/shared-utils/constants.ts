@@ -70,7 +70,6 @@ export enum RefundStatusEnum {
   Pending = "PENDING",
   Approved = "APPROVED",
   Rejected = "REJECTED",
-  Cancelled = "CANCELLED",
 }
 
 export enum PetTypeEnum {

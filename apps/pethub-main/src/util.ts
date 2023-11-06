@@ -483,3 +483,13 @@ export const flattenAndFilterFeaturedListingsResponse = (response: any) => {
       })
   );
 };
+
+export function validateRefundReason(reason: string) {
+  if (!reason) {
+    return "Reason is required.";
+  }
+  if (reason.length > 2000) {
+    return "Reason cannot exceed 2000 characters";
+  }
+  return null;
+}

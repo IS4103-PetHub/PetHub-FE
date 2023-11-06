@@ -152,16 +152,6 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           <Button miw={90} size="xs" mr={-5} onClick={bookNowHandler}>
             Book now
           </Button>
-          <Button
-            color="red"
-            variant="light"
-            size="xs"
-            miw={90}
-            onClick={triggerNotImplementedNotification}
-            mr={-5}
-          >
-            Refund
-          </Button>
           <OrderItemPopover
             text={`Make your booking and redeem your voucher before the end of the validity period on ${formatISODayDateTime(
               orderItem?.expiryDate,
