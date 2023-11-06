@@ -58,7 +58,7 @@ export default function Dashboard({
         <title>Dashboard - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid m="lg">
+      <Container fluid>
         {applicationStatus !== BusinessApplicationStatusEnum.Approved ? (
           // PB application is not yet approved
           <ApplicationStatusAlert

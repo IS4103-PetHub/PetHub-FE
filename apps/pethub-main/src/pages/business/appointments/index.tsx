@@ -49,7 +49,7 @@ export default function CalendarGroup({
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container fluid m="lg">
+        <Container fluid>
           <Group position="apart">
             <PageTitle title="Appointment Management" />
             <LargeCreateButton

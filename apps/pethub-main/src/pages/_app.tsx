@@ -15,6 +15,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import localFont from "next/font/local";
+import { useRouter } from "next/router";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -39,6 +40,7 @@ export function App({ Component, pageProps }: AppProps) {
   const { data: session, status } = useSession();
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+  const router = useRouter();
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -94,7 +96,12 @@ export function App({ Component, pageProps }: AppProps) {
               <AppShell
                 header={headerBarCheck()}
                 navbar={sideBarCheck()}
-                padding={0}
+                padding={
+                  router.asPath === "/business/sales/dashboard" ||
+                  !sideBarCheck()
+                    ? 0
+                    : "lg"
+                }
               >
                 {status === "loading" ? (
                   <Container
