@@ -42,7 +42,7 @@ import {
   ApproveOrRejectRefundRequestPayload,
   CreateRefundRequestPayload,
 } from "@/types/types";
-import { validateRefundReason } from "@/util";
+import { validateRefundComment, validateRefundReason } from "@/util";
 import OrderItemCardMini from "../order/OrderItemCardMini";
 import OrderItemPopover from "../order/OrderItemPopover";
 
@@ -109,7 +109,8 @@ const RefundModal = ({
     validate: {
       reason: (value) =>
         !orderItem?.RefundRequest ? validateRefundReason(value) : null,
-      comment: (value) => (isBusinessView ? validateRefundReason(value) : null),
+      comment: (value) =>
+        isBusinessView ? validateRefundComment(value) : null,
     },
   });
 
