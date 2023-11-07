@@ -6,6 +6,7 @@ import {
   CopyButton,
   Divider,
   Grid,
+  Group,
   Rating,
   Stack,
   Stepper,
@@ -26,6 +27,7 @@ import React, { useState } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
+  RefundStatusEnum,
   formatISODateTimeShort,
   formatISODayDateTime,
   formatNumber2Decimals,
@@ -69,6 +71,21 @@ const OrderItemStepperContent = ({
 
   const REFUND_HOLDING_PERIOD_DAYS = 7;
   const REVIEW_HOLDING_PERIOD_DAYS = 15;
+
+  const refundStatusTextMap = {
+    [RefundStatusEnum.Pending]:
+      "Your refund request is pending review from the business.",
+    [RefundStatusEnum.Approved]:
+      "The amount will be credited to your original payment method.",
+    [RefundStatusEnum.Rejected]:
+      "Please file a support ticket should you feel this is an error.",
+  };
+
+  const refundStatusColorMap = {
+    [RefundStatusEnum.Pending]: "orange",
+    [RefundStatusEnum.Approved]: "green",
+    [RefundStatusEnum.Rejected]: "red",
+  };
 
   async function buyAgainHandler() {
     await addItemToCart({
@@ -357,11 +374,28 @@ const OrderItemStepperContent = ({
   const refundColumn = (
     <>
       <Grid.Col span={6}>
-        <Text size="xs" color="dimmed">
-          {eligibleForRefund
-            ? `You are eligible to request for a refund until ${fakeRefundDate}.`
-            : `You are no longer eligible for a refund as the last refund date ${fakeRefundDate} has passed.`}
-        </Text>
+        {orderItem?.RefundRequest ? (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Badge
+              variant="filled"
+              mr="xs"
+              radius="xs"
+              p={3}
+              color={refundStatusColorMap[orderItem?.RefundRequest?.status]}
+            >
+              {orderItem?.RefundRequest?.status}
+            </Badge>
+            <Text size="xs">
+              {refundStatusTextMap[orderItem?.RefundRequest?.status]}
+            </Text>
+          </Box>
+        ) : (
+          <Text size="xs" color="dimmed">
+            {eligibleForRefund
+              ? `You are eligible to request for a refund until ${fakeRefundDate}.`
+              : `You are no longer eligible for a refund as the last refund date ${fakeRefundDate} has passed.`}
+          </Text>
+        )}
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
@@ -468,6 +502,8 @@ const OrderItemStepperContent = ({
   const refundedGroup = (
     <>
       {buyAgainColumn}
+      {dividerColumn}
+      {refundColumn}
       {dividerColumn}
       {reviewColumn}
       {dividerColumn}

@@ -3,9 +3,11 @@ import {
   IconBrowserCheck,
   IconBulb,
   IconCalendarEvent,
+  IconCheck,
   IconClipboardCheck,
   IconClockExclamation,
   IconCreditCard,
+  IconDots,
   IconMenu2,
   IconStar,
 } from "@tabler/icons-react";
@@ -14,6 +16,7 @@ import React, { useEffect, useRef } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
+  RefundStatusEnum,
   formatISODateTimeShort,
 } from "shared-utils";
 
@@ -81,8 +84,9 @@ const OrderItemStepper = ({
     happyNoBooking: ["Ordered", "Fulfilled", "Reviewed"],
     expiredBooking: ["Ordered", "Booked", "Expired"],
     expiredNoBooking: ["Ordered", "Expired"],
-    refundedBooking: ["Ordered", "Booked", "Fulfilled", "Refunded"],
-    refundedNoBooking: ["Ordered", "Fulfilled", "Refunded"],
+    refunds: ["RefundRequested", "RefundPending", "RefundOutcome"],
+    // refundedBooking: ["Ordered", "Booked", "Fulfilled", "Refunded"],
+    // refundedNoBooking: ["Ordered", "Fulfilled", "Refunded"],
   };
 
   // These are the steps that should be active depending on the status of the order item
@@ -92,7 +96,7 @@ const OrderItemStepper = ({
     [OrderItemStatusEnum.Fulfilled, "Fulfilled"],
     [OrderItemStatusEnum.PaidOut, "Fulfilled"],
     [OrderItemStatusEnum.Expired, "Expired"],
-    [OrderItemStatusEnum.Refunded, "Refunded"],
+    [OrderItemStatusEnum.Refunded, "RefundOutcome"],
   ]);
 
   // Apparently JSX elements in a map need a unique key or husky will be mad
@@ -102,7 +106,10 @@ const OrderItemStepper = ({
     ["Fulfilled", <IconBrowserCheck key="IconBrowserCheck" />],
     ["Reviewed", <IconStar key="IconStar" />],
     ["Expired", <IconClockExclamation key="IconClockExclamation" />],
-    ["Refunded", <IconCreditCard key="IconCreditCard" />],
+    // ["Refunded", <IconCreditCard key="IconCreditCard" />],
+    ["RefundRequested", <IconCreditCard key="IconCreditCard" />],
+    ["RefundPending", <IconDots key="IconDots" />],
+    ["RefundOutcome", <IconCheck key="IconCheck" />],
   ]);
 
   // A user can only leave a review max 15 days after the order item has been fulfilled
@@ -149,8 +156,6 @@ const OrderItemStepper = ({
         : 3
       : -1;
 
-    // const pendingReviewText = orderItem?.review ? `Review by ${}` : "Review has been made";
-
     const steps = {
       Ordered: {
         label: "Ordered",
@@ -181,9 +186,30 @@ const OrderItemStepper = ({
         label: "Expired",
         description: "Order has expired",
       },
-      Refunded: {
-        label: "Refunded",
-        description: "Order has been refunded",
+      // Refunded: {
+      //   label: "Refunded",
+      //   description: "Order has been refunded",
+      // },
+      RefundRequested: {
+        label: "Refund Requested",
+        description: formatISODateTimeShort(
+          orderItem?.RefundRequest?.createdAt,
+        ),
+      },
+      RefundPending: {
+        label: "Pending",
+        description: "Pending business review",
+      },
+      RefundOutcome: {
+        label:
+          orderItem?.RefundRequest?.status === RefundStatusEnum.Approved
+            ? "Approved"
+            : orderItem?.RefundRequest?.status === RefundStatusEnum.Rejected
+            ? "Rejected"
+            : "Outcome",
+        description: orderItem?.RefundRequest?.processedAt
+          ? formatISODateTimeShort(orderItem?.RefundRequest?.processedAt)
+          : "Pending outcome",
       },
     };
 
@@ -202,8 +228,7 @@ const OrderItemStepper = ({
     if (
       stepType === "Booked" &&
       !orderItem?.booking &&
-      (group === stepGroups.expiredBooking ||
-        group === stepGroups.refundedBooking)
+      group === stepGroups.expiredBooking
     ) {
       stepDetails = {
         color: "red",
@@ -212,12 +237,7 @@ const OrderItemStepper = ({
       };
     }
 
-    if (
-      stepType === "Fulfilled" &&
-      !orderItem?.dateFulfilled &&
-      (group === stepGroups.refundedNoBooking ||
-        group === stepGroups.refundedBooking)
-    ) {
+    if (stepType === "Fulfilled" && !orderItem?.dateFulfilled) {
       stepDetails = {
         color: "red",
         label: "Not Fulfilled",
@@ -237,6 +257,18 @@ const OrderItemStepper = ({
           ? formatISODateTimeShort(orderItem?.review?.lastUpdated)
           : formatISODateTimeShort(orderItem?.review?.dateCreated),
       };
+    }
+
+    if (stepType.startsWith("Refund") && orderItem?.RefundRequest) {
+      const refundRequest = orderItem.RefundRequest;
+      if (refundRequest.status === RefundStatusEnum.Pending) {
+        activeStepIndexRef.current = group.indexOf("RefundPending") + 1;
+      } else if (
+        refundRequest.status === RefundStatusEnum.Approved ||
+        refundRequest.status === RefundStatusEnum.Rejected
+      ) {
+        activeStepIndexRef.current = group.indexOf("RefundOutcome") + 1;
+      }
     }
 
     return { icon, ...stepDetails };
@@ -275,6 +307,15 @@ const OrderItemStepper = ({
         activeStepIndexRef.current = group.indexOf("Reviewed") + 1;
       }
 
+      if (orderItem?.status === OrderItemStatusEnum.Refunded) {
+        activeStepIndexRef.current =
+          group.findIndex(
+            (step) =>
+              step ===
+              mapStatusToStepGroupStep.get(OrderItemStatusEnum.Refunded),
+          ) + 1;
+      }
+
       return (
         <Stepper.Step
           key={idx}
@@ -289,30 +330,56 @@ const OrderItemStepper = ({
   }
 
   function renderContent() {
-    const contentMap = {
-      [OrderItemStatusEnum.PaidOut]: orderItem?.serviceListing.requiresBooking
-        ? stepGroups.happyBooking
-        : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.PendingFulfillment]: orderItem?.serviceListing
-        .requiresBooking
-        ? stepGroups.happyBooking
-        : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.Fulfilled]: orderItem?.serviceListing.requiresBooking
-        ? stepGroups.happyBooking
-        : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.PendingBooking]: orderItem?.serviceListing
-        .requiresBooking
-        ? stepGroups.happyBooking
-        : stepGroups.happyNoBooking,
-      [OrderItemStatusEnum.Expired]: orderItem?.serviceListing.requiresBooking
-        ? stepGroups.expiredBooking
-        : stepGroups.expiredNoBooking,
-      [OrderItemStatusEnum.Refunded]: orderItem?.serviceListing.requiresBooking
-        ? stepGroups.refundedBooking
-        : stepGroups.refundedNoBooking,
-    };
+    // const contentMap = {
+    //   [OrderItemStatusEnum.PaidOut]: orderItem?.serviceListing.requiresBooking
+    //     ? stepGroups.happyBooking
+    //     : stepGroups.happyNoBooking,
+    //   [OrderItemStatusEnum.PendingFulfillment]: orderItem?.serviceListing.requiresBooking
+    //     ? stepGroups.happyBooking
+    //     : stepGroups.happyNoBooking,
+    //   [OrderItemStatusEnum.Fulfilled]: orderItem?.serviceListing.requiresBooking
+    //     ? stepGroups.happyBooking
+    //     : stepGroups.happyNoBooking,
+    //   [OrderItemStatusEnum.PendingBooking]: orderItem?.serviceListing.requiresBooking
+    //     ? stepGroups.happyBooking
+    //     : stepGroups.happyNoBooking,
+    //   [OrderItemStatusEnum.Expired]: orderItem?.serviceListing.requiresBooking
+    //     ? stepGroups.expiredBooking
+    //     : stepGroups.expiredNoBooking,
+    //   [OrderItemStatusEnum.Refunded]: stepGroups.refunds,
+    // };
 
-    const groupToRender = contentMap[orderItem?.status];
+    let groupToRender;
+
+    // Check if there's a pending refund request, then override
+    if (orderItem?.RefundRequest?.status === RefundStatusEnum.Pending) {
+      groupToRender = stepGroups.refunds;
+    } else {
+      const contentMap = {
+        [OrderItemStatusEnum.PaidOut]: orderItem?.serviceListing.requiresBooking
+          ? stepGroups.happyBooking
+          : stepGroups.happyNoBooking,
+        [OrderItemStatusEnum.PendingFulfillment]: orderItem?.serviceListing
+          .requiresBooking
+          ? stepGroups.happyBooking
+          : stepGroups.happyNoBooking,
+        [OrderItemStatusEnum.Fulfilled]: orderItem?.serviceListing
+          .requiresBooking
+          ? stepGroups.happyBooking
+          : stepGroups.happyNoBooking,
+        [OrderItemStatusEnum.PendingBooking]: orderItem?.serviceListing
+          .requiresBooking
+          ? stepGroups.happyBooking
+          : stepGroups.happyNoBooking,
+        [OrderItemStatusEnum.Expired]: orderItem?.serviceListing.requiresBooking
+          ? stepGroups.expiredBooking
+          : stepGroups.expiredNoBooking,
+        [OrderItemStatusEnum.Refunded]: stepGroups.refunds,
+      };
+
+      groupToRender = contentMap[orderItem?.status];
+    }
+
     return (
       groupToRender && (
         <Stepper {...(STEPPER_PROPS as any)}>

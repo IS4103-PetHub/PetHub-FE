@@ -293,7 +293,11 @@ const RefundModal = ({
               />
             </Box>
           </Accordion.Item>
-          <Box mb="xs" mt="xl">
+          <Box
+            mb="xs"
+            mt="xl"
+            sx={{ display: "flex", justifyContent: "flex-end" }}
+          >
             {isCreate ? (
               <Button
                 fullWidth
@@ -305,7 +309,6 @@ const RefundModal = ({
               </Button>
             ) : (
               <Box
-                sx={{ display: "flex", justifyContent: "flex-end" }}
                 display={
                   orderItem?.RefundRequest?.status === RefundStatusEnum.Pending
                     ? "block"

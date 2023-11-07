@@ -240,14 +240,14 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           </Text>
         </>
       )}
-      {status === OrderItemStatusEnum.Refunded && (
-        <>
-          <Text size="xs" fw={500} color="orange">
-            The amount of ${formatNumber2Decimals(orderItem?.itemPrice)} has
-            been refunded to your original payment method
-          </Text>
-        </>
-      )}
+      {status === OrderItemStatusEnum.Refunded &&
+        orderItem?.RefundRequest?.status === RefundStatusEnum.Approved && (
+          <>
+            <Text size="xs" fw={500} color="orange">
+              The balance has been refunded to your original payment method
+            </Text>
+          </>
+        )}
     </>
   );
 
