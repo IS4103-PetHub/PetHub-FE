@@ -32,8 +32,16 @@ import {
   getErrorMessageProps,
 } from "shared-utils";
 import { RefundStatusEnum } from "shared-utils";
-import { useCancelRefundRequest, useCreateRefundRequest } from "@/hooks/refund";
-import { CreateRefundRequestPayload } from "@/types/types";
+import {
+  useApproveRefundRequest,
+  useCancelRefundRequest,
+  useCreateRefundRequest,
+  useRejectRefundRequest,
+} from "@/hooks/refund";
+import {
+  ApproveOrRejectRefundRequestPayload,
+  CreateRefundRequestPayload,
+} from "@/types/types";
 import { validateRefundReason } from "@/util";
 import OrderItemCardMini from "../order/OrderItemCardMini";
 import OrderItemPopover from "../order/OrderItemPopover";
@@ -42,7 +50,8 @@ interface RefundModalProps {
   orderItem: OrderItem;
   opened: boolean;
   onClose: () => void;
-  userId: number;
+  isBusinessView?: boolean;
+  userId?: number;
   refetch?: () => Promise<any>;
 }
 
@@ -52,30 +61,38 @@ const RefundModal = ({
   opened,
   onClose,
   refetch,
+  isBusinessView,
 }: RefundModalProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
 
-  console.log("orderItem", orderItem);
+  const [choice, setChoice] = useState<string>("");
 
   const createRefundMutation = useCreateRefundRequest();
   const cancelRefundMutation = useCancelRefundRequest();
+  const approveRefundMutation = useApproveRefundRequest();
+  const rejectRefundMutation = useRejectRefundRequest();
 
   const OPEN_FOREVER = ["content"];
 
   const isCreate = !orderItem?.RefundRequest;
 
-  const popoverText = isCreate
+  const popoverText = isBusinessView
+    ? `Please ensure that you review this request fairly. Failure to reach an appropriate resolution might result in the customer filing for a support ticket and an investigation to be opened.`
+    : isCreate
     ? `When requesting a refund, please provide a clear and concise explanation of your issue. Be sure to include any relevant details about your order. Refrain from using offensive language or uploading inappropriate photos. Do not share any personal information. Non-compliance may lead to the rejection of your refund request.`
     : `You are viewing the created refund request. The business should reach out to you shortly. If you have changed your mind, feel free to cancel the refund request.`;
 
   const statusTextMap = {
-    [RefundStatusEnum.Pending]:
-      "Your refund request is pending review from the business, please be patient.",
-    [RefundStatusEnum.Approved]:
-      "Your refund has been approved, the amount will be credited to your original payment method.",
-    [RefundStatusEnum.Rejected]:
-      "Your refund request has been rejected, please file a support ticket should you feel that this is an error.",
+    [RefundStatusEnum.Pending]: isBusinessView
+      ? "This refund request is pending your review."
+      : "Your refund request is pending review from the business, please be patient.",
+    [RefundStatusEnum.Approved]: isBusinessView
+      ? "You have already approved this refund request."
+      : "Your refund has been approved, the amount will be credited to your original payment method.",
+    [RefundStatusEnum.Rejected]: isBusinessView
+      ? "You have already rejected this refund request."
+      : "Your refund request has been rejected, please file a support ticket should you feel that this is an error.",
   };
 
   const statusColorMap = {
@@ -87,9 +104,11 @@ const RefundModal = ({
   const form = useForm({
     initialValues: {
       reason: "",
+      comment: "",
     },
     validate: {
       reason: (value) => validateRefundReason(value),
+      comment: (value) => validateRefundReason(value),
     },
   });
 
@@ -99,10 +118,10 @@ const RefundModal = ({
   };
 
   useEffect(() => {
-    console.log("orderItem?.refundRequest", orderItem);
     if (orderItem?.RefundRequest) {
       form.setValues({
         reason: orderItem?.RefundRequest?.reason,
+        comment: orderItem?.RefundRequest?.comment,
       });
     } else {
       form.reset();
@@ -150,8 +169,61 @@ const RefundModal = ({
     }
   };
 
+  const approveRefundRequest = async (
+    payload: ApproveOrRejectRefundRequestPayload,
+  ) => {
+    try {
+      await approveRefundMutation.mutateAsync(payload);
+      if (refetch) await refetch();
+      handleModalClose();
+      notifications.show({
+        title: `Refund Request Approved`,
+        color: "green",
+        icon: <IconCheck />,
+        message:
+          "The refund request has been approved. The balance will be refunded to the customer's original payment method.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Approving Refund Request`, error),
+      });
+    }
+  };
+
+  const rejectRefundRequest = async (
+    payload: ApproveOrRejectRefundRequestPayload,
+  ) => {
+    try {
+      await rejectRefundMutation.mutateAsync(payload);
+      if (refetch) await refetch();
+      handleModalClose();
+      notifications.show({
+        title: `Refund Request Rejected`,
+        color: "green",
+        icon: <IconCheck />,
+        message: "The refund request has been rejected.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Approving Refund Request`, error),
+      });
+    }
+  };
+
   type formValues = typeof form.values;
   async function handleSubmit(values: formValues) {
+    if (isBusinessView) {
+      const payload: ApproveOrRejectRefundRequestPayload = {
+        refundRequestId: orderItem?.RefundRequest?.refundRequestId,
+        comment: values.comment,
+      };
+      if (choice === "approve") {
+        await approveRefundRequest(payload);
+      } else {
+        await rejectRefundRequest(payload);
+      }
+      return;
+    }
     if (isCreate) {
       await createRefundRequest({
         orderItemId: orderItem?.orderItemId,
@@ -170,7 +242,7 @@ const RefundModal = ({
       size="80vh"
       closeOnEscape={false}
       closeOnClickOutside={false}
-      title={<Text size="sm">Order Item No. {orderItem.orderItemId}</Text>}
+      title={<Text size="sm">Order Item No. {orderItem?.orderItemId}</Text>}
     >
       <Accordion
         multiple
@@ -194,7 +266,9 @@ const RefundModal = ({
             <Group mb="sm" position="apart">
               <Center>
                 <Text fw={600} size="xl">
-                  Refund Request
+                  Refund Request{" "}
+                  {isBusinessView &&
+                    `ID. ${orderItem?.RefundRequest?.refundRequestId}`}
                 </Text>
                 {!orderItem?.RefundRequest?.processedAt && (
                   <OrderItemPopover text={popoverText} />
@@ -214,7 +288,7 @@ const RefundModal = ({
                 label="Reason"
                 autosize
                 minRows={3}
-                maxRows={3}
+                maxRows={5}
                 maxLength={2000}
                 placeholder="Please describe the reason for your refund request. Be specific about any issues or concerns."
                 readOnly={!isCreate}
@@ -277,49 +351,89 @@ const RefundModal = ({
               </Text>
               <Textarea
                 mb="xs"
-                label="Comment from Business"
+                label={
+                  isBusinessView ? "Your comment" : "Comment from business"
+                }
                 autosize
                 minRows={3}
-                maxRows={3}
-                value={orderItem?.RefundRequest?.comment}
-                display={orderItem?.RefundRequest?.comment ? "block" : "none"}
-                readOnly={true}
-                styles={(theme) => ({
-                  input: {
-                    backgroundColor: "white",
-                    color: theme.colors.dark[9],
-                  },
-                })}
-              />
-            </Box>
-          </Accordion.Item>
-          <Box
-            mb="xs"
-            mt="xl"
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            {isCreate ? (
-              <Button
-                fullWidth
-                color="dark"
-                className="gradient-hover"
-                type="submit"
-              >
-                Submit Refund Request
-              </Button>
-            ) : (
-              <Box
+                maxRows={5}
                 display={
-                  orderItem?.RefundRequest?.status === RefundStatusEnum.Pending
+                  isBusinessView
+                    ? "block"
+                    : orderItem?.RefundRequest?.comment
                     ? "block"
                     : "none"
                 }
-              >
-                <Button color="red" type="submit">
+                readOnly={!!orderItem?.RefundRequest?.comment}
+                styles={(theme) =>
+                  !!orderItem?.RefundRequest?.comment
+                    ? {
+                        input: {
+                          backgroundColor: "white",
+                          color: theme.colors.dark[9],
+                        },
+                      }
+                    : {}
+                }
+                {...form.getInputProps("comment")}
+              />
+            </Box>
+          </Accordion.Item>
+          <Box mb="xs" mt="xl" display={isBusinessView ? "none" : "block"}>
+            <Group position="right">
+              {isCreate ? (
+                <Button
+                  fullWidth
+                  color="dark"
+                  className="gradient-hover"
+                  type="submit"
+                >
+                  Submit Refund Request
+                </Button>
+              ) : (
+                <Button
+                  color="red"
+                  type="submit"
+                  display={
+                    orderItem?.RefundRequest?.status ===
+                    RefundStatusEnum.Pending
+                      ? "block"
+                      : "none"
+                  }
+                >
                   Cancel Refund Request
                 </Button>
-              </Box>
-            )}
+              )}
+            </Group>
+          </Box>
+          <Box
+            mb="xs"
+            mt="xl"
+            display={
+              isBusinessView &&
+              orderItem?.RefundRequest?.status === RefundStatusEnum.Pending
+                ? "block"
+                : "none"
+            }
+          >
+            <Group position="right">
+              <Button
+                color="red"
+                type="submit"
+                miw={100}
+                onClick={() => setChoice("reject")}
+              >
+                Reject
+              </Button>
+              <Button
+                color="green"
+                type="submit"
+                miw={100}
+                onClick={() => setChoice("approve")}
+              >
+                Approve
+              </Button>
+            </Group>
           </Box>
         </form>
       </Accordion>

@@ -1,7 +1,10 @@
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import { RefundRequest } from "shared-utils";
 import api from "@/api/axiosConfig";
-import { CreateRefundRequestPayload } from "@/types/types";
+import {
+  ApproveOrRejectRefundRequestPayload,
+  CreateRefundRequestPayload,
+} from "@/types/types";
 const REFUND_API = "/refund-requests";
 
 export const useCreateRefundRequest = () => {
@@ -22,16 +25,28 @@ export const useCancelRefundRequest = () => {
 
 export const useRejectRefundRequest = () => {
   return useMutation({
-    mutationFn: async (id: number) => {
-      return (await api.patch(`${REFUND_API}/reject/${id}`)).data;
+    mutationFn: async (payload: ApproveOrRejectRefundRequestPayload) => {
+      const { refundRequestId, ...payloadWithoutId } = payload;
+      return (
+        await api.patch(
+          `${REFUND_API}/reject/${refundRequestId}`,
+          payloadWithoutId,
+        )
+      ).data;
     },
   });
 };
 
 export const useApproveRefundRequest = () => {
   return useMutation({
-    mutationFn: async (id: number) => {
-      return (await api.patch(`${REFUND_API}/approve/${id}`)).data;
+    mutationFn: async (payload: ApproveOrRejectRefundRequestPayload) => {
+      const { refundRequestId, ...payloadWithoutId } = payload;
+      return (
+        await api.patch(
+          `${REFUND_API}/approve/${refundRequestId}`,
+          payloadWithoutId,
+        )
+      ).data;
     },
   });
 };

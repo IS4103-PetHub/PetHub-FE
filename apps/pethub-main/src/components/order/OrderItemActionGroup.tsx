@@ -218,11 +218,6 @@ const OrderItemStepperContent = ({
             Your order has reached the end of the validity period and expired on{" "}
             <b>{formatISODayDateTime(orderItem?.expiryDate)}</b>
           </Text>
-        ) : orderItem?.status === OrderItemStatusEnum.Refunded ? (
-          <Text size="xs" color="orange">
-            The amount of ${formatNumber2Decimals(orderItem?.itemPrice)} has
-            been refunded to your original payment method.
-          </Text>
         ) : (
           <Text size="xs">
             Satisfied with your purchase? Your furry friend might appreciate a

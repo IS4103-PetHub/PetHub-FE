@@ -1,7 +1,9 @@
 import { Badge, Group, ActionIcon, useMantineTheme, Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconFileDownload } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useState } from "react";
 import {
   RefundRequest,
   TABLE_PAGE_SIZE,
@@ -9,6 +11,8 @@ import {
   formatStringToLetterCase,
   getMinTableHeight,
 } from "shared-utils";
+import ViewActionButton from "web-ui/shared/ViewActionButton";
+import RefundModal from "./RefundModal";
 
 interface RefundManagementTableProps {
   records: RefundRequest[];
@@ -30,6 +34,11 @@ const RefundManagementTable = ({
   refetch,
 }: RefundManagementTableProps) => {
   const theme = useMantineTheme();
+  const [selectedOrderItem, setSelectedOrderItem] = useState(null);
+  const [
+    refundModalOpened,
+    { open: openRefundModal, close: closeRefundModal },
+  ] = useDisclosure(false);
 
   const refundStatusColorMap = new Map([
     ["PENDING", "orange"],
@@ -94,7 +103,22 @@ const RefundManagementTable = ({
       accessor: "actions",
       title: "View Details",
       textAlignment: "right",
-      render: (order) => <Group position="right">Button here</Group>,
+      render: (refundRequest) => (
+        <Group position="right">
+          <ViewActionButton
+            onClick={() => {
+              // construct an orderItem in a format that the RefundModal can understand
+              const orderItem = {
+                ...refundRequest.orderItem,
+                RefundRequest: refundRequest,
+                serviceListing: refundRequest.serviceListing,
+              };
+              setSelectedOrderItem(orderItem);
+              openRefundModal();
+            }}
+          />
+        </Group>
+      ),
     },
   ];
 
@@ -115,6 +139,19 @@ const RefundManagementTable = ({
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
+      />
+      {/* <RefundManagementModal
+        opened={refundModalOpened}
+        onClose={closeRefundModal}
+        refundRequest={selectedRefundRequest}
+        refetch={refetch}
+      /> */}
+      <RefundModal
+        opened={refundModalOpened}
+        onClose={closeRefundModal}
+        orderItem={selectedOrderItem}
+        refetch={refetch}
+        isBusinessView
       />
     </>
   );
