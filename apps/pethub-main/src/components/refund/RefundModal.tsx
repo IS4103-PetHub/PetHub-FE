@@ -196,7 +196,9 @@ const RefundModal = ({
                 <Text fw={600} size="xl">
                   Refund Request
                 </Text>
-                <OrderItemPopover text={popoverText} />
+                {!orderItem?.RefundRequest?.processedAt && (
+                  <OrderItemPopover text={popoverText} />
+                )}
               </Center>
               <Badge
                 variant="light"
@@ -211,8 +213,8 @@ const RefundModal = ({
               <Textarea
                 label="Reason"
                 autosize
-                minRows={4}
-                maxRows={4}
+                minRows={3}
+                maxRows={3}
                 maxLength={2000}
                 placeholder="Please describe the reason for your refund request. Be specific about any issues or concerns."
                 readOnly={!isCreate}
@@ -237,34 +239,38 @@ const RefundModal = ({
                 {form.values.reason.length} / 2000 characters
               </Text>
             </Box>
-            <Group mb="sm" mt="md" position="apart">
-              <Center>
-                <Text fw={600} size="lg" mr="xs">
-                  Status
-                </Text>
-                <Badge
-                  variant="filled"
-                  mr="xs"
-                  radius="xs"
-                  p={3}
-                  color={statusColorMap[orderItem?.RefundRequest?.status]}
-                >
-                  {orderItem?.RefundRequest?.status}
-                </Badge>
-              </Center>
-              {!isCreate && (
-                <Badge
-                  variant="light"
-                  radius="sm"
-                  display={
-                    orderItem?.RefundRequest?.processedAt ? "block" : "none"
-                  }
-                >
-                  UPDATED.{" "}
-                  {formatISODateTimeShort(orderItem?.RefundRequest?.createdAt)}
-                </Badge>
-              )}
-            </Group>
+            {orderItem?.RefundRequest && (
+              <Group mb="sm" mt="md" position="apart">
+                <Center>
+                  <Text fw={600} size="lg" mr="xs">
+                    Status
+                  </Text>
+                  <Badge
+                    variant="filled"
+                    mr="xs"
+                    radius="xs"
+                    p={3}
+                    color={statusColorMap[orderItem?.RefundRequest?.status]}
+                  >
+                    {orderItem?.RefundRequest?.status}
+                  </Badge>
+                </Center>
+                {!isCreate && (
+                  <Badge
+                    variant="light"
+                    radius="sm"
+                    display={
+                      orderItem?.RefundRequest?.processedAt ? "block" : "none"
+                    }
+                  >
+                    UPDATED.{" "}
+                    {formatISODateTimeShort(
+                      orderItem?.RefundRequest?.createdAt,
+                    )}
+                  </Badge>
+                )}
+              </Group>
+            )}
             <Box>
               <Text size="sm" mb="xs">
                 {statusTextMap[orderItem?.RefundRequest?.status]}
@@ -273,8 +279,8 @@ const RefundModal = ({
                 mb="xs"
                 label="Comment from Business"
                 autosize
-                minRows={1}
-                maxRows={4}
+                minRows={3}
+                maxRows={3}
                 value={orderItem?.RefundRequest?.comment}
                 display={orderItem?.RefundRequest?.comment ? "block" : "none"}
                 readOnly={true}
