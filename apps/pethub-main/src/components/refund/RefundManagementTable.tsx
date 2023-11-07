@@ -41,7 +41,6 @@ const RefundManagementTable = ({
     {
       accessor: "refundRequestId",
       title: "ID",
-      sortable: true,
       width: 80,
     },
     {

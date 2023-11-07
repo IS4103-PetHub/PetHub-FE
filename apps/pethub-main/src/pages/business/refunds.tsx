@@ -50,9 +50,9 @@ export default function Refunds({ userId, canView }: RefundsProps) {
     useState<string>(undefined);
   const [searchString, setSearchString] = useState<string>("");
 
-  const refundStatusValues = Object.values(RefundStatusEnum)
-    .slice(1)
-    .map((status) => formatStringToLetterCase(status.toString()));
+  const refundStatusValues = Object.values(RefundStatusEnum).map((status) =>
+    formatStringToLetterCase(status.toString()),
+  );
 
   const {
     data: refundRequests = [],
@@ -88,15 +88,12 @@ export default function Refunds({ userId, canView }: RefundsProps) {
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    const sortedRefundRequests = sortBy(
-      searchResults,
-      sortStatus.columnAccessor,
-    );
-    if (sortStatus.direction === "desc") {
-      sortedRefundRequests.reverse();
-    }
+    // const sortedRefundRequests = sortBy(searchResults, sortStatus.columnAccessor);
+    // if (sortStatus.direction === "desc") {
+    //   sortedRefundRequests.reverse();
+    // }
     // Slice the sorted array to get the records for the current page
-    const newRecords = sortedRefundRequests.slice(from, to);
+    const newRecords = searchResults.slice(from, to);
     // Update the records state
     setRecords(newRecords);
   }, [page, sortStatus, refundRequests, searchResults]);
