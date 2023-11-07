@@ -41,7 +41,7 @@ export default function ServiceListingCharts({ data }) {
                 animation: {
                   startup: true,
                   easing: "out",
-                  duration: 2000,
+                  duration: 1500,
                 },
               }}
               width="100%"
@@ -64,7 +64,7 @@ export default function ServiceListingCharts({ data }) {
                 animation: {
                   startup: true,
                   easing: "out",
-                  duration: 1000,
+                  duration: 1500,
                 },
               }}
               width="100%"

@@ -1,12 +1,11 @@
 import { Box, Container, Stack, Text, useMantineTheme } from "@mantine/core";
 import Head from "next/head";
-import { getSession } from "next-auth/react";
 import { useEffect } from "react";
 import { PageTitle } from "web-ui";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import api from "@/api/axiosConfig";
-import ServiceListingCharts from "@/components/dashboard/serviceListingCharts";
-import UserDemographic from "@/components/dashboard/userDemographic";
+import ServiceListingCharts from "@/components/dashboard/ServiceListingCharts";
+import UserDemographic from "@/components/dashboard/UserDemographic";
 
 export default function Home({ userDemographic, serviceListingData }) {
   const { showOverlay, hideOverlay } = useLoadingOverlay();
@@ -30,7 +29,7 @@ export default function Home({ userDemographic, serviceListingData }) {
             Admin Management Portal
           </Text>
           <PageTitle title="Admin Dashboard" />
-          <Stack spacing={30}>
+          <Stack spacing={30} mt="xs">
             <UserDemographic data={userDemographic} />
             <ServiceListingCharts data={serviceListingData} />
           </Stack>

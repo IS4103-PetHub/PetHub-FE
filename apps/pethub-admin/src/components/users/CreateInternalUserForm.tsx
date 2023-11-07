@@ -1,19 +1,9 @@
-import {
-  Button,
-  TextInput,
-  Container,
-  Grid,
-  PasswordInput,
-} from "@mantine/core";
+import { Button, TextInput, Container, Grid } from "@mantine/core";
 import { isEmail, useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconPlus, IconCheck } from "@tabler/icons-react";
-import {
-  AccountTypeEnum,
-  getErrorMessageProps,
-  validatePassword,
-} from "shared-utils";
-import PasswordBar from "web-ui/shared/PasswordBar";
+import { AccountTypeEnum, getErrorMessageProps } from "shared-utils";
 import { useCreateInternalUser } from "@/hooks/internal-user";
 import { InternalUserRoleEnum } from "@/types/constants";
 import { CreateInternalUserPayload } from "@/types/types";
@@ -23,6 +13,7 @@ export function CreateInternalUserForm({
 }: {
   onUserCreated: (success: boolean) => void;
 }) {
+  const [isCreating, setIsCreating] = useToggle();
   const form = useForm({
     initialValues: {
       accountType: AccountTypeEnum.InternalUser,
@@ -52,6 +43,7 @@ export function CreateInternalUserForm({
     payload: CreateInternalUserPayload,
   ) => {
     try {
+      setIsCreating(true);
       await createInternalUserMutation.mutateAsync(payload);
       notifications.show({
         title: "Account Created",
@@ -60,8 +52,10 @@ export function CreateInternalUserForm({
         message: `Internal user account created successfully!`,
       });
 
+      setIsCreating(false);
       onUserCreated(true);
     } catch (error: any) {
+      setIsCreating(false);
       onUserCreated(false);
       notifications.show({
         ...getErrorMessageProps("Error Creating Account", error),
@@ -106,7 +100,12 @@ export function CreateInternalUserForm({
               />
             </Grid.Col>
           </Grid>
-          <Button type="submit" fullWidth leftIcon={<IconPlus size="1rem" />}>
+          <Button
+            loading={isCreating}
+            type="submit"
+            fullWidth
+            leftIcon={<IconPlus size="1rem" />}
+          >
             Create Internal User
           </Button>
         </form>

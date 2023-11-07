@@ -5,15 +5,13 @@ import {
   Chip,
   Container,
   Group,
-  LoadingOverlay,
   SegmentedControl,
   Select,
   Stack,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
-import { IconChartBar, IconRefresh, IconReport } from "@tabler/icons-react";
+import { IconChartBar, IconRefresh } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -58,21 +56,13 @@ export default function SalesDashboard({
     useState<string>("order-count");
   const [selectedTimePeriod, setSelectedTimePeriod] =
     useState<string>("all-time");
-  const [top5Title, setTop5Title] = useState<string>(
-    "All Time Top 5 Service Listings by Order Count",
-  );
-  const [top5ServiceListings, settop5ServiceListings] = useState<
+  const [top5ServiceListings, setTop5ServiceListings] = useState<
     SalesDashboardServiceListing[]
   >(allTimeTop5ByOrderCount);
   const [monthlySalesChartType, setMonthlySalesChartType] =
     useState("ColumnChart");
   const [updatedDate, setUpdatedDate] = useState<Date>(new Date());
   const { showOverlay, hideOverlay } = useLoadingOverlay();
-
-  const projectedFirstMonth =
-    aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 3][0];
-  const projectedLastMonth =
-    aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 1][0];
 
   const top5TitleMap = new Map([
     ["order-count all-time", "All Time Top 5 Service Listings by Order Count"],
@@ -89,6 +79,14 @@ export default function SalesDashboard({
       "Top 5 Service Listings by Last 30 Days  Sales Amount",
     ],
   ]);
+  const [top5Title, setTop5Title] = useState<string>(
+    top5TitleMap.get("order-count all-time"),
+  );
+
+  const projectedFirstMonth =
+    aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 3][0];
+  const projectedLastMonth =
+    aggregatedAndProjectedSales[aggregatedAndProjectedSales.length - 1][0];
 
   // for filtering of top 5 service listings
 
@@ -100,7 +98,6 @@ export default function SalesDashboard({
       }
       return top5Within30DaysByOrderCount;
     }
-    aggregatedAndProjectedSales;
     // by sales
     if (selectedTimePeriod === "all-time") {
       return allTimeTop5BySales;
@@ -115,7 +112,7 @@ export default function SalesDashboard({
     );
     setTop5Title(title);
     // set records
-    settop5ServiceListings(getListingsByFilters());
+    setTop5ServiceListings(getListingsByFilters());
   }, [selectedChipValue, selectedTimePeriod]);
 
   const handleRefresh = async () => {
