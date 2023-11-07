@@ -46,6 +46,17 @@ const RefundManagementTable = ({
     ["REJECTED", "red"],
   ]);
 
+  const constructOIAndOpenModal = (refundRequest) => {
+    // construct an orderItem in a format that the RefundModal can understand
+    const orderItem = {
+      ...refundRequest.orderItem,
+      RefundRequest: refundRequest,
+      serviceListing: refundRequest.serviceListing,
+    };
+    setSelectedOrderItem(orderItem);
+    openRefundModal();
+  };
+
   const cols: any = [
     {
       accessor: "refundRequestId",
@@ -106,16 +117,7 @@ const RefundManagementTable = ({
       render: (refundRequest) => (
         <Group position="right">
           <ViewActionButton
-            onClick={() => {
-              // construct an orderItem in a format that the RefundModal can understand
-              const orderItem = {
-                ...refundRequest.orderItem,
-                RefundRequest: refundRequest,
-                serviceListing: refundRequest.serviceListing,
-              };
-              setSelectedOrderItem(orderItem);
-              openRefundModal();
-            }}
+            onClick={() => constructOIAndOpenModal(refundRequest)}
           />
         </Group>
       ),
@@ -139,13 +141,11 @@ const RefundManagementTable = ({
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
+        highlightOnHover
+        onRowClick={(record) => {
+          constructOIAndOpenModal(record);
+        }}
       />
-      {/* <RefundManagementModal
-        opened={refundModalOpened}
-        onClose={closeRefundModal}
-        refundRequest={selectedRefundRequest}
-        refetch={refetch}
-      /> */}
       <RefundModal
         opened={refundModalOpened}
         onClose={closeRefundModal}

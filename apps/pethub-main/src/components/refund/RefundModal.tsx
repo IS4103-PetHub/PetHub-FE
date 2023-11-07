@@ -107,8 +107,9 @@ const RefundModal = ({
       comment: "",
     },
     validate: {
-      reason: (value) => validateRefundReason(value),
-      comment: (value) => validateRefundReason(value),
+      reason: (value) =>
+        !orderItem?.RefundRequest ? validateRefundReason(value) : null,
+      comment: (value) => (isBusinessView ? validateRefundReason(value) : null),
     },
   });
 
