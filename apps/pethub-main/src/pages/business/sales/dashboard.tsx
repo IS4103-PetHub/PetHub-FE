@@ -40,7 +40,7 @@ interface SalesDashboardProps {
   // Month, Sales
   monthlySales: [string, any][];
   // Month, Sales, Projected
-  aggregatedAndProjectedSales: [string, any][];
+  aggregatedAndProjectedSales: [string, any, any][];
 }
 
 export default function SalesDashboard({
