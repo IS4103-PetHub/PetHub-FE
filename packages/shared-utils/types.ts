@@ -190,6 +190,9 @@ export interface RefundRequest {
   petOwnerId: number;
   orderItemId: number;
   petBusinessId: number;
+  orderItem: OrderItem;
+  PetOwner: PetOwner;
+  PetBusiness: any;
 }
 
 export interface CommissionRule {
