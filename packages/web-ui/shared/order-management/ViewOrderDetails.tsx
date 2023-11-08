@@ -39,11 +39,13 @@ import { PageTitle } from "../PageTitle";
 interface ViewOrderDetailsProps {
   order: OrderItem;
   pet: Pet;
+  isAdmin?: boolean;
 }
 
 export default function ViewOrderDetails({
   order,
   pet,
+  isAdmin,
 }: ViewOrderDetailsProps) {
   const theme = useMantineTheme();
   const orderStatusColorMap = new Map([
@@ -453,7 +455,10 @@ export default function ViewOrderDetails({
           </Accordion.Item>
           {order.status !== OrderItemStatusEnum.PendingBooking &&
             order.status !== OrderItemStatusEnum.Expired && (
-              <Accordion.Item value="ClaimVoucher">
+              <Accordion.Item
+                value="ClaimVoucher"
+                display={isAdmin ? "none" : "block"}
+              >
                 <Accordion.Control sx={{ "&:hover": { cursor: "default" } }}>
                   <Group>
                     <IconGiftCard color={theme.colors.indigo[5]} />{" "}

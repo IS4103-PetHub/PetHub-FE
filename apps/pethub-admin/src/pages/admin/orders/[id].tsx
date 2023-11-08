@@ -50,7 +50,7 @@ export default function PBOrdersDetails({
         size="sm"
         mb="md"
       />
-      <ViewOrderDetails order={order} pet={pet} />
+      <ViewOrderDetails order={order} pet={pet} isAdmin={true} />
     </>
   );
 }
