@@ -12,6 +12,9 @@ const TransactionsCommissionAreaChart = ({
 
   const options = {
     colors: [theme.colors.indigo[4], theme.colors.pink[4]],
+    legend: { position: "bottom" },
+    hAxis: { title: "Month" },
+    vAxis: { title: "Amount ($)" },
     animation: {
       startup: true,
       easing: "out",
