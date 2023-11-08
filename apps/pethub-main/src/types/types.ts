@@ -12,6 +12,8 @@ import {
   Pet,
   OrderItem,
   ReviewReportReasonEnum,
+  SupportTicketReason,
+  Priority,
 } from "shared-utils";
 import { PetRequestTypeEnum } from "./constants";
 
@@ -351,4 +353,18 @@ export interface pbDashboardData {
   invalidSLCount: number;
   openRefundRequestsCount: number;
   openSupportRequestsCount: number;
+}
+
+export interface createSupportTicketPayload {
+  userId: number;
+  supportCategory: SupportTicketReason;
+  priority: Priority;
+  reason: string;
+  files: File[];
+}
+
+export interface commentSupportPayload {
+  userId: number;
+  comment: string;
+  files: File[];
 }

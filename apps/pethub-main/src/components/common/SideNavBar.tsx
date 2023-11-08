@@ -18,6 +18,7 @@ import {
   IconLogout,
   IconFileInvoice,
   IconReportAnalytics,
+  IconHelp,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -103,6 +104,11 @@ const defaultLinks = [
 
 // display these only if PB account is not pending
 const nonPendingLinks = [
+  {
+    link: "/business/supports",
+    label: "Support",
+    icon: IconHelp,
+  },
   {
     link: "/business/orders",
     label: "Orders",

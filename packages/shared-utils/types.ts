@@ -4,9 +4,12 @@ import {
   GenderEnum,
   OrderItemStatusEnum,
   PetTypeEnum,
+  Priority,
   RecurrencePatternEnum,
   ReviewReportReasonEnum,
   ServiceCategoryEnum,
+  SupportTicketReason,
+  SupportTicketStatus,
 } from "./constants";
 
 export interface ChangePasswordPayload {
@@ -223,6 +226,17 @@ export interface PetOwner extends User {
   user?: User; // BE not flattening for some endpoints
 }
 
+export interface PetBusiness extends User {
+  // pet business attributes
+  companyName: string;
+  uen: string;
+  businessType?: string;
+  businessDescription?: string;
+  websiteURL?: string;
+  businessAddresses?: Address[];
+  businessEmail?: string;
+}
+
 export interface Pet {
   petId: number;
   petName: string;
@@ -264,4 +278,32 @@ export interface ReportReview {
   reportReason: ReviewReportReasonEnum;
   reviewId: number;
   review: Review;
+}
+
+export interface SupportTicket {
+  supportTicketId: number;
+  createdAt: string;
+  updatedAt: string;
+  status: SupportTicketStatus;
+  reason: string;
+  closedAt?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  comments: Comment[];
+  supportCategory: SupportTicketReason;
+  priority: Priority;
+  petOwnerId?: number;
+  petOwner?: PetOwner;
+  petBusinessId?: number;
+  petBusiness?: PetBusiness;
+}
+
+export interface Comment {
+  commentId: number;
+  createdAt: string;
+  comment: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  supportTicketId: number;
+  userId: number;
 }
