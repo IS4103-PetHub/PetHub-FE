@@ -43,8 +43,8 @@ interface RevenueTrackingDashboardProps {
   top5PetBusinessWithin30DaysBySales: RevenueDashboardPetBusiness[];
   // Month, Transactions, Commission Earned
   monthlyData: [string, any, any][];
-  // Category, Transactions
-  transactionsByCategory: [string, any][];
+  // Business Type, Commission Earned
+  commissionByBusinessType: [string, any][];
   // Category, Commission Earned
   commissionByCategory: [string, any][];
   canRead: boolean;
@@ -57,7 +57,7 @@ export default function RevenueTrackingDashboard({
   allTimeTop5PetBusinessBySales,
   top5PetBusinessWithin30DaysBySales,
   monthlyData,
-  transactionsByCategory,
+  commissionByBusinessType,
   commissionByCategory,
   canRead,
 }: RevenueTrackingDashboardProps) {
@@ -199,13 +199,13 @@ export default function RevenueTrackingDashboard({
             <Grid>
               <Grid.Col span={6}>
                 <Text size="xl" fw={600} mb="md">
-                  All Time Transactions by Category
+                  All Time Commission Earned by Pet Business Type ($)
                 </Text>
-                <CategoryPieChart data={transactionsByCategory} />
+                <CategoryPieChart data={commissionByBusinessType} />
               </Grid.Col>
               <Grid.Col span={6}>
                 <Text size="xl" fw={600} mb="md">
-                  All Time Commission Earned by Category
+                  All Time Commission Earned by Service Listing Category ($)
                 </Text>
                 <CategoryPieChart data={commissionByCategory} />
               </Grid.Col>
@@ -250,8 +250,8 @@ export async function getServerSideProps(context) {
       top5PetBusinessWithin30DaysBySales:
         dashboardData.lists.bySaleAmount["top5PetBusinessWithin30DaysBySales"],
       monthlyData: dashboardData.charts.areaChart["monthlyData"],
-      transactionsByCategory:
-        dashboardData.charts.pieChart["transactionsByCategory"],
+      commissionByBusinessType:
+        dashboardData.charts.pieChart["commissionByBusinessType"],
       commissionByCategory:
         dashboardData.charts.pieChart["commissionByCategory"],
       canRead: true,

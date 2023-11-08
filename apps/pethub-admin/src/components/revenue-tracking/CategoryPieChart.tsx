@@ -1,7 +1,11 @@
 import { Card, useMantineTheme } from "@mantine/core";
 import React from "react";
 import Chart from "react-google-charts";
-import { ServiceCategoryEnum, formatStringToLetterCase } from "shared-utils";
+import {
+  PetBusinessTypeEnum,
+  ServiceCategoryEnum,
+  formatStringToLetterCase,
+} from "shared-utils";
 
 interface CategoryPieChartProps {
   data: [string, any][];
@@ -31,6 +35,9 @@ const CategoryPieChart = ({ data }: CategoryPieChartProps) => {
         if (
           Object.values(ServiceCategoryEnum).includes(
             row[0] as ServiceCategoryEnum,
+          ) ||
+          Object.values(PetBusinessTypeEnum).includes(
+            row[0] as PetBusinessTypeEnum,
           )
         ) {
           return [formatStringToLetterCase(row[0]), row[1]];

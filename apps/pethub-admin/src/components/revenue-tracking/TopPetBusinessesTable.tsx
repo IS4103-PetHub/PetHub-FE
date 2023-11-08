@@ -10,9 +10,9 @@ interface TopPetBusinessesTableProps {
 
 const TopPetBusinessesTable = ({ records }: TopPetBusinessesTableProps) => {
   const badgeColorMap = new Map([
-    [PetBusinessTypeEnum.Service, "indigo"],
-    [PetBusinessTypeEnum.Fnb, "orange"],
-    [PetBusinessTypeEnum.Healthcare, "cyan"],
+    [PetBusinessTypeEnum.Service, "teal"],
+    [PetBusinessTypeEnum.Fnb, "pink"],
+    [PetBusinessTypeEnum.Healthcare, "indigo"],
   ]);
   return (
     <Card shadow="sm" radius="md" mt="md">
