@@ -341,14 +341,14 @@ export interface SalesDashboardServiceListing {
   totalSales: number;
 }
 
-export interface userDemographicData {
+export interface UserDemographicData {
   POCount: number;
   PBCount: number;
   ReportedReviewCount: number;
   PBApplicationCount: number;
 }
 
-export interface pbDashboardData {
+export interface PbDashboardData {
   unrepliedReviewCount: number;
   invalidSLCount: number;
   openRefundRequestsCount: number;

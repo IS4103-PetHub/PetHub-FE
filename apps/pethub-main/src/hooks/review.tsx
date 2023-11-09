@@ -1,5 +1,5 @@
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
-import { Review } from "shared-utils";
+import { Review, ReviewStatsResponse } from "shared-utils";
 import api from "@/api/axiosConfig";
 import {
   CreateReviewPayload,
@@ -8,6 +8,7 @@ import {
   UpdateReviewPayload,
 } from "@/types/types";
 const REVIEW_API = "/reviews";
+const CHART_API = "/chart";
 
 export const useCreateReview = () => {
   return useMutation({
@@ -114,5 +115,22 @@ export const useGetLikedAndReportedReviews = (serviceListingId: number) => {
       );
       return response.data as { likesBy: number[]; reportsBy: number[] };
     },
+  });
+};
+
+// GET data for the review stats section of the SL details page
+export const useGetReviewStatsForServiceListing = (
+  serviceListingId: number,
+  monthsBack = 6,
+) => {
+  return useQuery({
+    queryKey: ["review-stats", serviceListingId],
+    queryFn: async () => {
+      const response = await api.get(
+        `${CHART_API}/reviews/data/${serviceListingId}?monthsBack=${monthsBack}`,
+      );
+      return response.data as ReviewStatsResponse;
+    },
+    enabled: !!serviceListingId, // Only run when has ID
   });
 };

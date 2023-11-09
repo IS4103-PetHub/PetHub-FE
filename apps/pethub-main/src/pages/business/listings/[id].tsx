@@ -28,6 +28,7 @@ import ServiceListingDetailsAccordionItem from "@/components/service-listing-man
 import ServiceListingReviewsAccordionItem from "@/components/service-listing-management/ServiceListingReviewsAccordionItem";
 import ServiceListingStatsAccordionItem from "@/components/service-listing-management/ServiceListingStatsAccordionItem";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
+import { useGetReviewStatsForServiceListing } from "@/hooks/review";
 import {
   useGetServiceListingById,
   useGetServiceListingByPetBusinessId,
@@ -65,6 +66,11 @@ export default function ViewServiceListing({
 
   // Fetch all available tags
   const { data: tags } = useGetAllTags();
+
+  // Fetch review stats data
+  const { data: reviewStats } = useGetReviewStatsForServiceListing(
+    serviceListing?.serviceListingId,
+  );
 
   const initialValues = {
     serviceListingId: null,
@@ -173,9 +179,7 @@ export default function ViewServiceListing({
                   refetchServiceListing={refetchServiceListing}
                 />
 
-                <ServiceListingStatsAccordionItem
-                  serviceListing={serviceListing}
-                />
+                <ServiceListingStatsAccordionItem reviewStats={reviewStats} />
               </Accordion>
             </>
           )}

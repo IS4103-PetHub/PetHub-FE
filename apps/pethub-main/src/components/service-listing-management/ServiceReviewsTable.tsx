@@ -61,16 +61,17 @@ const ServiceReviewsTable = ({
     openReviewModal();
   };
 
+  // Reset the state of selected review whenever refetch is called in that component
   useEffect(() => {
-    // Set smooth scroll when component mounts
-    const prevScrollBehavior = document.documentElement.style.scrollBehavior;
-    document.documentElement.style.scrollBehavior = "smooth";
-
-    // Reset to previous scroll behavior when component unmounts
-    return () => {
-      document.documentElement.style.scrollBehavior = prevScrollBehavior;
-    };
-  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+    if (reviewModalOpened && selectedReview) {
+      const updatedReview = records.find(
+        (r) => r.reviewId === selectedReview.reviewId,
+      );
+      if (updatedReview) {
+        setSelectedReview(updatedReview);
+      }
+    }
+  }, [records, reviewModalOpened, selectedReview]);
 
   return (
     <>

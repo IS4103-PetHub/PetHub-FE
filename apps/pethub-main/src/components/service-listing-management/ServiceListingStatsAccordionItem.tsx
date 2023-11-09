@@ -32,6 +32,7 @@ import {
   Address,
   CalendarGroup,
   Review,
+  ReviewStatsResponse,
   ServiceCategoryEnum,
   ServiceListing,
 } from "shared-utils";
@@ -39,11 +40,11 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ReviewStatisticsGroup from "./ReviewStatisticsGroup";
 
 interface ServiceListingStatsAccordionItemProps {
-  serviceListing: ServiceListing;
+  reviewStats: ReviewStatsResponse;
 }
 
 const ServiceListingStatsAccordionItem = ({
-  serviceListing,
+  reviewStats,
 }: ServiceListingStatsAccordionItemProps) => {
   const [areStatsHidden, toggleStatsVisibility] = useToggle();
 
@@ -53,7 +54,7 @@ const ServiceListingStatsAccordionItem = ({
         <Text size="xl">
           <b>Review Statistics</b>
         </Text>
-        {serviceListing?.reviews?.length !== 0 && (
+        {reviewStats && (
           <Button
             onClick={() => toggleStatsVisibility()}
             leftIcon={<IconChartBar size="1rem" />}
@@ -65,9 +66,9 @@ const ServiceListingStatsAccordionItem = ({
       </Group>
       <Divider mt="lg" mb="lg" />
 
-      {!areStatsHidden && serviceListing?.reviews?.length !== 0 ? (
-        <ReviewStatisticsGroup serviceListing={serviceListing} />
-      ) : serviceListing?.reviews?.length === 0 ? (
+      {!areStatsHidden && reviewStats ? (
+        <ReviewStatisticsGroup reviewStats={reviewStats} />
+      ) : !reviewStats ? (
         <Text color="dimmed" size="sm">
           There are no reviews for this service listing.
         </Text>
