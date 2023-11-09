@@ -85,8 +85,6 @@ const OrderItemStepper = ({
     expiredBooking: ["Ordered", "Booked", "Expired"],
     expiredNoBooking: ["Ordered", "Expired"],
     refunds: ["RefundRequested", "RefundPending", "RefundOutcome"],
-    // refundedBooking: ["Ordered", "Booked", "Fulfilled", "Refunded"],
-    // refundedNoBooking: ["Ordered", "Fulfilled", "Refunded"],
   };
 
   // These are the steps that should be active depending on the status of the order item
@@ -186,10 +184,6 @@ const OrderItemStepper = ({
         label: "Expired",
         description: "Order has expired",
       },
-      // Refunded: {
-      //   label: "Refunded",
-      //   description: "Order has been refunded",
-      // },
       RefundRequested: {
         label: "Refund Requested",
         description: formatISODateTimeShort(
@@ -330,25 +324,6 @@ const OrderItemStepper = ({
   }
 
   function renderContent() {
-    // const contentMap = {
-    //   [OrderItemStatusEnum.PaidOut]: orderItem?.serviceListing.requiresBooking
-    //     ? stepGroups.happyBooking
-    //     : stepGroups.happyNoBooking,
-    //   [OrderItemStatusEnum.PendingFulfillment]: orderItem?.serviceListing.requiresBooking
-    //     ? stepGroups.happyBooking
-    //     : stepGroups.happyNoBooking,
-    //   [OrderItemStatusEnum.Fulfilled]: orderItem?.serviceListing.requiresBooking
-    //     ? stepGroups.happyBooking
-    //     : stepGroups.happyNoBooking,
-    //   [OrderItemStatusEnum.PendingBooking]: orderItem?.serviceListing.requiresBooking
-    //     ? stepGroups.happyBooking
-    //     : stepGroups.happyNoBooking,
-    //   [OrderItemStatusEnum.Expired]: orderItem?.serviceListing.requiresBooking
-    //     ? stepGroups.expiredBooking
-    //     : stepGroups.expiredNoBooking,
-    //   [OrderItemStatusEnum.Refunded]: stepGroups.refunds,
-    // };
-
     let groupToRender;
 
     // Check if there's a pending refund request, then override

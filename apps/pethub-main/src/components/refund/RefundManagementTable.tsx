@@ -7,6 +7,7 @@ import { useState } from "react";
 import {
   RefundRequest,
   TABLE_PAGE_SIZE,
+  formatISODateTimeShort,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getMinTableHeight,
@@ -66,6 +67,7 @@ const RefundManagementTable = ({
     {
       accessor: "orderItem.itemName",
       title: "Order Item Name",
+      elipsis: true,
       sortable: true,
       render: (record) => <Text fw={500}>{record.orderItem.itemName}</Text>,
       width: "30vw",
@@ -84,7 +86,7 @@ const RefundManagementTable = ({
       title: "Date Created",
       render: (record) => {
         return record.createdAt
-          ? dayjs(record.createdAt).format("DD-MM-YYYY")
+          ? formatISODateTimeShort(record.createdAt)
           : "-";
       },
       sortable: true,
@@ -94,7 +96,7 @@ const RefundManagementTable = ({
       title: "Date Processed",
       render: (record) => {
         return record.processedAt
-          ? dayjs(record.processedAt).format("DD-MM-YYYY")
+          ? formatISODateTimeShort(record.processedAt)
           : "-";
       },
       sortable: true,

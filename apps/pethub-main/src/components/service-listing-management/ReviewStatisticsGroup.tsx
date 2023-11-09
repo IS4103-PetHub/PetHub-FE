@@ -85,7 +85,6 @@ const ReviewStatisticsGroup = ({ reviewStats }: ReviewStatisticsGroupProps) => {
 
   const ratingCountOptions = {
     title: "Ratings Distribution (past 6 months)",
-    is3D: true,
     colors: themeColors,
   };
 

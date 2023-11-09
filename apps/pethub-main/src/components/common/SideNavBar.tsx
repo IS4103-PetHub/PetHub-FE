@@ -125,7 +125,7 @@ const nonPendingLinks = [
     icon: IconReportAnalytics,
   },
   {
-    link: "/business/refunds/",
+    link: "/business/refunds",
     label: "Refunds",
     icon: IconCreditCard,
   },
