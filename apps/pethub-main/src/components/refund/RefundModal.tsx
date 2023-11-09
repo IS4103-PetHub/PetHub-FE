@@ -281,7 +281,7 @@ const RefundModal = ({
                 radius="sm"
                 display={isCreate ? "none" : "block"}
               >
-                APPLIED.{" "}
+                APPLIED ON:{" "}
                 {formatISODateTimeShort(orderItem?.RefundRequest?.createdAt)}
               </Badge>
             </Group>
@@ -339,7 +339,7 @@ const RefundModal = ({
                       orderItem?.RefundRequest?.processedAt ? "block" : "none"
                     }
                   >
-                    UPDATED.{" "}
+                    UPDATED ON:{" "}
                     {formatISODateTimeShort(
                       orderItem?.RefundRequest?.createdAt,
                     )}
