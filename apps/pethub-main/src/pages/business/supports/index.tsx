@@ -215,7 +215,11 @@ export default function Supports({
       <>
         <Grid>
           <Grid.Col span={6}>
-            <SearchBar text="Search by id and reason" onSearch={handleSearch} />
+            <SearchBar
+              size="md"
+              text="Search by id and reason"
+              onSearch={handleSearch}
+            />
           </Grid.Col>
           <Grid.Col span={3}>
             <MultiSelect
