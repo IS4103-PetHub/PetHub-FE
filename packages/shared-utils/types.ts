@@ -291,3 +291,21 @@ export interface ReviewStatsResponse {
   ratingCountDistributionData: RatingCountDistributionData;
   ratingCountData: RatingCountData;
 }
+export interface Article {
+  articleId: number;
+  title: string;
+  content: string;
+  isPinned: boolean;
+  dateCreated: string;
+  dateUpdated?: string;
+  createdByUserId: number;
+  updatedByUserId?: number;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  petBusinessId: number;
+  petBusiness: any;
+  tags: Tag[];
+  categories: string[];
+  createdBy?: any;
+  updatedBy?: any;
+}

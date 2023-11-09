@@ -2,6 +2,7 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   Address,
+  ArticleTypeEnum,
   PetBusinessTypeEnum,
   ServiceListing,
 } from "shared-utils";
@@ -172,4 +173,16 @@ export interface RevenueDashboardPetBusiness {
   businessType: PetBusinessTypeEnum;
   userEmail: string;
   dateJoined: string;
+}
+
+export interface CreateOrUpdateArticlePayload {
+  articleId?: number;
+  title: string;
+  content: string;
+  articleType: ArticleTypeEnum;
+  files: File[];
+  internalUserId?: number;
+  tagIds: number[];
+  categories: string[];
+  isPinned: boolean;
 }
