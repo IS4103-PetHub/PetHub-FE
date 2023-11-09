@@ -156,8 +156,20 @@ export interface CommissionRule {
   petBusinesses?: PetBusiness[];
 }
 
-export interface FeaturedServiceListing extends ServiceListing {
-  featuredListingSetId: number;
-  id: number;
-  featuredDescription: string;
+export interface RevenueDashboardSummary {
+  totalTransactionAmount: number;
+  totalCommissionEarned: number;
+  last30DaysTransactionAmount: number;
+  last30DaysCommissionEarned: number;
+}
+
+export interface RevenueDashboardPetBusiness {
+  petBusinessId: number;
+  totalAmount: number;
+  totalCommission: number;
+  orderItemCount: number;
+  companyName: string;
+  businessType: PetBusinessTypeEnum;
+  userEmail: string;
+  dateJoined: string;
 }

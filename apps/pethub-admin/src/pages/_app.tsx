@@ -15,6 +15,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import localFont from "next/font/local";
+import { useRouter } from "next/router";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -47,6 +48,7 @@ export function App({ Component, pageProps }: AppProps) {
         },
       }),
   );
+  const router = useRouter();
 
   return (
     <main className={inter.className}>
@@ -69,7 +71,12 @@ export function App({ Component, pageProps }: AppProps) {
               <>
                 <AppShell
                   navbar={session ? <SideNavBar /> : undefined}
-                  padding="lg"
+                  padding={
+                    router.asPath === "/" ||
+                    router.asPath === "/admin/revenue/dashboard"
+                      ? 0
+                      : "lg"
+                  }
                 >
                   {status === "loading" ? (
                     <Container

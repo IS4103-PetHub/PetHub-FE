@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
 interface ProjectedSalesLineChartProps {
-  data: [string, any][];
+  data: [string, any, any][];
 }
 const ProjectedSalesLineChart = ({ data }: ProjectedSalesLineChartProps) => {
   const theme = useMantineTheme();
@@ -36,7 +36,6 @@ const ProjectedSalesLineChart = ({ data }: ProjectedSalesLineChartProps) => {
     hAxis: { title: "Month" },
     vAxis: { title: "Sales ($)" },
     legend: { position: "bottom" },
-    curveType: "function",
     colors: [theme.colors.indigo[5], theme.colors.pink[5]],
     animation: {
       startup: true,

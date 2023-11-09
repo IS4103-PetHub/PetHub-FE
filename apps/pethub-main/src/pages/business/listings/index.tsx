@@ -111,7 +111,8 @@ export default function Listings({
     if (sortStatus.direction === "desc") {
       sortedServiceListing.reverse();
     }
-    const newRecords = sortedServiceListing.slice(from, to);
+    const sortInvalidSL = sortInvalidServiceListings(sortedServiceListing);
+    const newRecords = sortInvalidSL.slice(from, to);
     setRecords(sortInvalidServiceListings(newRecords));
   }, [page, sortStatus, serviceListings, searchResults]);
 
@@ -209,7 +210,7 @@ export default function Listings({
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container fluid m="lg">
+        <Container fluid>
           <Group position="apart">
             <PageTitle title="Service Listing Management" />
             <LargeCreateButton

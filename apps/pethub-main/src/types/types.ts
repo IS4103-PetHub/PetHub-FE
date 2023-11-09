@@ -348,3 +348,17 @@ export interface SalesDashboardServiceListing {
   totalOrders: number;
   totalSales: number;
 }
+
+export interface UserDemographicData {
+  POCount: number;
+  PBCount: number;
+  ReportedReviewCount: number;
+  PBApplicationCount: number;
+}
+
+export interface PbDashboardData {
+  unrepliedReviewCount: number;
+  invalidSLCount: number;
+  openRefundRequestsCount: number;
+  openSupportRequestsCount: number;
+}

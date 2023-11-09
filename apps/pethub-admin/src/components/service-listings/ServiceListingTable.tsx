@@ -1,5 +1,6 @@
 import { Group, Badge } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useRouter } from "next/router";
 import React from "react";
 import {
   ServiceListing,
@@ -9,6 +10,7 @@ import {
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import ViewActionButton from "web-ui/shared/ViewActionButton";
 import ViewServiceListingModal from "./ViewServiceListingModal";
 
 interface ServiceListingTableProps {
@@ -32,6 +34,7 @@ const ServiceListingTable = ({
   onSortStatusChange,
   onPageChange,
 }: ServiceListingTableProps) => {
+  const router = useRouter();
   return (
     <>
       <DataTable
@@ -94,15 +97,10 @@ const ServiceListingTable = ({
             textAlignment: "right",
             render: (record) => (
               <Group position="right">
-                <ViewServiceListingModal
-                  canWrite={canWrite}
-                  onDelete={() => {
-                    onDelete(record.serviceListingId);
-                    if (records.length === 1 && page > 1) {
-                      onPageChange(page - 1);
-                    }
-                  }}
-                  serviceListing={record}
+                <ViewActionButton
+                  onClick={() =>
+                    router.push(`${router.asPath}/${record.serviceListingId}`)
+                  }
                 />
                 {canWrite && (
                   <DeleteActionButtonModal

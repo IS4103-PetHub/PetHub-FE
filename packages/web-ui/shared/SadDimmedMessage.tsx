@@ -16,6 +16,7 @@ interface SadDimmedMessageProps {
   replaceIcon?: ReactNode;
   button?: ReactNode;
   replaceClass?: string;
+  removeWidth?: boolean;
 }
 
 const SadDimmedMessage = ({
@@ -25,6 +26,7 @@ const SadDimmedMessage = ({
   replaceIcon,
   button,
   replaceClass,
+  removeWidth,
 }: SadDimmedMessageProps) => {
   const theme = useMantineTheme();
 
@@ -54,13 +56,18 @@ const SadDimmedMessage = ({
           color="dimmed"
           align="center"
           mb={10}
-          w="50vw"
+          style={removeWidth ? {} : { width: "50vw" }}
         >
           {title}
         </Text>
 
         {subtitle && (
-          <Text size="md" color="dimmed" align="center" w="50vw">
+          <Text
+            size="md"
+            color="dimmed"
+            align="center"
+            style={removeWidth ? {} : { width: "50vw" }}
+          >
             {subtitle}
           </Text>
         )}

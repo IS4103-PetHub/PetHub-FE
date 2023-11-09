@@ -1,7 +1,6 @@
 import {
   useMantineTheme,
   Text,
-  Card,
   Button,
   Group,
   Box,
@@ -9,22 +8,15 @@ import {
   Image,
   Center,
   Avatar,
-  ActionIcon,
   Flex,
   Alert,
   Divider,
+  ActionIcon,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconAlertCircle,
-  IconCheck,
-  IconFlag,
-  IconMessageCircle2,
-  IconThumbDown,
-  IconThumbUp,
-} from "@tabler/icons-react";
-import { IconX } from "@tabler/icons-react";
+import { IconCheck, IconMessageCircle2 } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -32,34 +24,20 @@ import {
   formatISODateTimeShort,
   getErrorMessageProps,
 } from "shared-utils";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import DeleteActionIcon from "web-ui/shared/DeleteActionIcon";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
-import { useToggleLikedReview } from "@/hooks/review";
-import ReportModal from "./ReportModal";
+import { useDeleteReview } from "@/hooks/reported-review";
 import StarRating from "./StarRating";
 
 interface ReviewItemProps {
   review: Review;
-  isLikedByUser: boolean;
-  isReportedByUser: boolean;
-  refetchLikedAndReportedReviewIds?: () => Promise<any>;
-  hideIconButtons?: boolean;
+  refetch(): void;
+  canWrite: boolean;
 }
 
-const ReviewItem = ({
-  review,
-  isLikedByUser,
-  isReportedByUser,
-  refetchLikedAndReportedReviewIds,
-  hideIconButtons,
-}: ReviewItemProps) => {
-  const theme = useMantineTheme();
-  const router = useRouter();
-  const [likedCount, setLikedCount] = useState(review.likedByCount || 0);
-  const [
-    reportModalOpened,
-    { open: openReportModal, close: closeReportModal },
-  ] = useDisclosure(false);
-
+const ReviewItem = ({ review, refetch, canWrite }: ReviewItemProps) => {
+  const queryClient = useQueryClient();
   const [showFullReview, toggleShowFullReview] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
   const textRef = useRef(null);
@@ -90,45 +68,20 @@ const ReviewItem = ({
     }
   };
 
-  const handleReport = () => {
-    if (isReportedByUser) {
-      notifications.show({
-        title: `Review Already Reported`,
-        color: "orange",
-        icon: <IconAlertCircle />,
-        message:
-          "You have already reported this review. Please wait for PetHub staff to investigate this review and take the appropriate action.",
-      });
-      return;
-    }
-    openReportModal();
-  };
-
-  const createToggleLikedReviewMutation = useToggleLikedReview();
-  const toggleLikedReview = async () => {
+  const deleteReviewMutation = useDeleteReview(queryClient);
+  const handleDeleteReview = async (reviewId: number) => {
     try {
-      const res = await createToggleLikedReviewMutation.mutateAsync(
-        review?.reviewId,
-      );
+      await deleteReviewMutation.mutateAsync(reviewId);
       notifications.show({
-        title: `Review ${res.liked ? "Liked" : "Unliked"}`,
+        title: "Review Deleted",
         color: "green",
-        icon: res.liked ? <IconThumbUp /> : <IconThumbDown />,
-        message: res.liked
-          ? "Your like helps other pet owners easily discover this review"
-          : "You have unliked this review",
+        icon: <IconCheck />,
+        message: `Review ID: ${reviewId} deleted successfully.`,
       });
-      if (refetchLikedAndReportedReviewIds)
-        await refetchLikedAndReportedReviewIds();
-      if (res.liked) {
-        // update the count
-        setLikedCount((prevCount) => prevCount + 1);
-      } else {
-        setLikedCount((prevCount) => prevCount - 1);
-      }
-    } catch (error: any) {
+      refetch();
+    } catch (error) {
       notifications.show({
-        ...getErrorMessageProps(`Error Toggling Liked Review`, error),
+        ...getErrorMessageProps("Error Deleting Review", error),
       });
     }
   };
@@ -221,7 +174,7 @@ const ReviewItem = ({
         <ImageCarousel
           attachmentURLs={review?.attachmentURLs}
           altText="Review Image"
-          imageHeight={350}
+          imageHeight={250}
           focusedImage={focusedImage}
           setFocusedImage={setFocusedImage}
         />
@@ -267,38 +220,27 @@ const ReviewItem = ({
             </Text>
           </Box>
         </Grid.Col>
-
-        <Grid.Col
-          span={2}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "flex-end",
-          }}
-        >
-          {!hideIconButtons && (
+        {canWrite && (
+          <Grid.Col
+            span={2}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "flex-end",
+            }}
+          >
             <Center mr="md">
-              <ActionIcon onClick={toggleLikedReview}>
-                <IconThumbUp
-                  size="1rem"
-                  {...(isLikedByUser ? { fill: "gray" } : {})}
-                />
-                {likedCount ? (
-                  <Text size="xs" mt="xs">
-                    {likedCount}
-                  </Text>
-                ) : null}
-              </ActionIcon>
-              <ActionIcon onClick={handleReport}>
-                <IconFlag
-                  size="1rem"
-                  {...(isReportedByUser ? { fill: "gray" } : {})}
-                />
-              </ActionIcon>
+              <DeleteActionButtonModal
+                title={`Are you sure you want to delete this review?`}
+                subtitle={
+                  "Are you sure you want to delete this review? Please note that once deleted, the review will be permanently removed and cannot be recovered."
+                }
+                onDelete={() => handleDeleteReview(review.reviewId)}
+              />
             </Center>
-          )}
-        </Grid.Col>
+          </Grid.Col>
+        )}
 
         {reviewContentCol}
 
@@ -310,13 +252,6 @@ const ReviewItem = ({
       </Grid>
 
       <Divider mt="xl" />
-
-      <ReportModal
-        reviewId={review?.reviewId}
-        opened={reportModalOpened}
-        onClose={closeReportModal}
-        onReported={refetchLikedAndReportedReviewIds}
-      />
     </Box>
   );
 };
