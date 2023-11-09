@@ -17,6 +17,7 @@ import {
   OrderBarCounts,
   OrderItem,
   OrderItemStatusEnum,
+  RefundStatusEnum,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
@@ -128,22 +129,38 @@ export default function Orders({ userId }: OrdersProps) {
   };
 
   function getFilteredAndSortedRecords() {
-    // filter orderItems based on activeTab
-    let filteredOrderItems = orderItems;
-    if (activeTab !== OrderItemStatusEnum.All) {
-      if (activeTab === OrderItemStatusEnum.Fulfilled) {
-        filteredOrderItems = orderItems.filter(
-          (item) =>
-            item.status === OrderItemStatusEnum.Fulfilled ||
-            item.status === OrderItemStatusEnum.PaidOut,
-        );
-      } else {
-        filteredOrderItems = orderItems.filter(
-          (item) => item.status === activeTab,
-        );
-      }
+    let filteredOrderItems;
+    // 'ALL' tab shows all items without any additional filtering
+    if (activeTab === OrderItemStatusEnum.All) {
+      filteredOrderItems = orderItems;
+    } else if (activeTab === OrderItemStatusEnum.Refunded) {
+      // 'REFUNDED' tab shows items that are 'REFUNDED' or pending refund
+      filteredOrderItems = orderItems.filter(
+        (item) =>
+          item.status === OrderItemStatusEnum.Refunded ||
+          (item.RefundRequest &&
+            item.RefundRequest.status === RefundStatusEnum.Pending),
+      );
+    } else if (
+      activeTab === OrderItemStatusEnum.PendingBooking ||
+      activeTab === OrderItemStatusEnum.PendingFulfillment ||
+      activeTab === OrderItemStatusEnum.Fulfilled
+    ) {
+      filteredOrderItems = orderItems.filter(
+        (item) =>
+          item.status === activeTab &&
+          (!item.RefundRequest ||
+            (item.RefundRequest &&
+              item.RefundRequest.status !== RefundStatusEnum.Pending)), // filter out pending refund items
+      );
+    } else {
+      // PAID_OUT or EXPIRED tabs show items with the respective statuses only
+      filteredOrderItems = orderItems.filter(
+        (item) => item.status === activeTab,
+      );
     }
-    // then sort
+
+    // Apply sorting to the filtered list
     return sortRecords(orderItemsSortOptions, filteredOrderItems, sortStatus);
   }
 
@@ -160,16 +177,39 @@ export default function Orders({ userId }: OrdersProps) {
       orderBarCounts.allCount++;
       switch (item.status) {
         case OrderItemStatusEnum.PendingBooking:
+          if (
+            item.RefundRequest &&
+            item.RefundRequest.status === RefundStatusEnum.Pending
+          ) {
+            orderBarCounts.refundedCount++;
+            break;
+          }
           orderBarCounts.toBookCount++;
           break;
         case OrderItemStatusEnum.PendingFulfillment:
+          if (
+            item.RefundRequest &&
+            item.RefundRequest.status === RefundStatusEnum.Pending
+          ) {
+            orderBarCounts.refundedCount++;
+            break;
+          }
           orderBarCounts.toFulfillCount++;
           break;
         case OrderItemStatusEnum.Fulfilled:
-        case OrderItemStatusEnum.PaidOut: // paid out means its fulfilled
+          if (
+            item.RefundRequest &&
+            item.RefundRequest.status === RefundStatusEnum.Pending
+          ) {
+            orderBarCounts.refundedCount++;
+            break;
+          }
           orderBarCounts.fulfilledCount++;
           break;
-        case OrderItemStatusEnum.Expired:
+        case OrderItemStatusEnum.PaidOut: // paid out means its fulfilled, paid out items cannot be refunded or pending refund
+          orderBarCounts.fulfilledCount++;
+          break;
+        case OrderItemStatusEnum.Expired: // expired items cannot be refunded or pending refund
           orderBarCounts.expiredCount++;
           break;
         case OrderItemStatusEnum.Refunded:

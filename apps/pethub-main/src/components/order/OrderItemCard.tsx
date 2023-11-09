@@ -33,6 +33,7 @@ import {
   Invoice,
   OrderItem,
   OrderItemStatusEnum,
+  RefundStatusEnum,
   ServiceListing,
   convertMinsToDurationString,
   formatISODateLong,
@@ -67,8 +68,26 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
   ] = useDisclosure(false);
   const { addItemToCart } = useCartOperations(userId);
   const [visible, { toggle }] = useDisclosure(false);
+  const [status, setStatus] = useState<OrderItemStatusEnum>();
+  const [badgeStatusText, setBadgeStatusText] = useState<string>();
 
   const REVIEW_HOLDING_PERIOD_DAYS = 15;
+
+  // Override the status to Refunded for order items with a pending refund request
+  useEffect(() => {
+    setStatus(orderItem.status);
+    setBadgeStatusText(orderItem.status);
+
+    if (
+      orderItem.RefundRequest &&
+      orderItem.status !== OrderItemStatusEnum.Refunded
+    ) {
+      if (orderItem.RefundRequest.status === RefundStatusEnum.Pending) {
+        setStatus(OrderItemStatusEnum.Refunded);
+        setBadgeStatusText("REFUND_PENDING");
+      }
+    }
+  }, []);
 
   // A user can only leave a review max 15 days after the order item has been fulfilled
   const lastReviewCreateDate = formatISODateTimeShort(
@@ -110,14 +129,6 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
         lastReviewCreateDate,
       )} (within 15 days of the order item being fulfilled).`;
 
-  function triggerNotImplementedNotification() {
-    notifications.show({
-      title: "Not Implemented",
-      color: "orange",
-      message: "This function will be implemented in SR4",
-    });
-  }
-
   function navToOrderDetailsPage() {
     router.push(`/customer/orders/${orderItem?.orderItemId}`);
   }
@@ -147,20 +158,10 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
 
   const orderItemFooterGroup = (
     <>
-      {orderItem?.status === OrderItemStatusEnum.PendingBooking && (
+      {status === OrderItemStatusEnum.PendingBooking && (
         <>
           <Button miw={90} size="xs" mr={-5} onClick={bookNowHandler}>
             Book now
-          </Button>
-          <Button
-            color="red"
-            variant="light"
-            size="xs"
-            miw={90}
-            onClick={triggerNotImplementedNotification}
-            mr={-5}
-          >
-            Refund
           </Button>
           <OrderItemPopover
             text={`Make your booking and redeem your voucher before the end of the validity period on ${formatISODayDateTime(
@@ -169,7 +170,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           />
         </>
       )}
-      {orderItem?.status === OrderItemStatusEnum.PendingFulfillment && (
+      {status === OrderItemStatusEnum.PendingFulfillment && (
         <>
           {orderItem?.booking && (
             <Button miw={90} size="xs" mr={-10} onClick={bookNowHandler}>
@@ -208,8 +209,8 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           </Center>
         </>
       )}
-      {(orderItem?.status === OrderItemStatusEnum.Fulfilled ||
-        orderItem?.status === OrderItemStatusEnum.PaidOut) && (
+      {(status === OrderItemStatusEnum.Fulfilled ||
+        status === OrderItemStatusEnum.PaidOut) && (
         <>
           <Button size="xs" miw={90} onClick={buyAgainHandler} mr={-5}>
             Buy again
@@ -231,7 +232,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           )}
         </>
       )}
-      {orderItem?.status === OrderItemStatusEnum.Expired && (
+      {status === OrderItemStatusEnum.Expired && (
         <>
           <Text size="xs" fw={500} color="red">
             You did not redeem your voucher before the end of the validity
@@ -239,14 +240,14 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
           </Text>
         </>
       )}
-      {orderItem?.status === OrderItemStatusEnum.Refunded && (
-        <>
-          <Text size="xs" fw={500} color="orange">
-            The amount of ${formatNumber2Decimals(orderItem?.itemPrice)} has
-            been refunded to your original payment method
-          </Text>
-        </>
-      )}
+      {status === OrderItemStatusEnum.Refunded &&
+        orderItem?.RefundRequest?.status === RefundStatusEnum.Approved && (
+          <>
+            <Text size="xs" fw={500} color="orange">
+              The balance has been refunded to your original payment method
+            </Text>
+          </>
+        )}
     </>
   );
 
@@ -280,7 +281,7 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
             <Badge mr="md" radius="xl" c="dark" sx={{ fontWeight: 600 }}>
               Item ID: {orderItem?.orderItemId}
             </Badge>
-            <OrderItemBadge text={orderItem?.status} />
+            <OrderItemBadge text={badgeStatusText} />
           </Box>
         </Center>
       </Group>

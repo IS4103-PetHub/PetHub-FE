@@ -6,6 +6,7 @@ import {
   CopyButton,
   Divider,
   Grid,
+  Group,
   Rating,
   Stack,
   Stepper,
@@ -26,6 +27,7 @@ import React, { useState } from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
+  RefundStatusEnum,
   formatISODateTimeShort,
   formatISODayDateTime,
   formatNumber2Decimals,
@@ -35,6 +37,7 @@ import { useCartOperations } from "@/hooks/cart";
 import { useDeleteReview } from "@/hooks/review";
 import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
+import RefundModal from "../refund/RefundModal";
 import ReviewModal from "../review/ReviewModal";
 import OrderItemPopover from "./OrderItemPopover";
 
@@ -61,17 +64,28 @@ const OrderItemStepperContent = ({
     reviewModalOpened,
     { open: openReviewModal, close: closeReviewModal },
   ] = useDisclosure(false);
+  const [
+    refundModalOpened,
+    { open: openRefundModal, close: closeRefundModal },
+  ] = useDisclosure(false);
 
   const REFUND_HOLDING_PERIOD_DAYS = 7;
   const REVIEW_HOLDING_PERIOD_DAYS = 15;
 
-  function triggerNotImplementedNotification() {
-    notifications.show({
-      title: "Not Implemented",
-      color: "orange",
-      message: "This function will be implemented in SR4",
-    });
-  }
+  const refundStatusTextMap = {
+    [RefundStatusEnum.Pending]:
+      "Your refund request is pending review from the business.",
+    [RefundStatusEnum.Approved]:
+      "The amount will be credited to your original payment method.",
+    [RefundStatusEnum.Rejected]:
+      "Please file a support ticket should you feel this is an error.",
+  };
+
+  const refundStatusColorMap = {
+    [RefundStatusEnum.Pending]: "orange",
+    [RefundStatusEnum.Approved]: "green",
+    [RefundStatusEnum.Rejected]: "red",
+  };
 
   async function buyAgainHandler() {
     await addItemToCart({
@@ -127,14 +141,14 @@ const OrderItemStepperContent = ({
   };
 
   // Add the holding period to expiry date, this is the last allowed refund date
-  const fakeRefundDate = formatISODateTimeShort(
-    dayjs(orderItem?.expiryDate || new Date())
+  const lastRefundDate = formatISODateTimeShort(
+    dayjs(orderItem?.dateFulfilled || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day")
       .toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem?.expiryDate || new Date())
+    dayjs(orderItem?.dateFulfilled || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day"),
   );
@@ -203,11 +217,6 @@ const OrderItemStepperContent = ({
           <Text size="xs" color="red">
             Your order has reached the end of the validity period and expired on{" "}
             <b>{formatISODayDateTime(orderItem?.expiryDate)}</b>
-          </Text>
-        ) : orderItem?.status === OrderItemStatusEnum.Refunded ? (
-          <Text size="xs" color="orange">
-            The amount of ${formatNumber2Decimals(orderItem?.itemPrice)} has
-            been refunded to your original payment method.
           </Text>
         ) : (
           <Text size="xs">
@@ -360,11 +369,28 @@ const OrderItemStepperContent = ({
   const refundColumn = (
     <>
       <Grid.Col span={6}>
-        <Text size="xs" color="dimmed">
-          {eligibleForRefund
-            ? `You are eligible to request for a refund until ${fakeRefundDate}.`
-            : `You are no longer eligible for a refund as the last refund date ${fakeRefundDate} has passed.`}
-        </Text>
+        {orderItem?.RefundRequest ? (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Badge
+              variant="filled"
+              mr="xs"
+              radius="xs"
+              p={3}
+              color={refundStatusColorMap[orderItem?.RefundRequest?.status]}
+            >
+              {orderItem?.RefundRequest?.status}
+            </Badge>
+            <Text size="xs">
+              {refundStatusTextMap[orderItem?.RefundRequest?.status]}
+            </Text>
+          </Box>
+        ) : (
+          <Text size="xs" color="dimmed">
+            {eligibleForRefund
+              ? `You are eligible to request for a refund until ${lastRefundDate}.`
+              : `You are no longer eligible for a refund as the last refund date ${lastRefundDate} has passed.`}
+          </Text>
+        )}
       </Grid.Col>
       <Grid.Col span={2} />
       <Grid.Col span={4}>
@@ -373,10 +399,11 @@ const OrderItemStepperContent = ({
           color="red"
           variant="light"
           sx={{ border: "1px solid #e0e0e0" }}
-          onClick={triggerNotImplementedNotification}
+          onClick={openRefundModal}
           disabled={eligibleForRefund ? false : true}
+          display={eligibleForRefund ? "block" : "none"}
         >
-          Refund
+          {orderItem?.RefundRequest ? "View Refund Request" : "Refund"}
         </Button>
       </Grid.Col>
     </>
@@ -472,6 +499,8 @@ const OrderItemStepperContent = ({
     <>
       {buyAgainColumn}
       {dividerColumn}
+      {refundColumn}
+      {dividerColumn}
       {reviewColumn}
       {dividerColumn}
       {invoiceColumn}
@@ -522,6 +551,13 @@ const OrderItemStepperContent = ({
         opened={reviewModalOpened}
         onClose={closeReviewModal}
         onCreateOrUpdate={refetch}
+      />
+      <RefundModal
+        orderItem={orderItem}
+        userId={userId}
+        opened={refundModalOpened}
+        onClose={closeRefundModal}
+        refetch={refetch}
       />
     </Grid>
   );

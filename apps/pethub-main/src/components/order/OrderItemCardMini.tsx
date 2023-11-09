@@ -91,7 +91,7 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
         <Center>
           <Box>
             <Badge radius="xl" c="dark" sx={{ fontWeight: 600 }} variant="dot">
-              Ordered on: {formatISODayDateTime(orderItem?.invoice.createdAt)}
+              Ordered on: {formatISODayDateTime(orderItem?.invoice?.createdAt)}
             </Badge>
           </Box>
         </Center>
@@ -101,7 +101,7 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
           {orderItem?.serviceListing?.attachmentURLs?.length > 0 ? (
             <Image
               radius="md"
-              src={orderItem?.serviceListing.attachmentURLs[0]}
+              src={orderItem?.serviceListing?.attachmentURLs[0]}
               fit="contain"
               w="auto"
               alt="Cart Item Photo"
@@ -122,23 +122,23 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
             {!viewOnly ? (
               <Link href={`/service-listings/${orderItem?.serviceListingId}`}>
                 <Text fw={600} size={16}>
-                  {orderItem?.serviceListing.title}
+                  {orderItem?.serviceListing?.title}
                 </Text>
               </Link>
             ) : (
               <Text fw={600} size={16}>
-                {orderItem?.serviceListing.title}
+                {orderItem?.serviceListing?.title}
               </Text>
             )}
             <Text lineClamp={2} size="xs">
-              {orderItem?.serviceListing.description}
+              {orderItem?.serviceListing?.description}
             </Text>
             {orderItem?.serviceListing?.requiresBooking &&
-              orderItem?.serviceListing.duration && (
+              orderItem?.serviceListing?.duration && (
                 <Badge variant="dot" radius="xs">
                   Duration:{" "}
                   {convertMinsToDurationString(
-                    orderItem?.serviceListing.duration,
+                    orderItem?.serviceListing?.duration,
                   )}
                 </Badge>
               )}

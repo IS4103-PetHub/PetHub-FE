@@ -155,7 +155,7 @@ function OrderStatusBar({
             />
           }
         >
-          Refunded
+          Refunds
         </Tabs.Tab>
       </Tabs.List>
     </Tabs>
