@@ -15,13 +15,13 @@ import PBDashboardCharts from "@/components/dashboard/PBDashboardCharts";
 import PBUpcomingAppointments from "@/components/dashboard/PBUpcomingAppointments";
 import ApplicationStatusAlert from "@/components/pb-application/ApplicationStatusAlert";
 import { useGetPetBusinessApplicationByPBId } from "@/hooks/pet-business-application";
-import { Booking, pbDashboardData } from "@/types/types";
+import { Booking, PbDashboardData } from "@/types/types";
 
 interface DashboardProps {
   userId: number;
   accountType: AccountTypeEnum;
   upcomingBookings: Booking[];
-  dashboardData: pbDashboardData;
+  dashboardData: PbDashboardData;
 }
 
 const DAYS_AHEAD = 3;
@@ -58,7 +58,7 @@ export default function Dashboard({
         <title>Dashboard - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid m="lg">
+      <Container fluid>
         {applicationStatus !== BusinessApplicationStatusEnum.Approved ? (
           // PB application is not yet approved
           <ApplicationStatusAlert
@@ -114,7 +114,7 @@ export async function getServerSideProps(context) {
   const dashboardDataResponse = api.get(
     `/chart/pet-business-dashboard/data/${userId}`,
   );
-  const dashboardData: pbDashboardData = (await dashboardDataResponse).data;
+  const dashboardData: PbDashboardData = (await dashboardDataResponse).data;
 
   return { props: { userId, accountType, upcomingBookings, dashboardData } };
 }

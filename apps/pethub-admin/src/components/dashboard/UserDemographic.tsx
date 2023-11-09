@@ -1,9 +1,9 @@
-import { Box, Grid, Text } from "@mantine/core";
+import { Box, Grid } from "@mantine/core";
 import MiniSummaryCard from "web-ui/shared/dashboard/MiniSummaryCard";
-import { userDemographicData } from "../../../../pethub-main/src/types/types";
+import { UserDemographicData } from "../../../../pethub-main/src/types/types";
 
 interface UserDemographicProps {
-  data: userDemographicData;
+  data: UserDemographicData;
 }
 
 export default function UserDemographic({ data }: UserDemographicProps) {

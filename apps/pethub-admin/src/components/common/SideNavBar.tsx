@@ -122,7 +122,7 @@ const data = [
     icon: IconMessageReport,
   },
   {
-    link: "/admin/revenue",
+    link: "/admin/revenue/dashboard",
     label: "Revenue Tracking",
     icon: IconChartBar,
   },

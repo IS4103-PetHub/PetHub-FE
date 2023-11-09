@@ -23,12 +23,14 @@ export default function ServiceListingCharts({ data }) {
     <Box>
       <Grid>
         <Grid.Col span={6}>
+          <Text size="xl" fw={600} mb="sm">
+            Service Listings by Category
+          </Text>
           <Card shadow="sm" radius="md">
             <Chart
               chartType="PieChart"
               data={data.serviceListingDistribution}
               options={{
-                title: "Service Listing by Category",
                 colors: [
                   theme.colors.indigo[4],
                   theme.colors.red[4],
@@ -38,30 +40,34 @@ export default function ServiceListingCharts({ data }) {
                 ],
                 animation: {
                   startup: true,
-                  easing: "inAndOut",
-                  duration: 2000,
+                  easing: "out",
+                  duration: 1500,
                 },
               }}
-              width={"100%"}
+              width="100%"
               height="600px"
             />
           </Card>
         </Grid.Col>
         <Grid.Col span={6}>
+          <Text size="xl" fw={600} mb="sm">
+            Number of New Service Listings Created by Month
+          </Text>
           <Card shadow="sm" radius="md">
             <Chart
               chartType="ColumnChart"
               data={newServiceListingData}
               options={{
-                title: "New Service Listings",
+                hAxis: { title: "Month" },
+                vAxis: { title: "New Service Listings" },
                 legend: "none",
                 animation: {
                   startup: true,
-                  easing: "inAndOut",
-                  duration: 2000,
+                  easing: "out",
+                  duration: 1500,
                 },
               }}
-              width={"100%"}
+              width="100%"
               height="600px"
             />
           </Card>
