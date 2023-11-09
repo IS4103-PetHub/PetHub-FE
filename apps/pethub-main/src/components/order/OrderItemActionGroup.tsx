@@ -141,14 +141,14 @@ const OrderItemStepperContent = ({
   };
 
   // Add the holding period to expiry date, this is the last allowed refund date
-  const fakeRefundDate = formatISODateTimeShort(
-    dayjs(orderItem?.expiryDate || new Date())
+  const lastRefundDate = formatISODateTimeShort(
+    dayjs(orderItem?.dateFulfilled || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day")
       .toISOString(),
   );
   const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem?.expiryDate || new Date())
+    dayjs(orderItem?.dateFulfilled || new Date())
       .add(REFUND_HOLDING_PERIOD_DAYS, "day")
       .endOf("day"),
   );
@@ -387,8 +387,8 @@ const OrderItemStepperContent = ({
         ) : (
           <Text size="xs" color="dimmed">
             {eligibleForRefund
-              ? `You are eligible to request for a refund until ${fakeRefundDate}.`
-              : `You are no longer eligible for a refund as the last refund date ${fakeRefundDate} has passed.`}
+              ? `You are eligible to request for a refund until ${lastRefundDate}.`
+              : `You are no longer eligible for a refund as the last refund date ${lastRefundDate} has passed.`}
           </Text>
         )}
       </Grid.Col>
@@ -401,6 +401,7 @@ const OrderItemStepperContent = ({
           sx={{ border: "1px solid #e0e0e0" }}
           onClick={openRefundModal}
           disabled={eligibleForRefund ? false : true}
+          display={eligibleForRefund ? "block" : "none"}
         >
           {orderItem?.RefundRequest ? "View Refund Request" : "Refund"}
         </Button>
