@@ -164,12 +164,48 @@ export default function Supports({
           duration={100}
         >
           {(styles) => (
-            <div style={styles}>
-              <SadDimmedMessage
-                title="No Support Ticket found"
-                subtitle="Click 'Create Support Ticket' to create a new Support Ticket"
-              />
-            </div>
+            <Grid>
+              <Grid.Col span={6}>
+                <SearchBar
+                  size="md"
+                  text="Search by id and reason"
+                  onSearch={handleSearch}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <MultiSelect
+                  mt={-4.5}
+                  size="md"
+                  label="Category"
+                  placeholder="Select category"
+                  data={supportReasonValue}
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <MultiSelect
+                  mt={-4.5}
+                  size="md"
+                  label="Status"
+                  placeholder="Select status"
+                  data={supportStatusValue}
+                  value={selectedStatus}
+                  onChange={setSelectedStatus}
+                />
+              </Grid.Col>
+              <Grid.Col span={9}>
+                <div style={styles}>
+                  <SadDimmedMessage
+                    title="No Support Ticket found"
+                    subtitle="Click 'Create Support Ticket' to create a new Support Ticket"
+                  />
+                </div>
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <FAQInformation />
+              </Grid.Col>
+            </Grid>
           )}
         </Transition>
       );

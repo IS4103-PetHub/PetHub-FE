@@ -42,7 +42,7 @@ export default function FAQInformation({}) {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Text size="xl">Frequently Asked Questions</Text>
-      <Accordion multiple variant="filled" chevronSize={0} mt="md">
+      <Accordion multiple variant="contained" chevronSize={0} mt="md">
         {generateFAQ}
       </Accordion>
     </Card>
