@@ -1,14 +1,7 @@
 import {
   Accordion,
   ActionIcon,
-  Avatar,
-  Box,
-  Container,
-  Divider,
-  FileInput,
-  Grid,
   Group,
-  Paper,
   ScrollArea,
   Text,
   Textarea,
@@ -16,12 +9,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import {
-  IconMessageCircle,
-  IconMessageCircle2Filled,
-  IconPaperclip,
-  IconSend,
-} from "@tabler/icons-react";
+import { IconMessageCircle, IconSend } from "@tabler/icons-react";
 import { useEffect, useRef } from "react";
 import { SupportTicket, getErrorMessageProps } from "shared-utils";
 import { useUpdateSupportTicketComment } from "@/hooks/support";
