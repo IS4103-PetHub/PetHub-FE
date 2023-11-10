@@ -87,3 +87,22 @@ export const useUpdateSupportTicketComment = (supportTicketId: number) => {
     },
   });
 };
+
+export const useCloseResolveSupportTicket = (supportTicketId: number) => {
+  return useMutation({
+    mutationFn: async () => {
+      return (await api.put(`${SUPPORT_API}/close-resolved/${supportTicketId}`))
+        .data;
+    },
+  });
+};
+
+export const useReopenSupportTicket = (supportTicketId: number) => {
+  return useMutation({
+    mutationFn: async () => {
+      return (
+        await api.put(`${SUPPORT_API}/reopen-unresolved/${supportTicketId}`)
+      ).data;
+    },
+  });
+};

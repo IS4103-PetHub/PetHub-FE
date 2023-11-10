@@ -5,6 +5,7 @@ import { getSession } from "next-auth/react";
 import {
   AccountStatusEnum,
   SupportTicket,
+  SupportTicketStatus,
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -13,7 +14,10 @@ import api from "@/api/axiosConfig";
 import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import SupportAccordionDetails from "@/components/support/SupportAccordionDetails";
 import SupportCommentAccordion from "@/components/support/SupportCommentAccordion";
-import { useGetSupportTicketsById } from "@/hooks/support";
+import {
+  useGetSupportTickets,
+  useGetSupportTicketsById,
+} from "@/hooks/support";
 import { PetBusiness } from "@/types/types";
 
 interface PBSUpportTicketDetailsProps {
@@ -31,6 +35,14 @@ export default function PBSupportTicketDetails({
   const OPEN_FOREVER = ["details", "comments"];
   const { data: supportTicket, refetch: refetchSupportTicket } =
     useGetSupportTicketsById(supportTicketId);
+
+  const { data: supportTickets, refetch: refetchSupportTickets } =
+    useGetSupportTickets(userId);
+
+  const canEdit = [
+    SupportTicketStatus.Pending,
+    SupportTicketStatus.InProgress,
+  ].includes(supportTicket?.status);
 
   if (!supportTicketId || !supportTicket) {
     return null;
@@ -50,14 +62,9 @@ export default function PBSupportTicketDetails({
       ) : (
         <Container mt="xl" mb="xl" size="70vw">
           <Group position="apart">
-            <PageTitle
-              title={`${
-                supportTicket.supportTicketId
-              } - ${formatStringToLetterCase(supportTicket.supportCategory)}`}
-            />
             <Box>
               <LargeBackButton
-                text="Back to Supports"
+                text="Back to Supports Tickets"
                 onClick={async () => {
                   router.push("/business/supports");
                 }}
@@ -73,11 +80,17 @@ export default function PBSupportTicketDetails({
             chevronSize={0}
             mt="md"
           >
-            <SupportAccordionDetails supportTicket={supportTicket} />
+            <SupportAccordionDetails
+              supportTicket={supportTicket}
+              refetch={refetchSupportTicket}
+              canEdit={canEdit}
+              refetchTableData={refetchSupportTickets}
+            />
             <SupportCommentAccordion
               supportTicket={supportTicket}
               userId={userId}
               refetch={refetchSupportTicket}
+              canEdit={canEdit}
             />
           </Accordion>
         </Container>

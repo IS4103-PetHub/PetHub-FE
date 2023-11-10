@@ -105,11 +105,6 @@ const defaultLinks = [
 // display these only if PB account is not pending
 const nonPendingLinks = [
   {
-    link: "/business/supports",
-    label: "Support",
-    icon: IconHelp,
-  },
-  {
     link: "/business/orders",
     label: "Orders",
     icon: IconFileInvoice,
@@ -128,6 +123,11 @@ const nonPendingLinks = [
     link: "/business/sales/dashboard",
     label: "Business Sales",
     icon: IconReportAnalytics,
+  },
+  {
+    link: "/business/supports",
+    label: "Support",
+    icon: IconHelp,
   },
 ];
 

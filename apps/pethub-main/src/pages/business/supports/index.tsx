@@ -30,8 +30,8 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import api from "@/api/axiosConfig";
 import FAQInformation from "@/components/support/FAQInformation";
+import PBSupportTable from "@/components/support/PBSupportTable";
 import CreateSupportModal from "@/components/support/createSupportModal";
-import PBSupportTable from "@/components/support/pbSupportTable";
 import { useGetSupportTickets } from "@/hooks/support";
 import { PetBusiness } from "@/types/types";
 

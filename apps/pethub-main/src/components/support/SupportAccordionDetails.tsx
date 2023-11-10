@@ -10,6 +10,8 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck, IconSwitch3 } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -21,15 +23,30 @@ import {
   downloadFile,
   extractFileName,
   formatISODateLong,
+  formatISODayDateTime,
+  getErrorMessageProps,
 } from "shared-utils";
+import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
+import DeleteButton from "web-ui/shared/LargeDeleteButton";
+import SimpleDeleteActionButton from "web-ui/shared/SimpleDeleteActionButton";
+import {
+  useCloseResolveSupportTicket,
+  useReopenSupportTicket,
+} from "@/hooks/support";
 
 interface SupportAccordionDetailsProps {
   supportTicket: SupportTicket;
+  refetch(): void;
+  canEdit: boolean;
+  refetchTableData(): void;
 }
 
 export default function SupportAccordionDetails({
   supportTicket,
+  refetch,
+  canEdit,
+  refetchTableData,
 }: SupportAccordionDetailsProps) {
   const theme = useMantineTheme();
 
@@ -110,12 +127,62 @@ export default function SupportAccordionDetails({
     setImagePreview(imageUrls);
   };
 
+  const closeSupportTicketMutation = useCloseResolveSupportTicket(
+    supportTicket.supportTicketId,
+  );
+  const reopenSupportTicketMutation = useReopenSupportTicket(
+    supportTicket.supportTicketId,
+  );
+  async function handleAction() {
+    try {
+      if (canEdit) {
+        await closeSupportTicketMutation.mutateAsync();
+        notifications.show({
+          title: "Support Ticket Closed",
+          color: "green",
+          icon: <IconCheck />,
+          message: `Support Ticket successfully closed`,
+        });
+      } else {
+        await reopenSupportTicketMutation.mutateAsync();
+        notifications.show({
+          title: "Support Ticket Reopened",
+          color: "green",
+          icon: <IconCheck />,
+          message: `Support Ticket successfully Reopened`,
+        });
+      }
+      refetch();
+      refetchTableData();
+    } catch (error) {
+      notifications.show({
+        ...getErrorMessageProps("Error Deleting Service Listing", error),
+      });
+    }
+  }
+
   return (
     <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
       <Group position="apart" mt={5}>
         <Text size="xl">
           <b>Support Ticket Details</b> | ID. {supportTicket?.supportTicketId}
         </Text>
+        {supportTicket.status != SupportTicketStatus.ClosedResolved && (
+          <DeleteActionButtonModal
+            title={canEdit ? "Close Support Ticket" : "Reopen Support Ticket"}
+            onDelete={() => handleAction()}
+            subtitle={
+              canEdit
+                ? "Are you sure you want to close the support ticket. Once the support ticket is closed, it cannot be reopened."
+                : "Are you sure you want to reopen the support ticket."
+            }
+            large
+            largeText={canEdit ? "Close" : "Reopen"}
+            removeIcon
+            overrideDeleteButtonText={canEdit ? "Close" : "Reopen"}
+            buttonColor={canEdit ? "red" : "teal"}
+          />
+        )}
       </Group>
       <Box>
         <Divider mb="lg" mt="lg" />
@@ -172,11 +239,11 @@ export default function SupportAccordionDetails({
           )}
           {generateItemGroup(
             "Created At",
-            <Text>{formatISODateLong(supportTicket?.createdAt)}</Text>,
+            <Text>{formatISODayDateTime(supportTicket?.createdAt)}</Text>,
           )}
           {generateItemGroup(
             "Updated At",
-            <Text>{formatISODateLong(supportTicket?.updatedAt)}</Text>,
+            <Text>{formatISODayDateTime(supportTicket?.updatedAt)}</Text>,
           )}
         </Grid>
         <Divider mt="lg" mb="lg" />
@@ -202,6 +269,7 @@ export default function SupportAccordionDetails({
           )}
         </Grid>
       </Box>
+      <Divider mt="lg" mb="lg" />
     </Accordion.Item>
   );
 }

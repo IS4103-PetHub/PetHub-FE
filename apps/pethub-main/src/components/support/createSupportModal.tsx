@@ -147,14 +147,14 @@ export default function CreateSupportModal({
           <TextInput
             placeholder="Input Reason"
             label="Reason"
-            mb="xs"
+            mb="xl"
             withAsterisk
             {...supportTicketForm.getInputProps("reason")}
           />
           <Select
             label="Category"
             placeholder="Pick one Category"
-            mb="xs"
+            mb="xl"
             data={supportReasonOptions}
             dropdownPosition="bottom"
             withAsterisk
@@ -173,14 +173,14 @@ export default function CreateSupportModal({
             onChange={(files) => handleFileInputChange(files)}
             capture={false}
             key={fileInputKey}
-            mb="xs"
+            mb="xl"
           />
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
             {imagePreview &&
               imagePreview.length > 0 &&
               imagePreview.map((imageUrl, index) => (
                 <div key={index} style={{ flex: "0 0 calc(33.33% - 10px)" }}>
-                  <Card style={{ maxWidth: "100%" }} mt="xs" mb="xs">
+                  <Card style={{ maxWidth: "100%" }} mt="xs" mb="xl">
                     <Group position="right">
                       <CloseButton
                         size="md"
@@ -199,6 +199,10 @@ export default function CreateSupportModal({
                 </div>
               ))}
           </div>
+          <Text size="sm" mb="xl" color="gray">
+            Please wait while our dedicated support team assist you. Please
+            expect a response within 5 working days.
+          </Text>
           <Group position="right">
             <Button
               type="reset"
@@ -213,7 +217,7 @@ export default function CreateSupportModal({
           </Group>
         </form>
       </Modal>
-      <LargeCreateButton text="Create Support Ticket" onClick={open} />
+      <LargeCreateButton mb="lg" text="Create Support Ticket" onClick={open} />
     </>
   );
 }

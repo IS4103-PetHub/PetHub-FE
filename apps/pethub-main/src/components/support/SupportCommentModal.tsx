@@ -19,11 +19,13 @@ import React, { useRef, useState } from "react";
 interface SupportCommentModalProps {
   commentForm: UseFormReturnType<any>;
   handleAction(): void;
+  canEdit: boolean;
 }
 
 export default function SupportCommentModal({
   commentForm,
   handleAction,
+  canEdit,
 }: SupportCommentModalProps) {
   const theme = useMantineTheme();
   const [opened, { open, close }] = useDisclosure(false);
@@ -81,7 +83,7 @@ export default function SupportCommentModal({
 
   return (
     <>
-      <ActionIcon>
+      <ActionIcon disabled={!canEdit}>
         <IconPaperclip
           onClick={() => handlePaperclipClick()}
           color={theme.colors.blue[5]}
@@ -154,7 +156,7 @@ export default function SupportCommentModal({
             mb="xs"
             {...commentForm.getInputProps("comment")}
           />
-          <Group mt={25}>
+          <Group mt={25} position="right">
             <Button
               type="reset"
               color="gray"
@@ -164,7 +166,7 @@ export default function SupportCommentModal({
               Cancel
             </Button>
             <Button type="submit" mb="xs">
-              Save
+              Send
             </Button>
           </Group>
         </form>
