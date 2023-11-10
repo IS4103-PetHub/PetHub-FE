@@ -52,16 +52,6 @@ export default function ArticleDetails({
 }
 
 export async function getServerSideProps(context) {
-  const orderId = context.params.id;
-  const { data: order } = await api.get(`/order-items/${orderId}`);
-  let pet = null;
-  if (order.booking) {
-    if (order.booking.petId) {
-      const { data: petData } = await api.get(`/pets/${order.booking.petId}`);
-      pet = petData;
-    }
-  }
-
   const session = await getSession(context);
   if (!session) return { props: {} };
 
@@ -70,5 +60,5 @@ export async function getServerSideProps(context) {
     await api.get(`/rbac/users/${userId}/permissions`)
   ).data;
 
-  return { props: { order, pet, permissions } };
+  return { props: { permissions } };
 }

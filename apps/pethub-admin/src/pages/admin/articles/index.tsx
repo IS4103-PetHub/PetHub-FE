@@ -28,11 +28,12 @@ import {
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
+import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import api from "@/api/axiosConfig";
-import ArticleManagementTable from "@/components/article/articleManagementTable";
+import ArticleManagementTable from "@/components/article/ArticleManagementTable";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import { useGetAllArticles } from "@/hooks/article";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
@@ -199,8 +200,14 @@ export default function Articles({ permissions }: ArticlesProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
-        <Group position="apart">
+        <Group position="apart" mb="md">
           <PageTitle title="Article Management" />
+          {canWrite && (
+            <LargeCreateButton
+              text="Create New Article"
+              onClick={() => router.push(`${router.asPath}/create`)}
+            />
+          )}
         </Group>
         <Grid>
           <Grid.Col span={6}>

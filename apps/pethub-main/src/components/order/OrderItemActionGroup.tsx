@@ -140,18 +140,18 @@ const OrderItemStepperContent = ({
     }
   };
 
-  // Add the holding period to expiry date, this is the last allowed refund date
+  // if fulfilled, holding period + that date. Else, expiry date
+  const baseDate = orderItem?.dateFulfilled
+    ? dayjs(orderItem?.dateFulfilled || new Date()).add(
+        REFUND_HOLDING_PERIOD_DAYS,
+        "day",
+      )
+    : dayjs(orderItem?.expiryDate || new Date());
+
   const lastRefundDate = formatISODateTimeShort(
-    dayjs(orderItem?.dateFulfilled || new Date())
-      .add(REFUND_HOLDING_PERIOD_DAYS, "day")
-      .endOf("day")
-      .toISOString(),
+    baseDate.endOf("day").toISOString(),
   );
-  const eligibleForRefund = dayjs().isBefore(
-    dayjs(orderItem?.dateFulfilled || new Date())
-      .add(REFUND_HOLDING_PERIOD_DAYS, "day")
-      .endOf("day"),
-  );
+  const eligibleForRefund = dayjs().isBefore(baseDate.endOf("day"));
 
   // A user can only leave a review max 15 days after the order item has been fulfilled
   const lastReviewCreateDate = formatISODateTimeShort(

@@ -58,6 +58,7 @@ const ArticleManagementTable = ({
             accessor: "createdBy.name",
             title: "Author",
             sortable: true,
+            ellipsis: true,
             width: "10vw",
           },
           {
