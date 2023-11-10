@@ -18,6 +18,7 @@ import {
   IconLogout,
   IconFileInvoice,
   IconReportAnalytics,
+  IconCreditCard,
   IconHelp,
 } from "@tabler/icons-react";
 import Link from "next/link";
@@ -123,6 +124,11 @@ const nonPendingLinks = [
     link: "/business/sales/dashboard",
     label: "Business Sales",
     icon: IconReportAnalytics,
+  },
+  {
+    link: "/business/refunds",
+    label: "Refunds",
+    icon: IconCreditCard,
   },
   {
     link: "/business/supports",

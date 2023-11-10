@@ -30,6 +30,7 @@ import {
   OrderItem,
   OrderItemStatusEnum,
   PLATFORM_FEE_PERCENT,
+  RefundStatusEnum,
   convertMinsToDurationString,
   formatISODayDateTime,
 } from "shared-utils";
@@ -112,29 +113,36 @@ export default function OrderDetails({ userId }: OrderDetailsProps) {
   }
 
   function setStepperCount() {
-    if (
-      orderItem?.status === OrderItemStatusEnum.PaidOut ||
-      orderItem?.status === OrderItemStatusEnum.PendingFulfillment ||
-      orderItem?.status === OrderItemStatusEnum.Fulfilled ||
-      orderItem?.status === OrderItemStatusEnum.PendingBooking
-    ) {
-      if (orderItem?.serviceListing.requiresBooking) {
-        setNumberOfSteps(4);
-      } else {
-        setNumberOfSteps(3);
-      }
-    }
-    if (orderItem?.status === OrderItemStatusEnum.Expired) {
-      if (orderItem?.serviceListing.requiresBooking) {
-        setNumberOfSteps(3);
-      }
-      setNumberOfSteps(2);
-    }
-    if (orderItem?.status === OrderItemStatusEnum.Refunded) {
-      if (orderItem?.serviceListing.requiresBooking) {
-        setNumberOfSteps(4);
-      }
+    const { status, RefundRequest, serviceListing } = orderItem || {};
+
+    // NEW: Check for pending refund request first
+    const isRefundPending = RefundRequest?.status === RefundStatusEnum.Pending;
+    const needsRefundHandling =
+      isRefundPending &&
+      [
+        OrderItemStatusEnum.PendingFulfillment,
+        OrderItemStatusEnum.Fulfilled,
+        OrderItemStatusEnum.PendingBooking,
+      ].includes(status);
+
+    if (needsRefundHandling) {
       setNumberOfSteps(3);
+      return;
+    }
+
+    switch (status) {
+      case OrderItemStatusEnum.PaidOut:
+      case OrderItemStatusEnum.PendingFulfillment:
+      case OrderItemStatusEnum.Fulfilled:
+      case OrderItemStatusEnum.PendingBooking:
+        setNumberOfSteps(serviceListing?.requiresBooking ? 4 : 3);
+        break;
+      case OrderItemStatusEnum.Expired:
+        setNumberOfSteps(serviceListing?.requiresBooking ? 3 : 2);
+        break;
+      case OrderItemStatusEnum.Refunded:
+        setNumberOfSteps(3);
+        break;
     }
   }
 

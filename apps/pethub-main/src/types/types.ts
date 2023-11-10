@@ -265,6 +265,16 @@ export interface UpdateReviewPayload {
   files: File[];
 }
 
+export interface CreateRefundRequestPayload {
+  orderItemId: number;
+  reason: string;
+}
+
+export interface ApproveOrRejectRefundRequestPayload {
+  refundRequestId: number;
+  comment: string;
+}
+
 export interface ReportReviewPayload {
   reviewId: number;
   reportReason: ReviewReportReasonEnum;

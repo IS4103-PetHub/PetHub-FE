@@ -6,6 +6,7 @@ import {
   PetTypeEnum,
   Priority,
   RecurrencePatternEnum,
+  RefundStatusEnum,
   ReviewReportReasonEnum,
   ServiceCategoryEnum,
   SupportTicketReason,
@@ -155,6 +156,7 @@ export interface OrderItem {
   dateFulfilled?: string;
 
   review?: Review;
+  RefundRequest?: RefundRequest;
 }
 
 export interface OrderBarCounts {
@@ -184,13 +186,16 @@ export interface RefundRequest {
   refundRequestId: number;
   createdAt: string;
   updatedAt: string;
-  status: string;
-  reason?: string;
+  status: RefundStatusEnum;
+  reason: string;
+  comment?: string;
   processedAt?: string;
   petOwnerId: number;
-  orderId: number;
-  order: Invoice;
+  orderItemId: number;
   petBusinessId: number;
+  orderItem: OrderItem;
+  PetOwner: PetOwner;
+  PetBusiness: any;
 }
 
 export interface CommissionRule {
