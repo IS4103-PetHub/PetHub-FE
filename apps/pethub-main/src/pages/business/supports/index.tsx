@@ -165,45 +165,16 @@ export default function Supports({
         >
           {(styles) => (
             <Grid>
-              <Grid.Col span={6}>
-                <SearchBar
-                  size="md"
-                  text="Search by id and reason"
-                  onSearch={handleSearch}
-                />
+              <Grid.Col span={12}>
+                <FAQInformation />
               </Grid.Col>
-              <Grid.Col span={3}>
-                <MultiSelect
-                  mt={-4.5}
-                  size="md"
-                  label="Category"
-                  placeholder="Select category"
-                  data={supportReasonValue}
-                  value={selectedCategory}
-                  onChange={setSelectedCategory}
-                />
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <MultiSelect
-                  mt={-4.5}
-                  size="md"
-                  label="Status"
-                  placeholder="Select status"
-                  data={supportStatusValue}
-                  value={selectedStatus}
-                  onChange={setSelectedStatus}
-                />
-              </Grid.Col>
-              <Grid.Col span={9}>
+              <Grid.Col span={12}>
                 <div style={styles}>
                   <SadDimmedMessage
                     title="No Support Ticket found"
                     subtitle="Click 'Create Support Ticket' to create a new Support Ticket"
                   />
                 </div>
-              </Grid.Col>
-              <Grid.Col span={3}>
-                <FAQInformation />
               </Grid.Col>
             </Grid>
           )}
@@ -248,7 +219,7 @@ export default function Supports({
           <NoSearchResultsMessage />
         ) : (
           <Grid>
-            <Grid.Col span={9}>
+            <Grid.Col span={9} style={{ height: "100%" }}>
               <PBSupportTable
                 records={records}
                 totalNumSupportTicket={searchResults.length}
@@ -260,7 +231,7 @@ export default function Supports({
                 router={router}
               />
             </Grid.Col>
-            <Grid.Col span={3}>
+            <Grid.Col span={3} style={{ height: "100%" }}>
               <FAQInformation />
             </Grid.Col>
           </Grid>

@@ -1,4 +1,5 @@
 import { Accordion, Box, Card, Text } from "@mantine/core";
+import Link from "next/link";
 
 export default function FAQInformation({}) {
   const faqList = [
@@ -6,21 +7,75 @@ export default function FAQInformation({}) {
       id: "1",
       key: "password",
       question: "How do i change my password?",
-      answer:
-        "Please head to the accounts management and select `change password`",
+      answer: (
+        <>
+          Navigate to{" "}
+          <Link href="/business/account">
+            <Text color="blue">My Account</Text>
+          </Link>{" "}
+          and select the &quot;Change password&quot; tab.
+        </>
+      ),
+    },
+    {
+      id: "3",
+      key: "contactInformation",
+      question: "How can I update my contact information on the platform?",
+      answer: (
+        <>
+          Navigate to{" "}
+          <Link href="/business/account">
+            <Text color="blue">My Account</Text>
+          </Link>{" "}
+          and select &quot;Edit&quot; to update your contact details.
+        </>
+      ),
     },
     {
       id: "2",
       key: "serviceListing",
       question: "How do i temporarily disable my service listings?",
-      answer:
-        "Please head to the servcie listing management and set the last possible date to the last operational date",
+      answer: (
+        <>
+          Navigate to{" "}
+          <Link href="/business/listings">
+            <Text color="blue">Service Listings</Text>
+          </Link>{" "}
+          select your service listing and set the last possible date to the last
+          operational date.
+        </>
+      ),
     },
     {
       id: "3",
       key: "calandarGroup",
       question: "How does the calendar group works?",
-      answer: "Please use your brain",
+      answer: (
+        <>
+          Navigate to{" "}
+          <Link href="/business/appointments">
+            <Text color="blue">Appointments</Text>
+          </Link>{" "}
+          select &quot;Create Calendar Group&quot; to view the rules set for
+          using a calendar group.
+        </>
+      ),
+    },
+    {
+      id: "4",
+      key: "businessSales",
+      question:
+        "Is there a way to track the performance of my service listings?",
+      answer: (
+        <>
+          Navigate to{" "}
+          <Link href="/business/sales/dashboard">
+            <Text color="blue">Business Sales</Text>
+          </Link>{" "}
+          to monitor the performance of your service listings through the
+          analytics dashboard
+        </>
+      ),
     },
   ];
 
@@ -31,9 +86,7 @@ export default function FAQInformation({}) {
           <Accordion.Control>
             <Text>{item.question}</Text>
           </Accordion.Control>
-          <Accordion.Panel>
-            <Text size="sm">{item.answer}</Text>
-          </Accordion.Panel>
+          <Accordion.Panel>{item.answer}</Accordion.Panel>
         </Accordion.Item>
       ))}
     </>
@@ -42,7 +95,7 @@ export default function FAQInformation({}) {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Text size="xl">Frequently Asked Questions</Text>
-      <Accordion multiple variant="contained" chevronSize={0} mt="md">
+      <Accordion variant="contained" chevronSize={0} mt="md">
         {generateFAQ}
       </Accordion>
     </Card>

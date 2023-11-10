@@ -16,7 +16,7 @@ import {
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
-import { formatISODateLong } from "shared-utils";
+import { formatISODateLong, formatNumber2Decimals } from "shared-utils";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
@@ -124,7 +124,10 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                   <Text ml={-15}>
                     Commission rate:{" "}
                     <strong>
-                      {petBusiness.commissionRule.commissionRate * 100}%
+                      {formatNumber2Decimals(
+                        petBusiness.commissionRule.commissionRate * 100,
+                      )}
+                      %
                     </strong>
                   </Text>
                 </Group>
