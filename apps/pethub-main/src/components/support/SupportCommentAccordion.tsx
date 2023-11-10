@@ -14,7 +14,7 @@ import { useEffect, useRef } from "react";
 import { SupportTicket, getErrorMessageProps } from "shared-utils";
 import { useUpdateSupportTicketComment } from "@/hooks/support";
 import { commentSupportPayload } from "@/types/types";
-// import SupportCommentBubble from "./SupportCommentBubble";
+import SupportCommentBubble from "./SupportCommentBubble";
 import SupportCommentModal from "./SupportCommentModal";
 
 interface SupportCommentAccordionProps {
@@ -84,7 +84,7 @@ export default function SupportCommentAccordion({
         </Text>
       </Group>
 
-      {/* {comments.length > 0 ? (
+      {comments.length > 0 ? (
         <ScrollArea h={500} viewportRef={viewport}>
           {comments.map((comment) => (
             <SupportCommentBubble
@@ -96,7 +96,7 @@ export default function SupportCommentAccordion({
         </ScrollArea>
       ) : (
         <Text mb="lg">No comments yet</Text>
-      )} */}
+      )}
 
       <form>
         <Group>

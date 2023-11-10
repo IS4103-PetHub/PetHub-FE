@@ -31,7 +31,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import api from "@/api/axiosConfig";
 import CreateSupportModal from "@/components/support/CreateSupportModal";
 import FAQInformation from "@/components/support/FAQInformation";
-import PBSupportTable from "@/components/support/PBSupportTable";
+// import PBSupportTable from "@/components/support/PBSupportTable";
 import { useGetSupportTickets } from "@/hooks/support";
 import { PetBusiness } from "@/types/types";
 
@@ -220,7 +220,7 @@ export default function Supports({
         ) : (
           <Grid>
             <Grid.Col span={9} style={{ height: "100%" }}>
-              <PBSupportTable
+              {/* <PBSupportTable
                 records={records}
                 totalNumSupportTicket={searchResults.length}
                 refetch={refetchSupportTickets}
@@ -229,7 +229,7 @@ export default function Supports({
                 onSortStatusChange={setSortStatus}
                 onPageChange={setPage}
                 router={router}
-              />
+              /> */}
             </Grid.Col>
             <Grid.Col span={3} style={{ height: "100%" }}>
               <FAQInformation />
