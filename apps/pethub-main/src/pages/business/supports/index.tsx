@@ -29,7 +29,7 @@ import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import api from "@/api/axiosConfig";
-import CreateSupportModal from "@/components/support/CreateSupportModal";
+// import CreateSupportModal from "@/components/support/CreateSupportModal";
 import FAQInformation from "@/components/support/FAQInformation";
 import PBSupportTable from "@/components/support/PBSupportTable";
 import { useGetSupportTickets } from "@/hooks/support";
@@ -249,7 +249,7 @@ export default function Supports({
       <Container fluid m="lg">
         <Group position="apart">
           <PageTitle title="Support Tickets" />
-          <CreateSupportModal userId={userId} refetch={refetchSupportTickets} />
+          {/* <CreateSupportModal userId={userId} refetch={refetchSupportTickets} /> */}
         </Group>
         {renderContent()}
       </Container>
