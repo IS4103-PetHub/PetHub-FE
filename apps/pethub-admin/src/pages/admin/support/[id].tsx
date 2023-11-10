@@ -5,43 +5,50 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import {
-  AccountStatusEnum,
-  SupportTicket,
   SupportTicketStatus,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
-import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import SupportCommentAccordion from "web-ui/shared/support/SupportCommentAccordion";
 import api from "@/api/axiosConfig";
-import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
+import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import SupportAccordionDetails from "@/components/support/SupportAccordionDetails";
 import {
   useGetSupportTickets,
   useGetSupportTicketsById,
   useUpdateSupportTicketComment,
 } from "@/hooks/support";
-import { PetBusiness, commentSupportPayload } from "@/types/types";
+import { PermissionsCodeEnum } from "@/types/constants";
+import { Permission } from "@/types/types";
+import { commentSupportPayload } from "../../../../../pethub-main/src/types/types";
 
-interface PBSUpportTicketDetailsProps {
+interface SupportTicketDetailsProps {
   supportTicketId: number;
   userId: number;
-  canView: boolean;
+  permissions: Permission[];
 }
 
-export default function PBSupportTicketDetails({
+export default function SupportTicketDetails({
   supportTicketId,
   userId,
-  canView,
-}: PBSUpportTicketDetailsProps) {
+  permissions,
+}: SupportTicketDetailsProps) {
   const router = useRouter();
-  const OPEN_FOREVER = ["details", "comments"];
+  // permissions
+  // const permissionCodes = permissions.map((permission) => permission.code);
+  // const canWrite = permissionCodes.includes(
+  //     PermissionsCodeEnum.WriteSupport,
+  // );
+  // const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadSupport);
+  const canWrite = true;
+  const canRead = true;
+
   const { data: supportTicket, refetch: refetchSupportTicket } =
     useGetSupportTicketsById(supportTicketId);
 
   const { data: supportTickets, refetch: refetchSupportTickets } =
-    useGetSupportTickets(userId);
+    useGetSupportTickets();
 
   const canEdit = [
     SupportTicketStatus.Pending,
@@ -52,6 +59,7 @@ export default function PBSupportTicketDetails({
     comment: "",
     files: [],
   };
+
   const commentForm = useForm({
     initialValues: initialValues,
     validate: {
@@ -79,9 +87,12 @@ export default function PBSupportTicketDetails({
       });
     }
   };
-
   if (!supportTicketId || !supportTicket) {
     return null;
+  }
+
+  if (!canRead) {
+    return <NoPermissionsMessage />;
   }
 
   return (
@@ -93,46 +104,42 @@ export default function PBSupportTicketDetails({
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      {!canView ? (
-        <PBCannotAccessMessage />
-      ) : (
-        <Container mt="xl" mb="xl" size="70vw">
-          <Group position="apart">
-            <Box>
-              <LargeBackButton
-                text="Back to Supports Tickets"
-                onClick={async () => {
-                  router.push("/business/supports");
-                }}
-                size="sm"
-              />
-            </Box>
-          </Group>
-          <Accordion
-            multiple
-            variant="filled"
-            value={OPEN_FOREVER}
-            onChange={() => {}}
-            chevronSize={0}
-            mt="md"
-          >
-            <SupportAccordionDetails
-              supportTicket={supportTicket}
-              refetch={refetchSupportTicket}
-              canEdit={canEdit}
-              refetchTableData={refetchSupportTickets}
+      <Container mt="xl" mb="xl" size="70vw">
+        <Group position="apart">
+          <Box>
+            <LargeBackButton
+              text="Back to Supports Tickets"
+              onClick={async () => {
+                router.push("/admin/support");
+              }}
+              size="sm"
             />
-            <SupportCommentAccordion
-              supportTicket={supportTicket}
-              userId={userId}
-              canEdit={canEdit}
-              commentForm={commentForm}
-              handleAction={handleAction}
-              isAdmin={false}
-            />
-          </Accordion>
-        </Container>
-      )}
+          </Box>
+        </Group>
+        <Accordion
+          multiple
+          variant="filled"
+          value={[]}
+          onChange={() => {}}
+          chevronSize={0}
+          mt="md"
+        >
+          <SupportAccordionDetails
+            supportTicket={supportTicket}
+            refetch={refetchSupportTicket}
+            canWrite={canWrite}
+            refetchTableData={refetchSupportTickets}
+          />
+          <SupportCommentAccordion
+            supportTicket={supportTicket}
+            userId={userId}
+            canEdit={canEdit}
+            commentForm={commentForm}
+            handleAction={handleAction}
+            isAdmin={true}
+          />
+        </Accordion>
+      </Container>
     </>
   );
 }
@@ -140,15 +147,11 @@ export default function PBSupportTicketDetails({
 export async function getServerSideProps(context) {
   const session = await getSession(context);
   const userId = session.user["userId"];
-  const accountStatus = session.user["accountStatus"];
   const supportTicketId = context.params.id;
-  const petBusiness = (await (
-    await api.get(`/users/pet-businesses/${userId}`)
-  ).data) as PetBusiness;
 
-  const canView =
-    accountStatus !== AccountStatusEnum.Pending &&
-    petBusiness.petBusinessApplication;
+  const permissions = await (
+    await api.get(`/rbac/users/${userId}/permissions`)
+  ).data;
 
-  return { props: { supportTicketId, userId, canView } };
+  return { props: { supportTicketId, userId, permissions } };
 }

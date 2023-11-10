@@ -7,32 +7,35 @@ import {
   Textarea,
   useMantineTheme,
 } from "@mantine/core";
-import { isNotEmpty, useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
 import { IconMessageCircle, IconSend } from "@tabler/icons-react";
 import { useEffect, useRef } from "react";
-import { SupportTicket, getErrorMessageProps } from "shared-utils";
-import { useUpdateSupportTicketComment } from "@/hooks/support";
-import { commentSupportPayload } from "@/types/types";
-import SupportCommentBubble from "./SupportCommentBubble";
-import SupportCommentModal from "./SupportCommentModal";
+import { SupportTicket } from "shared-utils";
+import SupportCommentBubble from "web-ui/shared/support/SupportCommentBubble";
+import SupportCommentModal from "web-ui/shared/support/SupportCommentModal";
 
 interface SupportCommentAccordionProps {
   supportTicket: SupportTicket;
   userId: number;
-  refetch(): void;
   canEdit: boolean;
+  handleAction(): void;
+  commentForm: any;
+  isAdmin: boolean;
 }
 
 export default function SupportCommentAccordion({
   supportTicket,
   userId,
-  refetch,
   canEdit,
+  handleAction,
+  commentForm,
+  isAdmin,
 }: SupportCommentAccordionProps) {
   const theme = useMantineTheme();
   const viewport = useRef<HTMLDivElement>(null);
   const comments = supportTicket.comments;
+  const userName = supportTicket.petBusiness
+    ? supportTicket.petBusiness.companyName
+    : `${supportTicket.petOwner.firstName} ${supportTicket.petOwner.lastName}`;
 
   useEffect(() => {
     if (viewport.current) {
@@ -42,38 +45,6 @@ export default function SupportCommentAccordion({
       });
     }
   }, [comments]);
-
-  const initialValues = {
-    comment: "",
-    files: [],
-  };
-  const commentForm = useForm({
-    initialValues: initialValues,
-    validate: {
-      comment: isNotEmpty("Comment cannot be empty."),
-    },
-  });
-
-  const updateSupportTicketCommentMutation = useUpdateSupportTicketComment(
-    supportTicket.supportTicketId,
-  );
-  const handleAction = async () => {
-    try {
-      const values = commentForm.values;
-      const payload: commentSupportPayload = {
-        comment: values.comment,
-        userId: userId,
-        files: values.files,
-      };
-      await updateSupportTicketCommentMutation.mutateAsync(payload);
-      commentForm.reset();
-      refetch();
-    } catch (error) {
-      notifications.show({
-        ...getErrorMessageProps("Error Creating Service Listing", error),
-      });
-    }
-  };
 
   return (
     <Accordion.Item value="comments" pl={30} pr={30} pt={15} pb={10}>
@@ -91,6 +62,8 @@ export default function SupportCommentAccordion({
               key={comment.commentId}
               comment={comment}
               userId={userId}
+              isAdmin={isAdmin}
+              userName={userName}
             />
           ))}
         </ScrollArea>

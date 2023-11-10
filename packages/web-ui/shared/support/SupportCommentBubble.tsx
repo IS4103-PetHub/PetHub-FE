@@ -21,11 +21,15 @@ import ImageCarousel from "web-ui/shared/ImageCarousel";
 interface SupportCommentAccordionProps {
   comment: Comment;
   userId: number;
+  isAdmin: boolean;
+  userName?: string;
 }
 
 export default function SupportCommentBubble({
   comment,
   userId,
+  isAdmin,
+  userName,
 }: SupportCommentAccordionProps) {
   const theme = useMantineTheme();
   const [focusedImage, setFocusedImage] = useState(null);
@@ -53,6 +57,8 @@ export default function SupportCommentBubble({
     }
   };
 
+  const isCurrentUsersMessage = userId === comment.userId;
+
   const commentImageCarouselCol = (
     <Grid.Col span={6} mt={10}>
       <Box ml="md" mr="md">
@@ -69,8 +75,8 @@ export default function SupportCommentBubble({
 
   return (
     <Box key={comment.commentId} mb="xl">
-      <Group position={userId === comment.userId ? "right" : "left"}>
-        {userId === comment.userId ? (
+      <Group position={isCurrentUsersMessage ? "right" : "left"}>
+        {isCurrentUsersMessage ? (
           <>
             <Text size="md" weight={700}>
               You
@@ -81,7 +87,7 @@ export default function SupportCommentBubble({
           <>
             <Avatar />
             <Text size="md" weight={700}>
-              Admin
+              {isAdmin ? userName : "Admin"}
             </Text>
           </>
         )}
@@ -92,13 +98,12 @@ export default function SupportCommentBubble({
         withBorder
         p="md"
         style={{
-          backgroundColor:
-            userId === comment.userId
-              ? theme.colors.gray[2]
-              : theme.colors.blue[2],
+          backgroundColor: isCurrentUsersMessage
+            ? theme.colors.gray[2]
+            : theme.colors.blue[2],
         }}
         w="80%"
-        ml={userId === comment.userId ? "auto" : 0}
+        ml={isCurrentUsersMessage ? "auto" : 0}
       >
         <Text>{comment.comment}</Text>
 

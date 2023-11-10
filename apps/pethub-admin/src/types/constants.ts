@@ -32,4 +32,6 @@ export const enum PermissionsCodeEnum {
   ReadOrderItems = "READ_ORDER_ITEMS",
   WriteReportedReview = "WRITE_REPORTED_REVIEWS",
   ReadReportedReview = "READ_REPORTED_REVIEWS",
+  WriteSupport = "WRITE_SUPPORTS",
+  ReadSupport = "READ_SUPPORTS",
 }

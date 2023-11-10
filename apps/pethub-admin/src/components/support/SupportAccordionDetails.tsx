@@ -11,43 +11,40 @@ import {
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconSwitch3 } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useState, useRef, ReactNode, useEffect } from "react";
 import {
-  SupportTicket,
-  SupportTicketReason,
   SupportTicketStatus,
-  downloadFile,
+  SupportTicketReason,
+  SupportTicket,
   extractFileName,
-  formatISODateLong,
+  downloadFile,
   formatISODayDateTime,
+  Priority,
+  formatEnumValueToLowerCase,
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
-import DeleteButton from "web-ui/shared/LargeDeleteButton";
-import SimpleDeleteActionButton from "web-ui/shared/SimpleDeleteActionButton";
 import {
   useCloseResolveSupportTicket,
-  useReopenSupportTicket,
+  useCloseUnresolveSupportTicket,
 } from "@/hooks/support";
 
 interface SupportAccordionDetailsProps {
   supportTicket: SupportTicket;
   refetch(): void;
-  canEdit: boolean;
+  canWrite: boolean;
   refetchTableData(): void;
 }
 
 export default function SupportAccordionDetails({
   supportTicket,
   refetch,
-  canEdit,
+  canWrite,
   refetchTableData,
-}: SupportAccordionDetailsProps) {
+}) {
   const theme = useMantineTheme();
 
   const [showFullDescription, toggleShowFullDescription] = useToggle();
@@ -73,6 +70,17 @@ export default function SupportAccordionDetails({
     [SupportTicketReason.Others, "gray"],
   ]);
 
+  const priorityColorMap = new Map([
+    [Priority.High, "red"],
+    [Priority.Medium, "orange"],
+    [Priority.Low, "green"],
+  ]);
+
+  const canEdit = [
+    SupportTicketStatus.Pending,
+    SupportTicketStatus.InProgress,
+  ].includes(supportTicket?.status);
+
   const generateItemGroup = (
     title: string,
     content: ReactNode,
@@ -90,6 +98,79 @@ export default function SupportAccordionDetails({
     );
   };
 
+  const generatePBDetails = () => {
+    return (
+      <>
+        {generateItemGroup(
+          "User ID",
+          <Text>{supportTicket.petBusiness.userId}</Text>,
+        )}
+        {generateItemGroup(
+          "Company Name",
+          <Text>{supportTicket.petBusiness.companyName}</Text>,
+        )}
+        {generateItemGroup(
+          "Email",
+          <Text>{supportTicket.petBusiness.user.email}</Text>,
+        )}
+        {generateItemGroup(
+          "Business Type",
+          <Badge>{supportTicket.petBusiness.businessType}</Badge>,
+        )}
+        {generateItemGroup(
+          "Contact Number",
+          <Text>{supportTicket.petBusiness.contactNumber}</Text>,
+        )}
+        {generateItemGroup(
+          "Website",
+          <Text>{supportTicket.petBusiness.websiteURL}</Text>,
+        )}
+        {generateItemGroup("UEN", <Text>{supportTicket.petBusiness.uen}</Text>)}
+        {generateItemGroup(
+          "Account Status",
+          <Text>
+            {formatEnumValueToLowerCase(
+              supportTicket.petBusiness.user.accountStatus,
+            )}
+          </Text>,
+        )}
+      </>
+    );
+  };
+
+  const generatePODetails = () => {
+    return (
+      <>
+        {generateItemGroup(
+          "User ID",
+          <Text>{supportTicket.petOwner.userId}</Text>,
+        )}
+        {generateItemGroup(
+          "Name",
+          <Text>
+            {supportTicket.petOwner.firstName} {supportTicket.petOwner.lastName}
+          </Text>,
+        )}
+        {generateItemGroup(
+          "Points",
+          <Text>{supportTicket.petOwner.points}</Text>,
+        )}
+        {generateItemGroup(
+          "Email",
+          <Text>{supportTicket.petOwner.user.email}</Text>,
+        )}
+        {generateItemGroup(
+          "Status",
+          <Text>
+            {formatEnumValueToLowerCase(
+              supportTicket.petOwner.user.accountStatus,
+            )}
+          </Text>,
+        )}
+      </>
+    );
+  };
+
   useEffect(() => {
     const fetchAndSetImages = async () => {
       if (supportTicket) {
@@ -98,17 +179,6 @@ export default function SupportAccordionDetails({
     };
     fetchAndSetImages();
   }, [supportTicket]);
-
-  useEffect(() => {
-    if (textRef.current) {
-      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight);
-      const textHeight = textRef.current.clientHeight;
-      // Check if text exceeds 2 lines
-      if (textHeight > lineHeight * 2) {
-        setTextExceedsLineClamp(true);
-      }
-    }
-  }, [supportTicket?.reason]);
 
   const setImages = async () => {
     const fileNames = supportTicket.attachmentKeys.map((keys) =>
@@ -127,31 +197,50 @@ export default function SupportAccordionDetails({
     setImagePreview(imageUrls);
   };
 
-  const closeSupportTicketMutation = useCloseResolveSupportTicket(
-    supportTicket.supportTicketId,
-  );
-  const reopenSupportTicketMutation = useReopenSupportTicket(
-    supportTicket.supportTicketId,
-  );
-  async function handleAction() {
-    try {
-      if (canEdit) {
-        await closeSupportTicketMutation.mutateAsync();
-        notifications.show({
-          title: "Support Ticket Closed",
-          color: "green",
-          icon: <IconCheck />,
-          message: `Support Ticket successfully closed`,
-        });
-      } else {
-        await reopenSupportTicketMutation.mutateAsync();
-        notifications.show({
-          title: "Support Ticket Reopened",
-          color: "green",
-          icon: <IconCheck />,
-          message: `Support Ticket successfully Reopened`,
-        });
+  useEffect(() => {
+    if (textRef.current) {
+      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight);
+      const textHeight = textRef.current.clientHeight;
+      // Check if text exceeds 2 lines
+      if (textHeight > lineHeight * 2) {
+        setTextExceedsLineClamp(true);
       }
+    }
+  }, [supportTicket?.reason]);
+
+  const closeResolvedMutation = useCloseResolveSupportTicket(
+    supportTicket.supportTicketId,
+  );
+  async function handleCloseResolved() {
+    try {
+      await closeResolvedMutation.mutateAsync();
+      notifications.show({
+        title: "Support Ticket Closed as Resolved",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Support Ticket successfully closed`,
+      });
+      refetch();
+      refetchTableData();
+    } catch (error) {
+      notifications.show({
+        ...getErrorMessageProps("Error Closing Support Ticket", error),
+      });
+    }
+  }
+
+  const closeUnresolvedMutation = useCloseUnresolveSupportTicket(
+    supportTicket.supportTicketId,
+  );
+  async function handleCloseUnresolved() {
+    try {
+      await closeUnresolvedMutation.mutateAsync();
+      notifications.show({
+        title: "Support Ticket Closed as Unresolved",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Support Ticket successfully closed`,
+      });
       refetch();
       refetchTableData();
     } catch (error) {
@@ -167,22 +256,35 @@ export default function SupportAccordionDetails({
         <Text size="xl">
           <b>Support Ticket Details</b> | ID. {supportTicket?.supportTicketId}
         </Text>
-        {supportTicket.status != SupportTicketStatus.ClosedResolved && (
-          <DeleteActionButtonModal
-            title={canEdit ? "Close Support Ticket" : "Reopen Support Ticket"}
-            onDelete={() => handleAction()}
-            subtitle={
-              canEdit
-                ? "Are you sure you want to close the support ticket. Once the support ticket is closed, it cannot be reopened."
-                : "Are you sure you want to reopen the support ticket."
-            }
-            large
-            largeText={canEdit ? "Close" : "Reopen"}
-            removeIcon
-            overrideDeleteButtonText={canEdit ? "Close" : "Reopen"}
-            buttonColor={canEdit ? "red" : "teal"}
-          />
-        )}
+        {supportTicket.status != SupportTicketStatus.ClosedResolved &&
+          supportTicket.status != SupportTicketStatus.ClosedUnresolved && (
+            <Group>
+              <DeleteActionButtonModal
+                title={"Close Support Ticket"}
+                onDelete={() => handleCloseResolved()}
+                subtitle={
+                  "Are you sure you want to close the support ticket as resolved. Once the support ticket is closed, it cannot be reopened."
+                }
+                large
+                largeText={"Close as Resolved"}
+                removeIcon
+                overrideDeleteButtonText={"Close"}
+                buttonColor={"green"}
+              />
+              <DeleteActionButtonModal
+                title={"Close Support Ticket"}
+                onDelete={() => handleCloseUnresolved()}
+                subtitle={
+                  "Are you sure you want to close the support ticket as unresolved."
+                }
+                large
+                largeText={"Close as Unresolved"}
+                removeIcon
+                overrideDeleteButtonText={"Close"}
+                buttonColor={"red"}
+              />
+            </Group>
+          )}
       </Group>
       <Box>
         <Divider mb="lg" mt="lg" />
@@ -238,6 +340,18 @@ export default function SupportAccordionDetails({
             </Badge>,
           )}
           {generateItemGroup(
+            "Priority",
+            <Badge
+              color={
+                priorityColorMap.has(supportTicket?.priority)
+                  ? priorityColorMap.get(supportTicket.priority)
+                  : "gray"
+              }
+            >
+              {supportTicket?.priority}
+            </Badge>,
+          )}
+          {generateItemGroup(
             "Created At",
             <Text>{formatISODayDateTime(supportTicket?.createdAt)}</Text>,
           )}
@@ -248,6 +362,19 @@ export default function SupportAccordionDetails({
         </Grid>
         <Divider mt="lg" mb="lg" />
       </Box>
+
+      <Box mb="md">
+        <Text fw={600} size="md">
+          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+          &nbsp;User Details
+        </Text>
+        <Grid columns={24} mt="xs">
+          {supportTicket.petBusiness
+            ? generatePBDetails()
+            : generatePODetails()}
+        </Grid>
+      </Box>
+      <Divider mt="lg" mb="lg" />
 
       <Box mb="md">
         <Text fw={600} size="md">
