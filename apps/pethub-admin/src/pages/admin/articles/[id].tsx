@@ -40,7 +40,6 @@ export default function ArticleDetails({
   permissions,
 }: ArticleDetailsProps) {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const articleId = Number(router.query.id);
 
@@ -51,7 +50,7 @@ export default function ArticleDetails({
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const updateArticleMutation = useUpdateArticle(queryClient);
+  const updateArticleMutation = useUpdateArticle();
 
   // Data fetching hooks
   const { data: article, refetch: refetchArticle } =

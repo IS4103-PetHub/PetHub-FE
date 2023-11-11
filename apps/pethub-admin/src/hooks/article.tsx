@@ -37,7 +37,7 @@ export const useCreateArticle = () => {
   });
 };
 
-export const useUpdateArticle = (queryClient: QueryClient) => {
+export const useUpdateArticle = () => {
   return useMutation({
     mutationFn: async (payload: CreateOrUpdateArticlePayload) => {
       const formData = new FormData();
@@ -89,6 +89,19 @@ export const useGetAllArticles = () => {
     queryFn: async () => {
       const response = await api.get(`${ARTICLE_API}`);
       return response.data as Article[];
+    },
+  });
+};
+
+export const useDeleteArticle = (queryClient: QueryClient) => {
+  return useMutation({
+    mutationFn: async (articleId: number) => {
+      return (await api.delete(`${ARTICLE_API}/${articleId}`)).data;
+    },
+    onSuccess: (data, articleId) => {
+      queryClient.setQueryData<Article[]>(["articles"], (oldArticles = []) => {
+        return oldArticles.filter((article) => article.articleId !== articleId);
+      });
     },
   });
 };

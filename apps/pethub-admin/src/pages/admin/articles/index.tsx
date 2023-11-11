@@ -8,6 +8,9 @@ import {
 } from "@mantine/core";
 import { DateInput, DatePicker } from "@mantine/dates";
 import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { sortBy } from "lodash";
 import { DataTableSortStatus } from "mantine-datatable";
@@ -26,6 +29,7 @@ import {
   formatStringToLetterCase,
   ArticleTypeEnum,
 } from "shared-utils";
+import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import LargeCreateButton from "web-ui/shared/LargeCreateButton";
@@ -35,7 +39,7 @@ import SearchBar from "web-ui/shared/SearchBar";
 import api from "@/api/axiosConfig";
 import ArticleManagementTable from "@/components/article/ArticleManagementTable";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
-import { useGetAllArticles } from "@/hooks/article";
+import { useDeleteArticle, useGetAllArticles } from "@/hooks/article";
 import { useGetAllInternalUsers } from "@/hooks/internal-user";
 import { useGetAllPetBusinesses } from "@/hooks/pet-business";
 import { useGetAllTags } from "@/hooks/tag";
@@ -48,6 +52,7 @@ interface ArticlesProps {
 
 export default function Articles({ permissions }: ArticlesProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Permissions
   const permissionCodes = permissions.map((permission) => permission.code);
@@ -103,6 +108,8 @@ export default function Articles({ permissions }: ArticlesProps) {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const [searchString, setSearchString] = useState<string>("");
 
+  const deleteArticleMutation = useDeleteArticle(queryClient);
+
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
@@ -148,6 +155,23 @@ export default function Articles({ permissions }: ArticlesProps) {
     });
   }
 
+  const handleDeleteArticle = async (articleId: number) => {
+    try {
+      await deleteArticleMutation.mutateAsync(articleId);
+      notifications.show({
+        title: `Article Deleted`,
+        color: "green",
+        icon: <IconCheck />,
+        message:
+          "This article has been removed and will no longer be available to view.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Deleting Article`, error),
+      });
+    }
+  };
+
   if (!canRead) {
     return <NoPermissionsMessage />;
   }
@@ -184,7 +208,7 @@ export default function Articles({ permissions }: ArticlesProps) {
               sortStatus={sortStatus}
               onSortStatusChange={setSortStatus}
               onPageChange={setPage}
-              onDelete={() => alert("mock delete article")}
+              onDelete={handleDeleteArticle}
               canWrite={canWrite}
             />
           </>
