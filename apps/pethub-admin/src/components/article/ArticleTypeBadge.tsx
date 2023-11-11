@@ -7,10 +7,10 @@ interface ArticleTypeBadgeProps extends BadgeProps {
 
 const ArticleTypeBadge = ({ ArticleType, ...props }: ArticleTypeBadgeProps) => {
   const colourMap = new Map([
-    ["ANNOUNCEMENTS", "orange"],
-    ["TIPS_AND_TRICKS", "purple"],
-    ["EVENTS", "green"],
-    ["OTHERS", "blue"],
+    ["Announcements", "orange"],
+    ["Tips And Tricks", "purple"],
+    ["Events", "green"],
+    ["Others", "blue"],
   ]);
 
   return (

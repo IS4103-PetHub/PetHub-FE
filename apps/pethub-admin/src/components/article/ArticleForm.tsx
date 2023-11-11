@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import {
+  IconDeviceFloppy,
   IconEye,
   IconPin,
   IconPinFilled,
@@ -158,6 +159,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
     form.setFieldValue("file", null);
   };
 
+  // Download a file to local disk
   const initiateDownload = (fileUrl, fileName) => {
     const link = document.createElement("a");
     link.href = fileUrl;
@@ -172,7 +174,9 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
       <Grid mb="xl" columns={48}>
         <Grid.Col span={12}>
           <PageTitle
-            title={article ? "Update Article" : "Create Article"}
+            title={
+              article ? `Article ID.${article?.articleId}` : "Create Article"
+            }
             mt={15}
           />
         </Grid.Col>
@@ -273,11 +277,17 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
               Preview
             </Button>
             <Button
-              leftIcon={<IconWriting size="1rem" />}
+              leftIcon={
+                isUpdating ? (
+                  <IconDeviceFloppy size="1rem" />
+                ) : (
+                  <IconWriting size="1rem" />
+                )
+              }
               miw={150}
               type="submit"
             >
-              Publish
+              {isUpdating ? "Save Changes" : "Publish Article"}
             </Button>
           </Group>
         </Grid.Col>

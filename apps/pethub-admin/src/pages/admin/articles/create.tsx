@@ -1,4 +1,4 @@
-import { Container, Group } from "@mantine/core";
+import { Container, Group, LoadingOverlay } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
@@ -13,7 +13,7 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import ArticleForm from "@/components/article/ArticleForm";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
-import { useCreateArticle } from "@/hooks/article";
+import { useCreateArticle, useGetAllArticles } from "@/hooks/article";
 import { useGetAllTags } from "@/hooks/tag";
 import { PermissionsCodeEnum } from "@/types/constants";
 import {
@@ -37,6 +37,15 @@ export default function CreateArticle({
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
   const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadArticles);
 
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Data fetching hooks
+  const {
+    data: articles = [],
+    refetch: refetchArticles,
+    isLoading,
+  } = useGetAllArticles();
+
   const createArticleMutation = useCreateArticle();
 
   if (!canRead) {
@@ -55,6 +64,7 @@ export default function CreateArticle({
         isPinned: values.isPinned,
         internalUserId: userId,
       };
+      setLoading(true);
       const data = await createArticleMutation.mutateAsync(payload);
       notifications.show({
         title: "Article Published",
@@ -62,8 +72,11 @@ export default function CreateArticle({
         icon: <IconCheck />,
         message: `This article will now be visible to all users`,
       });
-      router.push(`/admin/articles`);
+      setLoading(false);
+      await refetchArticles();
+      router.push(`/admin/articles/${data.articleId}`);
     } catch (error: any) {
+      setLoading(false);
       notifications.show({
         ...getErrorMessageProps("Error Publishing Article", error),
       });
@@ -77,6 +90,11 @@ export default function CreateArticle({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid mb="lg" mr="lg" ml="lg">
+        <LoadingOverlay
+          loaderProps={{ size: "sm", color: "pink", variant: "bars" }}
+          overlayBlur={2}
+          visible={isLoading}
+        />
         <Group position="apart" mb="md">
           <LargeBackButton
             text="Back to Articles"

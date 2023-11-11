@@ -119,7 +119,9 @@ const ArticleManagementTable = ({
             textAlignment: "left",
             width: 75,
             render: (record) => (
-              <ArticleTypeBadge ArticleType={record.articleType} />
+              <ArticleTypeBadge
+                ArticleType={formatStringToLetterCase(record.articleType)}
+              />
             ),
           },
           {

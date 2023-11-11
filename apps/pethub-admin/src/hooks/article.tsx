@@ -37,12 +37,13 @@ export const useCreateArticle = () => {
   });
 };
 
-export const useUpdateArticle = () => {
+export const useUpdateArticle = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CreateOrUpdateArticlePayload) => {
       const formData = new FormData();
       formData.append("title", payload.title);
       formData.append("content", payload.content);
+      formData.append("internalUserId", payload.internalUserId.toString());
       formData.append("articleType", payload.articleType);
       formData.append("isPinned", payload.isPinned.toString());
 
