@@ -1,10 +1,4 @@
-import {
-  Container,
-  Grid,
-  Group,
-  LoadingOverlay,
-  useMantineTheme,
-} from "@mantine/core";
+import { Container, Group } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
@@ -13,19 +7,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useState, useMemo, useRef } from "react";
-import {
-  Article,
-  ArticleTypeEnum,
-  OrderItem,
-  Pet,
-  ServiceCategoryEnum,
-  formatStringToLetterCase,
-} from "shared-utils";
 import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
-import LargeCreateButton from "web-ui/shared/LargeCreateButton";
-import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import api from "@/api/axiosConfig";
 import ArticleForm from "@/components/article/ArticleForm";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
@@ -48,13 +32,6 @@ export default function CreateArticle({
   permissions,
 }: CreateArticleProps) {
   const router = useRouter();
-  //   const RichTextEditor = useMemo(() => {
-  //     return dynamic(() => import("@/components/article/RichTextEditor"), {
-  //       loading: () => <></>,
-  //       ssr: false,
-  //     });
-  //   }, []);
-
   // Permissions
   const permissionCodes = permissions.map((permission) => permission.code);
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
@@ -62,67 +39,11 @@ export default function CreateArticle({
 
   const createArticleMutation = useCreateArticle();
 
-  // Data fetching
-  const { data: tags = [] } = useGetAllTags();
-
-  type FormValues = typeof form.values;
-  const form = useForm({
-    initialValues: {
-      title: "",
-      content: "",
-      articleType: "",
-      file: null,
-      tags: [],
-      categories: [],
-      isPinned: false,
-    },
-    validate: {
-      title: (value) => {
-        const minLength = 1;
-        const maxLength = 96;
-        if (!value) return "Title is mandatory.";
-        if (value.length < minLength || value.length > maxLength) {
-          return `Title must be between ${minLength} and ${maxLength} characters.`;
-        }
-      },
-      content: isNotEmpty("Content cannot be empty."),
-      articleType: isNotEmpty("Article type is mandatory."),
-    },
-  });
-
   if (!canRead) {
     return <NoPermissionsMessage />;
   }
 
-  //   const setFormFields = async () => {
-  //     if (isUpdating) {
-  //       form.setValues({
-  //         title: post.title,
-  //         description: post.description,
-  //         requestType: post.requestType,
-  //         lastSeenDate: new Date(post.lastSeenDate),
-  //         lastSeenLocation: post.lastSeenLocation,
-  //         contactNumber: post.contactNumber,
-  //         petId: post.petId?.toString() ?? "",
-  //         isResolved: post.isResolved,
-  //       });
-
-  //       if (post.attachmentURLs.length > 0) {
-  //         const newFile: File = await downloadPromise(
-  //           post.attachmentKeys[0],
-  //           post.attachmentURLs[0],
-  //         );
-  //         if (newFile) {
-  //           handleFileInputChange(newFile);
-  //         }
-  //       }
-  //       return;
-  //     }
-  //     form.setFieldValue("contactNumber", petOwner?.contactNumber);
-  //     form.setFieldValue("file", null);
-  //   };
-
-  const handleCreateArticle = async (values: FormValues) => {
+  const handleCreateArticle = async (values: any) => {
     try {
       const payload: CreateOrUpdateArticlePayload = {
         title: values.title,
@@ -134,7 +55,6 @@ export default function CreateArticle({
         isPinned: values.isPinned,
         internalUserId: userId,
       };
-      console.log("payload", payload);
       const data = await createArticleMutation.mutateAsync(payload);
       notifications.show({
         title: "Article Published",
@@ -168,7 +88,7 @@ export default function CreateArticle({
           />
         </Group>
 
-        <ArticleForm form={form} tags={tags} onSubmit={handleCreateArticle} />
+        <ArticleForm onSubmit={handleCreateArticle} />
       </Container>
     </>
   );

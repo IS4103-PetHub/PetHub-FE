@@ -302,7 +302,7 @@ export interface Article {
   createdByUserId: number;
   updatedByUserId?: number;
   attachmentKeys: string[];
-  attachmentURLs: string[];
+  attachmentUrls: string[];
   petBusinessId: number;
   petBusiness: any;
   tags: Tag[];

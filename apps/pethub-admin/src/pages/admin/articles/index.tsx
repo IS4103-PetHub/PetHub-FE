@@ -103,8 +103,6 @@ export default function Articles({ permissions }: ArticlesProps) {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const [searchString, setSearchString] = useState<string>("");
 
-  console.log("records", records);
-
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
@@ -211,7 +209,7 @@ export default function Articles({ permissions }: ArticlesProps) {
             />
           )}
         </Group>
-        <Grid>
+        <Grid mb={5}>
           <Grid.Col span={6}>
             <Select
               size="md"

@@ -53,7 +53,9 @@ const ArticleManagementTable = ({
         page={page}
         onPageChange={(p) => onPageChange(p)}
         highlightOnHover
-        onRowClick={(record) => alert("row clicked")}
+        onRowClick={(record) =>
+          router.push(`${router.asPath}/${record.articleId}`)
+        }
         columns={[
           {
             accessor: "articleId",
@@ -115,7 +117,7 @@ const ArticleManagementTable = ({
             accessor: "articleType",
             title: "Type",
             textAlignment: "left",
-            width: 80,
+            width: 75,
             render: (record) => (
               <ArticleTypeBadge ArticleType={record.articleType} />
             ),

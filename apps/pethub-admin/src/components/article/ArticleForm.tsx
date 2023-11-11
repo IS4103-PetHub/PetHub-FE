@@ -1,28 +1,27 @@
 import {
   useMantineTheme,
-  RatingProps,
-  Rating,
   Group,
   MultiSelect,
   Select,
   Grid,
   Button,
-  Checkbox,
   TextInput,
   FileInput,
+  rem,
+  Text,
 } from "@mantine/core";
+import { isNotEmpty, useForm } from "@mantine/form";
 import {
   IconEye,
-  IconPaw,
   IconPin,
   IconPinFilled,
-  IconPinned,
-  IconPinnedOff,
+  IconUpload,
   IconWriting,
 } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
+  Article,
   ArticleTypeEnum,
   ServiceCategoryEnum,
   Tag,
@@ -32,24 +31,30 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
+import FileIconBadge from "web-ui/shared/file/FileIconBadge";
+import FileMiniIcon from "web-ui/shared/file/FileMiniIcon";
 import { useGetAllTags } from "@/hooks/tag";
 import { CreateOrUpdateArticlePayload } from "@/types/types";
-import RichTextEditor from "./RichTextEditor";
 
 interface ArticleFormProps {
-  form: any;
-  tags: Tag[];
+  article?: Article;
   onSubmit: (payload: CreateOrUpdateArticlePayload) => void;
 }
 
-const ArticleForm = ({ form, tags, onSubmit }: ArticleFormProps) => {
+const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
   const theme = useMantineTheme();
+  const [existingFileUrl, setExistingFileUrl] = useState<string>("");
   const RichTextEditor = useMemo(() => {
     return dynamic(() => import("@/components/article/RichTextEditor"), {
       loading: () => <></>,
       ssr: false,
     });
   }, []);
+
+  const isUpdating = !!article;
+
+  // Data fetching
+  const { data: tags = [] } = useGetAllTags();
 
   const tagOptions = tags.map((tag) => ({
     value: tag.tagId.toString(),
@@ -69,6 +74,34 @@ const ArticleForm = ({ form, tags, onSubmit }: ArticleFormProps) => {
       label: `${formatStringToLetterCase(value)}`,
     }),
   );
+
+  const form = useForm({
+    initialValues: {
+      title: "",
+      content: "",
+      articleType: "",
+      file: null,
+      tags: [],
+      categories: [],
+      isPinned: false,
+    },
+    validate: {
+      title: (value) => {
+        const minLength = 1;
+        const maxLength = 96;
+        if (!value) return "Title is mandatory.";
+        if (value.length < minLength || value.length > maxLength) {
+          return `Title must be between ${minLength} and ${maxLength} characters.`;
+        }
+      },
+      content: isNotEmpty("Content cannot be empty."),
+      articleType: isNotEmpty("Article type is mandatory."),
+    },
+  });
+
+  useEffect(() => {
+    setFormFields();
+  }, [article]);
 
   const handlePin = () => {
     form.setFieldValue("isPinned", !form.values.isPinned);
@@ -91,17 +124,57 @@ const ArticleForm = ({ form, tags, onSubmit }: ArticleFormProps) => {
   const handleFileInputChange = (newFile: File) => {
     if (newFile) {
       const imageObjectUrl = URL.createObjectURL(newFile);
+      setExistingFileUrl(imageObjectUrl);
       form.setFieldValue("file", newFile);
     } else {
+      setExistingFileUrl("");
       form.setFieldValue("file", null);
     }
+  };
+
+  const setFormFields = async () => {
+    if (isUpdating) {
+      form.setValues({
+        title: article.title,
+        content: article.content,
+        articleType: article.articleType,
+        tags: article.tags.map((tag) => tag.tagId.toString()),
+        categories: article.category,
+        isPinned: article.isPinned,
+      });
+
+      if (article.attachmentUrls?.length > 0) {
+        const fileName = extractFileName(article.attachmentKeys[0]);
+        const newFile: File = await downloadPromise(
+          article.attachmentKeys[0],
+          article.attachmentUrls[0],
+        );
+        if (newFile) {
+          handleFileInputChange(newFile);
+        }
+      }
+      return;
+    }
+    form.setFieldValue("file", null);
+  };
+
+  const initiateDownload = (fileUrl, fileName) => {
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
     <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
       <Grid mb="xl" columns={48}>
         <Grid.Col span={12}>
-          <PageTitle title="Create Article" mt={15} />
+          <PageTitle
+            title={article ? "Update Article" : "Create Article"}
+            mt={15}
+          />
         </Grid.Col>
         <Grid.Col span={12}>
           <MultiSelect
@@ -139,15 +212,29 @@ const ArticleForm = ({ form, tags, onSubmit }: ArticleFormProps) => {
           />
         </Grid.Col>
         <Grid.Col span={11} mt={-10}>
-          <FileInput
-            label="Upload Cover Image"
-            clearable
-            placeholder={"Select the display image"}
-            accept="image/*"
-            name="image"
-            onChange={(file) => handleFileInputChange(file)}
-            capture={false}
-          />
+          <Text size="0.875rem" fw={500} color="#212529" mt={3}>
+            Upload Cover Image
+          </Text>
+          {form.values.file ? (
+            <FileIconBadge
+              size="xl"
+              fileName={form.values.file?.name}
+              onClick={() =>
+                initiateDownload(existingFileUrl, form.values.file?.name)
+              }
+              onRemove={() => form.setFieldValue("file", null)}
+            />
+          ) : (
+            <FileInput
+              clearable
+              placeholder="Select the display image"
+              accept="image/*"
+              name="image"
+              valueComponent={FileMiniIcon}
+              onChange={(file) => handleFileInputChange(file)}
+              capture={false}
+            />
+          )}
         </Grid.Col>
         <Grid.Col span={5}>
           <Button
