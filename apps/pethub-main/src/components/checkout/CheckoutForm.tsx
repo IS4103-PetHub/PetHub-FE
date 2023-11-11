@@ -124,8 +124,9 @@ const CheckoutForm = ({
 
       const payload = {
         paymentMethodId: result.paymentMethod.id,
-        totalPrice: Number(checkoutSummary.total),
+        totalPrice: calculateFinalAmount(),
         userId,
+        pointsRedeemed: pointsToUse,
         cartItems: cartItems.map((cartItem) => {
           return {
             serviceListingId: cartItem.serviceListing.serviceListingId,
@@ -179,9 +180,8 @@ const CheckoutForm = ({
         <Alert>
           You will earn{" "}
           <strong>
-            {formatNumberCustomDecimals(
+            {Math.floor(
               Number(checkoutSummary.subtotal) + Number(checkoutSummary.gst),
-              0,
             )}
           </strong>{" "}
           points for this purchase.
