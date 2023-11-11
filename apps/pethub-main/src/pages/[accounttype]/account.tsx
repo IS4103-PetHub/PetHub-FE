@@ -12,11 +12,16 @@ import {
   IconAddressBook,
   IconPaw,
   IconDiscount2,
+  IconCoins,
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import React from "react";
-import { formatISODateLong } from "shared-utils";
+import {
+  PLATFORM_FEE_PERCENT,
+  formatISODateLong,
+  formatNumber2Decimals,
+} from "shared-utils";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
@@ -41,7 +46,9 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
     useGetPetOwnerByIdAndAccountType(userId, accountType);
   const { data: petBusiness, refetch: refetchPetBusiness } =
     useGetPetBusinessByIdAndAccountType(userId, accountType);
-  const defaultValues = petOwner ? ["account"] : ["account", "commission"];
+  const defaultValues = petOwner
+    ? ["points", "account"]
+    : ["account", "commission"];
 
   if (!petOwner && !petBusiness) {
     return null;
@@ -86,7 +93,7 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
         <title>My Account - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} mb="xl">
+      <Container mt={50} mb={50}>
         <Group position="left">
           <PageTitle title="My account" />
           <AccountStatusBadge accountStatus={accountStatus} size="lg" />
@@ -127,6 +134,37 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                       {petBusiness.commissionRule.commissionRate * 100}%
                     </strong>
                   </Text>
+                </Group>
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
+
+          {petOwner && (
+            <Accordion.Item value="points">
+              <Accordion.Control>
+                <Group>
+                  <IconCoins color={theme.colors.indigo[5]} />
+                  <Text size="lg">My points</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel p="md" pt={0}>
+                <Text size="lg" weight={600} color={theme.primaryColor}>
+                  {petOwner.points} points
+                </Text>
+                <Text>≈ ${formatNumber2Decimals(petOwner.points / 100)}</Text>
+                <Group mt="xs">
+                  <Text mr={-15} color="dimmed" size="sm">
+                    Use points to offset the cost of your future purchases on
+                    PetHub!
+                  </Text>
+                  <CustomPopover
+                    text={`You may use points to offset up to ${formatNumber2Decimals(
+                      PLATFORM_FEE_PERCENT * 100,
+                    )}% (platform fee) of each purchase. PetHub points have no expiry date.`}
+                    width={300}
+                  >
+                    {}
+                  </CustomPopover>
                 </Group>
               </Accordion.Panel>
             </Accordion.Item>
