@@ -179,10 +179,10 @@ export interface CreateOrUpdateArticlePayload {
   articleId?: number;
   title: string;
   content: string;
-  articleType: ArticleTypeEnum;
-  files: File[];
+  articleType: string;
+  file: File;
   internalUserId?: number;
-  tagIds: number[];
+  tags: number[];
   categories: string[];
   isPinned: boolean;
 }

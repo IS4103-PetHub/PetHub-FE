@@ -3,17 +3,17 @@ import React, { useMemo, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-type RichTextEditorProps = {
+interface RichTextEditorProps {
   article: string;
   setArticle: (article: string) => void;
-};
+}
 
-export default function MyAwesomeTextEditor({
+export default function RichTextEditor({
   article,
   setArticle,
 }: RichTextEditorProps) {
   return (
-    <Box style={{ height: "calc(80vh - 40px)" }}>
+    <Box style={{ height: "calc(55vh - 40px)" }}>
       <ReactQuill
         theme="snow"
         value={article}

@@ -15,11 +15,11 @@ export const useCreateArticle = () => {
       formData.append("articleType", payload.articleType);
       formData.append("isPinned", payload.isPinned.toString());
 
-      payload.files.forEach((file) => {
-        formData.append("file", file);
-      });
+      if (payload.file) {
+        formData.append("file", payload.file);
+      }
 
-      payload.tagIds.forEach((tagId) => {
+      payload.tags.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());
       });
 
@@ -46,11 +46,11 @@ export const useUpdateArticle = () => {
       formData.append("articleType", payload.articleType);
       formData.append("isPinned", payload.isPinned.toString());
 
-      payload.files.forEach((file) => {
-        formData.append("file", file);
-      });
+      if (payload.file) {
+        formData.append("file", payload.file);
+      }
 
-      payload.tagIds.forEach((tagId) => {
+      payload.tags.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());
       });
 

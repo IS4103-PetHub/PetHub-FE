@@ -1,4 +1,5 @@
 import { Group, Badge } from "@mantine/core";
+import { IconPin, IconPinFilled } from "@tabler/icons-react";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React from "react";
@@ -11,6 +12,7 @@ import {
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
+import ArticleTypeBadge from "./ArticleTypeBadge";
 
 interface ArticleManagementTableProps {
   records: Article[];
@@ -38,40 +40,58 @@ const ArticleManagementTable = ({
     <>
       <DataTable
         minHeight={getMinTableHeight(records)}
+        records={records}
+        withBorder
+        withColumnBorders
+        striped
+        verticalSpacing="sm"
+        idAccessor="articleId"
+        sortStatus={sortStatus}
+        onSortStatusChange={onSortStatusChange}
+        totalRecords={totalNumArticle}
+        recordsPerPage={TABLE_PAGE_SIZE}
+        page={page}
+        onPageChange={(p) => onPageChange(p)}
+        highlightOnHover
+        onRowClick={(record) => alert("row clicked")}
         columns={[
           {
             accessor: "articleId",
             title: "#",
             textAlignment: "right",
-            width: 80,
+            width: 30,
             sortable: true,
           },
           {
             accessor: "title",
             title: "Title",
             textAlignment: "left",
-            width: "20vw",
+            width: 150,
             sortable: true,
             ellipsis: true,
           },
           {
-            accessor: "createdBy.name",
+            accessor: "createdBy",
             title: "Author",
             sortable: true,
             ellipsis: true,
-            width: "10vw",
+            width: 75,
+            render: (record) =>
+              record.createdBy.firstName + " " + record.createdBy.lastName,
           },
           {
             accessor: "category",
             title: "Categories",
             textAlignment: "left",
-            width: "10vw",
+            width: 90,
             render: (record) =>
-              record.categories
-                ? record.categories.map((category, index) => (
+              record.category
+                ? record.category.map((category, index) => (
                     <React.Fragment key={category}>
-                      <Badge color="blue">{category}</Badge>
-                      {index < record.categories.length - 1 && "\u00A0"}
+                      <Badge color="blue">
+                        {formatStringToLetterCase(category)}
+                      </Badge>
+                      {index < record.category.length - 1 && "\u00A0"}
                     </React.Fragment>
                   ))
                 : "-",
@@ -80,7 +100,7 @@ const ArticleManagementTable = ({
             accessor: "tags",
             title: "Tags",
             textAlignment: "left",
-            width: "10vw",
+            width: 90,
             render: (record) =>
               record.tags
                 ? record.tags.map((tag, index) => (
@@ -92,55 +112,56 @@ const ArticleManagementTable = ({
                 : "-",
           },
           {
+            accessor: "articleType",
+            title: "Type",
+            textAlignment: "left",
+            width: 80,
+            render: (record) => (
+              <ArticleTypeBadge ArticleType={record.articleType} />
+            ),
+          },
+          {
             accessor: "isPinned",
-            title: "Pinned",
+            title: "Pin",
             textAlignment: "right",
-            width: 100,
+            width: 40,
             sortable: true,
+            render: (record) =>
+              record.isPinned ? <IconPinFilled size="1rem" /> : null,
           },
           {
             // actions
             accessor: "actions",
             title: "Actions",
-            width: 100,
+            width: 50,
             textAlignment: "right",
             render: (record) => (
               <Group position="right">
-                <ViewActionButton
-                  onClick={() =>
-                    router.push(`${router.asPath}/${record.articleId}`)
-                  }
-                />
-                {canWrite && (
-                  <DeleteActionButtonModal
-                    title={`Are you sure you want to delete ${record.title}?`}
-                    subtitle="Pet Owners would no longer be able to view this service listing."
-                    onDelete={() => {
-                      onDelete(record.articleId);
-                      if (records.length === 1 && page > 1) {
-                        onPageChange(page - 1);
-                      }
-                    }}
+                <div onClick={(e) => e.stopPropagation()}>
+                  <ViewActionButton
+                    onClick={() =>
+                      router.push(`${router.asPath}/${record.articleId}`)
+                    }
                   />
+                </div>
+                {canWrite && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <DeleteActionButtonModal
+                      title={`Are you sure you want to delete ${record.title}?`}
+                      subtitle="Pet Owners would no longer be able to view this service listing."
+                      onDelete={() => {
+                        onDelete(record.articleId);
+                        if (records.length === 1 && page > 1) {
+                          onPageChange(page - 1);
+                        }
+                      }}
+                    />
+                  </div>
                 )}
               </Group>
             ),
           },
         ]}
-        records={records}
-        withBorder
-        withColumnBorders
-        striped
-        verticalSpacing="sm"
-        idAccessor="articleId"
-        //sorting
-        sortStatus={sortStatus}
-        onSortStatusChange={onSortStatusChange}
-        //pagination
-        totalRecords={totalNumArticle}
-        recordsPerPage={TABLE_PAGE_SIZE}
-        page={page}
-        onPageChange={(p) => onPageChange(p)}
       />
     </>
   );

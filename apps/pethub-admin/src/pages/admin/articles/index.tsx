@@ -103,6 +103,8 @@ export default function Articles({ permissions }: ArticlesProps) {
   const [searchResults, setSearchResults] = useState<Article[]>([]);
   const [searchString, setSearchString] = useState<string>("");
 
+  console.log("records", records);
+
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
@@ -112,17 +114,17 @@ export default function Articles({ permissions }: ArticlesProps) {
     }
     const newRecords = sortedArticles.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, Articles, searchResults]);
+  }, [page, sortStatus, articles, searchResults]);
 
   useEffect(() => {
     handleSearch(searchString);
     const timer = setTimeout(() => {
-      if (Articles.length === 0) {
+      if (articles.length === 0) {
         setHasNoFetchedRecords(true);
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [Articles]);
+  }, [articles]);
 
   const handleSearch = (searchStr: string) => {
     setSearchString(searchStr);
@@ -139,8 +141,8 @@ export default function Articles({ permissions }: ArticlesProps) {
     setPage(1);
   };
 
-  function searchArticles(Articles: Article[], searchStr: string) {
-    return Articles.filter((Article: Article) => {
+  function searchArticles(articles: Article[], searchStr: string) {
+    return articles.filter((Article: Article) => {
       return (
         Article.title.toLowerCase().includes(searchStr.toLowerCase()) ||
         Article.articleId.toString().includes(searchStr.toLowerCase())
@@ -153,7 +155,7 @@ export default function Articles({ permissions }: ArticlesProps) {
   }
 
   const renderContent = () => {
-    if (Articles.length === 0) {
+    if (articles.length === 0) {
       if (isLoading) {
         return <CenterLoader />;
       }

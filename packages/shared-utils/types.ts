@@ -296,6 +296,7 @@ export interface Article {
   title: string;
   content: string;
   isPinned: boolean;
+  articleType: string;
   dateCreated: string;
   dateUpdated?: string;
   createdByUserId: number;
@@ -305,7 +306,10 @@ export interface Article {
   petBusinessId: number;
   petBusiness: any;
   tags: Tag[];
-  categories: string[];
-  createdBy?: any;
+  category: string[];
+  createdBy?: {
+    firstName: string;
+    lastName: string;
+  };
   updatedBy?: any;
 }
