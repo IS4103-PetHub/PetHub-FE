@@ -85,23 +85,8 @@ const ArticleManagementTable = ({
             accessor: "category",
             title: "Categories",
             textAlignment: "left",
-            width: 90,
+            width: 55,
             render: (record) => formatStringToLetterCase(record.category),
-          },
-          {
-            accessor: "tags",
-            title: "Tags",
-            textAlignment: "left",
-            width: 90,
-            render: (record) =>
-              record.tags
-                ? record.tags.map((tag, index) => (
-                    <React.Fragment key={tag.tagId}>
-                      <Badge color="blue">{tag.name}</Badge>
-                      {index < record.tags.length - 1 && "\u00A0"}
-                    </React.Fragment>
-                  ))
-                : "-",
           },
           {
             accessor: "articleType",
@@ -115,13 +100,32 @@ const ArticleManagementTable = ({
             ),
           },
           {
+            accessor: "tags",
+            title: "Tags",
+            textAlignment: "left",
+            width: 100,
+            render: (record) =>
+              record.tags
+                ? record.tags.map((tag, index) => (
+                    <React.Fragment key={tag.tagId}>
+                      <Badge color="blue">{tag.name}</Badge>
+                      {index < record.tags.length - 1 && "\u00A0"}
+                    </React.Fragment>
+                  ))
+                : "-",
+          },
+          {
             accessor: "isPinned",
             title: "Pin",
             textAlignment: "right",
             width: 40,
             sortable: true,
             render: (record) =>
-              record.isPinned ? <IconPinFilled size="1rem" /> : null,
+              record.isPinned ? (
+                <IconPinFilled size="1rem" />
+              ) : (
+                <IconPin size="1rem" />
+              ),
           },
           {
             // actions

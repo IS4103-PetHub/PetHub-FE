@@ -2,6 +2,8 @@ import {
   Container,
   Group,
   LoadingOverlay,
+  Stack,
+  Text,
   useMantineTheme,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -11,7 +13,14 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useState } from "react";
-import { Article, OrderItem, Pet } from "shared-utils";
+import {
+  Article,
+  OrderItem,
+  Pet,
+  formatISODateLong,
+  formatISODayDateTime,
+  formatISOLongWithDay,
+} from "shared-utils";
 import { getErrorMessageProps } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import ViewOrderDetails from "web-ui/shared/order-management/ViewOrderDetails";
@@ -124,6 +133,16 @@ export default function ArticleDetails({
             size="md"
             mt={20}
           />
+
+          <Stack style={{ textAlign: "right" }}>
+            <Text size="sm" color="dimmed" mb={-15}>
+              Published by [{article?.createdBy.firstName}{" "}
+              {article?.createdBy.lastName}]
+            </Text>
+            <Text size="sm" color="dimmed">
+              {formatISODayDateTime(article?.dateCreated)}
+            </Text>
+          </Stack>
         </Group>
 
         <ArticleForm article={article} onSubmit={handleUpdateArticle} />

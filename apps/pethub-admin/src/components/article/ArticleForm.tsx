@@ -9,6 +9,8 @@ import {
   FileInput,
   rem,
   Text,
+  Stack,
+  Box,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import {
@@ -28,6 +30,7 @@ import {
   Tag,
   downloadFile,
   extractFileName,
+  formatISODayDateTime,
   formatLetterCaseToEnumString,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -271,27 +274,47 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
           />
         </Grid.Col>
         <Grid.Col span={48} mt={40}>
-          <Group position="right">
-            <Button
-              leftIcon={<IconEye size="1rem" />}
-              miw={150}
-              variant="light"
-            >
-              Preview
-            </Button>
-            <Button
-              leftIcon={
-                isUpdating ? (
-                  <IconDeviceFloppy size="1rem" />
-                ) : (
-                  <IconWriting size="1rem" />
-                )
-              }
-              miw={150}
-              type="submit"
-            >
-              {isUpdating ? "Save Changes" : "Publish Article"}
-            </Button>
+          <Group position="apart">
+            <Group>
+              {isUpdating && article?.dateUpdated ? (
+                <Box mt={-5}>
+                  <Text size="sm" color="dimmed">
+                    Last updated by [{article?.updatedBy?.firstName}{" "}
+                    {article?.updatedBy?.lastName}]
+                  </Text>
+                  <Text size="sm" color="dimmed">
+                    {formatISODayDateTime(article?.dateUpdated)}
+                  </Text>
+                </Box>
+              ) : (
+                <Text size="sm" color="dimmed">
+                  Not yet updated
+                </Text>
+              )}
+            </Group>
+
+            <Group>
+              <Button
+                leftIcon={<IconEye size="1rem" />}
+                miw={150}
+                variant="light"
+              >
+                Preview
+              </Button>
+              <Button
+                leftIcon={
+                  isUpdating ? (
+                    <IconDeviceFloppy size="1rem" />
+                  ) : (
+                    <IconWriting size="1rem" />
+                  )
+                }
+                miw={150}
+                type="submit"
+              >
+                {isUpdating ? "Save Changes" : "Publish Article"}
+              </Button>
+            </Group>
           </Group>
         </Grid.Col>
       </Grid>
