@@ -20,6 +20,7 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ArticleCard from "@/components/article/ArticleCard";
+import ArticleFilterBar from "@/components/article/ArticleFilterBar";
 import PinnedArticleSidebar from "@/components/article/PinnedArticleSidebar";
 import { useGetAllArticles, useGetAllPinnedArticles } from "@/hooks/article";
 import { useGetAllTags } from "@/hooks/tags";
@@ -32,6 +33,9 @@ export default function Articles({}: ArticlesProps) {
   const theme = useMantineTheme();
   const [sortStatus, setSortStatus] = useState<string>("recent");
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
+  const [filter, setFilter] = useState("All");
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+
   // States for infinite scroll and fake loading flag
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 5;
@@ -52,14 +56,24 @@ export default function Articles({}: ArticlesProps) {
   }, []);
 
   useEffect(() => {
-    // The reason we slice the array is because we want to display the records in batches for infinite scrolling
+    // Filter articles based on the selected filter
+    const filtered =
+      filter === "All"
+        ? articles
+        : articles.filter((article) => article.articleType === filter);
+    setFilteredArticles(filtered);
+  }, [articles, filter]);
+
+  useEffect(() => {
+    // Update records when page changes
     const sortedArticles = sortRecords(
       articleSortOptions,
-      articles,
+      filteredArticles,
       sortStatus,
     );
-    setRecords(sortedArticles.slice(0, page * PAGE_SIZE));
-  }, [articles, page, sortStatus]);
+    const paginatedArticles = sortedArticles.slice(0, page * PAGE_SIZE);
+    setRecords(paginatedArticles);
+  }, [filteredArticles, page, sortStatus]);
 
   // Scroll listeners for infinite scrolling, hooks into window scroll event
   useEffect(() => {
@@ -84,20 +98,25 @@ export default function Articles({}: ArticlesProps) {
     return () => clearTimeout(timer);
   }, [articles]);
 
-  useEffect(() => {
-    // Update records when page changes
-    setRecords(articles.slice(0, page * PAGE_SIZE));
-  }, [page, articles]);
-
   // Display more records when user scrolls to bottom of page
   const handleScroll = () => {
     if (
       window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 100 && // 100px before the bottom of the page
-      records.length < articles.length // Check if there are more articles to load
+      records.length < filteredArticles.length // Check if there are more articles to load
     ) {
       setPage((prevPage) => prevPage + 1);
     }
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setPage(1); // Reset pagination when filter changes
+    const filtered =
+      newFilter === "All"
+        ? articles
+        : articles.filter((article) => article.articleType === newFilter);
+    setFilteredArticles(filtered);
   };
 
   const ArticleCards = records?.map((item) => (
@@ -122,7 +141,10 @@ export default function Articles({}: ArticlesProps) {
     return (
       <>
         {records.length === 0 ? (
-          <NoSearchResultsMessage />
+          <SadDimmedMessage
+            title="No Articles Found"
+            subtitle="Please try another filter or wait for an article to get published!"
+          />
         ) : (
           <Grid mb="xl">{ArticleCards}</Grid>
         )}
@@ -144,7 +166,9 @@ export default function Articles({}: ArticlesProps) {
                 <PageTitle title={`Articles`} mb="lg" />
               </Group>
             </Grid.Col>
-            <Grid.Col span={31}>Filters</Grid.Col>
+            <Grid.Col span={31}>
+              <ArticleFilterBar onFilterChange={handleFilterChange} />
+            </Grid.Col>
             <Grid.Col span={1} />
             <Grid.Col span={16}>
               <SortBySelect
