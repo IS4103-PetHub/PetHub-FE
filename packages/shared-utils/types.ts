@@ -224,6 +224,7 @@ export interface PetOwner extends User {
   lastName: string;
   dateOfBirth: string;
   favouriteListings?: ServiceListing[];
+  points: number;
 
   user?: User; // BE not flattening for some endpoints
 }

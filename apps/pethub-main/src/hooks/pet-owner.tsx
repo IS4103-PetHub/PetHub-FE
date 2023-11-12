@@ -45,6 +45,7 @@ export const useGetPetOwnerByIdAndAccountType = (
         accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
+        points: data.points,
       };
       return petOwner as PetOwner;
     },

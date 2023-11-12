@@ -24,7 +24,6 @@ const ProjectedSalesLineChart = ({ data }: ProjectedSalesLineChartProps) => {
         processedData[i] = [...data[i], false, null];
       }
     }
-    console.log(processedData);
     return processedData;
   }
 

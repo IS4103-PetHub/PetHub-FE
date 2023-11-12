@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
+import api from "@/api/axiosConfig";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
 import { CheckoutSummary } from "@/types/types";
 
@@ -16,9 +17,14 @@ const stripePromise = loadStripe(PK);
 interface CheckoutProps {
   userId: number;
   checkoutSummary: CheckoutSummary;
+  userAvailablePoints: number;
 }
 
-export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
+export default function Checkout({
+  userId,
+  checkoutSummary,
+  userAvailablePoints,
+}: CheckoutProps) {
   const router = useRouter();
 
   // in case user refreshes the page, the checkout will not work anymore, redirect them back to cart
@@ -46,7 +52,11 @@ export default function Checkout({ userId, checkoutSummary }: CheckoutProps) {
         />
         <PageTitle title="Checkout" mb="lg" />
         <Elements stripe={stripePromise}>
-          <CheckoutForm userId={userId} checkoutSummary={checkoutSummary} />
+          <CheckoutForm
+            userId={userId}
+            checkoutSummary={checkoutSummary}
+            userAvailablePoints={userAvailablePoints}
+          />
         </Elements>
       </Container>
     </>
@@ -60,5 +70,9 @@ export async function getServerSideProps(context) {
   if (!session) return { props: { checkoutSummary } };
 
   const userId = session.user["userId"];
-  return { props: { userId, checkoutSummary } };
+  const petOwnerResponse = await (
+    await api.get(`/users/pet-owners/${userId}`)
+  ).data;
+  const userAvailablePoints: number = petOwnerResponse.points;
+  return { props: { userId, checkoutSummary, userAvailablePoints } };
 }

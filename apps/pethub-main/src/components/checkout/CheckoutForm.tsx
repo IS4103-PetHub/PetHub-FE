@@ -1,4 +1,11 @@
-import { Button, Group, Stack, Text, useMantineTheme } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Group,
+  Stack,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -7,10 +14,14 @@ import {
   useElements,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import { IconCheck, IconLock } from "@tabler/icons-react";
-import { Router, useRouter } from "next/router";
-import React from "react";
-import { formatNumber2Decimals, getErrorMessageProps } from "shared-utils";
+import { IconLock } from "@tabler/icons-react";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import {
+  formatNumber2Decimals,
+  formatNumberCustomDecimals,
+  getErrorMessageProps,
+} from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";
 import { useStripePaymentMethod } from "@/hooks/payment";
 import { CartItem, CheckoutSummary } from "@/types/types";
@@ -21,9 +32,14 @@ import CheckoutItemsSection from "./CheckoutItemsSection";
 interface CheckoutFormProps {
   userId: number;
   checkoutSummary: CheckoutSummary;
+  userAvailablePoints: number;
 }
 
-const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
+const CheckoutForm = ({
+  userId,
+  checkoutSummary,
+  userAvailablePoints,
+}: CheckoutFormProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
   const stripe = useStripe();
@@ -31,12 +47,15 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
   const stripePaymentMethodMutation = useStripePaymentMethod();
 
   const [isPaying, setIsPaying] = useToggle();
+  const [pointsToUse, setPointsToUse] = useState<number | "">(0);
 
   const { getSelectedCartItems, removeSelectedCartItems } =
     useCartOperations(userId);
   const cartItems: CartItem[] = getSelectedCartItems();
 
-  const amount = formatNumber2Decimals(checkoutSummary.total);
+  function calculateFinalAmount() {
+    return checkoutSummary.total - Number(pointsToUse) / 100;
+  }
 
   const billingForm = useForm({
     initialValues: {
@@ -105,8 +124,9 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
 
       const payload = {
         paymentMethodId: result.paymentMethod.id,
-        totalPrice: Number(checkoutSummary.total),
+        totalPrice: calculateFinalAmount(),
         userId,
+        pointsRedeemed: pointsToUse,
         cartItems: cartItems.map((cartItem) => {
           return {
             serviceListingId: cartItem.serviceListing.serviceListingId,
@@ -153,7 +173,19 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
         <CheckoutItemsSection
           cartItems={cartItems}
           checkoutSummary={checkoutSummary}
+          userAvailablePoints={userAvailablePoints}
+          pointsToUse={pointsToUse}
+          onChangePoints={setPointsToUse}
         />
+        <Alert>
+          You will earn{" "}
+          <strong>
+            {Math.floor(
+              Number(checkoutSummary.subtotal) + Number(checkoutSummary.gst),
+            )}
+          </strong>{" "}
+          points for this purchase.
+        </Alert>
         <BillingDetailsSection form={billingForm} />
         <CheckoutCardSection />
       </Stack>
@@ -168,7 +200,7 @@ const CheckoutForm = ({ userId, checkoutSummary }: CheckoutFormProps) => {
           className="gradient-hover"
           loading={isPaying}
         >
-          Pay ${amount}
+          Pay ${formatNumber2Decimals(calculateFinalAmount())}
         </Button>
       </Group>
       <Group position="center" mt="sm">
