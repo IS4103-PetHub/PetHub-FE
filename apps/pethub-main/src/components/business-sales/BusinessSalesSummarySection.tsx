@@ -1,4 +1,5 @@
 import { Grid } from "@mantine/core";
+import Link from "next/link";
 import React from "react";
 import {
   formatNumber2Decimals,
@@ -32,18 +33,22 @@ const BusinessSalesSummarySection = ({
   const renderSummarySection = () => {
     const first3Cards = Array.from(summaryMap.entries()).map(([key, value]) => (
       <Grid.Col span={3} key={key}>
-        <MiniSummaryCard title={key} body={value} />
+        <Link href="/business/orders">
+          <MiniSummaryCard title={key} body={value} />
+        </Link>
       </Grid.Col>
     ));
     const lastCard = (
       <Grid.Col span={3} key={summary.mostSalesDate}>
-        <MiniSummaryCard
-          title={"Date with Most Sales"}
-          body={`$${addCommasToNumberString(
-            formatNumber2Decimals(summary.mostSalesAmount),
-          )}`}
-          subbody={formatISODateLong(summary.mostSalesDate)}
-        />
+        <Link href="/business/orders">
+          <MiniSummaryCard
+            title={"Date with Most Sales"}
+            body={`$${addCommasToNumberString(
+              formatNumber2Decimals(summary.mostSalesAmount),
+            )}`}
+            subbody={formatISODateLong(summary.mostSalesDate)}
+          />
+        </Link>
       </Grid.Col>
     );
     return [...first3Cards, lastCard];

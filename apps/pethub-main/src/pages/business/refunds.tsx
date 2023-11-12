@@ -193,7 +193,7 @@ export default function Refunds({ userId, canView }: RefundsProps) {
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container fluid m="lg">
+        <Container fluid>
           <Group position="apart">
             <PageTitle title="Refunds Management" />
           </Group>

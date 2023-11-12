@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import AddUsersToUserGroupModal from "@/components/rbac/AddUsersToUserGroupModal";
@@ -181,6 +182,14 @@ export default function UserGroupDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
+        <LargeBackButton
+          text="Back to User Groups"
+          onClick={() => {
+            router.push("/admin/rbac");
+          }}
+          size="sm"
+          mb="md"
+        />
         <Group position="apart">
           <Group position="left">
             <PageTitle title="User Group Details" />

@@ -32,6 +32,10 @@ const UserGroupsTable = ({
 
   return (
     <DataTable
+      highlightOnHover
+      onRowClick={(record) =>
+        router.push(`/admin/rbac/user-groups/${record.groupId}`)
+      }
       minHeight={getMinTableHeight(records)}
       columns={[
         {

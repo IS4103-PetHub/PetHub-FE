@@ -1,4 +1,5 @@
 import { Grid } from "@mantine/core";
+import Link from "next/link";
 import React from "react";
 import { addCommasToNumberString, formatNumber2Decimals } from "shared-utils";
 import MiniSummaryCard from "web-ui/shared/dashboard/MiniSummaryCard";
@@ -41,7 +42,9 @@ const RevenueTrackingSummarySection = ({
   const renderSummarySection = () => {
     const first3Cards = Array.from(summaryMap.entries()).map(([key, value]) => (
       <Grid.Col span={3} key={key}>
-        <MiniSummaryCard title={key} body={value} />
+        <Link href="/admin/orders">
+          <MiniSummaryCard title={key} body={value} />
+        </Link>
       </Grid.Col>
     ));
     return first3Cards;
