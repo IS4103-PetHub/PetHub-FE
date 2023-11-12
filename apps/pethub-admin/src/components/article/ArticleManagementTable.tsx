@@ -146,7 +146,7 @@ const ArticleManagementTable = ({
                   <div onClick={(e) => e.stopPropagation()}>
                     <DeleteActionButtonModal
                       title={`Are you sure you want to delete ${record.title}?`}
-                      subtitle="Pet Owners would no longer be able to view this service listing."
+                      subtitle="Pet Owners would no longer be able to view this article."
                       onDelete={() => {
                         onDelete(record.articleId);
                         if (records.length === 1 && page > 1) {

@@ -20,7 +20,8 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ArticleCard from "@/components/article/ArticleCard";
-import { useGetAllArticles } from "@/hooks/article";
+import PinnedArticleSidebar from "@/components/article/PinnedArticleSidebar";
+import { useGetAllArticles, useGetAllPinnedArticles } from "@/hooks/article";
 import { useGetAllTags } from "@/hooks/tags";
 import { articleSortOptions } from "@/types/constants";
 import { sortRecords } from "@/util";
@@ -36,20 +37,29 @@ export default function Articles({}: ArticlesProps) {
   const PAGE_SIZE = 5;
 
   // Data fetching
-  const { data: articles = [], isLoading, refetch } = useGetAllArticles();
+  const { data: articles = [], isLoading: areArticlesLoading } =
+    useGetAllArticles();
+  const { data: pinnedArticles = [], isLoading: arePinnedArticlesLoading } =
+    useGetAllPinnedArticles();
   const [records, setRecords] = useState<Article[]>(articles);
 
-  useEffect(() => {
-    // The reason we slice the array is because we want to display the records in batches for infinite scrolling
-    setRecords(articles.slice(0, page * PAGE_SIZE));
-  }, [articles, page, sortStatus]);
-
+  // Change BG color to gray
   useEffect(() => {
     document.body.style.background = theme.colors.gray[0];
     return () => {
       document.body.style.background = "";
     };
   }, []);
+
+  useEffect(() => {
+    // The reason we slice the array is because we want to display the records in batches for infinite scrolling
+    const sortedArticles = sortRecords(
+      articleSortOptions,
+      articles,
+      sortStatus,
+    );
+    setRecords(sortedArticles.slice(0, page * PAGE_SIZE));
+  }, [articles, page, sortStatus]);
 
   // Scroll listeners for infinite scrolling, hooks into window scroll event
   useEffect(() => {
@@ -74,12 +84,17 @@ export default function Articles({}: ArticlesProps) {
     return () => clearTimeout(timer);
   }, [articles]);
 
+  useEffect(() => {
+    // Update records when page changes
+    setRecords(articles.slice(0, page * PAGE_SIZE));
+  }, [page, articles]);
+
   // Display more records when user scrolls to bottom of page
   const handleScroll = () => {
     if (
       window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 100 && // 100px before the bottom of the page
-      records.length < records.length // until not all records displayed yet
+      records.length < articles.length // Check if there are more articles to load
     ) {
       setPage((prevPage) => prevPage + 1);
     }
@@ -93,7 +108,7 @@ export default function Articles({}: ArticlesProps) {
 
   const renderContent = () => {
     if (articles.length === 0) {
-      if (isLoading) {
+      if (areArticlesLoading || arePinnedArticlesLoading) {
         return <CenterLoader />;
       }
       return (
@@ -123,15 +138,15 @@ export default function Articles({}: ArticlesProps) {
       </Head>
       <main>
         <Container mt={50} size="80vw" sx={{ overflow: "hidden" }}>
-          <Grid columns={24}>
-            <Grid.Col span={24}>
+          <Grid columns={48}>
+            <Grid.Col span={48}>
               <Group position="apart">
                 <PageTitle title={`Articles`} mb="lg" />
               </Group>
             </Grid.Col>
-            <Grid.Col span={15}>Filters</Grid.Col>
+            <Grid.Col span={31}>Filters</Grid.Col>
             <Grid.Col span={1} />
-            <Grid.Col span={8}>
+            <Grid.Col span={16}>
               <SortBySelect
                 data={articleSortOptions}
                 value={sortStatus}
@@ -139,9 +154,11 @@ export default function Articles({}: ArticlesProps) {
                 w="100%"
               />
             </Grid.Col>
-            <Grid.Col span={15}>{renderContent()}</Grid.Col>
+            <Grid.Col span={31}>{renderContent()}</Grid.Col>
             <Grid.Col span={1} />
-            <Grid.Col span={8}>Pinned articles here</Grid.Col>
+            <Grid.Col span={16}>
+              <PinnedArticleSidebar pinnedArticles={pinnedArticles} />
+            </Grid.Col>
           </Grid>
         </Container>
       </main>

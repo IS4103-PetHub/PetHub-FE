@@ -23,3 +23,13 @@ export const useGetAllArticles = () => {
     },
   });
 };
+
+export const useGetAllPinnedArticles = () => {
+  return useQuery({
+    queryKey: ["pinned-articles"],
+    queryFn: async () => {
+      const response = await api.get(`${ARTICLE_API}/pinned`);
+      return response.data as Article[];
+    },
+  });
+};

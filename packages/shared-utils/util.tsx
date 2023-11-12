@@ -227,16 +227,20 @@ export function validateReviewFiles(files: string[]) {
   return null;
 }
 
+// If < 1 hour: "recently posted", if < 24 hours: "x hours ago", if < 7 days, x days ago, else "DD-MM-YYYY-TT"
 export function displayArticleDate(dateCreated) {
   const createdDate = dayjs(dateCreated);
   const now = dayjs();
 
   const hoursDiff = now.diff(createdDate, "hour");
+  const daysDiff = now.diff(createdDate, "day");
 
   if (hoursDiff < 1) {
     return "Recently posted";
   } else if (hoursDiff >= 1 && hoursDiff < 24) {
     return `${hoursDiff} hour${hoursDiff > 1 ? "s" : ""} ago`;
+  } else if (daysDiff >= 1 && daysDiff < 7) {
+    return `${daysDiff} day${daysDiff > 1 ? "s" : ""} ago`;
   } else {
     return formatISODayDateTime(dateCreated);
   }

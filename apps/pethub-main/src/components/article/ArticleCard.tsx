@@ -100,7 +100,7 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
               src={article?.attachmentUrls[0]}
               fit="contain"
               w="auto"
-              alt="Cart Item Photo"
+              alt="Article Cover Image"
             />
           ) : (
             <Image
