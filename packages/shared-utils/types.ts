@@ -306,7 +306,7 @@ export interface Article {
   petBusinessId: number;
   petBusiness: any;
   tags: Tag[];
-  category: string[];
+  category: string;
   createdBy?: {
     firstName: string;
     lastName: string;

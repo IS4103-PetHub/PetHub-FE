@@ -58,7 +58,7 @@ export default function CreateArticle({
         title: values.title,
         articleType: values.articleType,
         content: values.content,
-        categories: values.categories,
+        category: values.category,
         tags: values.tags,
         file: values.file,
         isPinned: values.isPinned,

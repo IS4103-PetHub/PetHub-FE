@@ -86,17 +86,7 @@ const ArticleManagementTable = ({
             title: "Categories",
             textAlignment: "left",
             width: 90,
-            render: (record) =>
-              record.category
-                ? record.category.map((category, index) => (
-                    <React.Fragment key={category}>
-                      <Badge color="blue">
-                        {formatStringToLetterCase(category)}
-                      </Badge>
-                      {index < record.category.length - 1 && "\u00A0"}
-                    </React.Fragment>
-                  ))
-                : "-",
+            render: (record) => formatStringToLetterCase(record.category),
           },
           {
             accessor: "tags",

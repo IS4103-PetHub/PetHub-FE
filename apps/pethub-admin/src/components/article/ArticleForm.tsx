@@ -83,7 +83,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
       articleType: "",
       file: null,
       tags: [],
-      categories: [],
+      category: "",
       isPinned: false,
     },
     validate: {
@@ -97,6 +97,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
       },
       content: isNotEmpty("Content cannot be empty."),
       articleType: isNotEmpty("Article type is mandatory."),
+      category: isNotEmpty("Category is mandatory."),
     },
   });
 
@@ -140,7 +141,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
         content: article.content,
         articleType: article.articleType,
         tags: article.tags.map((tag) => tag.tagId.toString()),
-        categories: article.category,
+        category: article.category,
         isPinned: article.isPinned,
       });
 
@@ -190,12 +191,13 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
           />
         </Grid.Col>
         <Grid.Col span={12}>
-          <MultiSelect
+          <Select
+            clearable
             size="sm"
             label="Category"
-            placeholder="No categories selected"
+            placeholder="No category selected"
             data={CATEGORY_TYPE_DATA}
-            {...form.getInputProps("categories")}
+            {...form.getInputProps("category")}
           />
         </Grid.Col>
         <Grid.Col span={12}>
@@ -222,6 +224,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
           {form.values.file ? (
             <FileIconBadge
               size="xl"
+              mt={2}
               fileName={form.values.file?.name}
               onClick={() =>
                 initiateDownload(existingFileUrl, form.values.file?.name)

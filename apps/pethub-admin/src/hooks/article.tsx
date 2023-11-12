@@ -13,6 +13,7 @@ export const useCreateArticle = () => {
       formData.append("content", payload.content);
       formData.append("internalUserId", payload.internalUserId.toString());
       formData.append("articleType", payload.articleType);
+      formData.append("category", payload.category);
       formData.append("isPinned", payload.isPinned.toString());
 
       if (payload.file) {
@@ -21,10 +22,6 @@ export const useCreateArticle = () => {
 
       payload.tags.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());
-      });
-
-      payload.categories.forEach((category) => {
-        formData.append("category[]", category.toString());
       });
 
       const response = await api.post(`${ARTICLE_API}`, formData, {
@@ -45,6 +42,7 @@ export const useUpdateArticle = () => {
       formData.append("content", payload.content);
       formData.append("internalUserId", payload.internalUserId.toString());
       formData.append("articleType", payload.articleType);
+      formData.append("category", payload.category);
       formData.append("isPinned", payload.isPinned.toString());
 
       if (payload.file) {
@@ -53,10 +51,6 @@ export const useUpdateArticle = () => {
 
       payload.tags.forEach((tagId) => {
         formData.append("tagIds[]", tagId.toString());
-      });
-
-      payload.categories.forEach((category) => {
-        formData.append("category[]", category.toString());
       });
 
       const response = await api.put(

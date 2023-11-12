@@ -183,6 +183,6 @@ export interface CreateOrUpdateArticlePayload {
   file: File;
   internalUserId?: number;
   tags: number[];
-  categories: string[];
+  category: string;
   isPinned: boolean;
 }
