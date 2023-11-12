@@ -1,4 +1,6 @@
 import {
+  Box,
+  Button,
   Container,
   Group,
   LoadingOverlay,
@@ -6,8 +8,10 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconEye } from "@tabler/icons-react";
+import { IconWriting } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -57,6 +61,7 @@ export default function ArticleDetails({
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
   const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadArticles);
 
+  const [isPreviewing, toggleIsPreviewing] = useToggle();
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateArticleMutation = useUpdateArticle();
@@ -118,34 +123,51 @@ export default function ArticleDetails({
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid mb="lg" mr="lg" ml="lg">
+      <Container fluid mb="lg" mr="lg" ml="lg" mt="md">
         <LoadingOverlay
           loaderProps={{ size: "sm", color: "pink", variant: "bars" }}
           overlayBlur={2}
           visible={isLoading}
         />
-        <Group position="apart" mb="md">
+        <Group position={isPreviewing ? "right" : "apart"} mb="md">
           <LargeBackButton
+            display={isPreviewing ? "none" : "block"}
             text="Back to Articles"
             onClick={() => {
               router.push("/admin/articles");
             }}
             size="md"
-            mt={20}
           />
 
-          <Stack style={{ textAlign: "right" }}>
-            <Text size="sm" color="dimmed" mb={-15}>
-              Published by [{article?.createdBy.firstName}{" "}
-              {article?.createdBy.lastName}]
-            </Text>
-            <Text size="sm" color="dimmed">
-              {formatISODayDateTime(article?.dateCreated)}
-            </Text>
-          </Stack>
+          {isPreviewing ? (
+            <Button
+              leftIcon={<IconEye size="1rem" />}
+              miw={150}
+              size="md"
+              variant="light"
+              onClick={() => toggleIsPreviewing()}
+            >
+              Exit Preview
+            </Button>
+          ) : (
+            <Stack style={{ textAlign: "right" }}>
+              <Text size="sm" color="dimmed" mb={-15}>
+                Published by [{article?.createdBy.firstName}{" "}
+                {article?.createdBy.lastName}]
+              </Text>
+              <Text size="sm" color="dimmed">
+                {formatISODayDateTime(article?.dateCreated)}
+              </Text>
+            </Stack>
+          )}
         </Group>
 
-        <ArticleForm article={article} onSubmit={handleUpdateArticle} />
+        <ArticleForm
+          isPreviewing={isPreviewing}
+          toggleIsPreviewing={toggleIsPreviewing}
+          article={article}
+          onSubmit={handleUpdateArticle}
+        />
       </Container>
     </>
   );

@@ -13,6 +13,7 @@ import {
   Box,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import {
   IconDeviceFloppy,
   IconEye,
@@ -35,21 +36,29 @@ import {
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
+import PublishedArticleView from "web-ui/shared/article/PublishedArticleView";
 import FileIconBadge from "web-ui/shared/file/FileIconBadge";
 import FileMiniIcon from "web-ui/shared/file/FileMiniIcon";
 import { useGetAllTags } from "@/hooks/tag";
 import { CreateOrUpdateArticlePayload } from "@/types/types";
 
 interface ArticleFormProps {
+  isPreviewing: boolean;
+  toggleIsPreviewing: () => void;
   article?: Article;
   onSubmit: (payload: CreateOrUpdateArticlePayload) => void;
 }
 
-const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
+const ArticleForm = ({
+  isPreviewing,
+  toggleIsPreviewing,
+  article,
+  onSubmit,
+}: ArticleFormProps) => {
   const theme = useMantineTheme();
   const [existingFileUrl, setExistingFileUrl] = useState<string>("");
   const RichTextEditor = useMemo(() => {
-    return dynamic(() => import("@/components/article/RichTextEditor"), {
+    return dynamic(() => import("web-ui/shared/article/RichTextEditor"), {
       loading: () => <></>,
       ssr: false,
     });
@@ -173,7 +182,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
     document.body.removeChild(link);
   };
 
-  return (
+  const ArticleForm = (
     <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
       <Grid mb="xl" columns={48}>
         <Grid.Col span={12}>
@@ -184,31 +193,31 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
             mt={15}
           />
         </Grid.Col>
-        <Grid.Col span={12}>
+        <Grid.Col span={20}>
           <MultiSelect
             size="sm"
             label="Tags"
-            placeholder="No tags selected"
+            placeholder="None selected"
             data={tagOptions}
             {...form.getInputProps("tags")}
           />
         </Grid.Col>
-        <Grid.Col span={12}>
+        <Grid.Col span={8}>
           <Select
             clearable
             size="sm"
             label="Category"
-            placeholder="No category selected"
+            placeholder="None selected"
             data={CATEGORY_TYPE_DATA}
             {...form.getInputProps("category")}
           />
         </Grid.Col>
-        <Grid.Col span={12}>
+        <Grid.Col span={8}>
           <Select
             clearable
             size="sm"
             label="Type"
-            placeholder="No article type selected"
+            placeholder="None selected"
             data={ARTICLE_TYPE_DATA}
             {...form.getInputProps("articleType")}
           />
@@ -271,12 +280,13 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
           <RichTextEditor
             article={form.values.content}
             setArticle={setArticle}
+            viewOnly={false}
           />
         </Grid.Col>
         <Grid.Col span={48} mt={40}>
           <Group position="apart">
             <Group>
-              {isUpdating && article?.dateUpdated ? (
+              {isUpdating && article?.dateUpdated && (
                 <Box mt={-5}>
                   <Text size="sm" color="dimmed">
                     Last updated by [{article?.updatedBy?.firstName}{" "}
@@ -286,10 +296,6 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
                     {formatISODayDateTime(article?.dateUpdated)}
                   </Text>
                 </Box>
-              ) : (
-                <Text size="sm" color="dimmed">
-                  Not yet updated
-                </Text>
               )}
             </Group>
 
@@ -298,6 +304,7 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
                 leftIcon={<IconEye size="1rem" />}
                 miw={150}
                 variant="light"
+                onClick={() => toggleIsPreviewing()}
               >
                 Preview
               </Button>
@@ -319,6 +326,21 @@ const ArticleForm = ({ article, onSubmit }: ArticleFormProps) => {
         </Grid.Col>
       </Grid>
     </form>
+  );
+
+  return (
+    <>
+      {isPreviewing ? (
+        <PublishedArticleView
+          articleForm={form}
+          coverImageUrl={existingFileUrl}
+          article={article}
+          tagOptions={tagOptions}
+        />
+      ) : (
+        ArticleForm
+      )}
+    </>
   );
 };
 

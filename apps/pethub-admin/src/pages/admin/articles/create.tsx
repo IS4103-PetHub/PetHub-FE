@@ -1,7 +1,9 @@
-import { Container, Group, LoadingOverlay } from "@mantine/core";
+import { Button, Container, Group, LoadingOverlay } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
+import { IconEye } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -37,6 +39,7 @@ export default function CreateArticle({
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
   const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadArticles);
 
+  const [isPreviewing, toggleIsPreviewing] = useToggle();
   const [loading, setLoading] = useState<boolean>(false);
 
   // Data fetching hooks
@@ -89,24 +92,40 @@ export default function CreateArticle({
         <title>Create New Article</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid mb="lg" mr="lg" ml="lg">
+      <Container fluid mb="lg" mr="lg" ml="lg" mt="md">
         <LoadingOverlay
           loaderProps={{ size: "sm", color: "pink", variant: "bars" }}
           overlayBlur={2}
           visible={isLoading}
         />
-        <Group position="apart" mb="md">
+        <Group position={isPreviewing ? "right" : "apart"} mb="md">
           <LargeBackButton
+            display={isPreviewing ? "none" : "block"}
             text="Back to Articles"
             onClick={() => {
               router.push("/admin/articles");
             }}
             size="md"
-            mt={20}
           />
+
+          {isPreviewing && (
+            <Button
+              leftIcon={<IconEye size="1rem" />}
+              miw={150}
+              size="md"
+              variant="light"
+              onClick={() => toggleIsPreviewing()}
+            >
+              Exit Preview
+            </Button>
+          )}
         </Group>
 
-        <ArticleForm onSubmit={handleCreateArticle} />
+        <ArticleForm
+          isPreviewing={isPreviewing}
+          toggleIsPreviewing={toggleIsPreviewing}
+          onSubmit={handleCreateArticle}
+        />
       </Container>
     </>
   );
