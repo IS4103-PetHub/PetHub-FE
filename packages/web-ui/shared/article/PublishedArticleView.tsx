@@ -78,9 +78,7 @@ const PublishedArticleView = ({
       firstName: article?.createdBy?.firstName || "Author",
       lastName: article?.createdBy?.lastName || "Name",
     },
-    dateCreated: article?.dateCreated
-      ? article?.dateCreated
-      : new Date().toISOString(),
+    dateCreated: article?.dateCreated ? article?.dateCreated : null,
     dateUpdated: article?.dateUpdated ? article?.dateUpdated : null,
     attachmentUrl: coverImageUrl
       ? coverImageUrl

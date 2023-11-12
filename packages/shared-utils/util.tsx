@@ -229,6 +229,8 @@ export function validateReviewFiles(files: string[]) {
 
 // If < 1 hour: "recently posted", if < 24 hours: "x hours ago", if < 7 days, x days ago, else "DD-MM-YYYY-TT"
 export function displayArticleDate(dateCreated) {
+  if (!dateCreated) return "";
+
   const createdDate = dayjs(dateCreated);
   const now = dayjs();
 
