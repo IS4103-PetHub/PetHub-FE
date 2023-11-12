@@ -61,7 +61,7 @@ export default function ArticleDetails({
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
   const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadArticles);
 
-  const [isPreviewing, toggleIsPreviewing] = useToggle();
+  const [isPreviewing, toggleIsPreviewing] = useToggle([true, false]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateArticleMutation = useUpdateArticle();
@@ -129,9 +129,8 @@ export default function ArticleDetails({
           overlayBlur={2}
           visible={isLoading}
         />
-        <Group position={isPreviewing ? "right" : "apart"} mb="md">
+        <Group position={"apart"} mb="md">
           <LargeBackButton
-            display={isPreviewing ? "none" : "block"}
             text="Back to Articles"
             onClick={() => {
               router.push("/admin/articles");
