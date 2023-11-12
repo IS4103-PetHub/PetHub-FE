@@ -1,24 +1,16 @@
 import {
   Accordion,
-  Box,
-  Button,
   Container,
-  FileInput,
-  Group,
-  Image,
   LoadingOverlay,
-  Text,
-  TextInput,
-  Textarea,
   useMantineTheme,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AccountStatusEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
@@ -34,7 +26,7 @@ import {
   useGetServiceListingByPetBusinessId,
 } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import { PetBusiness, UpdateServiceListingPayload } from "@/types/types";
+import { PetBusiness } from "@/types/types";
 
 interface ViewServiceListingProps {
   userId: number;

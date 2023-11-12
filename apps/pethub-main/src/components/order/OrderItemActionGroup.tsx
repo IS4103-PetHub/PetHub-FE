@@ -6,10 +6,8 @@ import {
   CopyButton,
   Divider,
   Grid,
-  Group,
   Rating,
   Stack,
-  Stepper,
   Text,
   useMantineTheme,
 } from "@mantine/core";
@@ -23,14 +21,13 @@ import {
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import {
   OrderItem,
   OrderItemStatusEnum,
   RefundStatusEnum,
   formatISODateTimeShort,
   formatISODayDateTime,
-  formatNumber2Decimals,
   getErrorMessageProps,
 } from "shared-utils";
 import { useCartOperations } from "@/hooks/cart";

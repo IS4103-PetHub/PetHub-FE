@@ -247,7 +247,7 @@ const ViewServiceListingModal = ({
               </Grid.Col>
 
               <Grid.Col span={3}>
-                <Text fw={700}>Last Possible Date:</Text>
+                <Text fw={700}>Last Operational Date:</Text>
               </Grid.Col>
               <Grid.Col span={9}>
                 <Text>

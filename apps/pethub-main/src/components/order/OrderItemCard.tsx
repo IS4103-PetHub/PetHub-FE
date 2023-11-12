@@ -7,44 +7,29 @@ import {
   Group,
   Box,
   Badge,
-  Checkbox,
   Grid,
   Image,
-  Stack,
   CopyButton,
   Center,
-  Alert,
   LoadingOverlay,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import {
-  IconBuildingStore,
-  IconCopy,
-  IconMapPin,
-  IconPaw,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconBuildingStore, IconCopy, IconPaw } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Invoice,
   OrderItem,
   OrderItemStatusEnum,
   RefundStatusEnum,
-  ServiceListing,
   convertMinsToDurationString,
-  formatISODateLong,
-  formatISODateOnly,
   formatISODateTimeShort,
   formatISODayDateTime,
 } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
-import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import { useCartOperations } from "@/hooks/cart";
-import { Booking, CartItem } from "@/types/types";
+import { CartItem } from "@/types/types";
 import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
 import ReviewModal from "../review/ReviewModal";
 import OrderItemBadge from "./OrderItemBadge";

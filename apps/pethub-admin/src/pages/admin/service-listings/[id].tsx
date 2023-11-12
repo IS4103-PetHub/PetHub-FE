@@ -32,6 +32,7 @@ import {
   downloadFile,
   extractFileName,
   formatISODateLong,
+  formatISODateTimeShort,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
@@ -253,6 +254,28 @@ export default function ServiceListingDetails({
                   "Price",
                   <Text>
                     $ {formatNumber2Decimals(serviceListing?.basePrice)}
+                  </Text>,
+                )}
+                {generateItemGroup(
+                  "Date Created",
+                  <Text>
+                    {formatISODateTimeShort(serviceListing?.dateCreated)}
+                  </Text>,
+                )}
+                {generateItemGroup(
+                  "Last Updated",
+                  <Text>
+                    {serviceListing?.lastUpdated
+                      ? formatISODateTimeShort(serviceListing?.lastUpdated)
+                      : "-"}
+                  </Text>,
+                )}
+                {generateItemGroup(
+                  "Last Spotlighted",
+                  <Text>
+                    {serviceListing?.lastUpdated
+                      ? formatISODateTimeShort(serviceListing?.listingTime)
+                      : "-"}
                   </Text>,
                 )}
               </Grid>

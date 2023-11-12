@@ -1,12 +1,5 @@
-import {
-  Alert,
-  Button,
-  Group,
-  Stack,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
-import { isNotEmpty, useForm } from "@mantine/form";
+import { Button, Group, Stack, useMantineTheme, Text } from "@mantine/core";
+import { useForm, isNotEmpty } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
@@ -15,43 +8,30 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import { IconLock } from "@tabler/icons-react";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { formatNumber2Decimals, getErrorMessageProps } from "shared-utils";
-import { useCartOperations } from "@/hooks/cart";
-import { useStripeCheckoutCart } from "@/hooks/payment";
-import { CartItem, CheckoutCartPayload, CheckoutSummary } from "@/types/types";
-import BillingDetailsSection from "./BillingDetailsSection";
-import CheckoutCardSection from "./CheckoutCardSection";
-import CheckoutItemsSection from "./CheckoutItemsSection";
+import React from "react";
+import {
+  COST_PER_SPOTLIGHT,
+  formatNumber2Decimals,
+  getErrorMessageProps,
+} from "shared-utils";
+import { useStripeBumpServiceListing } from "@/hooks/service-listing";
+import { CheckoutSpotlightListingPayload } from "@/types/types";
+import BillingDetailsSection from "../checkout/BillingDetailsSection";
+import CheckoutCardSection from "../checkout/CheckoutCardSection";
 
-interface CheckoutFormProps {
-  userId: number;
-  checkoutSummary: CheckoutSummary;
-  userAvailablePoints: number;
+interface SpotlightListingCheckoutFormProps {
+  serviceListingId: number;
 }
 
-const CheckoutForm = ({
-  userId,
-  checkoutSummary,
-  userAvailablePoints,
-}: CheckoutFormProps) => {
+const SpotlightListingCheckoutForm = ({
+  serviceListingId,
+}: SpotlightListingCheckoutFormProps) => {
   const theme = useMantineTheme();
-  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
-  const stripeCheckoutCartMutation = useStripeCheckoutCart();
+  const stripeBumpServiceListingMutation = useStripeBumpServiceListing();
 
   const [isPaying, setIsPaying] = useToggle();
-  const [pointsToUse, setPointsToUse] = useState<number | "">(0);
-
-  const { getSelectedCartItems, removeSelectedCartItems } =
-    useCartOperations(userId);
-  const cartItems: CartItem[] = getSelectedCartItems();
-
-  function calculateFinalAmount() {
-    return checkoutSummary.total - Number(pointsToUse) / 100;
-  }
 
   const billingForm = useForm({
     initialValues: {
@@ -116,30 +96,12 @@ const CheckoutForm = ({
         },
       });
 
-      const payload: CheckoutCartPayload = {
+      const payload: CheckoutSpotlightListingPayload = {
         paymentMethodId: result.paymentMethod.id,
-        totalPrice: calculateFinalAmount(),
-        userId,
-        pointsRedeemed: Number(pointsToUse),
-        cartItems: cartItems.map((cartItem) => {
-          return {
-            serviceListingId: cartItem.serviceListing.serviceListingId,
-            quantity: cartItem.quantity,
-          };
-        }),
+        serviceListingId,
       };
-      const response = await stripeCheckoutCartMutation.mutateAsync(payload);
 
-      // remove checkouted items from cart
-      removeSelectedCartItems();
-      // redirect to success message
-      router.push(
-        {
-          pathname: "/customer/checkout/success",
-          query: { invoiceId: response.invoiceId },
-        },
-        "/customer/checkout/success",
-      );
+      await stripeBumpServiceListingMutation.mutateAsync(payload);
       notifications.hide("payment");
       setIsPaying(false);
     } catch (error: any) {
@@ -164,22 +126,6 @@ const CheckoutForm = ({
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing="lg">
-        <CheckoutItemsSection
-          cartItems={cartItems}
-          checkoutSummary={checkoutSummary}
-          userAvailablePoints={userAvailablePoints}
-          pointsToUse={pointsToUse}
-          onChangePoints={setPointsToUse}
-        />
-        <Alert>
-          You will earn{" "}
-          <strong>
-            {Math.floor(
-              Number(checkoutSummary.subtotal) + Number(checkoutSummary.gst),
-            )}
-          </strong>{" "}
-          points for this purchase.
-        </Alert>
         <BillingDetailsSection form={billingForm} />
         <CheckoutCardSection />
       </Stack>
@@ -194,7 +140,7 @@ const CheckoutForm = ({
           className="gradient-hover"
           loading={isPaying}
         >
-          Pay ${formatNumber2Decimals(calculateFinalAmount())}
+          Pay ${formatNumber2Decimals(COST_PER_SPOTLIGHT)}
         </Button>
       </Group>
       <Group position="center" mt="sm">
@@ -207,4 +153,4 @@ const CheckoutForm = ({
   );
 };
 
-export default CheckoutForm;
+export default SpotlightListingCheckoutForm;
