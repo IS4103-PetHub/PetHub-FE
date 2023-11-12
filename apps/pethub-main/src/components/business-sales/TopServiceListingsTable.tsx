@@ -1,7 +1,7 @@
 import { Card, Text } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
 import React from "react";
-import { formatNumber2Decimals } from "shared-utils";
+import { addCommasToNumberString, formatNumber2Decimals } from "shared-utils";
 import { SalesDashboardServiceListing } from "@/types/types";
 import ServiceCategoryBadge from "../service-listing-discovery/ServiceCategoryBadge";
 
@@ -47,7 +47,8 @@ const TopServiceListingsTable = ({ records }: TopServiceListingsTableProps) => {
             title: "Total Sales ($)",
             textAlignment: "right",
             width: "10vw",
-            render: (record) => formatNumber2Decimals(record.totalSales),
+            render: (record) =>
+              addCommasToNumberString(formatNumber2Decimals(record.totalSales)),
           },
         ]}
       />

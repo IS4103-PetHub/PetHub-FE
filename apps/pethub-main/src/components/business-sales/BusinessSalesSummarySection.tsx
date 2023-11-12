@@ -1,6 +1,10 @@
 import { Grid } from "@mantine/core";
 import React from "react";
-import { formatNumber2Decimals, formatISODateLong } from "shared-utils";
+import {
+  formatNumber2Decimals,
+  formatISODateLong,
+  addCommasToNumberString,
+} from "shared-utils";
 import MiniSummaryCard from "web-ui/shared/dashboard/MiniSummaryCard";
 import { SalesDashboardSummary } from "@/types/types";
 
@@ -13,8 +17,16 @@ const BusinessSalesSummarySection = ({
 }: BusinessSalesSummarySectionProps) => {
   const summaryMap = new Map<string, any>([
     ["Total Number of Orders", summary.totalNumOrders],
-    ["Total Sales", `$${formatNumber2Decimals(summary.totalSales)}`],
-    ["Last 30 Day Sales", `$${formatNumber2Decimals(summary.last30DaySales)}`],
+    [
+      "Total Sales",
+      `$${addCommasToNumberString(formatNumber2Decimals(summary.totalSales))}`,
+    ],
+    [
+      "Last 30 Day Sales",
+      `$${addCommasToNumberString(
+        formatNumber2Decimals(summary.last30DaySales),
+      )}`,
+    ],
   ]);
 
   const renderSummarySection = () => {
@@ -27,7 +39,9 @@ const BusinessSalesSummarySection = ({
       <Grid.Col span={3} key={summary.mostSalesDate}>
         <MiniSummaryCard
           title={"Date with Most Sales"}
-          body={`$${formatNumber2Decimals(summary.mostSalesAmount)}`}
+          body={`$${addCommasToNumberString(
+            formatNumber2Decimals(summary.mostSalesAmount),
+          )}`}
           subbody={formatISODateLong(summary.mostSalesDate)}
         />
       </Grid.Col>

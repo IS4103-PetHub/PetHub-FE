@@ -226,3 +226,7 @@ export function validateReviewFiles(files: string[]) {
   }
   return null;
 }
+
+export function addCommasToNumberString(numString: string) {
+  return numString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
