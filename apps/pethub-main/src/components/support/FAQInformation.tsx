@@ -8,13 +8,15 @@ export default function FAQInformation({}) {
       key: "password",
       question: "How do i change my password?",
       answer: (
-        <>
+        <Text>
           Navigate to{" "}
-          <Link href="/business/account">
-            <Text color="blue">My Account</Text>
-          </Link>{" "}
+          <span style={{ display: "inline-block" }}>
+            <Link href="/business/account">
+              <Text color="blue">My Account</Text>
+            </Link>
+          </span>{" "}
           and select the &quot;Change password&quot; tab.
-        </>
+        </Text>
       ),
     },
     {
@@ -24,10 +26,12 @@ export default function FAQInformation({}) {
       answer: (
         <>
           Navigate to{" "}
-          <Link href="/business/account">
-            <Text color="blue">My Account</Text>
-          </Link>{" "}
-          and select &quot;Edit&quot; to update your contact details.
+          <span style={{ display: "inline-block" }}>
+            <Link href="/business/account">
+              <Text color="blue">My Account</Text>
+            </Link>
+          </span>{" "}
+          and select &quot; Edit&quot; to update your contact details.
         </>
       ),
     },
@@ -38,9 +42,11 @@ export default function FAQInformation({}) {
       answer: (
         <>
           Navigate to{" "}
-          <Link href="/business/listings">
-            <Text color="blue">Service Listings</Text>
-          </Link>{" "}
+          <span style={{ display: "inline-block" }}>
+            <Link href="/business/listings">
+              <Text color="blue">Service Listings</Text>
+            </Link>
+          </span>{" "}
           select your service listing and set the last possible date to the last
           operational date.
         </>
@@ -53,9 +59,11 @@ export default function FAQInformation({}) {
       answer: (
         <>
           Navigate to{" "}
-          <Link href="/business/appointments">
-            <Text color="blue">Appointments</Text>
-          </Link>{" "}
+          <span style={{ display: "inline-block" }}>
+            <Link href="/business/appointments">
+              <Text color="blue">Appointments</Text>
+            </Link>
+          </span>{" "}
           select &quot;Create Calendar Group&quot; to view the rules set for
           using a calendar group.
         </>
@@ -69,9 +77,11 @@ export default function FAQInformation({}) {
       answer: (
         <>
           Navigate to{" "}
-          <Link href="/business/sales/dashboard">
-            <Text color="blue">Business Sales</Text>
-          </Link>{" "}
+          <span style={{ display: "inline-block" }}>
+            <Link href="/business/sales/dashboard">
+              <Text color="blue">Business Sales</Text>
+            </Link>
+          </span>{" "}
           to monitor the performance of your service listings through the
           analytics dashboard
         </>
