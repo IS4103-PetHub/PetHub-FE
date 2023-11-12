@@ -43,12 +43,9 @@ const SpotlightListingModal = ({
         }
       >
         <Alert mb="sm">
-          <Text>
-            Spotlight your service listing for just <strong>$5</strong>!
-            Spotlighted service listings will be bumped once to the top of all
-            service listings, and be displayed on the home page for up to 1
-            week.
-          </Text>
+          Spotlight your service listing for just <strong>$5</strong>!
+          Spotlighted service listings will be bumped once to the top of all
+          service listings, and be displayed on the home page for up to 1 week.
         </Alert>
         <Elements stripe={stripePromise}>
           <SpotlightListingCheckoutForm serviceListingId={serviceListingId} />
