@@ -252,7 +252,14 @@ const ReviewModal = ({
           <OrderItemCardMini orderItem={orderItem} viewOnly={true} />
         </Box>
         <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <Accordion.Item value="content" mt={-35} pl={30} pr={30} pt={15}>
+          <Accordion.Item
+            value="content"
+            mt={-35}
+            pl={30}
+            pr={30}
+            pt={15}
+            pb={20}
+          >
             <Group mb="sm" position="apart">
               <Center>
                 <Text fw={600} size="xl">
@@ -362,7 +369,7 @@ const ReviewModal = ({
               </div>
             </Box>
           </Accordion.Item>
-          <Box mb="xs" mt="xl">
+          <Box mt="xl">
             <Button
               fullWidth
               color="dark"

@@ -290,15 +290,17 @@ const ServiceListingDetailsAccordionItem = ({
   const serviceOverviewGrid = (
     <Box>
       <Divider mb="lg" mt="lg" />
-      <Text fw={600} size="md">
+      <Group>
         <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-        &nbsp;Service Overview
-      </Text>
+        <Text fw={600} size="md" ml={-5}>
+          Service Overview
+        </Text>
+      </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Title",
           isEditingDisabled ? (
-            <Text>{serviceListing?.title}</Text>
+            <Text fw={600}>{serviceListing?.title}</Text>
           ) : (
             <TextInput
               placeholder="Input Service Listing Title"
@@ -389,10 +391,12 @@ const ServiceListingDetailsAccordionItem = ({
 
   const schedulingGrid = (
     <Box>
-      <Text fw={600} size="md">
-        <IconCalendarTime size="1rem" color={theme.colors.indigo[5]} />{" "}
-        &nbsp;Scheduling
-      </Text>
+      <Group>
+        <IconCalendarTime size="1rem" color={theme.colors.indigo[5]} />
+        <Text fw={600} size="md" ml={-5}>
+          Scheduling
+        </Text>
+      </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Default Expiry Days",
@@ -588,7 +592,7 @@ const ServiceListingDetailsAccordionItem = ({
           "Display Images",
           isEditingDisabled ? (
             imagePreview.length == 0 ? (
-              <Text>No images uploaded</Text>
+              <Text color="dimmed">No images uploaded</Text>
             ) : (
               <ImageCarousel
                 attachmentURLs={imagePreview}
@@ -646,13 +650,21 @@ const ServiceListingDetailsAccordionItem = ({
   );
 
   return (
-    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
+    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={20}>
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Group position="apart" mt={5}>
-          <Text size="xl">
-            <b>Service Listing Details</b> | ID.{" "}
-            {serviceListing?.serviceListingId}
-          </Text>
+          <Group>
+            <Text size="xl" fw={600}>
+              Service Listing Details
+            </Text>
+            <Badge
+              size="lg"
+              variant="gradient"
+              gradient={{ from: "indigo", to: "cyan" }}
+            >
+              ID: {serviceListing?.serviceListingId}
+            </Badge>
+          </Group>
           {isEditingDisabled ? (
             <Group>
               <LargeEditButton

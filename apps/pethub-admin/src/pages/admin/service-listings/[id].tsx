@@ -172,13 +172,20 @@ export default function ServiceListingDetails({
           chevronSize={0}
           mt="md"
         >
-          <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
+          <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={20}>
             <Group position="apart" mt={5}>
-              <Text size="xl">
-                <b>Service Listing Details</b> | ID.{" "}
-                {serviceListing?.serviceListingId}
-              </Text>
-
+              <Group>
+                <Text size="xl" fw={600}>
+                  Service Listing Details
+                </Text>
+                <Badge
+                  size="lg"
+                  variant="gradient"
+                  gradient={{ from: "indigo", to: "cyan" }}
+                >
+                  ID: {serviceListing?.serviceListingId}
+                </Badge>
+              </Group>
               {canWrite && (
                 <Group>
                   <DeleteActionButtonModal
@@ -197,14 +204,16 @@ export default function ServiceListingDetails({
             </Group>
             <Box mb="md">
               <Divider mb="lg" mt="lg" />
-              <Text fw={600} size="md">
+              <Group>
                 <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-                &nbsp;Service Overview
-              </Text>
+                <Text fw={600} size="md" ml={-5}>
+                  Service Overview
+                </Text>
+              </Group>
               <Grid columns={24} mt="xs">
                 {generateItemGroup(
                   "Title",
-                  <Text>{serviceListing?.title}</Text>,
+                  <Text fw={600}>{serviceListing?.title}</Text>,
                 )}
                 {generateItemGroup(
                   "Description",
@@ -250,13 +259,15 @@ export default function ServiceListingDetails({
               <Divider mt="lg" mb="lg" />
 
               <Box mb="md">
-                <Text fw={600} size="md">
+                <Group>
                   <IconCalendarTime
                     size="1rem"
                     color={theme.colors.indigo[5]}
-                  />{" "}
-                  &nbsp;Scheduling
-                </Text>
+                  />
+                  <Text fw={600} size="md" ml={-5}>
+                    Scheduling
+                  </Text>
+                </Group>
                 <Grid columns={24} mt="xs">
                   {generateItemGroup(
                     "Default Expiry Days",
@@ -302,10 +313,12 @@ export default function ServiceListingDetails({
               </Box>
 
               <Box mb="md">
-                <Text fw={600} size="md">
+                <Group>
                   <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-                  &nbsp;Other Details
-                </Text>
+                  <Text fw={600} size="md" ml={-5}>
+                    Other Details
+                  </Text>
+                </Group>
                 <Grid columns={24} mt="xs">
                   {generateItemGroup(
                     "Locations",
@@ -346,7 +359,7 @@ export default function ServiceListingDetails({
                   {generateItemGroup(
                     "Display Images",
                     imagePreview.length == 0 ? (
-                      <Text>No images uploaded</Text>
+                      <Text color="dimmed">No images uploaded</Text>
                     ) : (
                       <ImageCarousel
                         attachmentURLs={imagePreview}
@@ -364,7 +377,7 @@ export default function ServiceListingDetails({
             pl={30}
             pr={30}
             pt={15}
-            pb={10}
+            pb={15}
             mt={20}
           >
             <ServiceListingReview

@@ -193,6 +193,9 @@ export default function Appointments({
             icon={<IconCalendar size="1rem" />}
             value={startDate}
             onChange={setStartDate}
+            error={
+              startDate > endDate && "Start date cannot be after end date."
+            }
           />
           <DateInput
             label="End date (exclusive)"
@@ -201,6 +204,9 @@ export default function Appointments({
             icon={<IconCalendar size="1rem" />}
             value={endDate}
             onChange={setEndDate}
+            error={
+              endDate < startDate && "End date cannot be before start date."
+            }
           />
         </Group>
         {renderContent()}
