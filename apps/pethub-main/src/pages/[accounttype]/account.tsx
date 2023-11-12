@@ -21,6 +21,7 @@ import {
   PLATFORM_FEE_PERCENT,
   formatISODateLong,
   formatNumber2Decimals,
+  formatNumberCustomDecimals,
 } from "shared-utils";
 import { AccountStatusEnum, AccountTypeEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -158,8 +159,9 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                     PetHub!
                   </Text>
                   <CustomPopover
-                    text={`You may use points to offset up to ${formatNumber2Decimals(
+                    text={`You may use points to offset up to ${formatNumberCustomDecimals(
                       PLATFORM_FEE_PERCENT * 100,
+                      0,
                     )}% (platform fee) of each purchase. PetHub points have no expiry date.`}
                     width={300}
                   >

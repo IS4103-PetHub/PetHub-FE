@@ -31,7 +31,6 @@ const CheckoutItemsSection = ({
   onChangePoints,
 }: CheckoutItemsSectionProps) => {
   const theme = useMantineTheme();
-  // const [pointsToUse, setPointsToUse] = useState<number | "">(0);
 
   function calculateMaxPointsCanUse() {
     const platformFeeToPoints = checkoutSummary.platformFee * 100;
@@ -51,42 +50,55 @@ const CheckoutItemsSection = ({
             Use points
           </Text>
         </Group>
-        <Text size="sm" mb="xs">
-          You have a total of <strong>{userAvailablePoints}</strong> points.
-          <br />
-          You may use up to <strong>{maxPoints}</strong> points for this
-          purchase.{" "}
-        </Text>
+
+        {userAvailablePoints > 0 ? (
+          <Text size="sm" mb="xs">
+            You have a total of <strong>{userAvailablePoints}</strong> points.
+            <br />
+            You may use up to <strong>{maxPoints}</strong> points for this
+            purchase.
+          </Text>
+        ) : (
+          <Text size="sm" mb="xs">
+            Oh no, you have no points to use now! Not to fret, every paw-chase
+            earns you more points.
+          </Text>
+        )}
+
         <Group align="flex-end">
           <NumberInput
+            w={200}
             label="Points to use"
             placeholder="Points"
             value={pointsToUse}
             onChange={onChangePoints}
-            w={200}
+            disabled={userAvailablePoints === 0}
             min={0}
             max={maxPoints}
             step={10}
           />
-          <Button
-            compact
-            variant="light"
-            mb={5}
-            onClick={() => onChangePoints(maxPoints)}
-          >
-            Use max
-          </Button>
-          <Button
-            compact
-            variant="light"
-            color="gray"
-            mb={5}
-            ml={-5}
-            display={Number(pointsToUse) > 0 ? "flex" : "none"}
-            onClick={() => onChangePoints(0)}
-          >
-            Clear
-          </Button>
+          {userAvailablePoints > 0 && (
+            <Button
+              compact
+              variant="light"
+              mb={5}
+              onClick={() => onChangePoints(maxPoints)}
+            >
+              Use max
+            </Button>
+          )}
+          {Number(pointsToUse) > 0 && (
+            <Button
+              compact
+              variant="light"
+              color="gray"
+              mb={5}
+              ml={-5}
+              onClick={() => onChangePoints(0)}
+            >
+              Clear
+            </Button>
+          )}
         </Group>
         {Number(pointsToUse) > 0 && (
           <Text color="dimmed" size="sm" mt="xs">
