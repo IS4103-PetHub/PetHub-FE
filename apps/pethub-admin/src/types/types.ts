@@ -37,6 +37,7 @@ export interface PetBusiness extends User {
   businessType?: string;
   businessDescription?: string;
   businessEmail?: string;
+  stripeAccountId?: string;
   businessAddresses?: Address[];
   contactNumber: string;
   websiteURL?: string;
@@ -125,6 +126,7 @@ export interface PetBusinessApplication {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];

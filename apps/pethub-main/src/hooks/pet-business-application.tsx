@@ -44,6 +44,7 @@ export const useGetPetBusinessApplicationByPBId = (
         businessType: data.businessType,
         businessEmail: data.businessEmail,
         websiteURL: data.websiteURL,
+        stripeAccountId: data.stripeAccountId,
         businessDescription: data.businessDescription,
         businessAddresses: data.businessAddresses,
         attachments: data.attachments,
