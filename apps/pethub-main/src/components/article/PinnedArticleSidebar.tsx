@@ -56,9 +56,7 @@ const PinnedArticleSidebar = ({
   return (
     <Card withBorder mih={200} radius="xs" shadow="xs">
       {pinnedArticles?.length === 0 ? (
-        <Text size="sm" color="dimmed">
-          No pinned articles available
-        </Text>
+        <Text color="dimmed">No pinned articles available</Text>
       ) : (
         Content
       )}

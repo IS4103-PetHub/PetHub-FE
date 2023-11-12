@@ -4,6 +4,7 @@ import {
   Container,
   Grid,
   Group,
+  Select,
   Text,
   useMantineTheme,
 } from "@mantine/core";
@@ -12,7 +13,13 @@ import { IconExclamationCircle } from "@tabler/icons-react";
 import Head from "next/head";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { Article, EMPTY_STATE_DELAY_MS, RefundStatusEnum } from "shared-utils";
+import {
+  Article,
+  EMPTY_STATE_DELAY_MS,
+  RefundStatusEnum,
+  ServiceCategoryEnum,
+  formatStringToLetterCase,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
@@ -34,6 +41,7 @@ export default function Articles({}: ArticlesProps) {
   const [sortStatus, setSortStatus] = useState<string>("recent");
   const [hasNoFetchedRecords, setHasNoFetchedRecords] = useToggle();
   const [filter, setFilter] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
 
   // States for infinite scroll and fake loading flag
@@ -47,6 +55,13 @@ export default function Articles({}: ArticlesProps) {
     useGetAllPinnedArticles();
   const [records, setRecords] = useState<Article[]>(articles);
 
+  const CATEGORY_TYPE_DATA = Object.entries(ServiceCategoryEnum).map(
+    ([key, value]) => ({
+      value: value as string,
+      label: `${formatStringToLetterCase(value)}`,
+    }),
+  );
+
   // Change BG color to gray
   useEffect(() => {
     document.body.style.background = theme.colors.gray[0];
@@ -56,13 +71,17 @@ export default function Articles({}: ArticlesProps) {
   }, []);
 
   useEffect(() => {
-    // Filter articles based on the selected filter
-    const filtered =
-      filter === "All"
-        ? articles
-        : articles.filter((article) => article.articleType === filter);
+    let filtered = articles;
+    if (filter !== "All") {
+      filtered = filtered.filter((article) => article.articleType === filter);
+    }
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (article) => article.category === selectedCategory,
+      );
+    }
     setFilteredArticles(filtered);
-  }, [articles, filter]);
+  }, [articles, filter, selectedCategory]);
 
   useEffect(() => {
     // Update records when page changes
@@ -119,6 +138,11 @@ export default function Articles({}: ArticlesProps) {
     setFilteredArticles(filtered);
   };
 
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setPage(1); // Reset pagination when category changes
+  };
+
   const ArticleCards = records?.map((item) => (
     <Grid.Col key={item.articleId}>
       <ArticleCard article={item} />
@@ -170,7 +194,19 @@ export default function Articles({}: ArticlesProps) {
               <ArticleFilterBar onFilterChange={handleFilterChange} />
             </Grid.Col>
             <Grid.Col span={1} />
-            <Grid.Col span={16}>
+            <Grid.Col span={8}>
+              <Select
+                clearable
+                dropdownPosition="bottom"
+                mt={-25}
+                size="md"
+                label="Category"
+                placeholder="None selected"
+                data={CATEGORY_TYPE_DATA}
+                onChange={handleCategoryChange}
+              />
+            </Grid.Col>
+            <Grid.Col span={8}>
               <SortBySelect
                 data={articleSortOptions}
                 value={sortStatus}
