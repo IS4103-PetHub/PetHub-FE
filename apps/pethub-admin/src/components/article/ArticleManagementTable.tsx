@@ -12,7 +12,7 @@ import {
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import ArticleTypeBadge from "./ArticleTypeBadge";
+import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
 
 interface ArticleManagementTableProps {
   records: Article[];

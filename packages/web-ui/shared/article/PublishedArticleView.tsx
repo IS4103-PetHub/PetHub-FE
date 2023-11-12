@@ -16,13 +16,15 @@ import dynamic from "next/dynamic";
 import React, { useMemo } from "react";
 import {
   Article,
+  Tag,
+  displayArticleDate,
   formatISODayDateTime,
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "../PageTitle";
 
 interface PublishedArticleViewProps {
-  articleForm: UseFormReturnType<{
+  articleForm?: UseFormReturnType<{
     title: string;
     content: string;
     articleType: string;
@@ -31,7 +33,7 @@ interface PublishedArticleViewProps {
     category: string;
     isPinned: boolean;
   }>;
-  tagOptions: { value: string; label: string }[];
+  tagOptions?: { value: string; label: string }[];
   coverImageUrl?: string;
   article?: Article;
 }
@@ -50,17 +52,44 @@ const PublishedArticleView = ({
     });
   }, []);
 
-  function getTagNames(tagIds) {
+  function constructTags(tagIds) {
     return tagIds
       .map((id) => {
         const tagOption = tagOptions.find((option) => option.value === id);
-        return tagOption ? tagOption.label : null;
+        return tagOption ? ({ tagId: id, name: tagOption.label } as Tag) : null;
       })
       .filter((name) => name !== null); // Filter out any null names
   }
 
+  // Depending on whether the form is passed in or the article, set the values to use
+  const articleToUse = {
+    title: articleForm?.values.title || article?.title || "[Title]",
+    content: articleForm?.values.content || article?.content || "",
+    articleType:
+      articleForm?.values.articleType ||
+      article?.articleType ||
+      "[Article Type]",
+    tags: articleForm?.values.tags
+      ? constructTags(articleForm.values.tags)
+      : article?.tags || [],
+    category: articleForm?.values.category || article?.category || "[Category]",
+    isPinned: articleForm?.values.isPinned || article?.isPinned || false,
+    createdBy: {
+      firstName: article?.createdBy?.firstName || "Author",
+      lastName: article?.createdBy?.lastName || "Name",
+    },
+    dateCreated: article?.dateCreated
+      ? article?.dateCreated
+      : new Date().toISOString(),
+    dateUpdated: article?.dateUpdated ? article?.dateUpdated : null,
+    attachmentUrl: coverImageUrl
+      ? coverImageUrl
+      : (article?.attachmentUrls.length > 0 && article?.attachmentUrls[0]) ||
+        null,
+  };
+
   function calculateEstimatedReadingTime() {
-    const text = articleForm.values.content;
+    const text = articleToUse.content;
     const wpm = 238; // https://scholarwithin.com/average-reading-speed
     const words = text.trim().split(/\s+/).length;
     const estimatedTime = Math.ceil(words / wpm);
@@ -77,25 +106,21 @@ const PublishedArticleView = ({
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Avatar radius="xl" size="lg" mr="md" />
         <Stack>
-          {article ? (
-            <Text mb={-8}>
-              {article?.createdBy?.firstName} {article?.createdBy.lastName}
-            </Text>
-          ) : (
-            <Text mb={-8}>Author Name</Text>
-          )}
+          <Text mb={-8}>
+            {articleToUse?.createdBy?.firstName}{" "}
+            {articleToUse?.createdBy.lastName}
+          </Text>
+
           <Text color="dimmed" size="sm" mt={-8}>
-            {articleForm.values.articleType
-              ? formatStringToLetterCase(articleForm.values.articleType)
-              : "[Article Type]"}{" "}
-            · {calculateEstimatedReadingTime()}
+            {formatStringToLetterCase(articleToUse.articleType)} ·{" "}
+            {calculateEstimatedReadingTime()}
           </Text>
         </Stack>
       </Box>
       <Box>
         <Stack sx={{ textAlign: "right" }}>
           <Text color="dimmed" size="sm" mb={-8}>
-            Published on. {formatISODayDateTime(article?.dateCreated)}
+            Published. {displayArticleDate(articleToUse?.dateCreated)}
           </Text>
           <Text
             color="dimmed"
@@ -103,33 +128,29 @@ const PublishedArticleView = ({
             mt={-8}
             display={article?.dateUpdated ? "block" : "none"}
           >
-            Last updated. {formatISODayDateTime(article?.dateUpdated)}
+            Last updated. {displayArticleDate(articleToUse?.dateUpdated)}
           </Text>
         </Stack>
       </Box>
     </Group>
   );
 
-  const tagNames = getTagNames(articleForm.values.tags);
-
   const BarInfo = (
     <Box mb="xl">
       <Divider mb={10} />
-      <Group position={tagNames.length > 0 ? "apart" : "right"}>
+      <Group position={articleToUse.tags.length > 0 ? "apart" : "right"}>
         <Box>
-          {tagNames.map((tagName, index) => (
-            <React.Fragment key={tagName}>
+          {articleToUse.tags.map((tag, index) => (
+            <React.Fragment key={tag.tagId}>
               <Badge color="blue" radius="xs" mb={5}>
-                {tagName}
+                {tag.name}
               </Badge>
-              {index < tagNames.length - 1 && " · "}
+              {index < articleToUse.tags.length - 1 && " · "}
             </React.Fragment>
           ))}
         </Box>
         <Badge variant="dot">
-          {articleForm.values.category
-            ? formatStringToLetterCase(articleForm.values.category)
-            : "[Category]"}
+          {formatStringToLetterCase(articleToUse.category)}
         </Badge>
       </Group>
       <Divider mt={10} />
@@ -140,18 +161,18 @@ const PublishedArticleView = ({
     <>
       <Container mt="xs" mb="xs">
         <Group position="apart">
-          <PageTitle title={`${articleForm.values.title}`} fw={700} size={35} />
+          <PageTitle title={`${articleToUse.title}`} fw={700} size={35} />
         </Group>
         {MetaInfo}
         {BarInfo}
         <Image
-          src={coverImageUrl}
+          src={articleToUse.attachmentUrl}
           alt="Article Cover Image"
           radius="md"
           mb="xl"
-          display={coverImageUrl ? "block" : "none"}
+          display={articleToUse.attachmentUrl ? "block" : "none"}
         />
-        <RichTextEditor article={articleForm.values.content} viewOnly />
+        <RichTextEditor article={articleToUse.content} viewOnly />
       </Container>
     </>
   );

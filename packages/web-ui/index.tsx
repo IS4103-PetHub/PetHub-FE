@@ -31,6 +31,8 @@ export * from "./shared/CustomPopover";
 export * from "./shared/RainbowBadge";
 export * from "./shared/dashboard/MiniSummaryCard";
 export * from "./shared/article/PublishedArticleView";
+// export * from "./shared/article/RichTextEditor"; // Do not uncomment this. This package depends on DOM and will need to be imported dynamically with SSR disabled
+export * from "./shared/article/ArticleTypeBadge";
 export * from "./shared/order-management/OrdersManagementTable";
 export * from "./shared/order-management/ViewOrderDetails";
 export * from "./shared/pb-applications/AddAddressCard";

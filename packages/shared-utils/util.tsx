@@ -226,3 +226,18 @@ export function validateReviewFiles(files: string[]) {
   }
   return null;
 }
+
+export function displayArticleDate(dateCreated) {
+  const createdDate = dayjs(dateCreated);
+  const now = dayjs();
+
+  const hoursDiff = now.diff(createdDate, "hour");
+
+  if (hoursDiff < 1) {
+    return "Recently posted";
+  } else if (hoursDiff >= 1 && hoursDiff < 24) {
+    return `${hoursDiff} hour${hoursDiff > 1 ? "s" : ""} ago`;
+  } else {
+    return formatISODayDateTime(dateCreated);
+  }
+}
