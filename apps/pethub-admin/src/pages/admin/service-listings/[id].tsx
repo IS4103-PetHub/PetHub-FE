@@ -154,19 +154,15 @@ export default function ServiceListingDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
+      <LargeBackButton
+        text="Back to Service Listings"
+        onClick={async () => {
+          router.push("/admin/service-listings");
+        }}
+        size="sm"
+      />
       <Container mt="xl" mb="xl" size="70vw">
-        <Group position="apart">
-          <PageTitle title={serviceListing?.title} />
-          <Box>
-            <LargeBackButton
-              text="Back to Service Listings"
-              onClick={async () => {
-                router.push("/business/listings");
-              }}
-              size="sm"
-            />
-          </Box>
-        </Group>
+        <PageTitle title={serviceListing?.title} />
 
         <Accordion
           multiple

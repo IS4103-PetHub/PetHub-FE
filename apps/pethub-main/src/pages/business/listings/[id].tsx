@@ -139,51 +139,49 @@ export default function ViewServiceListing({
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container mt="xl" mb="xl" size="70vw">
-          {isLoading ? (
-            <LoadingOverlay visible={isLoading} overlayBlur={1} />
-          ) : (
-            <>
-              <Group position="apart">
+        <>
+          <LargeBackButton
+            text="Back to Service Listings"
+            onClick={async () => {
+              await refetchServiceListings();
+              router.push("/business/listings");
+            }}
+            size="sm"
+          />
+          <Container mt="xl" mb="xl" size="70vw">
+            {isLoading ? (
+              <LoadingOverlay visible={isLoading} overlayBlur={1} />
+            ) : (
+              <>
                 <PageTitle title={serviceListing?.title} />
-                <Box>
-                  <LargeBackButton
-                    text="Back to Service Listings"
-                    onClick={async () => {
-                      await refetchServiceListings();
-                      router.push("/business/listings");
-                    }}
-                    size="sm"
+                <Accordion
+                  multiple
+                  variant="filled"
+                  value={OPEN_FOREVER}
+                  onChange={() => {}}
+                  chevronSize={0}
+                  mt="md"
+                >
+                  <ServiceListingDetailsAccordionItem
+                    form={serviceListingForm}
+                    serviceListing={serviceListing}
+                    refetchServiceListing={refetchServiceListing}
+                    refetchServiceListings={refetchServiceListings}
+                    calendarGroups={calendarGroups}
+                    tags={tags}
                   />
-                </Box>
-              </Group>
-              <Accordion
-                multiple
-                variant="filled"
-                value={OPEN_FOREVER}
-                onChange={() => {}}
-                chevronSize={0}
-                mt="md"
-              >
-                <ServiceListingDetailsAccordionItem
-                  form={serviceListingForm}
-                  serviceListing={serviceListing}
-                  refetchServiceListing={refetchServiceListing}
-                  refetchServiceListings={refetchServiceListings}
-                  calendarGroups={calendarGroups}
-                  tags={tags}
-                />
 
-                <ServiceListingReviewsAccordionItem
-                  serviceListing={serviceListing}
-                  refetchServiceListing={refetchServiceListing}
-                />
+                  <ServiceListingReviewsAccordionItem
+                    serviceListing={serviceListing}
+                    refetchServiceListing={refetchServiceListing}
+                  />
 
-                <ServiceListingStatsAccordionItem reviewStats={reviewStats} />
-              </Accordion>
-            </>
-          )}
-        </Container>
+                  <ServiceListingStatsAccordionItem reviewStats={reviewStats} />
+                </Accordion>
+              </>
+            )}
+          </Container>
+        </>
       )}
     </>
   );
