@@ -201,7 +201,7 @@ export default function Articles({}: ArticlesProps) {
                 mt={-25}
                 size="md"
                 label="Category"
-                placeholder="None selected"
+                placeholder="All"
                 data={CATEGORY_TYPE_DATA}
                 onChange={handleCategoryChange}
               />

@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Article,
+  calculateArticleEstimatedReadingTime,
   displayArticleDate,
   formatStringToLetterCase,
 } from "shared-utils";
@@ -139,8 +140,14 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
           <Group position="apart">
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar size="sm" radius="lg" color="blue" mr="xs" />
-              <Text size="xs">
+              <Text size="xs" fw={600}>
                 {article?.createdBy?.firstName} {article?.createdBy.lastName}
+              </Text>
+              <Text size="xs" ml={5} mr={5}>
+                ·
+              </Text>
+              <Text size="xs">
+                {calculateArticleEstimatedReadingTime(article?.content)}
               </Text>
             </Box>
             <Box>

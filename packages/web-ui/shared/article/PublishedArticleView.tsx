@@ -17,6 +17,7 @@ import React, { useMemo } from "react";
 import {
   Article,
   Tag,
+  calculateArticleEstimatedReadingTime,
   displayArticleDate,
   formatISODayDateTime,
   formatStringToLetterCase,
@@ -86,19 +87,6 @@ const PublishedArticleView = ({
         null,
   };
 
-  function calculateEstimatedReadingTime() {
-    const text = articleToUse.content;
-    const wpm = 238; // https://scholarwithin.com/average-reading-speed
-    const words = text.trim().split(/\s+/).length;
-    const estimatedTime = Math.ceil(words / wpm);
-
-    if (estimatedTime < 1) {
-      return "Under a minute read";
-    } else {
-      return `${estimatedTime} minute${estimatedTime > 1 ? "s" : ""} read`;
-    }
-  }
-
   const MetaInfo = (
     <Group position="apart" mb="xl" mt="md">
       <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -111,14 +99,14 @@ const PublishedArticleView = ({
 
           <Text color="dimmed" size="sm" mt={-8}>
             {formatStringToLetterCase(articleToUse.articleType)} ·{" "}
-            {calculateEstimatedReadingTime()}
+            {calculateArticleEstimatedReadingTime(articleToUse.content)}
           </Text>
         </Stack>
       </Box>
       <Box>
         <Stack sx={{ textAlign: "right" }}>
           <Text color="dimmed" size="sm" mb={-8}>
-            Published. {displayArticleDate(articleToUse?.dateCreated)}
+            Published: {displayArticleDate(articleToUse?.dateCreated)}
           </Text>
           <Text
             color="dimmed"
@@ -126,7 +114,7 @@ const PublishedArticleView = ({
             mt={-8}
             display={article?.dateUpdated ? "block" : "none"}
           >
-            Last updated. {displayArticleDate(articleToUse?.dateUpdated)}
+            Last updated: {displayArticleDate(articleToUse?.dateUpdated)}
           </Text>
         </Stack>
       </Box>
