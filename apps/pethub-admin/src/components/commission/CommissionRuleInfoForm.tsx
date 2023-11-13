@@ -8,6 +8,7 @@ import {
   Badge,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
+import { formatNumber2Decimals } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { CommissionRule } from "@/types/types";
 
@@ -67,7 +68,9 @@ const CommissionRuleInfoForm = ({
             <Text weight="600">Commission Rate:</Text>
             <Text>
               {commissionRule?.commissionRate
-                ? `${(commissionRule?.commissionRate * 100).toFixed(2)}%`
+                ? `${formatNumber2Decimals(
+                    commissionRule?.commissionRate * 100,
+                  )}%`
                 : "-"}
             </Text>
           </Box>

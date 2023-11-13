@@ -86,11 +86,13 @@ export const useGetServiceListingByPetBusinessId = (userId: number) => {
   });
 };
 
-export const useGetServiceListingById = (userId: number) => {
+export const useGetServiceListingById = (serviceListingId: number) => {
   return useQuery({
-    queryKey: ["service-listing", userId],
+    queryKey: ["service-listing", serviceListingId],
     queryFn: async () => {
-      const response = await api.get(`${SERVICE_LISTING_API}/${userId}`);
+      const response = await api.get(
+        `${SERVICE_LISTING_API}/${serviceListingId}`,
+      );
       return response.data as ServiceListing;
     },
   });
@@ -194,7 +196,7 @@ export const useDeleteServiceListingById = (queryClient: QueryClient) => {
 };
 
 // spotlight a service listing, with stripe payment
-export const useStripeBumpServiceListing = () => {
+export const useStripeBumpServiceListing = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (payload: CheckoutSpotlightListingPayload) => {
       const { serviceListingId, ...payloadWithoutId } = payload;

@@ -233,7 +233,9 @@ export default function ViewOrderDetails({
                 <Grid.Col span={4}>
                   <Box>
                     <Text weight="600">Commission Rate:</Text>
-                    <Text>{order.commissionRate * 100}% </Text>
+                    <Text>
+                      {formatNumber2Decimals(order.commissionRate * 100)}%{" "}
+                    </Text>
                   </Box>
                 </Grid.Col>
                 <Grid.Col span={4}>

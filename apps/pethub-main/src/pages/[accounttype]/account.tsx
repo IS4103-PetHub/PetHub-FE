@@ -132,7 +132,10 @@ export default function MyAccount({ userId, accountType }: MyAccountProps) {
                   <Text ml={-15}>
                     Commission rate:{" "}
                     <strong>
-                      {petBusiness.commissionRule.commissionRate * 100}%
+                      {formatNumber2Decimals(
+                        petBusiness.commissionRule.commissionRate * 100,
+                      )}
+                      %
                     </strong>
                   </Text>
                 </Group>

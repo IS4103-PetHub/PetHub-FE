@@ -11,31 +11,34 @@ const stripePromise = loadStripe(PK);
 interface SpotlightListingModalProps {
   serviceListingId: number;
   opened: boolean;
-  open(): void;
-  close(): void;
+  onOpen(): void;
+  onClose(): void;
+  refetch: () => Promise<any>;
 }
 
 const SpotlightListingModal = ({
   serviceListingId,
   opened,
-  open,
-  close,
+  onOpen,
+  onClose,
+  refetch,
 }: SpotlightListingModalProps) => {
   return (
     <>
       <Button
+        size="md"
         leftIcon={<IconSparkles size="1.2rem" />}
         variant="gradient"
         gradient={{ from: "indigo", to: "cyan" }}
-        onClick={open}
+        onClick={onOpen}
       >
         Spotlight Listing
       </Button>
       <Modal
         closeOnClickOutside={false}
         opened={opened}
-        onClose={close}
-        size="xl"
+        onClose={onClose}
+        size="60%"
         title={
           <Text fw={600} size="xl">
             Spotlight Service Listing
@@ -48,7 +51,11 @@ const SpotlightListingModal = ({
           service listings, and be displayed on the home page for up to 1 week.
         </Alert>
         <Elements stripe={stripePromise}>
-          <SpotlightListingCheckoutForm serviceListingId={serviceListingId} />
+          <SpotlightListingCheckoutForm
+            serviceListingId={serviceListingId}
+            onClose={onClose}
+            refetch={refetch}
+          />
         </Elements>
       </Modal>
     </>

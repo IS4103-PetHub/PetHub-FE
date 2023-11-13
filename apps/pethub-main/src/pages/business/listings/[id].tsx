@@ -1,10 +1,6 @@
-import {
-  Accordion,
-  Container,
-  LoadingOverlay,
-  useMantineTheme,
-} from "@mantine/core";
+import { Accordion, Container, Group, LoadingOverlay } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import Head from "next/head";
@@ -19,6 +15,7 @@ import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import ServiceListingDetailsAccordionItem from "@/components/service-listing-management/ServiceListingDetailsAccordionItem";
 import ServiceListingReviewsAccordionItem from "@/components/service-listing-management/ServiceListingReviewsAccordionItem";
 import ServiceListingStatsAccordionItem from "@/components/service-listing-management/ServiceListingStatsAccordionItem";
+import SpotlightListingModal from "@/components/service-listing-management/SpotlightListingModal";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetReviewStatsForServiceListing } from "@/hooks/review";
 import {
@@ -37,13 +34,15 @@ export default function ViewServiceListing({
   userId,
   canView,
 }: ViewServiceListingProps) {
-  const theme = useMantineTheme();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const serviceListingId = Number(router.query.id);
 
   const OPEN_FOREVER = ["details", "review"];
+
+  // for spotlight service listing modal
+  const [opened, { open, close }] = useDisclosure(false);
 
   // Used to refetch service listings upon backward navigation
   const { data: serviceListings = [], refetch: refetchServiceListings } =
@@ -145,7 +144,16 @@ export default function ViewServiceListing({
               <LoadingOverlay visible={isLoading} overlayBlur={1} />
             ) : (
               <>
-                <PageTitle title={serviceListing?.title} />
+                <Group position="apart">
+                  <PageTitle title={serviceListing?.title} />
+                  <SpotlightListingModal
+                    opened={opened}
+                    onOpen={open}
+                    onClose={close}
+                    serviceListingId={serviceListingId}
+                    refetch={refetchServiceListing}
+                  />
+                </Group>
                 <Accordion
                   multiple
                   variant="filled"

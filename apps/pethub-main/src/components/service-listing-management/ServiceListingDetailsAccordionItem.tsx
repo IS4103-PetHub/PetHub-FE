@@ -56,7 +56,6 @@ import {
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
 import { UpdateServiceListingPayload } from "@/types/types";
-import SpotlightListingModal from "./SpotlightListingModal";
 
 interface ServiceListingDetailsAccordionItemProps {
   form: any;
@@ -81,8 +80,6 @@ const ServiceListingDetailsAccordionItem = ({
 
   const [showFullDescription, toggleShowFullDescription] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
-  // for spotlight service listing modal
-  const [opened, { open, close }] = useDisclosure(false);
 
   const textRef = useRef(null);
 
@@ -682,12 +679,6 @@ const ServiceListingDetailsAccordionItem = ({
           </Group>
           {isEditingDisabled ? (
             <Group>
-              <SpotlightListingModal
-                opened={opened}
-                open={open}
-                close={close}
-                serviceListingId={form.values.serviceListingId}
-              />
               <LargeEditButton
                 text="Edit"
                 onClick={() => setIsEditingDisabled(false)}

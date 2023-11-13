@@ -7,7 +7,8 @@ import {
   useElements,
   CardNumberElement,
 } from "@stripe/react-stripe-js";
-import { IconLock } from "@tabler/icons-react";
+import { IconCheck, IconLock } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import {
   COST_PER_SPOTLIGHT,
@@ -21,15 +22,21 @@ import CheckoutCardSection from "../checkout/CheckoutCardSection";
 
 interface SpotlightListingCheckoutFormProps {
   serviceListingId: number;
+  onClose(): void;
+  refetch: () => Promise<any>;
 }
 
 const SpotlightListingCheckoutForm = ({
   serviceListingId,
+  onClose,
+  refetch,
 }: SpotlightListingCheckoutFormProps) => {
   const theme = useMantineTheme();
   const stripe = useStripe();
   const elements = useElements();
-  const stripeBumpServiceListingMutation = useStripeBumpServiceListing();
+  const queryClient = useQueryClient();
+  const stripeBumpServiceListingMutation =
+    useStripeBumpServiceListing(queryClient);
 
   const [isPaying, setIsPaying] = useToggle();
 
@@ -59,6 +66,11 @@ const SpotlightListingCheckoutForm = ({
       },
     },
   });
+
+  function handleClose() {
+    if (isPaying) return;
+    onClose();
+  }
 
   const handleSubmit = async (event: any) => {
     // We don't want to let default form submission happen here which would refresh the page.
@@ -102,8 +114,17 @@ const SpotlightListingCheckoutForm = ({
       };
 
       await stripeBumpServiceListingMutation.mutateAsync(payload);
+      await refetch();
+      handleClose();
       notifications.hide("payment");
       setIsPaying(false);
+      notifications.show({
+        title: "Service Listing Spotlighted",
+        color: "green",
+        icon: <IconCheck />,
+        message:
+          "Your service listing has been successfully bumped to the top!",
+      });
     } catch (error: any) {
       setIsPaying(false);
       notifications.hide("payment");
