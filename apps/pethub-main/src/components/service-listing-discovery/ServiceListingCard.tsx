@@ -1,4 +1,13 @@
-import { Card, Group, Image, Text, createStyles, Box } from "@mantine/core";
+import {
+  Card,
+  Group,
+  Image,
+  Text,
+  createStyles,
+  Box,
+  Badge,
+} from "@mantine/core";
+import { IconSparkles } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ServiceListing } from "shared-utils";
@@ -113,7 +122,21 @@ const ServiceListingCard = ({
       <Card.Section>{coverImage}</Card.Section>
 
       <Box mt="md" mb="xs">
-        <ServiceCategoryBadge category={serviceListing.category} mb="xs" />
+        <Group position="apart" mb="xs">
+          <ServiceCategoryBadge category={serviceListing.category} />
+          {serviceListing.listingTime !== serviceListing.dateCreated &&
+            !isFavourite &&
+            !isFeaturedListing && (
+              <Badge
+                color="indigo"
+                leftSection={
+                  <IconSparkles size="0.8rem" style={{ marginBottom: -2 }} />
+                }
+              >
+                Bumped
+              </Badge>
+            )}
+        </Group>
         <Text weight={600} size="md" lineClamp={1} sx={{ lineHeight: 1.4 }}>
           {serviceListing.title}
         </Text>

@@ -3,6 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
 import { useEffect } from "react";
+import { ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
 import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
@@ -18,12 +19,14 @@ interface HomeProps {
   almostGoneListings: FeaturedServiceListing[];
   allTimeFavsListings: FeaturedServiceListing[];
   risingListings: FeaturedServiceListing[];
+  bumpedListings: ServiceListing[];
 }
 export default function Home({
   hottestListings,
   almostGoneListings,
   allTimeFavsListings,
   risingListings,
+  bumpedListings,
 }: HomeProps) {
   // for appointment reminder modal
   const [opened, { open, close }] = useDisclosure(false);
@@ -41,6 +44,11 @@ export default function Home({
         <ServicesSection />
         {hottestListings.length > 0 && (
           <Stack spacing={0} mb={80}>
+            <ServiceListingScrollCarousel
+              serviceListings={bumpedListings}
+              title="Spotlighted listings"
+              description="These listings were recently spotlighted!"
+            />
             <ServiceListingScrollCarousel
               serviceListings={hottestListings}
               title="Hottest listings"
@@ -97,12 +105,17 @@ export async function getServerSideProps(context) {
     flattenAndFilterFeaturedListingsResponse(
       featuredServiceListings["RISING_LISTINGS"].featuredListings,
     ) ?? [];
+
+  const bumpedListings =
+    (await (await api.get(`/service-listings/get-bumped-listings`)).data) ?? [];
+
   return {
     props: {
       hottestListings,
       almostGoneListings,
       allTimeFavsListings,
       risingListings,
+      bumpedListings,
     },
   };
 }
