@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
   IconMessage2,
   IconMessageCircle2,
@@ -50,6 +51,7 @@ interface PublishedArticleViewProps {
   publishComment?: (
     payload: CreateUpdateArticleCommentPayload,
   ) => Promise<void>;
+  adminView?: boolean;
 }
 
 const PublishedArticleView = ({
@@ -58,6 +60,7 @@ const PublishedArticleView = ({
   article,
   tagOptions,
   publishComment,
+  adminView,
 }: PublishedArticleViewProps) => {
   const theme = useMantineTheme();
   const [
@@ -155,9 +158,12 @@ const PublishedArticleView = ({
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <ActionIcon mr="xs">
-            <IconMessageCircle2 size="1.25rem" onClick={openCommentDrawer} />
+            <IconMessageCircle2
+              size="1.25rem"
+              onClick={adminView ? null : openCommentDrawer}
+            />
           </ActionIcon>
-          <ArticleSharePopover />
+          <ArticleSharePopover adminView={adminView} />
         </Box>
       </Group>
       <Divider mt={10} />

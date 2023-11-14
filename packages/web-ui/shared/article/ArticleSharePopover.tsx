@@ -26,9 +26,11 @@ import { useRouter } from "next/router";
 
 import React from "react";
 
-interface ArticleSharePopoverProps {}
+interface ArticleSharePopoverProps {
+  adminView?: boolean;
+}
 
-const ArticleSharePopover = ({}: ArticleSharePopoverProps) => {
+const ArticleSharePopover = ({ adminView }: ArticleSharePopoverProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
   const [sharePopoverOpen, toggleSharePopoverOpen] = useToggle();
@@ -68,6 +70,7 @@ const ArticleSharePopover = ({}: ArticleSharePopoverProps) => {
   };
 
   const shareOnLinkedIn = () => {
+    // LinkedIn does validation for SSL cert links, so gotta use this dummy article
     const url = SHARE_URL_LINKEDIN + encodeURIComponent(DUMMY_MEDIUM_URL);
     openUrlInNewWindow(url, "linkedin-share-dialog");
   };
@@ -78,7 +81,7 @@ const ArticleSharePopover = ({}: ArticleSharePopoverProps) => {
   };
 
   const shareOnTwitter = () => {
-    const url = SHARE_URL_TWITTER + encodeURIComponent(DUMMY_MEDIUM_URL);
+    const url = SHARE_URL_TWITTER + encodeURIComponent(currentUrl);
     openUrlInNewWindow(url, "twitter-share-dialog");
   };
 
@@ -108,6 +111,7 @@ const ArticleSharePopover = ({}: ArticleSharePopoverProps) => {
             <Button
               leftIcon={<IconPaperclip size="1.25rem" />}
               onClick={() => {
+                if (adminView) return;
                 copy();
                 toggleSharePopoverOpen();
                 notifications.show({
@@ -127,7 +131,7 @@ const ArticleSharePopover = ({}: ArticleSharePopoverProps) => {
         <Button
           {...LINK_BUTTON_PROPS}
           leftIcon={<IconBrandLinkedin size="1.25rem" />}
-          onClick={shareOnLinkedIn}
+          onClick={adminView ? null : shareOnLinkedIn}
         >
           Share on LinkedIn
         </Button>
@@ -142,14 +146,14 @@ const ArticleSharePopover = ({}: ArticleSharePopoverProps) => {
         <Button
           {...LINK_BUTTON_PROPS}
           leftIcon={<IconBrandTwitter size="1.25rem" />}
-          onClick={shareOnTwitter}
+          onClick={adminView ? null : shareOnTwitter}
         >
           Share on Twitter
         </Button>
         <Button
           {...LINK_BUTTON_PROPS}
           leftIcon={<IconBrandTelegram size="1.25rem" />}
-          onClick={shareOnTelegram}
+          onClick={adminView ? null : shareOnTelegram}
         >
           Share on Telegram
         </Button>

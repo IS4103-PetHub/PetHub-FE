@@ -65,7 +65,6 @@ const ArticleForm = ({
   }, []);
 
   const isUpdating = !!article;
-  const ARTICLE_MARGIN = 300;
 
   // Data fetching
   const { data: tags = [] } = useGetAllTags();
@@ -332,14 +331,13 @@ const ArticleForm = ({
   return (
     <>
       {isPreviewing ? (
-        <Box ml={ARTICLE_MARGIN} mr={ARTICLE_MARGIN}>
-          <PublishedArticleView
-            articleForm={form}
-            coverImageUrl={existingFileUrl}
-            article={article}
-            tagOptions={tagOptions}
-          />
-        </Box>
+        <PublishedArticleView
+          articleForm={form}
+          coverImageUrl={existingFileUrl}
+          article={article}
+          tagOptions={tagOptions}
+          adminView={true}
+        />
       ) : (
         ArticleForm
       )}
