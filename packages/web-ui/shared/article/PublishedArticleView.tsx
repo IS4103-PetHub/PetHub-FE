@@ -32,6 +32,7 @@ import {
 import { CreateUpdateArticleCommentPayload } from "../../../../apps/pethub-main/src/types/types";
 import { PageTitle } from "../PageTitle";
 import ArticleCommentDrawer from "./ArticleCommentDrawer";
+import ArticleSharePopover from "./ArticleSharePopover";
 
 interface PublishedArticleViewProps {
   articleForm?: UseFormReturnType<{
@@ -156,9 +157,7 @@ const PublishedArticleView = ({
           <ActionIcon mr="xs">
             <IconMessageCircle2 size="1.25rem" onClick={openCommentDrawer} />
           </ActionIcon>
-          <ActionIcon>
-            <IconShare size="1.25rem" />
-          </ActionIcon>
+          <ArticleSharePopover />
         </Box>
       </Group>
       <Divider mt={10} />
