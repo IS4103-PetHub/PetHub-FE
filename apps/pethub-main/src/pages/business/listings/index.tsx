@@ -227,11 +227,11 @@ export default function Listings({
                 icon={<IconAlertCircle />}
                 w="100%"
               >
-                Service Listings highlighted in RED are `invalid` and requires
-                action. <br />
+                Service Listings highlighted in red are <strong>invalid</strong>{" "}
+                and requires action. <br />
                 Please ensure that every service listing that requires a booking
                 has an allocated Calendar Group, valid duration and last
-                possible date
+                operational date.
               </Alert>
             )}
             <ServiceListingModal

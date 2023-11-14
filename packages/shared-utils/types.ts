@@ -110,6 +110,8 @@ export interface ServiceListing {
 
   reviews: Review[];
   overallRating: number;
+  // spotlighted listings will have updated listing time
+  listingTime: string;
 }
 export interface OrderItem {
   orderItemId: number;
@@ -227,6 +229,7 @@ export interface PetOwner extends User {
   lastName: string;
   dateOfBirth: string;
   favouriteListings?: ServiceListing[];
+  points: number;
 
   user?: User; // BE not flattening for some endpoints
 }

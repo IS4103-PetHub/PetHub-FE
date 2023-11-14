@@ -144,6 +144,7 @@ export default function InternalUserTable({
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            highlightOnHover
             onRowClick={(record) => handleViewDetailsOpenModal(record)}
             rowStyle={{ cursor: "pointer" }}
             withBorder

@@ -185,7 +185,7 @@ export default function ViewOrderDetails({
                 </Badge>
               </Group>
             </Accordion.Control>
-            <Accordion.Panel mb="xs">
+            <Accordion.Panel mb="md">
               <Grid>
                 <Grid.Col span={6}>
                   <Box>
@@ -286,7 +286,7 @@ export default function ViewOrderDetails({
                     Booking Details
                   </Text>
                 </Accordion.Control>
-                <Accordion.Panel mb="xs">
+                <Accordion.Panel mb="md">
                   <Grid>
                     <Grid.Col span={6}>
                       <Box>
@@ -338,7 +338,7 @@ export default function ViewOrderDetails({
                 Pet Owner Details
               </Text>
             </Accordion.Control>
-            <Accordion.Panel mb="xs">
+            <Accordion.Panel mb="md">
               <Grid>
                 <Grid.Col span={6}>
                   <Box>
@@ -399,7 +399,7 @@ export default function ViewOrderDetails({
                 Service Listing Details
               </Text>
             </Accordion.Control>
-            <Accordion.Panel mb="xs">
+            <Accordion.Panel mb="md">
               <Grid>
                 <Grid.Col span={6}>
                   <Box>
@@ -481,7 +481,7 @@ export default function ViewOrderDetails({
                     {claimVoucherBadge()}
                   </Group>
                 </Accordion.Control>
-                <Accordion.Panel mb="xs">
+                <Accordion.Panel mb="md">
                   <Grid>
                     <Grid.Col span={12}>
                       {isOrderItemClaimed(order.status) || isClaimed ? (

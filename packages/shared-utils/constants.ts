@@ -117,3 +117,5 @@ export enum SupportTicketStatus {
 }
 
 export const PLATFORM_FEE_PERCENT = 0.07;
+
+export const COST_PER_SPOTLIGHT = 5;

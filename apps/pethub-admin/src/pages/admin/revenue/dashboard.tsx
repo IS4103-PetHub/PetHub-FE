@@ -10,17 +10,14 @@ import {
   Select,
   Grid,
 } from "@mantine/core";
+import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import { IconRefresh } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import {
-  ServiceCategoryEnum,
-  formatEnumValueToLowerCase,
-  formatISODateTimeShort,
-  formatStringToLetterCase,
-} from "shared-utils";
+import { formatISODateTimeShort, getErrorMessageProps } from "shared-utils";
 import { PageTitle, useLoadingOverlay } from "web-ui";
 import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
@@ -30,7 +27,6 @@ import TopPetBusinessesTable from "@/components/revenue-tracking/TopPetBusinesse
 import TransactionsCommissionAreaChart from "@/components/revenue-tracking/TransactionsCommissionAreaChart";
 import { PermissionsCodeEnum } from "@/types/constants";
 import {
-  Permission,
   RevenueDashboardPetBusiness,
   RevenueDashboardSummary,
 } from "@/types/types";
@@ -64,7 +60,9 @@ export default function RevenueTrackingDashboard({
   const theme = useMantineTheme();
   const router = useRouter();
   const [updatedDate, setUpdatedDate] = useState<Date>(new Date());
+  const [isPayingOut, setIsPayingOut] = useToggle();
   const { showOverlay, hideOverlay } = useLoadingOverlay();
+
   const [selectedChipValue, setSelectedChipValue] =
     useState<string>("order-count");
   const [selectedTimePeriod, setSelectedTimePeriod] =
@@ -93,6 +91,19 @@ export default function RevenueTrackingDashboard({
     await router.replace(router.asPath);
     setUpdatedDate(new Date());
     hideOverlay();
+  };
+
+  const handleManualPayout = async () => {
+    setIsPayingOut(true);
+    try {
+      await api.patch(`/order-items/payout`);
+      // payout done
+      setIsPayingOut(false);
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps("Error Processing Payout", error),
+      });
+    }
   };
 
   function getPetBusinessesByFilters() {
@@ -142,14 +153,24 @@ export default function RevenueTrackingDashboard({
                 updatedDate.toISOString(),
               )}`}</Text>
             </Group>
-            <Button
-              size="md"
-              leftIcon={<IconRefresh />}
-              className="gradient-hover"
-              onClick={handleRefresh}
-            >
-              Refresh
-            </Button>
+            <Group>
+              <Button
+                size="md"
+                onClick={handleManualPayout}
+                color="pink"
+                loading={isPayingOut}
+              >
+                Trigger Manual Payout
+              </Button>
+              <Button
+                size="md"
+                leftIcon={<IconRefresh />}
+                className="gradient-hover"
+                onClick={handleRefresh}
+              >
+                Refresh
+              </Button>
+            </Group>
           </Group>
           <Stack spacing={30}>
             <RevenueTrackingSummarySection summary={summary} />

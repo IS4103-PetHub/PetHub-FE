@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ServiceListing, AccountTypeEnum } from "shared-utils";
+import { ServiceListing, AccountTypeEnum, PetOwner } from "shared-utils";
 import api from "@/api/axiosConfig";
 import {
   AddRemoveFavouriteServiceListingPayload,
   CreatePetOwnerPayload,
-  PetOwner,
 } from "@/types/types";
 
 const PET_OWNER_API = "/users/pet-owners";
@@ -45,6 +44,7 @@ export const useGetPetOwnerByIdAndAccountType = (
         accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,
         dateCreated: data.user.dateCreated,
+        points: data.points,
       };
       return petOwner as PetOwner;
     },
