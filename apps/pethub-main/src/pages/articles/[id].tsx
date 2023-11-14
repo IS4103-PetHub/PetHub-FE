@@ -30,7 +30,8 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import PublishedArticleView from "web-ui/shared/article/PublishedArticleView";
 import ViewOrderDetails from "web-ui/shared/order-management/ViewOrderDetails";
 import api from "@/api/axiosConfig";
-import { useGetArticleById } from "@/hooks/article";
+import { useCreateArticleComment, useGetArticleById } from "@/hooks/article";
+import { CreateUpdateArticleCommentPayload } from "@/types/types";
 
 interface ArticleDetailsProps {}
 
@@ -38,8 +39,31 @@ export default function ArticleDetails({}: ArticleDetailsProps) {
   const router = useRouter();
   const articleId = Number(router.query.id);
 
+  const ARTICLE_MARGIN = 300;
+
+  const createArticleCommentMutation = useCreateArticleComment();
+
   const { data: article, refetch: refetchArticle } =
     useGetArticleById(articleId);
+
+  const createArticleComment = async (
+    payload: CreateUpdateArticleCommentPayload,
+  ) => {
+    try {
+      await createArticleCommentMutation.mutateAsync(payload);
+      notifications.show({
+        title: `Comment Published`,
+        color: "green",
+        icon: <IconCheck />,
+        message:
+          "Your comment has been published and is now visible to the public.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Publishing Comment`, error),
+      });
+    }
+  };
 
   if (!articleId) {
     return null;
@@ -63,8 +87,12 @@ export default function ArticleDetails({}: ArticleDetailsProps) {
             size="md"
           />
         </Group>
-
-        <PublishedArticleView article={article} />
+        <Box ml={ARTICLE_MARGIN} mr={ARTICLE_MARGIN}>
+          <PublishedArticleView
+            article={article}
+            publishComment={createArticleComment}
+          />
+        </Box>
       </Container>
     </>
   );

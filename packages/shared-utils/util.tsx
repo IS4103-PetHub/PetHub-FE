@@ -261,3 +261,13 @@ export function calculateArticleEstimatedReadingTime(content: string) {
     return `${estimatedTime} minute${estimatedTime > 1 ? "s" : ""} read`;
   }
 }
+
+export function validateArticleComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 500) {
+    return "Comment cannot exceed 500 characters";
+  }
+  return null;
+}

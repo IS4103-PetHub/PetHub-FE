@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Article } from "shared-utils";
+import { Article, ArticleComment } from "shared-utils";
 import api from "@/api/axiosConfig";
+import { CreateUpdateArticleCommentPayload } from "@/types/types";
 
 const ARTICLE_API = "/articles";
 
@@ -30,6 +31,53 @@ export const useGetAllPinnedArticles = () => {
     queryFn: async () => {
       const response = await api.get(`${ARTICLE_API}/pinned`);
       return response.data as Article[];
+    },
+  });
+};
+
+export const useCreateArticleComment = () => {
+  return useMutation({
+    mutationFn: async (payload: CreateUpdateArticleCommentPayload) => {
+      const { articleId, ...payloadWithoutId } = payload;
+      return (
+        await api.post(`${ARTICLE_API}/${articleId}/comments`, payloadWithoutId)
+      ).data;
+    },
+  });
+};
+
+export const useUpdateArticleComment = () => {
+  return useMutation({
+    mutationFn: async (payload: CreateUpdateArticleCommentPayload) => {
+      const { articleCommentId, ...payloadWithoutId } = payload;
+      return (
+        await api.put(
+          `${ARTICLE_API}/comments/${articleCommentId}`,
+          payloadWithoutId,
+        )
+      ).data;
+    },
+  });
+};
+
+export const useDeleteArticleComment = () => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (await api.delete(`${ARTICLE_API}/comments/${id}`)).data;
+    },
+  });
+};
+
+export const useGetArticleCommentsIdByArticleIdAndPetOwnerId = (
+  petOwnerId: number,
+) => {
+  return useQuery({
+    queryKey: ["article-comments", { petOwnerId }],
+    queryFn: async () => {
+      const response = await api.get(
+        `${ARTICLE_API}/comments?petOwnerId=${petOwnerId}`,
+      );
+      return response.data as number[];
     },
   });
 };

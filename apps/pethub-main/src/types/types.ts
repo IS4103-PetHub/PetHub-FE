@@ -365,3 +365,9 @@ export interface PbDashboardData {
   openRefundRequestsCount: number;
   openSupportRequestsCount: number;
 }
+
+export interface CreateUpdateArticleCommentPayload {
+  articleId?: number;
+  articleCommentId?: number;
+  comment: string;
+}

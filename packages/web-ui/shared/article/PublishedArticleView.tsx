@@ -10,8 +10,15 @@ import {
   Box,
   Divider,
   Badge,
+  ActionIcon,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+import {
+  IconMessage2,
+  IconMessageCircle2,
+  IconShare,
+} from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import React, { useMemo } from "react";
 import {
@@ -22,7 +29,9 @@ import {
   formatISODayDateTime,
   formatStringToLetterCase,
 } from "shared-utils";
+import { CreateUpdateArticleCommentPayload } from "../../../../apps/pethub-main/src/types/types";
 import { PageTitle } from "../PageTitle";
+import ArticleCommentDrawer from "./ArticleCommentDrawer";
 
 interface PublishedArticleViewProps {
   articleForm?: UseFormReturnType<{
@@ -37,6 +46,9 @@ interface PublishedArticleViewProps {
   tagOptions?: { value: string; label: string }[];
   coverImageUrl?: string;
   article?: Article;
+  publishComment?: (
+    payload: CreateUpdateArticleCommentPayload,
+  ) => Promise<void>;
 }
 
 const PublishedArticleView = ({
@@ -44,8 +56,13 @@ const PublishedArticleView = ({
   coverImageUrl,
   article,
   tagOptions,
+  publishComment,
 }: PublishedArticleViewProps) => {
   const theme = useMantineTheme();
+  const [
+    commentDrawerOpened,
+    { open: openCommentDrawer, close: closeCommentDrawer },
+  ] = useDisclosure(false);
   const RichTextEditor = useMemo(() => {
     return dynamic(() => import("web-ui/shared/article/RichTextEditor"), {
       loading: () => <></>,
@@ -135,9 +152,14 @@ const PublishedArticleView = ({
             </React.Fragment>
           ))}
         </Box>
-        <Badge variant="dot">
-          {formatStringToLetterCase(articleToUse.category)}
-        </Badge>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <ActionIcon mr="xs">
+            <IconMessageCircle2 size="1.25rem" onClick={openCommentDrawer} />
+          </ActionIcon>
+          <ActionIcon>
+            <IconShare size="1.25rem" />
+          </ActionIcon>
+        </Box>
       </Group>
       <Divider mt={10} />
     </Box>
@@ -147,7 +169,10 @@ const PublishedArticleView = ({
     <>
       <Container mt="xs" mb="xs">
         <Group position="apart">
-          <PageTitle title={`${articleToUse.title}`} fw={700} size={35} />
+          <PageTitle title={`${articleToUse.title}`} fw={700} size={30} />
+          <Badge variant="dot">
+            {formatStringToLetterCase(articleToUse.category)}
+          </Badge>
         </Group>
         {MetaInfo}
         {BarInfo}
@@ -159,6 +184,12 @@ const PublishedArticleView = ({
           display={articleToUse.attachmentUrl ? "block" : "none"}
         />
         <RichTextEditor article={articleToUse.content} viewOnly />
+        <ArticleCommentDrawer
+          article={articleToUse}
+          opened={commentDrawerOpened}
+          onClose={closeCommentDrawer}
+          publishComment={publishComment}
+        />
       </Container>
     </>
   );

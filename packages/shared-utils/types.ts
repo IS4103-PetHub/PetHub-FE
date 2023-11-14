@@ -312,4 +312,16 @@ export interface Article {
     lastName: string;
   };
   updatedBy?: any;
+  articleComments: ArticleComment[];
+}
+
+export interface ArticleComment {
+  articleCommentId: number;
+  comment: string;
+  dateCreated: string;
+  dateUpdated?: string;
+  articleId: number;
+  Article: Article;
+  petOwnerId: number;
+  PetOwner: PetOwner;
 }
