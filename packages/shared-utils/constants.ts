@@ -99,6 +99,7 @@ export enum SupportTicketReason {
   Appointments = "APPOINTMENTS",
   Payments = "PAYMENTS",
   Accounts = "ACCOUNTS",
+  Refunds = "REFUNDS",
   Others = "OTHERS",
 }
 

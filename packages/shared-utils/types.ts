@@ -301,6 +301,57 @@ export interface SupportTicket {
   petOwner?: PetOwner;
   petBusinessId?: number;
   petBusiness?: PetBusiness;
+
+  serviceListingId?: number;
+  serviceListing?: ServiceListing;
+
+  orderItemId?: number;
+  orderItem?: OrderItem;
+
+  bookingId?: number;
+  booking?: Booking;
+
+  payoutInvoiceId?: number;
+  payoutInvoice?: PayoutInvoice;
+
+  refundRequestId?: number;
+  refundRequest?: RefundRequest;
+
+  invoiceId?: number;
+  invoice: Invoice;
+}
+
+export interface PayoutInvoice {
+  invoiceId: number;
+  totalAmount: number;
+  commissionCharge: number;
+  paidOutAmount: number;
+  createdAt: string;
+  paymentId: string;
+  attachmentKey?: string;
+  attachmentURL?: string;
+  userId: number;
+  petBusiness: PetBusiness;
+}
+export interface Booking {
+  bookingId: number;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated?: string;
+  startTime: string;
+  endTime: string;
+  timeSlotId: number;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
+  // pet owner and pet details (optional)
+  petOwner?: PetOwner;
+  petId?: number;
+  pet?: Pet;
+  // not yet implemented
+  invoiceId?: number;
+  transactionId?: number;
+  orderItemId: number;
+  OrderItem?: OrderItem;
 }
 
 export interface Comment {

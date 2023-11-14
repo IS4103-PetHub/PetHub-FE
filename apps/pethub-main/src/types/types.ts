@@ -371,6 +371,11 @@ export interface createSupportTicketPayload {
   priority: Priority;
   reason: string;
   files: File[];
+  serviceListingId?: number;
+  orderItemId?: number;
+  bookingId?: number;
+  payoutInvoiceId?: number;
+  refundRequestId?: number;
 }
 
 export interface commentSupportPayload {

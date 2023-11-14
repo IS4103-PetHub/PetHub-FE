@@ -25,6 +25,7 @@ import {
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
+import LargeCreateButton from "web-ui/shared/LargeCreateButton";
 import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
@@ -249,7 +250,11 @@ export default function Supports({
       <Container fluid m="lg">
         <Group position="apart">
           <PageTitle title="Support Tickets" />
-          <CreateSupportModal userId={userId} refetch={refetchSupportTickets} />
+          <LargeCreateButton
+            mb="lg"
+            text="Create Support Ticket"
+            onClick={() => router.push("/business/supports/create")}
+          />
         </Group>
         {renderContent()}
       </Container>

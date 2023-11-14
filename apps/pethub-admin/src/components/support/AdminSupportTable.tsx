@@ -44,6 +44,7 @@ export default function AdminSupportTable({
     [SupportTicketReason.Orders, "grape"],
     [SupportTicketReason.Appointments, "green"],
     [SupportTicketReason.Payments, "indigo"],
+    [SupportTicketReason.Refunds, "orange"],
     [SupportTicketReason.Accounts, "lime"],
     [SupportTicketReason.Others, "gray"],
   ]);

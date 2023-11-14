@@ -42,15 +42,12 @@ export default function PBOrdersDetails({
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <LargeBackButton
-        text="Back to Order Management"
-        onClick={() => {
-          router.push("/admin/orders");
-        }}
-        size="sm"
-        mb="md"
+      <ViewOrderDetails
+        order={order}
+        pet={pet}
+        isAdmin={true}
+        router={router}
       />
-      <ViewOrderDetails order={order} pet={pet} isAdmin={true} />
     </>
   );
 }

@@ -109,6 +109,7 @@ export default function CreateSupportModal({
     APPOINTMENTS: "MEDIUM",
     PAYMENTS: "HIGH",
     ACCOUNTS: "LOW",
+    REFUNDS: "MEDIUM",
     OTHERS: "LOW",
   };
 

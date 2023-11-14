@@ -13,6 +13,7 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconSwitch3 } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
+import { IconFileDownload } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect, useRef, useState } from "react";
@@ -24,6 +25,8 @@ import {
   extractFileName,
   formatISODateLong,
   formatISODayDateTime,
+  formatNumber2Decimals,
+  formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
@@ -50,9 +53,16 @@ export default function SupportAccordionDetails({
 }: SupportAccordionDetailsProps) {
   const theme = useMantineTheme();
 
-  const [showFullDescription, toggleShowFullDescription] = useToggle();
-  const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
-  const textRef = useRef(null);
+  const [showFullDescriptionReason, toggleShowFullDescriptionReason] =
+    useToggle();
+  const [showFullDescriptionDescription, toggleShowFullDescriptionDescription] =
+    useToggle();
+  const [textExceedsLineClampReason, setTextExceedsLineClampReason] =
+    useState(false);
+  const [textExceedsLineClampDescription, setTextExceedsLineClampDescription] =
+    useState(false);
+  const textRefReason = useRef(null);
+  const textRefDescription = useRef(null);
 
   const [imagePreview, setImagePreview] = useState([]);
 
@@ -69,6 +79,7 @@ export default function SupportAccordionDetails({
     [SupportTicketReason.Orders, "grape"],
     [SupportTicketReason.Appointments, "green"],
     [SupportTicketReason.Payments, "indigo"],
+    [SupportTicketReason.Refunds, "orange"],
     [SupportTicketReason.Accounts, "lime"],
     [SupportTicketReason.Others, "gray"],
   ]);
@@ -100,12 +111,24 @@ export default function SupportAccordionDetails({
   }, [supportTicket]);
 
   useEffect(() => {
-    if (textRef.current) {
-      const lineHeight = parseInt(getComputedStyle(textRef.current).lineHeight);
-      const textHeight = textRef.current.clientHeight;
+    if (textRefReason.current) {
+      const lineHeight = parseInt(
+        getComputedStyle(textRefReason.current).lineHeight,
+      );
+      const textHeight = textRefReason.current.clientHeight;
       // Check if text exceeds 2 lines
       if (textHeight > lineHeight * 2) {
-        setTextExceedsLineClamp(true);
+        setTextExceedsLineClampReason(true);
+      }
+    }
+    if (textRefDescription.current) {
+      const lineHeight = parseInt(
+        getComputedStyle(textRefDescription.current).lineHeight,
+      );
+      const textHeight = textRefDescription.current.clientHeight;
+      // Check if text exceeds 2 lines
+      if (textHeight > lineHeight * 2) {
+        setTextExceedsLineClampDescription(true);
       }
     }
   }, [supportTicket?.reason]);
@@ -194,7 +217,10 @@ export default function SupportAccordionDetails({
           {generateItemGroup(
             "Reason",
             <Box>
-              <Text lineClamp={showFullDescription ? 0 : 2} ref={textRef}>
+              <Text
+                lineClamp={showFullDescriptionReason ? 0 : 2}
+                ref={textRefReason}
+              >
                 {supportTicket?.reason}
               </Text>
               <Group position="right">
@@ -203,12 +229,12 @@ export default function SupportAccordionDetails({
                   variant="subtle"
                   color="blue"
                   size="xs"
-                  onClick={() => toggleShowFullDescription()}
+                  onClick={() => toggleShowFullDescriptionReason()}
                   mt="xs"
                   mr="xs"
-                  display={textExceedsLineClamp ? "block" : "none"}
+                  display={textExceedsLineClampReason ? "block" : "none"}
                 >
-                  {showFullDescription ? "View less" : "View more"}
+                  {showFullDescriptionReason ? "View less" : "View more"}
                 </Button>
               </Group>
             </Box>,
@@ -248,6 +274,284 @@ export default function SupportAccordionDetails({
         </Grid>
         <Divider mt="lg" mb="lg" />
       </Box>
+
+      {supportTicket.serviceListing && (
+        <Box mb="md">
+          <Text fw={600} size="md">
+            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+            &nbsp;Service Listing Details
+          </Text>
+          <Grid columns={24} mt="xs">
+            {generateItemGroup(
+              "Service Listing ID",
+              <Text>{supportTicket.serviceListing.serviceListingId}</Text>,
+            )}
+            {generateItemGroup(
+              "Title",
+              <Text>{supportTicket.serviceListing.title}</Text>,
+            )}
+            {generateItemGroup(
+              "Description",
+              <Box>
+                <Text
+                  lineClamp={showFullDescriptionDescription ? 0 : 2}
+                  ref={textRefDescription}
+                >
+                  {supportTicket.serviceListing?.description}
+                </Text>
+                <Group position="right">
+                  <Button
+                    compact
+                    variant="subtle"
+                    color="blue"
+                    size="xs"
+                    onClick={() => toggleShowFullDescriptionDescription()}
+                    mt="xs"
+                    mr="xs"
+                    display={textExceedsLineClampDescription ? "block" : "none"}
+                  >
+                    {showFullDescriptionDescription ? "View less" : "View more"}
+                  </Button>
+                </Group>
+              </Box>,
+            )}
+            {generateItemGroup(
+              "Category",
+              <Badge ml={-2}>
+                {formatStringToLetterCase(
+                  supportTicket.serviceListing?.category,
+                )}
+              </Badge>,
+            )}
+            {generateItemGroup(
+              "Price",
+              <Text>
+                ${" "}
+                {formatNumber2Decimals(supportTicket.serviceListing?.basePrice)}
+              </Text>,
+            )}
+          </Grid>
+          <Divider mt="lg" mb="lg" />
+        </Box>
+      )}
+
+      {supportTicket.orderItem && (
+        <Box mb="md">
+          <Text fw={600} size="md">
+            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+            &nbsp;Order Item Details
+          </Text>
+          <Grid columns={24} mt="xs">
+            {generateItemGroup(
+              "Order Item ID",
+              <Text>{supportTicket.orderItem.orderItemId}</Text>,
+            )}
+            {generateItemGroup(
+              "Item Name",
+              <Text>{supportTicket.orderItem.itemName}</Text>,
+            )}
+            {generateItemGroup(
+              "Price",
+              <Text>
+                $ {formatNumber2Decimals(supportTicket.orderItem?.itemPrice)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Date Created",
+              <Text>
+                {formatISODayDateTime(
+                  supportTicket.orderItem?.invoice?.createdAt,
+                )}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Date Expiry",
+              <Text>
+                {formatISODateLong(supportTicket.orderItem?.expiryDate)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Name",
+              <Text>
+                {supportTicket.orderItem.invoice?.PetOwner?.firstName}{" "}
+                {supportTicket.orderItem.invoice?.PetOwner?.lastName}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Contact No.",
+              <Text>
+                {supportTicket.orderItem.invoice.PetOwner.contactNumber}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Email",
+              <Text>
+                {supportTicket.orderItem.invoice.PetOwner.user.email}
+              </Text>,
+            )}
+          </Grid>
+          <Divider mt="lg" mb="lg" />
+        </Box>
+      )}
+
+      {supportTicket.booking && (
+        <Box mb="md">
+          <Text fw={600} size="md">
+            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+            &nbsp;Booking Details
+          </Text>
+          <Grid columns={24} mt="xs">
+            {generateItemGroup(
+              "Booking ID",
+              <Text>{supportTicket.booking.bookingId}</Text>,
+            )}
+            {generateItemGroup(
+              "Start Time",
+              <Text>
+                {formatISODayDateTime(supportTicket.booking.startTime)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "End Time",
+              <Text>
+                {formatISODayDateTime(supportTicket.booking.endTime)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Order Item Name",
+              <Text>{supportTicket.booking.OrderItem.itemName}</Text>,
+            )}
+            {generateItemGroup(
+              "Price",
+              <Text>
+                ${" "}
+                {formatNumber2Decimals(
+                  supportTicket.booking.OrderItem?.itemPrice,
+                )}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Name",
+              <Text>
+                {supportTicket.booking.OrderItem.invoice?.PetOwner?.firstName}{" "}
+                {supportTicket.booking.OrderItem.invoice?.PetOwner?.lastName}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Contact No.",
+              <Text>
+                {supportTicket.booking.OrderItem.invoice.PetOwner.contactNumber}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Email",
+              <Text>
+                {supportTicket.booking.OrderItem.invoice.PetOwner.user.email}
+              </Text>,
+            )}
+          </Grid>
+          <Divider mt="lg" mb="lg" />
+        </Box>
+      )}
+
+      {supportTicket.payoutInvoice && (
+        <Box mb="md">
+          <Group position="apart">
+            <Text fw={600} size="md">
+              <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+              &nbsp;Payout Details
+            </Text>
+            {supportTicket.payoutInvoice.attachmentURL && (
+              <Button
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={() => {
+                  window.open(
+                    supportTicket.payoutInvoice.attachmentURL,
+                    "_blank",
+                  );
+                }}
+                leftIcon={<IconFileDownload size={"1.5rem"} />}
+              >
+                Download Invoice
+              </Button>
+            )}
+          </Group>
+          <Grid columns={24} mt="xs">
+            {generateItemGroup(
+              "Payout Invoice ID",
+              <Text>{supportTicket.payoutInvoice.invoiceId}</Text>,
+            )}
+            {generateItemGroup(
+              "Total Amount",
+              <Text>
+                ${" "}
+                {formatNumber2Decimals(supportTicket.payoutInvoice.totalAmount)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Commission Amount",
+              <Text>
+                ${" "}
+                {formatNumber2Decimals(
+                  supportTicket.payoutInvoice.commissionCharge,
+                )}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Payout Date",
+              <Text>
+                {formatISODayDateTime(supportTicket.payoutInvoice.createdAt)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Payment ID",
+              <Text>{supportTicket.payoutInvoice.paymentId}</Text>,
+            )}
+          </Grid>
+          <Divider mt="lg" mb="lg" />
+        </Box>
+      )}
+
+      {supportTicket.refundRequest && (
+        <Box mb="md">
+          <Text fw={600} size="md">
+            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
+            &nbsp;Refund Request Details
+          </Text>
+
+          <Grid columns={24} mt="xs">
+            {generateItemGroup(
+              "Refund Request ID",
+              <Text>{supportTicket.refundRequest.refundRequestId}</Text>,
+            )}
+            {generateItemGroup(
+              "Date Created",
+              <Text>
+                {formatISODateLong(supportTicket.refundRequest.createdAt)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Status",
+              <Text>
+                {formatStringToLetterCase(supportTicket.refundRequest.status)}
+              </Text>,
+            )}
+            {generateItemGroup(
+              "Pet Owner Reason",
+              <Text>{supportTicket.refundRequest.reason}</Text>,
+            )}
+            {generateItemGroup(
+              "Pet Business Comment",
+              <Text>{supportTicket.refundRequest.comment}</Text>,
+            )}
+            {/* TODO: need to see what else to put here */}
+          </Grid>
+          <Divider mt="lg" mb="lg" />
+        </Box>
+      )}
 
       <Box mb="md">
         <Text fw={600} size="md">
