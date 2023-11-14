@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
 import {
   AccountTypeEnum,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
@@ -246,7 +247,7 @@ const PetBusinessDetails = ({
         <Grid.Col span={6}>
           <Text>
             {user.commissionRule.name} (
-            {user.commissionRule.commissionRate * 100}%)
+            {formatNumber2Decimals(user.commissionRule.commissionRate * 100)}%)
           </Text>
         </Grid.Col>
       </Grid>

@@ -1,7 +1,8 @@
 import { Card, Text } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
+import { useRouter } from "next/router";
 import React from "react";
-import { formatNumber2Decimals } from "shared-utils";
+import { addCommasToNumberString, formatNumber2Decimals } from "shared-utils";
 import { SalesDashboardServiceListing } from "@/types/types";
 import ServiceCategoryBadge from "../service-listing-discovery/ServiceCategoryBadge";
 
@@ -9,6 +10,7 @@ interface TopServiceListingsTableProps {
   records: SalesDashboardServiceListing[];
 }
 const TopServiceListingsTable = ({ records }: TopServiceListingsTableProps) => {
+  const router = useRouter();
   return (
     <Card shadow="sm" radius="md" mt="md">
       <DataTable
@@ -18,6 +20,10 @@ const TopServiceListingsTable = ({ records }: TopServiceListingsTableProps) => {
         verticalSpacing="sm"
         idAccessor="serviceListingId"
         records={records}
+        highlightOnHover
+        onRowClick={(record) =>
+          router.push(`/business/listings/${record.serviceListingId}`)
+        }
         columns={[
           {
             accessor: "rank",
@@ -47,7 +53,8 @@ const TopServiceListingsTable = ({ records }: TopServiceListingsTableProps) => {
             title: "Total Sales ($)",
             textAlignment: "right",
             width: "10vw",
-            render: (record) => formatNumber2Decimals(record.totalSales),
+            render: (record) =>
+              addCommasToNumberString(formatNumber2Decimals(record.totalSales)),
           },
         ]}
       />

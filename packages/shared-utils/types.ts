@@ -107,6 +107,8 @@ export interface ServiceListing {
 
   reviews: Review[];
   overallRating: number;
+  // spotlighted listings will have updated listing time
+  listingTime: string;
 }
 export interface OrderItem {
   orderItemId: number;

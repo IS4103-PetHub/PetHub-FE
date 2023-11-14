@@ -235,6 +235,9 @@ export default function Orders({ permissions }: OrdersProps) {
               placeholder="Select start date"
               value={new Date(startDate)}
               onChange={(newDate) => setStartDate(newDate)}
+              error={
+                startDate > endDate && "Start date cannot be after end date."
+              }
             />
           </Grid.Col>
           <Grid.Col span={3}>
@@ -245,6 +248,9 @@ export default function Orders({ permissions }: OrdersProps) {
               placeholder="Select end date"
               value={new Date(endDate)}
               onChange={(newDate) => setEndDate(newDate)}
+              error={
+                endDate < startDate && "End date cannot be before start date."
+              }
             />
           </Grid.Col>
           <Grid.Col span={9}>

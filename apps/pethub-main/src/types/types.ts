@@ -12,6 +12,7 @@ import {
   Pet,
   OrderItem,
   ReviewReportReasonEnum,
+  PetOwner,
 } from "shared-utils";
 import { PetRequestTypeEnum } from "./constants";
 
@@ -64,17 +65,6 @@ export interface PetBusiness extends User {
   businessEmail?: string;
   petBusinessApplication: PetBusinessApplication;
   commissionRule: CommissionRule;
-}
-
-export interface PetOwner extends User {
-  // pet owner attributes
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  favouriteListings?: ServiceListing[];
-  points: number;
-
-  user?: User; // BE not flattening for some endpoints
 }
 
 export interface BusinessApplicationApprover {
@@ -362,4 +352,18 @@ export interface PbDashboardData {
   invalidSLCount: number;
   openRefundRequestsCount: number;
   openSupportRequestsCount: number;
+}
+
+export interface CheckoutCartPayload {
+  paymentMethodId: string;
+  totalPrice: number;
+  userId: number;
+  pointsRedeemed: number;
+  // serviceListingId, quantity
+  cartItems: any[];
+}
+
+export interface CheckoutSpotlightListingPayload {
+  serviceListingId: number;
+  paymentMethodId: string;
 }

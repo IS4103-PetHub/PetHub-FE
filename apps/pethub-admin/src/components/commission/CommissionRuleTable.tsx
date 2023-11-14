@@ -74,6 +74,11 @@ export default function CommissionRuleTable({
   return (
     <>
       <DataTable
+        onRowClick={(record) =>
+          router.push(
+            `/admin/commission/commission-rules/${record.commissionRuleId}`,
+          )
+        }
         minHeight={getMinTableHeight(commissionRules)}
         records={commissionRules}
         columns={[
@@ -171,6 +176,7 @@ export default function CommissionRuleTable({
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
+        highlightOnHover
       />
     </>
   );

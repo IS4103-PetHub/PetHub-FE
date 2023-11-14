@@ -193,9 +193,9 @@ export default function Refunds({ userId, canView }: RefundsProps) {
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container fluid m="lg">
+        <Container fluid>
           <Group position="apart">
-            <PageTitle title="Refunds Management" />
+            <PageTitle title="Refund Request Management" />
           </Group>
           <Grid>
             <Grid.Col span={6}>
@@ -221,6 +221,9 @@ export default function Refunds({ userId, canView }: RefundsProps) {
                 placeholder="Select start date"
                 value={new Date(startDate)}
                 onChange={(newDate) => setStartDate(newDate)}
+                error={
+                  startDate > endDate && "Start date cannot be after end date."
+                }
               />
             </Grid.Col>
             <Grid.Col span={3}>
@@ -231,6 +234,9 @@ export default function Refunds({ userId, canView }: RefundsProps) {
                 placeholder="Select end date"
                 value={new Date(endDate)}
                 onChange={(newDate) => setEndDate(newDate)}
+                error={
+                  endDate < startDate && "End date cannot be before start date."
+                }
               />
             </Grid.Col>
             <Grid.Col span={9}>
