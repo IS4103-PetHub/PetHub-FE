@@ -38,7 +38,7 @@ const PinnedArticleSidebar = ({
   const router = useRouter();
 
   const Content = (
-    <>
+    <Box mah="50vh" sx={{ overflowY: "auto" }}>
       <Box sx={{ display: "flex", alignItems: "center" }} mb="md">
         <IconPinFilled size="1rem" />
         <Text fw={600} ml="xs">
@@ -54,7 +54,7 @@ const PinnedArticleSidebar = ({
           />
         ))}
       </Box>
-    </>
+    </Box>
   );
 
   return (
