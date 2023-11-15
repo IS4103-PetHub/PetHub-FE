@@ -155,18 +155,16 @@ export default function ServiceListingDetails({
       </Head>
 
       <Container mt="xl" mb="xl" size="70vw">
-        <Group position="apart">
-          <PageTitle title={serviceListing?.title} />
-          <Box>
-            <LargeBackButton
-              text="Back to Service Listings"
-              onClick={async () => {
-                router.push("/admin/service-listings");
-              }}
-              size="sm"
-            />
-          </Box>
-        </Group>
+        <Box mb="xl">
+          <LargeBackButton
+            text="Back to Service Listings"
+            onClick={async () => {
+              router.push("/admin/service-listings");
+            }}
+            size="sm"
+          />
+        </Box>
+        <PageTitle title={serviceListing?.title} />
 
         <Accordion
           multiple
