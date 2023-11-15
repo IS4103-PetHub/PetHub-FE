@@ -161,7 +161,7 @@ export default function ServiceListingDetails({
             <LargeBackButton
               text="Back to Service Listings"
               onClick={async () => {
-                router.push("/business/listings");
+                router.push("/admin/service-listings");
               }}
               size="sm"
             />

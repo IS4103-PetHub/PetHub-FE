@@ -47,6 +47,7 @@ interface ArticleFormProps {
   toggleIsPreviewing: () => void;
   article?: Article;
   onSubmit: (payload: CreateOrUpdateArticlePayload) => void;
+  deleteComment?: (articleCommentId: number) => Promise<void>;
 }
 
 const ArticleForm = ({
@@ -54,6 +55,7 @@ const ArticleForm = ({
   toggleIsPreviewing,
   article,
   onSubmit,
+  deleteComment,
 }: ArticleFormProps) => {
   const theme = useMantineTheme();
   const [existingFileUrl, setExistingFileUrl] = useState<string>("");
@@ -336,6 +338,7 @@ const ArticleForm = ({
           article={article}
           tagOptions={tagOptions}
           adminView={true}
+          deleteComment={deleteComment}
         />
       ) : (
         ArticleForm

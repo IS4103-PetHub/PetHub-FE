@@ -32,6 +32,7 @@ import api from "@/api/axiosConfig";
 import ArticleForm from "@/components/article/ArticleForm";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import {
+  useDeleteArticleComment,
   useGetAllArticles,
   useGetArticleById,
   useUpdateArticle,
@@ -65,6 +66,7 @@ export default function ArticleDetails({
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateArticleMutation = useUpdateArticle();
+  const deleteArticleCommentMutation = useDeleteArticleComment();
 
   // Data fetching hooks
   const { data: article, refetch: refetchArticle } =
@@ -111,6 +113,23 @@ export default function ArticleDetails({
       setLoading(false);
       notifications.show({
         ...getErrorMessageProps("Error Updating Article", error),
+      });
+    }
+  };
+
+  const handleDeleteArticleComment = async (articleCommentId: number) => {
+    try {
+      await deleteArticleCommentMutation.mutateAsync(articleCommentId);
+      await refetchArticle();
+      notifications.show({
+        title: `Comment Deleted`,
+        color: "green",
+        icon: <IconCheck />,
+        message: "Article comment has been removed.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Deleting Comment`, error),
       });
     }
   };
@@ -166,6 +185,7 @@ export default function ArticleDetails({
           toggleIsPreviewing={toggleIsPreviewing}
           article={article}
           onSubmit={handleUpdateArticle}
+          deleteComment={handleDeleteArticleComment}
         />
       </Container>
     </>

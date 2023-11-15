@@ -169,10 +169,7 @@ const PublishedArticleView = ({
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <ActionIcon>
-            <IconMessageCircle2
-              size="1.25rem"
-              onClick={adminView ? null : openCommentDrawer}
-            />
+            <IconMessageCircle2 size="1.25rem" onClick={openCommentDrawer} />
           </ActionIcon>
           <Text size="xs" color="dimmed" mr="xs" mt={5}>
             16
@@ -212,6 +209,7 @@ const PublishedArticleView = ({
           deleteComment={deleteComment}
           petOwner={petOwner}
           petOwnerArticleCommentIds={petOwnerArticleCommentIds}
+          isAdminView={adminView}
         />
       </Container>
     </>

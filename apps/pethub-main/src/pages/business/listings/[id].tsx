@@ -144,19 +144,18 @@ export default function ViewServiceListing({
             <LoadingOverlay visible={isLoading} overlayBlur={1} />
           ) : (
             <>
-              <Group position="apart">
-                <PageTitle title={serviceListing?.title} />
-                <Box>
-                  <LargeBackButton
-                    text="Back to Service Listings"
-                    onClick={async () => {
-                      await refetchServiceListings();
-                      router.push("/business/listings");
-                    }}
-                    size="sm"
-                  />
-                </Box>
-              </Group>
+              <Box mb="xl">
+                <LargeBackButton
+                  text="Back to Service Listings"
+                  onClick={async () => {
+                    await refetchServiceListings();
+                    router.push("/business/listings");
+                  }}
+                  size="sm"
+                />
+              </Box>
+              <PageTitle title={serviceListing?.title} />
+
               <Accordion
                 multiple
                 variant="filled"

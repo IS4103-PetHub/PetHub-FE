@@ -99,3 +99,11 @@ export const useDeleteArticle = (queryClient: QueryClient) => {
     },
   });
 };
+
+export const useDeleteArticleComment = () => {
+  return useMutation({
+    mutationFn: async (id: number) => {
+      return (await api.delete(`${ARTICLE_API}/comments/${id}`)).data;
+    },
+  });
+};

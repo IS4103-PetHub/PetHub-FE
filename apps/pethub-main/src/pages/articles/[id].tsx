@@ -66,8 +66,6 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
   const { data: petOwner, refetch: refetchPetOwner } =
     useGetPetOwnerByIdAndAccountType(userId, AccountTypeEnum.PetOwner);
 
-  console.log("article", article);
-
   const createArticleComment = async (
     payload: CreateUpdateArticleCommentPayload,
   ) => {

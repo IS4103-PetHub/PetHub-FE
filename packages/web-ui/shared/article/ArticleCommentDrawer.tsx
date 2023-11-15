@@ -47,6 +47,7 @@ interface ArticleCommentDrawerProps {
   deleteComment?: (articleCommentId: number) => Promise<void>;
   petOwner?: PetOwner;
   petOwnerArticleCommentIds?: number[];
+  isAdminView?: boolean;
 }
 
 const ArticleCommentDrawer = ({
@@ -58,6 +59,7 @@ const ArticleCommentDrawer = ({
   deleteComment,
   petOwner,
   petOwnerArticleCommentIds,
+  isAdminView,
 }: ArticleCommentDrawerProps) => {
   const theme = useMantineTheme();
 
@@ -92,17 +94,27 @@ const ArticleCommentDrawer = ({
       position="right"
       size="45vh"
       lockScroll={false}
-      styles={{
-        // Styles API (We don't want the thing cutting through header)
-        inner: { marginTop: rem(80) },
-      }}
+      styles={
+        !isAdminView
+          ? {
+              // Styles API (We don't want the thing cutting through header for PO view)
+              inner: { marginTop: rem(80) },
+            }
+          : undefined
+      }
       shadow="lg"
       overlayProps={{
         style: { backgroundColor: "rgba(0, 0, 0, 0.2)" }, // Just a slight darken for the page when opened
       }}
     >
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-        <Card shadow="xs" withBorder mt="xs" mb="xs">
+        <Card
+          shadow="xs"
+          withBorder
+          mt="xs"
+          mb="xs"
+          display={isAdminView ? "none" : "block"}
+        >
           <Textarea
             variant="unstyled"
             size="sm"
@@ -141,6 +153,7 @@ const ArticleCommentDrawer = ({
               isOwner={petOwnerArticleCommentIds?.includes(
                 articleComment?.articleCommentId,
               )}
+              isAdminView={isAdminView}
             />
           ))
           .reverse()}

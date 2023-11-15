@@ -51,6 +51,7 @@ interface ArticleCommentCardProps {
   updateComment?: (payload: CreateUpdateArticleCommentPayload) => Promise<void>;
   deleteComment?: (articleCommentId: number) => Promise<void>;
   petOwner?: PetOwner;
+  isAdminView?: boolean;
 }
 
 const ArticleCommentCard = ({
@@ -59,6 +60,7 @@ const ArticleCommentCard = ({
   deleteComment,
   petOwner,
   isOwner,
+  isAdminView,
 }: ArticleCommentCardProps) => {
   const theme = useMantineTheme();
   const [isEditing, setIsEditing] = useState(false);
@@ -121,7 +123,7 @@ const ArticleCommentCard = ({
               </Text>
             </Box>
           </Box>
-          {!isEditing && isOwner && (
+          {!isEditing && (isOwner || isAdminView) && (
             <Menu withinPortal position="bottom-end" shadow="sm">
               <Menu.Target>
                 <ActionIcon>
@@ -133,6 +135,7 @@ const ArticleCommentCard = ({
                 <Menu.Item
                   onClick={() => setIsEditing(true)}
                   icon={<IconPencil size={rem(14)} color="blue" />}
+                  display={isAdminView ? "none" : "block"}
                 >
                   Edit
                 </Menu.Item>
