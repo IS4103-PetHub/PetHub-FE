@@ -11,8 +11,9 @@ import {
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconFileDownload } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import { useState, useRef, ReactNode, useEffect } from "react";
 import {
   SupportTicketStatus,
@@ -24,9 +25,18 @@ import {
   Priority,
   formatEnumValueToLowerCase,
   getErrorMessageProps,
+  formatStringToLetterCase,
+  formatNumber2Decimals,
+  formatISODateLong,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
+import BookingDetails from "web-ui/shared/support/BookingDetails";
+import OrderItemDetails from "web-ui/shared/support/OrderItemDetails";
+import PayoutInvoiceDetails from "web-ui/shared/support/PayoutInvoiceDetails";
+import RefundRequestDetails from "web-ui/shared/support/RefundRequestDetails";
+import ServiceListingDetails from "web-ui/shared/support/ServiceListingDetails";
+import { useReopenRefundRequest } from "@/hooks/refund";
 import {
   useCloseResolveSupportTicket,
   useCloseUnresolveSupportTicket,
@@ -44,7 +54,8 @@ export default function SupportAccordionDetails({
   refetch,
   canWrite,
   refetchTableData,
-}) {
+}: SupportAccordionDetailsProps) {
+  const router = useRouter();
   const theme = useMantineTheme();
 
   const [showFullDescription, toggleShowFullDescription] = useToggle();
@@ -66,6 +77,7 @@ export default function SupportAccordionDetails({
     [SupportTicketReason.Orders, "grape"],
     [SupportTicketReason.Appointments, "green"],
     [SupportTicketReason.Payments, "indigo"],
+    [SupportTicketReason.Refunds, "orange"],
     [SupportTicketReason.Accounts, "lime"],
     [SupportTicketReason.Others, "gray"],
   ]);
@@ -250,6 +262,25 @@ export default function SupportAccordionDetails({
     }
   }
 
+  const reopenRefundRequest = useReopenRefundRequest();
+  async function handleReopenRefundRequests() {
+    try {
+      await reopenRefundRequest.mutateAsync(supportTicket?.refundRequestId);
+      notifications.show({
+        title: "Reopen Refund Request",
+        color: "green",
+        icon: <IconCheck />,
+        message: `Refund Request successfully reopened`,
+      });
+      refetch();
+      refetchTableData();
+    } catch (error) {
+      notifications.show({
+        ...getErrorMessageProps("Error Closing Support Ticket", error),
+      });
+    }
+  }
+
   return (
     <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
       <Group position="apart" mt={5}>
@@ -324,7 +355,7 @@ export default function SupportAccordionDetails({
                   : "gray"
               }
             >
-              {supportTicket?.status}
+              {formatEnumValueToLowerCase(supportTicket?.status)}
             </Badge>,
           )}
           {generateItemGroup(
@@ -336,7 +367,7 @@ export default function SupportAccordionDetails({
                   : "gray"
               }
             >
-              {supportTicket?.supportCategory}
+              {formatEnumValueToLowerCase(supportTicket?.supportCategory)}
             </Badge>,
           )}
           {generateItemGroup(
@@ -348,7 +379,7 @@ export default function SupportAccordionDetails({
                   : "gray"
               }
             >
-              {supportTicket?.priority}
+              {formatStringToLetterCase(supportTicket?.priority)}
             </Badge>,
           )}
           {generateItemGroup(
@@ -373,8 +404,32 @@ export default function SupportAccordionDetails({
             ? generatePBDetails()
             : generatePODetails()}
         </Grid>
+        <Divider mt="lg" mb="lg" />
       </Box>
-      <Divider mt="lg" mb="lg" />
+
+      {supportTicket.serviceListing && (
+        <ServiceListingDetails supportTicket={supportTicket} isAdmin />
+      )}
+
+      {supportTicket.orderItem && (
+        <OrderItemDetails supportTicket={supportTicket} isAdmin={true} />
+      )}
+
+      {supportTicket.booking && (
+        <BookingDetails supportTicket={supportTicket} isAdmin={true} />
+      )}
+
+      {supportTicket.payoutInvoice && (
+        <PayoutInvoiceDetails supportTicket={supportTicket} isAdmin={true} />
+      )}
+
+      {supportTicket.refundRequest && (
+        <RefundRequestDetails
+          supportTicket={supportTicket}
+          isAdmin={true}
+          handleReopenRefund={handleReopenRefundRequests}
+        />
+      )}
 
       <Box mb="md">
         <Text fw={600} size="md">

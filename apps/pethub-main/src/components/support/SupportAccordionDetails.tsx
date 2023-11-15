@@ -11,11 +11,9 @@ import {
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconSwitch3 } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
 import { IconFileDownload } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   SupportTicket,
@@ -23,6 +21,7 @@ import {
   SupportTicketStatus,
   downloadFile,
   extractFileName,
+  formatEnumValueToLowerCase,
   formatISODateLong,
   formatISODayDateTime,
   formatNumber2Decimals,
@@ -31,8 +30,11 @@ import {
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
-import DeleteButton from "web-ui/shared/LargeDeleteButton";
-import SimpleDeleteActionButton from "web-ui/shared/SimpleDeleteActionButton";
+import BookingDetails from "web-ui/shared/support/BookingDetails";
+import OrderItemDetails from "web-ui/shared/support/OrderItemDetails";
+import PayoutInvoiceDetails from "web-ui/shared/support/PayoutInvoiceDetails";
+import RefundRequestDetails from "web-ui/shared/support/RefundRequestDetails";
+import ServiceListingDetails from "web-ui/shared/support/ServiceListingDetails";
 import {
   useCloseResolveSupportTicket,
   useReopenSupportTicket,
@@ -55,14 +57,9 @@ export default function SupportAccordionDetails({
 
   const [showFullDescriptionReason, toggleShowFullDescriptionReason] =
     useToggle();
-  const [showFullDescriptionDescription, toggleShowFullDescriptionDescription] =
-    useToggle();
   const [textExceedsLineClampReason, setTextExceedsLineClampReason] =
     useState(false);
-  const [textExceedsLineClampDescription, setTextExceedsLineClampDescription] =
-    useState(false);
   const textRefReason = useRef(null);
-  const textRefDescription = useRef(null);
 
   const [imagePreview, setImagePreview] = useState([]);
 
@@ -119,16 +116,6 @@ export default function SupportAccordionDetails({
       // Check if text exceeds 2 lines
       if (textHeight > lineHeight * 2) {
         setTextExceedsLineClampReason(true);
-      }
-    }
-    if (textRefDescription.current) {
-      const lineHeight = parseInt(
-        getComputedStyle(textRefDescription.current).lineHeight,
-      );
-      const textHeight = textRefDescription.current.clientHeight;
-      // Check if text exceeds 2 lines
-      if (textHeight > lineHeight * 2) {
-        setTextExceedsLineClampDescription(true);
       }
     }
   }, [supportTicket?.reason]);
@@ -200,7 +187,7 @@ export default function SupportAccordionDetails({
                 : "Are you sure you want to reopen the support ticket."
             }
             large
-            largeText={canEdit ? "Close" : "Reopen"}
+            largeText={canEdit ? "Close as Resolved" : "Reopen"}
             removeIcon
             overrideDeleteButtonText={canEdit ? "Close" : "Reopen"}
             buttonColor={canEdit ? "red" : "teal"}
@@ -248,7 +235,7 @@ export default function SupportAccordionDetails({
                   : "gray"
               }
             >
-              {supportTicket?.status}
+              {formatEnumValueToLowerCase(supportTicket?.status)}
             </Badge>,
           )}
           {generateItemGroup(
@@ -260,7 +247,7 @@ export default function SupportAccordionDetails({
                   : "gray"
               }
             >
-              {supportTicket?.supportCategory}
+              {formatEnumValueToLowerCase(supportTicket?.supportCategory)}
             </Badge>,
           )}
           {generateItemGroup(
@@ -276,281 +263,23 @@ export default function SupportAccordionDetails({
       </Box>
 
       {supportTicket.serviceListing && (
-        <Box mb="md">
-          <Text fw={600} size="md">
-            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-            &nbsp;Service Listing Details
-          </Text>
-          <Grid columns={24} mt="xs">
-            {generateItemGroup(
-              "Service Listing ID",
-              <Text>{supportTicket.serviceListing.serviceListingId}</Text>,
-            )}
-            {generateItemGroup(
-              "Title",
-              <Text>{supportTicket.serviceListing.title}</Text>,
-            )}
-            {generateItemGroup(
-              "Description",
-              <Box>
-                <Text
-                  lineClamp={showFullDescriptionDescription ? 0 : 2}
-                  ref={textRefDescription}
-                >
-                  {supportTicket.serviceListing?.description}
-                </Text>
-                <Group position="right">
-                  <Button
-                    compact
-                    variant="subtle"
-                    color="blue"
-                    size="xs"
-                    onClick={() => toggleShowFullDescriptionDescription()}
-                    mt="xs"
-                    mr="xs"
-                    display={textExceedsLineClampDescription ? "block" : "none"}
-                  >
-                    {showFullDescriptionDescription ? "View less" : "View more"}
-                  </Button>
-                </Group>
-              </Box>,
-            )}
-            {generateItemGroup(
-              "Category",
-              <Badge ml={-2}>
-                {formatStringToLetterCase(
-                  supportTicket.serviceListing?.category,
-                )}
-              </Badge>,
-            )}
-            {generateItemGroup(
-              "Price",
-              <Text>
-                ${" "}
-                {formatNumber2Decimals(supportTicket.serviceListing?.basePrice)}
-              </Text>,
-            )}
-          </Grid>
-          <Divider mt="lg" mb="lg" />
-        </Box>
+        <ServiceListingDetails supportTicket={supportTicket} />
       )}
 
       {supportTicket.orderItem && (
-        <Box mb="md">
-          <Text fw={600} size="md">
-            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-            &nbsp;Order Item Details
-          </Text>
-          <Grid columns={24} mt="xs">
-            {generateItemGroup(
-              "Order Item ID",
-              <Text>{supportTicket.orderItem.orderItemId}</Text>,
-            )}
-            {generateItemGroup(
-              "Item Name",
-              <Text>{supportTicket.orderItem.itemName}</Text>,
-            )}
-            {generateItemGroup(
-              "Price",
-              <Text>
-                $ {formatNumber2Decimals(supportTicket.orderItem?.itemPrice)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Date Created",
-              <Text>
-                {formatISODayDateTime(
-                  supportTicket.orderItem?.invoice?.createdAt,
-                )}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Date Expiry",
-              <Text>
-                {formatISODateLong(supportTicket.orderItem?.expiryDate)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Name",
-              <Text>
-                {supportTicket.orderItem.invoice?.PetOwner?.firstName}{" "}
-                {supportTicket.orderItem.invoice?.PetOwner?.lastName}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Contact No.",
-              <Text>
-                {supportTicket.orderItem.invoice.PetOwner.contactNumber}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Email",
-              <Text>
-                {supportTicket.orderItem.invoice.PetOwner.user.email}
-              </Text>,
-            )}
-          </Grid>
-          <Divider mt="lg" mb="lg" />
-        </Box>
+        <OrderItemDetails supportTicket={supportTicket} />
       )}
 
       {supportTicket.booking && (
-        <Box mb="md">
-          <Text fw={600} size="md">
-            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-            &nbsp;Booking Details
-          </Text>
-          <Grid columns={24} mt="xs">
-            {generateItemGroup(
-              "Booking ID",
-              <Text>{supportTicket.booking.bookingId}</Text>,
-            )}
-            {generateItemGroup(
-              "Start Time",
-              <Text>
-                {formatISODayDateTime(supportTicket.booking.startTime)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "End Time",
-              <Text>
-                {formatISODayDateTime(supportTicket.booking.endTime)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Order Item Name",
-              <Text>{supportTicket.booking.OrderItem.itemName}</Text>,
-            )}
-            {generateItemGroup(
-              "Price",
-              <Text>
-                ${" "}
-                {formatNumber2Decimals(
-                  supportTicket.booking.OrderItem?.itemPrice,
-                )}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Name",
-              <Text>
-                {supportTicket.booking.OrderItem.invoice?.PetOwner?.firstName}{" "}
-                {supportTicket.booking.OrderItem.invoice?.PetOwner?.lastName}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Contact No.",
-              <Text>
-                {supportTicket.booking.OrderItem.invoice.PetOwner.contactNumber}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Email",
-              <Text>
-                {supportTicket.booking.OrderItem.invoice.PetOwner.user.email}
-              </Text>,
-            )}
-          </Grid>
-          <Divider mt="lg" mb="lg" />
-        </Box>
+        <BookingDetails supportTicket={supportTicket} />
       )}
 
       {supportTicket.payoutInvoice && (
-        <Box mb="md">
-          <Group position="apart">
-            <Text fw={600} size="md">
-              <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-              &nbsp;Payout Details
-            </Text>
-            {supportTicket.payoutInvoice.attachmentURL && (
-              <Button
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={() => {
-                  window.open(
-                    supportTicket.payoutInvoice.attachmentURL,
-                    "_blank",
-                  );
-                }}
-                leftIcon={<IconFileDownload size={"1.5rem"} />}
-              >
-                Download Invoice
-              </Button>
-            )}
-          </Group>
-          <Grid columns={24} mt="xs">
-            {generateItemGroup(
-              "Payout Invoice ID",
-              <Text>{supportTicket.payoutInvoice.invoiceId}</Text>,
-            )}
-            {generateItemGroup(
-              "Total Amount",
-              <Text>
-                ${" "}
-                {formatNumber2Decimals(supportTicket.payoutInvoice.totalAmount)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Commission Amount",
-              <Text>
-                ${" "}
-                {formatNumber2Decimals(
-                  supportTicket.payoutInvoice.commissionCharge,
-                )}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Payout Date",
-              <Text>
-                {formatISODayDateTime(supportTicket.payoutInvoice.createdAt)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Payment ID",
-              <Text>{supportTicket.payoutInvoice.paymentId}</Text>,
-            )}
-          </Grid>
-          <Divider mt="lg" mb="lg" />
-        </Box>
+        <PayoutInvoiceDetails supportTicket={supportTicket} />
       )}
 
       {supportTicket.refundRequest && (
-        <Box mb="md">
-          <Text fw={600} size="md">
-            <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-            &nbsp;Refund Request Details
-          </Text>
-
-          <Grid columns={24} mt="xs">
-            {generateItemGroup(
-              "Refund Request ID",
-              <Text>{supportTicket.refundRequest.refundRequestId}</Text>,
-            )}
-            {generateItemGroup(
-              "Date Created",
-              <Text>
-                {formatISODateLong(supportTicket.refundRequest.createdAt)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Status",
-              <Text>
-                {formatStringToLetterCase(supportTicket.refundRequest.status)}
-              </Text>,
-            )}
-            {generateItemGroup(
-              "Pet Owner Reason",
-              <Text>{supportTicket.refundRequest.reason}</Text>,
-            )}
-            {generateItemGroup(
-              "Pet Business Comment",
-              <Text>{supportTicket.refundRequest.comment}</Text>,
-            )}
-            {/* TODO: need to see what else to put here */}
-          </Grid>
-          <Divider mt="lg" mb="lg" />
-        </Box>
+        <RefundRequestDetails supportTicket={supportTicket} />
       )}
 
       <Box mb="md">

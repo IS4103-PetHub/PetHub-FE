@@ -6,6 +6,7 @@ import {
   SupportTicketReason,
   SupportTicketStatus,
   TABLE_PAGE_SIZE,
+  formatStringToLetterCase,
   getMinTableHeight,
 } from "shared-utils";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
@@ -91,7 +92,7 @@ export default function AdminSupportTable({
                     : "gray"
                 }
               >
-                {support.supportCategory}
+                {formatStringToLetterCase(support.supportCategory)}
               </Badge>
             ),
           },
@@ -109,7 +110,7 @@ export default function AdminSupportTable({
                     : "gray"
                 }
               >
-                {support.status}
+                {formatStringToLetterCase(support.status)}
               </Badge>
             ),
           },
@@ -127,7 +128,7 @@ export default function AdminSupportTable({
                     : "gray"
                 }
               >
-                {support.priority}
+                {formatStringToLetterCase(support.priority)}
               </Badge>
             ),
           },

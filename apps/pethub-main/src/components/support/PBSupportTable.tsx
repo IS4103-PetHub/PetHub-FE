@@ -85,7 +85,7 @@ export default function PBSupportTable({
                     : "gray"
                 }
               >
-                {support.supportCategory}
+                {formatStringToLetterCase(support.supportCategory)}
               </Badge>
             ),
           },
@@ -104,7 +104,7 @@ export default function PBSupportTable({
                     : "gray"
                 }
               >
-                {support.status}
+                {formatStringToLetterCase(support.status)}
               </Badge>
             ),
           },

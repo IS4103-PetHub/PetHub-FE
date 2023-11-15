@@ -243,6 +243,7 @@ export interface PetBusiness extends User {
   websiteURL?: string;
   businessAddresses?: Address[];
   businessEmail?: string;
+  user?: User;
 }
 
 export interface Pet {
