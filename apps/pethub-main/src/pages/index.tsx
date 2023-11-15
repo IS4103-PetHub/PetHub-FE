@@ -3,7 +3,9 @@ import { useDisclosure } from "@mantine/hooks";
 import Head from "next/head";
 import nookies from "nookies";
 import { useEffect } from "react";
+import { Article } from "shared-utils";
 import api from "@/api/axiosConfig";
+import AnnouncementArticleBanner from "@/components/article/AnnouncementArticleBanner";
 import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
 import ServicesSection from "@/components/common/landing/ServicesSection";
@@ -18,12 +20,14 @@ interface HomeProps {
   almostGoneListings: FeaturedServiceListing[];
   allTimeFavsListings: FeaturedServiceListing[];
   risingListings: FeaturedServiceListing[];
+  latestAnnouncementArticle: Article;
 }
 export default function Home({
   hottestListings,
   almostGoneListings,
   allTimeFavsListings,
   risingListings,
+  latestAnnouncementArticle,
 }: HomeProps) {
   // for appointment reminder modal
   const [opened, { open, close }] = useDisclosure(false);
@@ -37,7 +41,7 @@ export default function Home({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>
-        <Banner />
+        <Banner announcementArticle={latestAnnouncementArticle} />
         <ServicesSection />
         <Stack spacing={0} mb={80}>
           <ServiceListingScrollCarousel
@@ -76,6 +80,10 @@ export async function getServerSideProps(context) {
     path: "/",
   });
 
+  const latestAnnouncementArticle = await (
+    await api.get(`/articles/latest-announcement`)
+  ).data;
+
   const featuredServiceListings =
     (await (await api.get(`/service-listings/get-featured-listings`)).data) ??
     [];
@@ -97,6 +105,7 @@ export async function getServerSideProps(context) {
       almostGoneListings,
       allTimeFavsListings,
       risingListings,
+      latestAnnouncementArticle,
     },
   };
 }
