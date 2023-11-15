@@ -13,8 +13,11 @@ export const useCreateArticle = () => {
       formData.append("content", payload.content);
       formData.append("internalUserId", payload.internalUserId.toString());
       formData.append("articleType", payload.articleType);
-      formData.append("category", payload.category);
       formData.append("isPinned", payload.isPinned.toString());
+
+      if (payload.category) {
+        formData.append("category", payload.category);
+      }
 
       if (payload.file) {
         formData.append("file", payload.file);
@@ -42,11 +45,15 @@ export const useUpdateArticle = () => {
       formData.append("content", payload.content);
       formData.append("internalUserId", payload.internalUserId.toString());
       formData.append("articleType", payload.articleType);
-      formData.append("category", payload.category);
+
       formData.append("isPinned", payload.isPinned.toString());
 
       if (payload.file) {
         formData.append("file", payload.file);
+      }
+
+      if (payload.category) {
+        formData.append("category", payload.category);
       }
 
       payload.tags.forEach((tagId) => {

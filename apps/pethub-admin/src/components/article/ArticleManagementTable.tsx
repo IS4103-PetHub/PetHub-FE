@@ -83,10 +83,11 @@ const ArticleManagementTable = ({
           },
           {
             accessor: "category",
-            title: "Categories",
+            title: "Category",
             textAlignment: "left",
             width: 55,
-            render: (record) => formatStringToLetterCase(record.category),
+            render: (record) =>
+              record.category ? formatStringToLetterCase(record.category) : "-",
           },
           {
             accessor: "articleType",

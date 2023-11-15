@@ -46,8 +46,12 @@ const PinnedArticleSidebar = ({
         </Text>
       </Box>
       <Box pl="md" pr="md">
-        {pinnedArticles?.map((article) => (
-          <PinnedArticleItem article={article} key={article?.articleId} />
+        {pinnedArticles?.map((article, index) => (
+          <PinnedArticleItem
+            article={article}
+            key={article?.articleId}
+            isLast={index === pinnedArticles.length - 1}
+          />
         ))}
       </Box>
     </>

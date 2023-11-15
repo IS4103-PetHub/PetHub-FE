@@ -28,9 +28,10 @@ import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
 
 interface PinnedArticleItemProps {
   article: Article;
+  isLast?: boolean;
 }
 
-const PinnedArticleItem = ({ article }: PinnedArticleItemProps) => {
+const PinnedArticleItem = ({ article, isLast }: PinnedArticleItemProps) => {
   const theme = useMantineTheme();
   const router = useRouter();
 
@@ -63,7 +64,7 @@ const PinnedArticleItem = ({ article }: PinnedArticleItemProps) => {
         </Text>
       </Box>
 
-      <Divider mt="sm" mb="sm" />
+      {!isLast && <Divider mt="sm" mb="sm" />}
     </Box>
   );
 };

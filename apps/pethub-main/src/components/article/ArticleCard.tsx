@@ -132,9 +132,11 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
             alignItems: "flex-end",
           }}
         >
-          <Badge variant="dot" radius="xs">
-            {formatStringToLetterCase(article?.category)}
-          </Badge>
+          {article?.category && (
+            <Badge variant="dot" radius="xs">
+              {formatStringToLetterCase(article?.category)}
+            </Badge>
+          )}
         </Grid.Col>
         <Grid.Col span={24}>
           <Group position="apart">

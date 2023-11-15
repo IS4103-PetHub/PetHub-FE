@@ -104,7 +104,7 @@ const PublishedArticleView = ({
     tags: articleForm?.values.tags
       ? constructTags(articleForm.values.tags)
       : article?.tags || [],
-    category: articleForm?.values.category || article?.category || "[Category]",
+    category: articleForm?.values.category || article?.category,
     isPinned: articleForm?.values.isPinned || article?.isPinned || false,
     createdBy: {
       firstName: article?.createdBy?.firstName || "Author",
@@ -172,7 +172,7 @@ const PublishedArticleView = ({
             <IconMessageCircle2 size="1.25rem" onClick={openCommentDrawer} />
           </ActionIcon>
           <Text size="xs" color="dimmed" mr="xs" mt={5}>
-            16
+            {articleToUse.articleComments.length}
           </Text>
           <ArticleSharePopover adminView={adminView} />
         </Box>
@@ -186,9 +186,11 @@ const PublishedArticleView = ({
       <Container mt="xs" mb="xs">
         <Group position="apart">
           <PageTitle title={`${articleToUse.title}`} fw={700} size={30} />
-          <Badge variant="dot">
-            {formatStringToLetterCase(articleToUse.category)}
-          </Badge>
+          {articleToUse.category && (
+            <Badge variant="dot">
+              {formatStringToLetterCase(articleToUse.category)}
+            </Badge>
+          )}
         </Group>
         {MetaInfo}
         {BarInfo}
