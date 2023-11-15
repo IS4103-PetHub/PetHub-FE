@@ -109,7 +109,6 @@ const ArticleForm = ({
       },
       content: isNotEmpty("Content cannot be empty."),
       articleType: isNotEmpty("Article type is mandatory."),
-      category: isNotEmpty("Category is mandatory."),
     },
   });
 

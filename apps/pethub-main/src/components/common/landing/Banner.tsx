@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Article } from "shared-utils";
 import AnnouncementArticleBanner from "@/components/article/AnnouncementArticleBanner";
 
-const BANNER_HEIGHT = rem(500);
+const BANNER_HEIGHT = rem(550);
 
 const useStyles = createStyles((theme) => ({
   announcementBanner: {

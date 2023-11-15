@@ -168,12 +168,15 @@ const PublishedArticleView = ({
           ))}
         </Box>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <ActionIcon mr="xs">
+          <ActionIcon>
             <IconMessageCircle2
               size="1.25rem"
               onClick={adminView ? null : openCommentDrawer}
             />
           </ActionIcon>
+          <Text size="xs" color="dimmed" mr="xs" mt={5}>
+            16
+          </Text>
           <ArticleSharePopover adminView={adminView} />
         </Box>
       </Group>

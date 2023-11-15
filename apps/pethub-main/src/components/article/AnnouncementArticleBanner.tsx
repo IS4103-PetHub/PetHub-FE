@@ -19,7 +19,10 @@ import { notifications } from "@mantine/notifications";
 import {
   IconArrowRight,
   IconArticle,
+  IconCaretRight,
   IconCaretRightFilled,
+  IconChevronRight,
+  IconExclamationCircle,
   IconPin,
   IconPinFilled,
 } from "@tabler/icons-react";
@@ -31,6 +34,7 @@ import {
   Article,
   calculateArticleEstimatedReadingTime,
   displayArticleDate,
+  formatISODateTimeShort,
   formatStringToLetterCase,
 } from "shared-utils";
 import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
@@ -57,31 +61,33 @@ const AnnouncementArticleBanner = ({
       sx={{ backgroundColor: theme.colors.gray[1] }}
     >
       <Grid columns={24}>
-        <Grid.Col span={5}>
+        <Grid.Col span={4}>
           <Group mt={2}>
-            <IconArticle size="1.25rem" />
-            <Text size="sm">New Announcement</Text>
+            <IconExclamationCircle size="1.5rem" color="gray" />
+            <Text size="sm" color="dimmed">
+              {formatISODateTimeShort(article?.dateCreated)}
+            </Text>
           </Group>
         </Grid.Col>
-        <Grid.Col span={14}>
+        <Grid.Col span={16}>
           <Group>
             <Text fw={600}>{article?.title}</Text>
             <Button
               ml={-10}
               variant="subtle"
-              rightIcon={
-                <IconCaretRightFilled size="1rem" style={{ marginLeft: -10 }} />
+              leftIcon={
+                <IconChevronRight size="1rem" style={{ marginRight: -10 }} />
               }
               size="xs"
               onClick={() => router.push(`/articles/${article.articleId}`)}
             >
-              View Now
+              View
             </Button>
           </Group>
         </Grid.Col>
-        <Grid.Col span={4} />
+        <Grid.Col span={3} />
         <Grid.Col span={1}>
-          <CloseButton onClick={closeBanner} />
+          <CloseButton onClick={closeBanner} size="lg" />
         </Grid.Col>
       </Grid>
     </Card>
