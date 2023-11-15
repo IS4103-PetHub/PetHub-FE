@@ -24,6 +24,7 @@ import dynamic from "next/dynamic";
 import React, { useMemo } from "react";
 import {
   Article,
+  PetOwner,
   Tag,
   calculateArticleEstimatedReadingTime,
   displayArticleDate,
@@ -52,6 +53,8 @@ interface PublishedArticleViewProps {
     payload: CreateUpdateArticleCommentPayload,
   ) => Promise<void>;
   adminView?: boolean;
+  petOwner?: PetOwner;
+  petOwnerArticleCommentIds?: number[];
 }
 
 const PublishedArticleView = ({
@@ -61,6 +64,8 @@ const PublishedArticleView = ({
   tagOptions,
   publishComment,
   adminView,
+  petOwner,
+  petOwnerArticleCommentIds,
 }: PublishedArticleViewProps) => {
   const theme = useMantineTheme();
   const [
@@ -85,6 +90,7 @@ const PublishedArticleView = ({
 
   // Depending on whether the form is passed in or the article, set the values to use
   const articleToUse = {
+    articleId: article?.articleId,
     title: articleForm?.values.title || article?.title || "[Title]",
     content: articleForm?.values.content || article?.content || "",
     articleType:
@@ -106,6 +112,7 @@ const PublishedArticleView = ({
       ? coverImageUrl
       : (article?.attachmentUrls.length > 0 && article?.attachmentUrls[0]) ||
         null,
+    articleComments: article?.articleComments || [],
   };
 
   const MetaInfo = (
@@ -194,6 +201,8 @@ const PublishedArticleView = ({
           opened={commentDrawerOpened}
           onClose={closeCommentDrawer}
           publishComment={publishComment}
+          petOwner={petOwner}
+          petOwnerArticleCommentIds={petOwnerArticleCommentIds}
         />
       </Container>
     </>

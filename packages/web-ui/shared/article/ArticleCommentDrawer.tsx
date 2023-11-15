@@ -14,12 +14,17 @@ import {
   rem,
   createStyles,
   Card,
+  Textarea,
 } from "@mantine/core";
 import { UseFormReturnType, useForm } from "@mantine/form";
+import { notifications } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import React, { useMemo } from "react";
 import {
   Article,
+  ArticleComment,
+  PetOwner,
   Tag,
   calculateArticleEstimatedReadingTime,
   displayArticleDate,
@@ -29,6 +34,7 @@ import {
 } from "shared-utils";
 import { CreateUpdateArticleCommentPayload } from "../../../../apps/pethub-main/src/types/types";
 import { PageTitle } from "../PageTitle";
+import ArticleCommentCard from "./ArticleCommentCard";
 
 interface ArticleCommentDrawerProps {
   opened: boolean;
@@ -37,6 +43,8 @@ interface ArticleCommentDrawerProps {
   publishComment?: (
     payload: CreateUpdateArticleCommentPayload,
   ) => Promise<void>;
+  petOwner?: PetOwner;
+  petOwnerArticleCommentIds?: number[];
 }
 
 const ArticleCommentDrawer = ({
@@ -44,6 +52,8 @@ const ArticleCommentDrawer = ({
   opened,
   onClose,
   publishComment,
+  petOwner,
+  petOwnerArticleCommentIds,
 }: ArticleCommentDrawerProps) => {
   const theme = useMantineTheme();
 
@@ -59,10 +69,21 @@ const ArticleCommentDrawer = ({
   type formValues = typeof form.values;
   async function handleSubmit(values: formValues) {
     const payload: CreateUpdateArticleCommentPayload = {
+      articleId: article?.articleId,
       comment: values.comment,
     };
     await publishComment(payload);
+    form.reset();
+    notifications.show({
+      title: `Comment Published`,
+      color: "green",
+      icon: <IconCheck />,
+      message:
+        "Your comment has been published and is now visible to the public.",
+    });
   }
+
+  console.log("MY ARTICLE COMMENTS", petOwnerArticleCommentIds);
 
   return (
     <Drawer
@@ -70,7 +91,7 @@ const ArticleCommentDrawer = ({
       onClose={onClose}
       title={
         <Text fw={700} size={20}>
-          Comments (x)
+          Comments ({petOwnerArticleCommentIds?.length})
         </Text>
       }
       position="right"
@@ -86,10 +107,49 @@ const ArticleCommentDrawer = ({
       }}
     >
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-        <Card>
-          <Avatar />
+        <Card shadow="xs" withBorder mt="xs" mb="xs">
+          <Group>
+            <Avatar radius="xl" size="md" mr={-5} color="blue" />
+            <Text size="sm" fw={500}>
+              {petOwner?.firstName} {petOwner?.lastName}
+            </Text>
+          </Group>
+          <Textarea
+            variant="unstyled"
+            size="sm"
+            autosize
+            sx={{ length: "100%" }}
+            minRows={3}
+            maxLength={500}
+            placeholder="Write your thoughts on the article here"
+            styles={(theme) => ({
+              input: {
+                backgroundColor: "white",
+                color: theme.colors.dark[9],
+              },
+            })}
+            {...form.getInputProps("comment")}
+          />
+          <Group position="apart">
+            <Text color="dimmed" size="sm">
+              {form.values.comment.length} / 500 characters
+            </Text>
+            <Button radius="xl" type="submit">
+              Post
+            </Button>
+          </Group>
         </Card>
       </form>
+      <Box>
+        {article?.articleComments
+          .map((articleComment: ArticleComment) => (
+            <ArticleCommentCard
+              key={articleComment?.articleCommentId}
+              articleComment={articleComment}
+            />
+          ))
+          .reverse()}
+      </Box>
     </Drawer>
   );
 };

@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useMemo, useState } from "react";
 import {
+  AccountTypeEnum,
   Article,
   OrderItem,
   Pet,
@@ -30,12 +31,19 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import PublishedArticleView from "web-ui/shared/article/PublishedArticleView";
 import ViewOrderDetails from "web-ui/shared/order-management/ViewOrderDetails";
 import api from "@/api/axiosConfig";
-import { useCreateArticleComment, useGetArticleById } from "@/hooks/article";
+import {
+  useCreateArticleComment,
+  useGetArticleById,
+  useGetArticleCommentsIdByArticleIdAndPetOwnerId,
+} from "@/hooks/article";
+import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { CreateUpdateArticleCommentPayload } from "@/types/types";
 
-interface ArticleDetailsProps {}
+interface ArticleDetailsProps {
+  userId: number;
+}
 
-export default function ArticleDetails({}: ArticleDetailsProps) {
+export default function ArticleDetails({ userId }: ArticleDetailsProps) {
   const router = useRouter();
   const articleId = Number(router.query.id);
 
@@ -45,19 +53,20 @@ export default function ArticleDetails({}: ArticleDetailsProps) {
 
   const { data: article, refetch: refetchArticle } =
     useGetArticleById(articleId);
+  const {
+    data: petOwnerArticleCommentIds = [],
+    refetch: refetchPetOwnerArticleCommentIds,
+  } = useGetArticleCommentsIdByArticleIdAndPetOwnerId(articleId, userId);
+  const { data: petOwner, refetch: refetchPetOwner } =
+    useGetPetOwnerByIdAndAccountType(userId, AccountTypeEnum.PetOwner);
 
   const createArticleComment = async (
     payload: CreateUpdateArticleCommentPayload,
   ) => {
     try {
       await createArticleCommentMutation.mutateAsync(payload);
-      notifications.show({
-        title: `Comment Published`,
-        color: "green",
-        icon: <IconCheck />,
-        message:
-          "Your comment has been published and is now visible to the public.",
-      });
+      await refetchArticle();
+      await refetchPetOwnerArticleCommentIds();
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(`Error Publishing Comment`, error),
@@ -91,9 +100,22 @@ export default function ArticleDetails({}: ArticleDetailsProps) {
           <PublishedArticleView
             article={article}
             publishComment={createArticleComment}
+            petOwner={petOwner}
+            petOwnerArticleCommentIds={petOwnerArticleCommentIds}
           />
         </Box>
       </Container>
     </>
   );
+}
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) return;
+  const userId = session.user["userId"];
+
+  return {
+    props: { userId },
+  };
 }

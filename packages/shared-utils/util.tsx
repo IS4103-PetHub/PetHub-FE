@@ -248,6 +248,31 @@ export function displayArticleDate(dateCreated) {
   }
 }
 
+// Same as above but got seconds and minutes also
+export function displayArticleCommentDate(dateCreated) {
+  if (!dateCreated) return "Moments ago";
+
+  const createdDate = dayjs(dateCreated);
+  const now = dayjs();
+
+  const secondsDiff = now.diff(createdDate, "second");
+  const minutesDiff = now.diff(createdDate, "minute");
+  const hoursDiff = now.diff(createdDate, "hour");
+  const daysDiff = now.diff(createdDate, "day");
+
+  if (secondsDiff < 60) {
+    return `${secondsDiff} second${secondsDiff !== 1 ? "s" : ""} ago`;
+  } else if (minutesDiff < 60) {
+    return `${minutesDiff} minute${minutesDiff !== 1 ? "s" : ""} ago`;
+  } else if (hoursDiff < 24) {
+    return `${hoursDiff} hour${hoursDiff !== 1 ? "s" : ""} ago`;
+  } else if (daysDiff < 7) {
+    return `${daysDiff} day${daysDiff !== 1 ? "s" : ""} ago`;
+  } else {
+    return formatISODateTimeShort(dateCreated);
+  }
+}
+
 export function calculateArticleEstimatedReadingTime(content: string) {
   const text = content;
   const wpm = 238;

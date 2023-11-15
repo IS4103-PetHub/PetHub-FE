@@ -69,15 +69,17 @@ export const useDeleteArticleComment = () => {
 };
 
 export const useGetArticleCommentsIdByArticleIdAndPetOwnerId = (
+  articleId,
   petOwnerId: number,
 ) => {
   return useQuery({
-    queryKey: ["article-comments", { petOwnerId }],
+    queryKey: ["article-comments", { petOwnerId, articleId }],
     queryFn: async () => {
       const response = await api.get(
-        `${ARTICLE_API}/comments?petOwnerId=${petOwnerId}`,
+        `${ARTICLE_API}/${articleId}/comments?petOwnerId=${petOwnerId}`,
       );
       return response.data as number[];
     },
+    enabled: !!(articleId && petOwnerId),
   });
 };
