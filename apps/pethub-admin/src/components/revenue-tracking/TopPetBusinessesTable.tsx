@@ -1,7 +1,11 @@
 import { Badge, Card, Text } from "@mantine/core";
 import { DataTable } from "mantine-datatable";
 import React from "react";
-import { PetBusinessTypeEnum, formatNumber2Decimals } from "shared-utils";
+import {
+  PetBusinessTypeEnum,
+  addCommasToNumberString,
+  formatNumber2Decimals,
+} from "shared-utils";
 import { RevenueDashboardPetBusiness } from "@/types/types";
 
 interface TopPetBusinessesTableProps {
@@ -62,14 +66,20 @@ const TopPetBusinessesTable = ({ records }: TopPetBusinessesTableProps) => {
             title: "Total Sales ($)",
             textAlignment: "right",
             width: "10vw",
-            render: (record) => formatNumber2Decimals(record.totalAmount),
+            render: (record) =>
+              addCommasToNumberString(
+                formatNumber2Decimals(record.totalAmount),
+              ),
           },
           {
             accessor: "totalCommission",
             title: "Total Commission ($)",
             textAlignment: "right",
             width: "10vw",
-            render: (record) => formatNumber2Decimals(record.totalCommission),
+            render: (record) =>
+              addCommasToNumberString(
+                formatNumber2Decimals(record.totalCommission),
+              ),
           },
         ]}
       />

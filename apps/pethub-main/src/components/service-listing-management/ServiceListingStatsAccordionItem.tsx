@@ -49,10 +49,10 @@ const ServiceListingStatsAccordionItem = ({
   const [areStatsHidden, toggleStatsVisibility] = useToggle();
 
   return (
-    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10} mt={20}>
+    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={20} mt={20}>
       <Group position="apart" mt={5}>
-        <Text size="xl">
-          <b>Review Statistics (Past 6 months)</b>
+        <Text size="xl" fw={600}>
+          Review Statistics (Past 6 months)
         </Text>
         {reviewStats && (
           <Button
@@ -70,11 +70,11 @@ const ServiceListingStatsAccordionItem = ({
         <ReviewStatisticsGroup reviewStats={reviewStats} />
       ) : !reviewStats ? (
         <Text color="dimmed" size="sm">
-          There are no reviews for this service listing in the past 6 months
+          There are no reviews for this service listing in the past 6 months.
         </Text>
       ) : (
         <Text color="dimmed" size="sm">
-          Review statistics are currently toggled to be hidden
+          Review statistics are currently toggled to be hidden.
         </Text>
       )}
     </Accordion.Item>

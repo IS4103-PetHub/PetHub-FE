@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import CommissionGroupAddPBModal from "@/components/commission/CommissionRuleAddPBModal";
 import CommissionRuleInfoForm from "@/components/commission/CommissionRuleInfoForm";
@@ -156,6 +157,14 @@ export default function CommissionRuleDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
+        <LargeBackButton
+          text="Back to Commission Rules"
+          onClick={() => {
+            router.push("/admin/commission");
+          }}
+          size="sm"
+          mb="md"
+        />
         <Group position="apart">
           <Group position="left">
             <PageTitle title="Commission Rule Details" />

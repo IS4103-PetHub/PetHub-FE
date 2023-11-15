@@ -5,12 +5,16 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconCheck } from "@tabler/icons-react";
 import React, { useEffect } from "react";
-import { formatISODateLong, getErrorMessageProps } from "shared-utils";
+import {
+  PetOwner,
+  formatISODateLong,
+  getErrorMessageProps,
+} from "shared-utils";
 import { AccountStatusEnum } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
-import { PetBusiness, PetOwner } from "@/types/types";
+import { PetBusiness } from "@/types/types";
 import { validateWebsiteURL } from "@/util";
 
 interface AccountInfoFormProps {

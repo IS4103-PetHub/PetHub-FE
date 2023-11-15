@@ -12,13 +12,13 @@ export const serviceListingSortOptions = [
   {
     value: "recent",
     label: "Recently added",
-    attribute: "dateCreated",
+    attribute: "listingTime",
     direction: "desc",
   },
   {
     value: "oldest",
     label: "Oldest",
-    attribute: "dateCreated",
+    attribute: "listingTime",
     direction: "asc",
   },
   {

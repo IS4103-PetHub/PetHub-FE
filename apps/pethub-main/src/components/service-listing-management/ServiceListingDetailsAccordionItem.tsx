@@ -5,43 +5,36 @@ import {
   NumberInput,
   FileInput,
   Image,
-  Stack,
   Textarea,
   Card,
   CloseButton,
   Autocomplete,
   Checkbox,
   Accordion,
-  Center,
   Box,
   Text,
   Button,
   MultiSelect,
   Grid,
   Divider,
-  rem,
   Badge,
   useMantineTheme,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { isNotEmpty, useForm } from "@mantine/form";
-import { useToggle } from "@mantine/hooks";
+import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconCheck,
   IconCircleX,
   IconListDetails,
   IconPhotoPlus,
-  IconUserExclamation,
   IconX,
 } from "@tabler/icons-react";
 import { IconCalendarTime } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { set } from "lodash";
 import { useRouter } from "next/router";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import {
-  Address,
   CalendarGroup,
   ServiceCategoryEnum,
   ServiceListing,
@@ -49,24 +42,20 @@ import {
   downloadFile,
   extractFileName,
   formatISODateLong,
+  formatISODateTimeShort,
   formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
 import LargeSaveButton from "web-ui/shared/LargeSaveButton";
 import {
-  useCreateServiceListing,
   useDeleteServiceListingById,
   useUpdateServiceListing,
 } from "@/hooks/service-listing";
-import {
-  CreateServiceListingPayload,
-  UpdateServiceListingPayload,
-} from "@/types/types";
+import { UpdateServiceListingPayload } from "@/types/types";
 
 interface ServiceListingDetailsAccordionItemProps {
   form: any;
@@ -91,6 +80,7 @@ const ServiceListingDetailsAccordionItem = ({
 
   const [showFullDescription, toggleShowFullDescription] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
+
   const textRef = useRef(null);
 
   const queryClient = useQueryClient();
@@ -195,7 +185,7 @@ const ServiceListingDetailsAccordionItem = ({
     setFileInputKey((prevKey) => prevKey + 1);
   };
 
-  const removeImage = (indexToRemove) => {
+  const removeImage = (indexToRemove: number) => {
     const updatedImagePreview = [...imagePreview];
     updatedImagePreview.splice(indexToRemove, 1);
     setImagePreview(updatedImagePreview);
@@ -290,15 +280,17 @@ const ServiceListingDetailsAccordionItem = ({
   const serviceOverviewGrid = (
     <Box>
       <Divider mb="lg" mt="lg" />
-      <Text fw={600} size="md">
+      <Group>
         <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-        &nbsp;Service Overview
-      </Text>
+        <Text fw={600} size="md" ml={-5}>
+          Service Overview
+        </Text>
+      </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Title",
           isEditingDisabled ? (
-            <Text>{serviceListing?.title}</Text>
+            <Text fw={600}>{serviceListing?.title}</Text>
           ) : (
             <TextInput
               placeholder="Input Service Listing Title"
@@ -362,7 +354,7 @@ const ServiceListingDetailsAccordionItem = ({
         {generateItemGroup(
           "Price",
           isEditingDisabled ? (
-            <Text>$ {formatNumber2Decimals(serviceListing?.basePrice)}</Text>
+            <Text>${formatNumber2Decimals(serviceListing?.basePrice)}</Text>
           ) : (
             <NumberInput
               defaultValue={0.0}
@@ -382,6 +374,26 @@ const ServiceListingDetailsAccordionItem = ({
             />
           ),
         )}
+        {generateItemGroup(
+          "Date Created",
+          <Text>{formatISODateTimeShort(serviceListing?.dateCreated)}</Text>,
+        )}
+        {generateItemGroup(
+          "Last Updated",
+          <Text>
+            {serviceListing?.lastUpdated
+              ? formatISODateTimeShort(serviceListing?.lastUpdated)
+              : "-"}
+          </Text>,
+        )}
+        {generateItemGroup(
+          "Last Spotlighted",
+          <Text>
+            {serviceListing?.lastUpdated
+              ? formatISODateTimeShort(serviceListing?.listingTime)
+              : "-"}
+          </Text>,
+        )}
       </Grid>
       <Divider mt="lg" mb="lg" />
     </Box>
@@ -389,10 +401,12 @@ const ServiceListingDetailsAccordionItem = ({
 
   const schedulingGrid = (
     <Box>
-      <Text fw={600} size="md">
-        <IconCalendarTime size="1rem" color={theme.colors.indigo[5]} />{" "}
-        &nbsp;Scheduling
-      </Text>
+      <Group>
+        <IconCalendarTime size="1rem" color={theme.colors.indigo[5]} />
+        <Text fw={600} size="md" ml={-5}>
+          Scheduling
+        </Text>
+      </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Default Expiry Days",
@@ -516,10 +530,12 @@ const ServiceListingDetailsAccordionItem = ({
 
   const othersGrid = (
     <Box mb="md">
-      <Text fw={600} size="md">
-        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} /> &nbsp;Other
-        Details
-      </Text>
+      <Group>
+        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+        <Text fw={600} size="md" ml={-5}>
+          Other Details
+        </Text>
+      </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
           "Locations",
@@ -588,7 +604,7 @@ const ServiceListingDetailsAccordionItem = ({
           "Display Images",
           isEditingDisabled ? (
             imagePreview.length == 0 ? (
-              <Text>No images uploaded</Text>
+              <Text color="dimmed">No images uploaded</Text>
             ) : (
               <ImageCarousel
                 attachmentURLs={imagePreview}
@@ -646,13 +662,21 @@ const ServiceListingDetailsAccordionItem = ({
   );
 
   return (
-    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10}>
+    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={20}>
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Group position="apart" mt={5}>
-          <Text size="xl">
-            <b>Service Listing Details</b> | ID.{" "}
-            {serviceListing?.serviceListingId}
-          </Text>
+          <Group>
+            <Text size="xl" fw={600}>
+              Service Listing Details
+            </Text>
+            <Badge
+              size="lg"
+              variant="gradient"
+              gradient={{ from: "indigo", to: "cyan" }}
+            >
+              ID: {serviceListing?.serviceListingId}
+            </Badge>
+          </Group>
           {isEditingDisabled ? (
             <Group>
               <LargeEditButton
@@ -682,7 +706,7 @@ const ServiceListingDetailsAccordionItem = ({
                 onClick={() => setIsEditingDisabled(true)}
                 miw={120}
                 variant="light"
-                color="red"
+                color="gray"
                 sx={{ border: "1.5px  solid" }}
                 leftIcon={<IconCircleX size="1rem" />}
               >
@@ -694,7 +718,6 @@ const ServiceListingDetailsAccordionItem = ({
                 onClick={form.onSubmit((values: any) => handleSubmit(values))}
                 miw={120}
                 variant="light"
-                color="green"
                 sx={{ border: "1.5px  solid" }}
               />
             </Group>

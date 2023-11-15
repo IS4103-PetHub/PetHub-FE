@@ -1,24 +1,12 @@
-import {
-  Accordion,
-  Box,
-  Button,
-  Container,
-  FileInput,
-  Group,
-  Image,
-  LoadingOverlay,
-  Text,
-  TextInput,
-  Textarea,
-  useMantineTheme,
-} from "@mantine/core";
+import { Accordion, Container, Group, LoadingOverlay } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AccountStatusEnum } from "shared-utils";
 import { PageTitle } from "web-ui";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
@@ -27,6 +15,7 @@ import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import ServiceListingDetailsAccordionItem from "@/components/service-listing-management/ServiceListingDetailsAccordionItem";
 import ServiceListingReviewsAccordionItem from "@/components/service-listing-management/ServiceListingReviewsAccordionItem";
 import ServiceListingStatsAccordionItem from "@/components/service-listing-management/ServiceListingStatsAccordionItem";
+import SpotlightListingModal from "@/components/service-listing-management/SpotlightListingModal";
 import { useGetCalendarGroupByPBId } from "@/hooks/calendar-group";
 import { useGetReviewStatsForServiceListing } from "@/hooks/review";
 import {
@@ -34,7 +23,7 @@ import {
   useGetServiceListingByPetBusinessId,
 } from "@/hooks/service-listing";
 import { useGetAllTags } from "@/hooks/tags";
-import { PetBusiness, UpdateServiceListingPayload } from "@/types/types";
+import { PetBusiness } from "@/types/types";
 
 interface ViewServiceListingProps {
   userId: number;
@@ -45,13 +34,15 @@ export default function ViewServiceListing({
   userId,
   canView,
 }: ViewServiceListingProps) {
-  const theme = useMantineTheme();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const serviceListingId = Number(router.query.id);
 
   const OPEN_FOREVER = ["details", "review"];
+
+  // for spotlight service listing modal
+  const [opened, { open, close }] = useDisclosure(false);
 
   // Used to refetch service listings upon backward navigation
   const { data: serviceListings = [], refetch: refetchServiceListings } =
@@ -139,50 +130,58 @@ export default function ViewServiceListing({
       {!canView ? (
         <PBCannotAccessMessage />
       ) : (
-        <Container mt="xl" mb="xl" size="70vw">
-          {isLoading ? (
-            <LoadingOverlay visible={isLoading} overlayBlur={1} />
-          ) : (
-            <>
-              <Box mb="xl">
-                <LargeBackButton
-                  text="Back to Service Listings"
-                  onClick={async () => {
-                    await refetchServiceListings();
-                    router.push("/business/listings");
-                  }}
-                  size="sm"
-                />
-              </Box>
-              <PageTitle title={serviceListing?.title} />
+        <>
+          <LargeBackButton
+            text="Back to Service Listings"
+            onClick={async () => {
+              await refetchServiceListings();
+              router.push("/business/listings");
+            }}
+            size="sm"
+          />
+          <Container mt="xl" mb="xl" size="70vw">
+            {isLoading ? (
+              <LoadingOverlay visible={isLoading} overlayBlur={1} />
+            ) : (
+              <>
+                <Group position="apart">
+                  <PageTitle title={serviceListing?.title} />
+                  <SpotlightListingModal
+                    opened={opened}
+                    onOpen={open}
+                    onClose={close}
+                    serviceListingId={serviceListingId}
+                    refetch={refetchServiceListing}
+                  />
+                </Group>
+                <Accordion
+                  multiple
+                  variant="filled"
+                  value={OPEN_FOREVER}
+                  onChange={() => {}}
+                  chevronSize={0}
+                  mt="md"
+                >
+                  <ServiceListingDetailsAccordionItem
+                    form={serviceListingForm}
+                    serviceListing={serviceListing}
+                    refetchServiceListing={refetchServiceListing}
+                    refetchServiceListings={refetchServiceListings}
+                    calendarGroups={calendarGroups}
+                    tags={tags}
+                  />
 
-              <Accordion
-                multiple
-                variant="filled"
-                value={OPEN_FOREVER}
-                onChange={() => {}}
-                chevronSize={0}
-                mt="md"
-              >
-                <ServiceListingDetailsAccordionItem
-                  form={serviceListingForm}
-                  serviceListing={serviceListing}
-                  refetchServiceListing={refetchServiceListing}
-                  refetchServiceListings={refetchServiceListings}
-                  calendarGroups={calendarGroups}
-                  tags={tags}
-                />
+                  <ServiceListingReviewsAccordionItem
+                    serviceListing={serviceListing}
+                    refetchServiceListing={refetchServiceListing}
+                  />
 
-                <ServiceListingReviewsAccordionItem
-                  serviceListing={serviceListing}
-                  refetchServiceListing={refetchServiceListing}
-                />
-
-                <ServiceListingStatsAccordionItem reviewStats={reviewStats} />
-              </Accordion>
-            </>
-          )}
-        </Container>
+                  <ServiceListingStatsAccordionItem reviewStats={reviewStats} />
+                </Accordion>
+              </>
+            )}
+          </Container>
+        </>
       )}
     </>
   );

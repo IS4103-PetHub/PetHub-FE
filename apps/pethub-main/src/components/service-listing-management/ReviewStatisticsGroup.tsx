@@ -1,33 +1,7 @@
-import {
-  useMantineTheme,
-  Text,
-  Card,
-  Button,
-  Group,
-  Box,
-  Grid,
-  Image,
-  Center,
-  Stack,
-  SegmentedControl,
-} from "@mantine/core";
-import { useDisclosure, useToggle } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import {
-  IconList,
-  IconMessage,
-  IconMessage2Off,
-  IconMessageCircle,
-  IconPhoto,
-  IconThumbUp,
-} from "@tabler/icons-react";
-import { IconX } from "@tabler/icons-react";
-import { IconClockHour8 } from "@tabler/icons-react";
-import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import { useMantineTheme, Box, Grid } from "@mantine/core";
+import React from "react";
 import Chart from "react-google-charts";
-import { Review, ReviewStatsResponse, ServiceListing } from "shared-utils";
-import StarRating from "../review/StarRating";
+import { ReviewStatsResponse } from "shared-utils";
 
 interface ReviewStatisticsGroupProps {
   reviewStats: ReviewStatsResponse;

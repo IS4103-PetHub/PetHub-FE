@@ -197,7 +197,6 @@ const ServiceListingModal = ({
           lastPossibleDate: values.lastPossibleDate,
         };
         const res = await createServiceListingMutation.mutateAsync(payload);
-        console.log("res", res);
         notifications.show({
           title: "Service Listing Created",
           message: `Service listing successfully created with ID: ${res.serviceListingId}`,

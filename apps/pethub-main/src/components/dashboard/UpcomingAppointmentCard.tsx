@@ -1,4 +1,4 @@
-import { Badge, Card, Group, Text } from "@mantine/core";
+import { Card, Group, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import React from "react";
 import RainbowBadge from "web-ui/shared/RainbowBadge";

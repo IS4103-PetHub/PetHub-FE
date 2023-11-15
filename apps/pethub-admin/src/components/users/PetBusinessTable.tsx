@@ -128,6 +128,7 @@ export default function PetBusinessTable() {
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            highlightOnHover
             onRowClick={(record) => handleOpenModal(record)}
             rowStyle={{ cursor: "pointer" }}
             withBorder

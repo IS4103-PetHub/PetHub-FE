@@ -221,6 +221,12 @@ const OrdersManagementTable = ({
         withColumnBorders
         striped
         verticalSpacing="sm"
+        highlightOnHover
+        onRowClick={(record) =>
+          isAdmin
+            ? router.push(`/admin/orders/${record.orderItemId}`)
+            : router.push(`/business/orders/${record.orderItemId}`)
+        }
         idAccessor="orderItemId"
         //sorting
         sortStatus={sortStatus}

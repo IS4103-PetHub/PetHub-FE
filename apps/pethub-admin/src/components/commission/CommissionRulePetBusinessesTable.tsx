@@ -1,4 +1,5 @@
 import { DataTable } from "mantine-datatable";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { TABLE_PAGE_SIZE, getMinTableHeight } from "shared-utils";
 import { CommissionRule, PetBusiness } from "@/types/types";
@@ -13,6 +14,7 @@ const CommissionRulePetBusinessesTable = ({
   commissionRule,
   disabled, // refetch
 }: CommissionRulePetBusinessesTableProps) => {
+  const router = useRouter();
   const [petBusinesses, setpetBusinesses] = useState<PetBusiness[]>(
     commissionRule?.petBusinesses ?? [],
   );

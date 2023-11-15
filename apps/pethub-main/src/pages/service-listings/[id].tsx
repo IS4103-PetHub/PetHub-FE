@@ -9,8 +9,6 @@ import {
   useMantineTheme,
   Box,
   Stack,
-  Rating,
-  Center,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -19,9 +17,7 @@ import {
   IconMapPin,
   IconPhone,
   IconCheck,
-  IconX,
   IconClock,
-  IconPaw,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import Head from "next/head";

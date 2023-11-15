@@ -76,10 +76,10 @@ const ServiceListingReviewsAccordionItem = ({
   );
 
   return (
-    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={10} mt={20}>
+    <Accordion.Item value="details" pl={30} pr={30} pt={15} pb={20} mt={20}>
       <Group position="apart" mt={5}>
-        <Text size="xl">
-          <b>Reviews ({serviceListing?.reviews?.length})</b>
+        <Text size="xl" fw={600}>
+          Reviews ({serviceListing?.reviews?.length})
         </Text>
         {serviceListing?.reviews?.length !== 0 && overallRatingDisplay}
       </Group>

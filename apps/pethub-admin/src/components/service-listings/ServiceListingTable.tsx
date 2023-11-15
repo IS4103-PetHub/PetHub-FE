@@ -124,7 +124,10 @@ const ServiceListingTable = ({
         striped
         verticalSpacing="sm"
         idAccessor="serviceListingId"
-        //sorting
+        highlightOnHover
+        onRowClick={(record) =>
+          router.push(`/admin/service-listings/${record.serviceListingId}`)
+        } //sorting
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination

@@ -46,7 +46,7 @@ export function formatISODateLong(dateString: string) {
 }
 
 export function formatISODateOnly(dateString: string) {
-  // e.g. 1/9/2023
+  // e.g. 1-9-2023
   return dayjs(dateString).format("DD-MM-YYYY");
 }
 
@@ -297,4 +297,8 @@ export function validateArticleComment(comment: string) {
     return "Comment cannot exceed 500 characters";
   }
   return null;
+}
+
+export function addCommasToNumberString(numString: string) {
+  return numString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
