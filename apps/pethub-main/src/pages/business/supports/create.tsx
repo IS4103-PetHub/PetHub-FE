@@ -9,6 +9,7 @@ import {
   Image,
   Select,
   TextInput,
+  Textarea,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
@@ -288,7 +289,7 @@ export default function CreatePBSupport({ userId, canView }) {
               {supportTicketForm.values.supportCategory == "REFUNDS" &&
                 renderRefundItemInput()}
               <Grid.Col span={12}>
-                <TextInput
+                <Textarea
                   placeholder="Input Reason"
                   label="Reason"
                   mb="xl"

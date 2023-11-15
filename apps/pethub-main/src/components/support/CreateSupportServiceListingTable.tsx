@@ -69,12 +69,12 @@ export default function CreateSupportServiceListingTable({
     serviceListings: ServiceListing[],
     searchStr: string,
   ) {
-    return serviceListings.filter((refundRequests: ServiceListing) => {
+    return serviceListings.filter((serviceListing: ServiceListing) => {
       return (
-        refundRequests.serviceListingId
+        serviceListing.serviceListingId
           .toString()
           .includes(searchStr.toLowerCase()) ||
-        refundRequests.title.toLowerCase().includes(searchStr.toLowerCase())
+        serviceListing.title.toLowerCase().includes(searchStr.toLowerCase())
       );
     });
   }
