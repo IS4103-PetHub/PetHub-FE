@@ -163,7 +163,7 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session) return;
+  if (!session) return { props: { userId: null } };
   const userId = session.user["userId"];
 
   return {

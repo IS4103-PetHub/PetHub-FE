@@ -86,7 +86,7 @@ const ArticleCommentDrawer = ({
       onClose={onClose}
       title={
         <Text fw={700} size={20}>
-          Comments ({petOwnerArticleCommentIds?.length})
+          Comments ({article?.articleComments?.length})
         </Text>
       }
       position="right"
@@ -103,12 +103,6 @@ const ArticleCommentDrawer = ({
     >
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Card shadow="xs" withBorder mt="xs" mb="xs">
-          <Group>
-            <Avatar radius="xl" size="md" mr={-5} color="blue" />
-            <Text size="sm" fw={500}>
-              {petOwner?.firstName} {petOwner?.lastName}
-            </Text>
-          </Group>
           <Textarea
             variant="unstyled"
             size="sm"
@@ -143,6 +137,10 @@ const ArticleCommentDrawer = ({
               articleComment={articleComment}
               updateComment={updateComment}
               deleteComment={deleteComment}
+              petOwner={petOwner}
+              isOwner={petOwnerArticleCommentIds?.includes(
+                articleComment?.articleCommentId,
+              )}
             />
           ))
           .reverse()}

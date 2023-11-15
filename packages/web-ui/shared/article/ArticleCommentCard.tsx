@@ -47,14 +47,18 @@ import { PageTitle } from "../PageTitle";
 
 interface ArticleCommentCardProps {
   articleComment: ArticleComment;
+  isOwner: boolean;
   updateComment?: (payload: CreateUpdateArticleCommentPayload) => Promise<void>;
   deleteComment?: (articleCommentId: number) => Promise<void>;
+  petOwner?: PetOwner;
 }
 
 const ArticleCommentCard = ({
   articleComment,
   updateComment,
   deleteComment,
+  petOwner,
+  isOwner,
 }: ArticleCommentCardProps) => {
   const theme = useMantineTheme();
   const [isEditing, setIsEditing] = useState(false);
@@ -108,8 +112,8 @@ const ArticleCommentCard = ({
             <Avatar radius="xl" size="md" mr={10} color="blue" />
             <Box>
               <Text size={13} fw={500}>
-                {articleComment?.PetOwner?.firstName}{" "}
-                {articleComment?.PetOwner?.lastName}
+                {articleComment?.petOwner?.firstName}{" "}
+                {articleComment?.petOwner?.lastName}
               </Text>
               <Text size={11}>
                 {displayArticleCommentDate(articleComment?.dateCreated)}{" "}
@@ -117,7 +121,7 @@ const ArticleCommentCard = ({
               </Text>
             </Box>
           </Box>
-          {!isEditing && (
+          {!isEditing && isOwner && (
             <Menu withinPortal position="bottom-end" shadow="sm">
               <Menu.Target>
                 <ActionIcon>

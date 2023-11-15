@@ -323,5 +323,5 @@ export interface ArticleComment {
   articleId: number;
   Article: Article;
   petOwnerId: number;
-  PetOwner: PetOwner;
+  petOwner: PetOwner;
 }
