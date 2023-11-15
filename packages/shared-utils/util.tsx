@@ -248,22 +248,19 @@ export function displayArticleDate(dateCreated) {
   }
 }
 
-// Same as above but got seconds and minutes also
+// Same as above but got minutes also
 export function displayArticleCommentDate(dateCreated) {
-  if (!dateCreated) return "Moments ago";
+  if (!dateCreated) return "A moment ago";
 
   const createdDate = dayjs(dateCreated);
   const now = dayjs();
 
-  const secondsDiff = now.diff(createdDate, "second");
   const minutesDiff = now.diff(createdDate, "minute");
   const hoursDiff = now.diff(createdDate, "hour");
   const daysDiff = now.diff(createdDate, "day");
 
-  if (secondsDiff === 0) {
+  if (minutesDiff < 1) {
     return `A moment ago`;
-  } else if (secondsDiff < 60) {
-    return `${secondsDiff} second${secondsDiff !== 1 ? "s" : ""} ago`;
   } else if (minutesDiff < 60) {
     return `${minutesDiff} minute${minutesDiff !== 1 ? "s" : ""} ago`;
   } else if (hoursDiff < 24) {

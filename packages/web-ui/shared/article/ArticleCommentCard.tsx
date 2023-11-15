@@ -132,13 +132,14 @@ const ArticleCommentCard = ({
               </Menu.Target>
 
               <Menu.Dropdown>
-                <Menu.Item
-                  onClick={() => setIsEditing(true)}
-                  icon={<IconPencil size={rem(14)} color="blue" />}
-                  display={isAdminView ? "none" : "block"}
-                >
-                  Edit
-                </Menu.Item>
+                {!isAdminView && (
+                  <Menu.Item
+                    onClick={() => setIsEditing(true)}
+                    icon={<IconPencil size={rem(14)} color="blue" />}
+                  >
+                    Edit
+                  </Menu.Item>
+                )}
                 <Menu.Item
                   icon={<IconTrash size={rem(14)} color="red" />}
                   onClick={() =>
