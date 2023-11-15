@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   Group,
   LoadingOverlay,
   Stack,
@@ -31,6 +32,7 @@ import LargeBackButton from "web-ui/shared/LargeBackButton";
 import PublishedArticleView from "web-ui/shared/article/PublishedArticleView";
 import ViewOrderDetails from "web-ui/shared/order-management/ViewOrderDetails";
 import api from "@/api/axiosConfig";
+import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import {
   useCreateArticleComment,
   useDeleteArticleComment,
@@ -63,6 +65,8 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
   } = useGetArticleCommentsIdByArticleIdAndPetOwnerId(articleId, userId);
   const { data: petOwner, refetch: refetchPetOwner } =
     useGetPetOwnerByIdAndAccountType(userId, AccountTypeEnum.PetOwner);
+
+  console.log("article", article);
 
   const createArticleComment = async (
     payload: CreateUpdateArticleCommentPayload,
@@ -155,6 +159,12 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
             petOwnerArticleCommentIds={petOwnerArticleCommentIds}
           />
         </Box>
+        <Divider mt={70} />
+        <ServiceListingScrollCarousel
+          serviceListings={article?.recommendedServices}
+          title="Recommended"
+          description="Related services based on article"
+        />
       </Container>
     </>
   );

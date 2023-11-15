@@ -313,6 +313,7 @@ export interface Article {
   };
   updatedBy?: any;
   articleComments: ArticleComment[];
+  recommendedServices?: ServiceListing[];
 }
 
 export interface ArticleComment {
