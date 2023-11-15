@@ -365,7 +365,7 @@ const OrderItemStepperContent = ({
 
   const refundColumn = (
     <>
-      <Grid.Col span={6}>
+      <Grid.Col span={8}>
         {orderItem?.RefundRequest ? (
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Badge
@@ -389,7 +389,6 @@ const OrderItemStepperContent = ({
           </Text>
         )}
       </Grid.Col>
-      <Grid.Col span={2} />
       <Grid.Col span={4}>
         <Button
           fullWidth
