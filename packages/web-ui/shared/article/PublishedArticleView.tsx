@@ -52,6 +52,8 @@ interface PublishedArticleViewProps {
   publishComment?: (
     payload: CreateUpdateArticleCommentPayload,
   ) => Promise<void>;
+  updateComment?: (payload: CreateUpdateArticleCommentPayload) => Promise<void>;
+  deleteComment?: (articleCommentId: number) => Promise<void>;
   adminView?: boolean;
   petOwner?: PetOwner;
   petOwnerArticleCommentIds?: number[];
@@ -63,6 +65,8 @@ const PublishedArticleView = ({
   article,
   tagOptions,
   publishComment,
+  updateComment,
+  deleteComment,
   adminView,
   petOwner,
   petOwnerArticleCommentIds,
@@ -201,6 +205,8 @@ const PublishedArticleView = ({
           opened={commentDrawerOpened}
           onClose={closeCommentDrawer}
           publishComment={publishComment}
+          updateComment={updateComment}
+          deleteComment={deleteComment}
           petOwner={petOwner}
           petOwnerArticleCommentIds={petOwnerArticleCommentIds}
         />

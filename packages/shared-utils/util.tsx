@@ -260,7 +260,9 @@ export function displayArticleCommentDate(dateCreated) {
   const hoursDiff = now.diff(createdDate, "hour");
   const daysDiff = now.diff(createdDate, "day");
 
-  if (secondsDiff < 60) {
+  if (secondsDiff === 0) {
+    return `A moment ago`;
+  } else if (secondsDiff < 60) {
     return `${secondsDiff} second${secondsDiff !== 1 ? "s" : ""} ago`;
   } else if (minutesDiff < 60) {
     return `${minutesDiff} minute${minutesDiff !== 1 ? "s" : ""} ago`;

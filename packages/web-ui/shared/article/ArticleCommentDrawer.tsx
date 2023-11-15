@@ -43,6 +43,8 @@ interface ArticleCommentDrawerProps {
   publishComment?: (
     payload: CreateUpdateArticleCommentPayload,
   ) => Promise<void>;
+  updateComment?: (payload: CreateUpdateArticleCommentPayload) => Promise<void>;
+  deleteComment?: (articleCommentId: number) => Promise<void>;
   petOwner?: PetOwner;
   petOwnerArticleCommentIds?: number[];
 }
@@ -52,6 +54,8 @@ const ArticleCommentDrawer = ({
   opened,
   onClose,
   publishComment,
+  updateComment,
+  deleteComment,
   petOwner,
   petOwnerArticleCommentIds,
 }: ArticleCommentDrawerProps) => {
@@ -74,16 +78,7 @@ const ArticleCommentDrawer = ({
     };
     await publishComment(payload);
     form.reset();
-    notifications.show({
-      title: `Comment Published`,
-      color: "green",
-      icon: <IconCheck />,
-      message:
-        "Your comment has been published and is now visible to the public.",
-    });
   }
-
-  console.log("MY ARTICLE COMMENTS", petOwnerArticleCommentIds);
 
   return (
     <Drawer
@@ -146,6 +141,8 @@ const ArticleCommentDrawer = ({
             <ArticleCommentCard
               key={articleComment?.articleCommentId}
               articleComment={articleComment}
+              updateComment={updateComment}
+              deleteComment={deleteComment}
             />
           ))
           .reverse()}

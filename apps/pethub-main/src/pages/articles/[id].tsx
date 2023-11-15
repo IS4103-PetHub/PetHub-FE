@@ -33,8 +33,10 @@ import ViewOrderDetails from "web-ui/shared/order-management/ViewOrderDetails";
 import api from "@/api/axiosConfig";
 import {
   useCreateArticleComment,
+  useDeleteArticleComment,
   useGetArticleById,
   useGetArticleCommentsIdByArticleIdAndPetOwnerId,
+  useUpdateArticleComment,
 } from "@/hooks/article";
 import { useGetPetOwnerByIdAndAccountType } from "@/hooks/pet-owner";
 import { CreateUpdateArticleCommentPayload } from "@/types/types";
@@ -50,6 +52,8 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
   const ARTICLE_MARGIN = 300;
 
   const createArticleCommentMutation = useCreateArticleComment();
+  const updateArticleCommentMutation = useUpdateArticleComment();
+  const deleteArticleCommentMutation = useDeleteArticleComment();
 
   const { data: article, refetch: refetchArticle } =
     useGetArticleById(articleId);
@@ -67,9 +71,54 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
       await createArticleCommentMutation.mutateAsync(payload);
       await refetchArticle();
       await refetchPetOwnerArticleCommentIds();
+      notifications.show({
+        title: `Comment Published`,
+        color: "green",
+        icon: <IconCheck />,
+        message:
+          "Your comment has been published and is now visible to the public.",
+      });
     } catch (error: any) {
       notifications.show({
         ...getErrorMessageProps(`Error Publishing Comment`, error),
+      });
+    }
+  };
+
+  const updateArticleComment = async (
+    payload: CreateUpdateArticleCommentPayload,
+  ) => {
+    try {
+      await updateArticleCommentMutation.mutateAsync(payload);
+      await refetchArticle();
+      await refetchPetOwnerArticleCommentIds();
+      notifications.show({
+        title: `Comment Updated`,
+        color: "green",
+        icon: <IconCheck />,
+        message: "Your comment has been updated.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Updating Comment`, error),
+      });
+    }
+  };
+
+  const deleteArticleComment = async (articleCommentId: number) => {
+    try {
+      await deleteArticleCommentMutation.mutateAsync(articleCommentId);
+      await refetchArticle();
+      await refetchPetOwnerArticleCommentIds();
+      notifications.show({
+        title: `Comment Deleted`,
+        color: "green",
+        icon: <IconCheck />,
+        message: "Your comment has been removed.",
+      });
+    } catch (error: any) {
+      notifications.show({
+        ...getErrorMessageProps(`Error Deleting Comment`, error),
       });
     }
   };
@@ -100,6 +149,8 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
           <PublishedArticleView
             article={article}
             publishComment={createArticleComment}
+            updateComment={updateArticleComment}
+            deleteComment={deleteArticleComment}
             petOwner={petOwner}
             petOwnerArticleCommentIds={petOwnerArticleCommentIds}
           />
