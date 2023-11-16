@@ -266,7 +266,8 @@ const ReviewItem = ({
               {review?.orderItem?.invoice?.PetOwner?.lastName}
             </Text>
             <Text lineClamp={2} size="xs" color="dimmed">
-              Reviewed on {formatISODateTimeShort(review.dateCreated)}
+              Reviewed on {formatISODateTimeShort(review.dateCreated)}{" "}
+              {review?.lastUpdated && "(edited)"}
             </Text>
           </Box>
         </Grid.Col>

@@ -146,10 +146,10 @@ const ViewReviewModal = ({
     >
       <Group position="right" mt="xs" mb="xs">
         <Text size="sm">
-          As an pet business, you have the opportunity to respond to this
-          review. Your response will appear directly below the customer&apos;s
-          review, providing context or addressing any concerns raised. Below is
-          how the review currently looks like in the service listing page.
+          As a pet business, you have the opportunity to respond to this review.
+          Your response will appear directly below the customer&apos;s review,
+          providing context or addressing any concerns raised. Below is how the
+          review currently looks like in the service listing page.
         </Text>
       </Group>
 

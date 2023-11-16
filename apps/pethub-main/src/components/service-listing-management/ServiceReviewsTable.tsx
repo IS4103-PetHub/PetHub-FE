@@ -6,25 +6,13 @@ import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
-  Address,
-  CalendarGroup,
   Review,
-  ServiceListing,
-  Tag,
   formatISODateTimeShort,
   getErrorMessageProps,
   getMinTableHeight,
-  isValidServiceListing,
 } from "shared-utils";
-import { formatStringToLetterCase } from "shared-utils";
-import { TABLE_PAGE_SIZE } from "shared-utils";
-import { formatNumber2Decimals } from "shared-utils";
-import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
-import { useDeleteServiceListingById } from "@/hooks/service-listing";
 import StarRating from "../review/StarRating";
-import ServiceListingModal from "./ServiceListingModal";
 import ViewReviewModal from "./ViewReviewModal";
 
 interface ServiceReviewsTableProps {
