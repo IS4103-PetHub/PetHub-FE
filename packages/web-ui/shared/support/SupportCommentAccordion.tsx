@@ -79,7 +79,7 @@ export default function SupportCommentAccordion({
             canEdit={canEdit}
           />
           <Textarea
-            w="90%"
+            w="85%"
             autosize
             disabled={!canEdit}
             {...commentForm.getInputProps("comment")}

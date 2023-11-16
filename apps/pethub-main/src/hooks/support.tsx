@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { SupportTicket } from "shared-utils";
 import api from "@/api/axiosConfig";
 import {
   commentSupportPayload,
@@ -82,7 +83,7 @@ export const useGetSupportTicketsById = (supportTicketId: number) => {
     queryKey: ["support-tickets", supportTicketId],
     queryFn: async () => {
       const response = await api.get(`${SUPPORT_API}/${supportTicketId}`);
-      return response.data;
+      return response.data as SupportTicket;
     },
   });
 };
