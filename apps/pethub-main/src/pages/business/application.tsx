@@ -66,6 +66,7 @@ export default function Application({ userId }: ApplicationProps) {
         businessAddresses: petBusinessApplication.businessAddresses,
         businessEmail: petBusinessApplication.businessEmail,
         websiteURL: petBusinessApplication.websiteURL,
+        stripeAccountId: petBusinessApplication.stripeAccountId,
         businessDescription: petBusinessApplication.businessDescription,
         attachments: [],
       });
@@ -92,6 +93,7 @@ export default function Application({ userId }: ApplicationProps) {
       businessAddresses: [],
       businessEmail: "",
       websiteURL: "",
+      stripeAccountId: "",
       businessDescription: "",
       attachments: [],
     },
@@ -109,6 +111,8 @@ export default function Application({ userId }: ApplicationProps) {
         value && !/^(http|https):\/\/[^ "]+$/.test(value)
           ? "Website must start with http:// or https://"
           : null,
+      stripeAccountId: (value) =>
+        !value ? "Stripe account ID is required." : null,
       attachments: (value) => null,
     },
   });
@@ -204,6 +208,7 @@ export default function Application({ userId }: ApplicationProps) {
       businessType: values.businessType as PetBusinessTypeEnum,
       businessEmail: values.businessEmail,
       websiteURL: values.websiteURL,
+      stripeAccountId: values.stripeAccountId,
       businessDescription: values.businessDescription,
       businessAddresses: values.businessAddresses,
       attachments: [],
@@ -288,6 +293,15 @@ export default function Application({ userId }: ApplicationProps) {
                   placeholder="https://www.pet-groomer.com"
                   label="Business website URL"
                   {...applicationForm.getInputProps("websiteURL")}
+                />
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <TextInput
+                  withAsterisk
+                  disabled={isDisabled}
+                  placeholder="acct_1OB7qmPMnZYzJNe2"
+                  label="Stripe account ID"
+                  {...applicationForm.getInputProps("stripeAccountId")}
                 />
               </Grid.Col>
               <Grid.Col span={12}>

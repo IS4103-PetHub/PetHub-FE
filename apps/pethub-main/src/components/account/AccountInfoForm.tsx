@@ -42,6 +42,7 @@ const AccountInfoForm = ({
     email: petOwner ? petOwner.email : petBusiness.email,
     businessEmail: petBusiness ? petBusiness.businessEmail : "",
     websiteURL: petBusiness ? petBusiness.websiteURL : "",
+    stripeAccountId: petBusiness ? petBusiness.stripeAccountId : "",
     businessDescription: petBusiness ? petBusiness.businessDescription : "",
     businessAddresses: petBusiness ? petBusiness.businessAddresses : [],
   };
@@ -61,6 +62,8 @@ const AccountInfoForm = ({
         petBusiness && !/^.{8,9}[A-Z]$/.test(value)
           ? "Invalid Unique Entity Number (UEN)."
           : null,
+      stripeAccountId: (value, values) =>
+        petBusiness && !value ? "Stripe account ID is required." : null,
       firstName: (value, values) =>
         petOwner && !value ? "First name is required." : null,
       lastName: (value, values) =>
@@ -288,6 +291,23 @@ const AccountInfoForm = ({
                 />
               ) : (
                 petBusiness.websiteURL
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Stripe account ID</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <TextInput
+                  placeholder=""
+                  {...form.getInputProps("stripeAccountId")}
+                  disabled
+                />
+              ) : (
+                petBusiness.stripeAccountId
               )}
             </Grid.Col>
             <Grid.Col span={12}>

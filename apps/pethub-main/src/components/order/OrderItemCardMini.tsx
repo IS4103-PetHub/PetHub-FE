@@ -104,7 +104,7 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
               src={orderItem?.serviceListing?.attachmentURLs[0]}
               fit="contain"
               w="auto"
-              alt="Cart Item Photo"
+              alt="Order Item Photo"
             />
           ) : (
             <Image
@@ -112,7 +112,7 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
               src="/pethub-placeholder.png"
               fit="contain"
               w="auto"
-              alt="Cart Item Photo"
+              alt="Order Item Photo"
             />
           )}
         </Grid.Col>

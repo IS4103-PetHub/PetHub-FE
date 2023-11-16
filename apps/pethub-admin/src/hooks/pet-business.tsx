@@ -15,6 +15,7 @@ export const useGetAllPetBusinesses = () => {
         businessDescription: data.businessDescription,
         contactNumber: data.contactNumber,
         websiteURL: data.websiteURL,
+        stripeAccountId: data.stripeAccountId,
         email: data.user.email,
         accountType: data.user.accountType,
         accountStatus: data.user.accountStatus,

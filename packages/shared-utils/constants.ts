@@ -92,6 +92,13 @@ export enum ReviewReportReasonEnum {
   Others = "OTHERS",
 }
 
+export enum ArticleTypeEnum {
+  Annnouncements = "ANNOUNCEMENTS",
+  TipsAndTricks = "TIPS_AND_TRICKS",
+  Events = "EVENTS",
+  Others = "OTHERS",
+}
+
 export const PLATFORM_FEE_PERCENT = 0.07;
 
 export const COST_PER_SPOTLIGHT = 5;

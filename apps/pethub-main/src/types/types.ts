@@ -63,6 +63,7 @@ export interface PetBusiness extends User {
   websiteURL?: string;
   businessAddresses?: Address[];
   businessEmail?: string;
+  stripeAccountId?: string;
   petBusinessApplication: PetBusinessApplication;
   commissionRule: CommissionRule;
 }
@@ -80,6 +81,7 @@ export interface CreatePetBusinessApplicationPayload {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];
@@ -90,6 +92,7 @@ export interface PetBusinessApplication {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId?: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];
@@ -352,6 +355,12 @@ export interface PbDashboardData {
   invalidSLCount: number;
   openRefundRequestsCount: number;
   openSupportRequestsCount: number;
+}
+
+export interface CreateUpdateArticleCommentPayload {
+  articleId?: number;
+  articleCommentId?: number;
+  comment: string;
 }
 
 export interface CheckoutCartPayload {

@@ -227,6 +227,75 @@ export function validateReviewFiles(files: string[]) {
   return null;
 }
 
+// If < 1 hour: "Moments ago", if < 24 hours: "x hours ago", if < 7 days, x days ago, else "DD-MM-YYYY-TT"
+export function displayArticleDate(dateCreated) {
+  if (!dateCreated) return "Moments ago";
+
+  const createdDate = dayjs(dateCreated);
+  const now = dayjs();
+
+  const hoursDiff = now.diff(createdDate, "hour");
+  const daysDiff = now.diff(createdDate, "day");
+
+  if (hoursDiff < 1) {
+    return "Moments ago";
+  } else if (hoursDiff >= 1 && hoursDiff < 24) {
+    return `${hoursDiff} hour${hoursDiff > 1 ? "s" : ""} ago`;
+  } else if (daysDiff >= 1 && daysDiff < 7) {
+    return `${daysDiff} day${daysDiff > 1 ? "s" : ""} ago`;
+  } else {
+    return formatISODayDateTime(dateCreated);
+  }
+}
+
+// Same as above but got minutes also
+export function displayArticleCommentDate(dateCreated) {
+  if (!dateCreated) return "A moment ago";
+
+  const createdDate = dayjs(dateCreated);
+  const now = dayjs();
+
+  const minutesDiff = now.diff(createdDate, "minute");
+  const hoursDiff = now.diff(createdDate, "hour");
+  const daysDiff = now.diff(createdDate, "day");
+
+  if (minutesDiff < 1) {
+    return `A moment ago`;
+  } else if (minutesDiff < 60) {
+    return `${minutesDiff} minute${minutesDiff !== 1 ? "s" : ""} ago`;
+  } else if (hoursDiff < 24) {
+    return `${hoursDiff} hour${hoursDiff !== 1 ? "s" : ""} ago`;
+  } else if (daysDiff < 7) {
+    return `${daysDiff} day${daysDiff !== 1 ? "s" : ""} ago`;
+  } else {
+    return formatISODateTimeShort(dateCreated);
+  }
+}
+
+export function calculateArticleEstimatedReadingTime(content: string) {
+  const text = content;
+  const wpm = 238;
+  const words = text.trim().split(/\s+/).length;
+  let estimatedTime = words / wpm;
+
+  if (estimatedTime < 1) {
+    return "Under a minute read";
+  } else {
+    estimatedTime = Math.ceil(estimatedTime);
+    return `${estimatedTime} minute${estimatedTime > 1 ? "s" : ""} read`;
+  }
+}
+
+export function validateArticleComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 500) {
+    return "Comment cannot exceed 500 characters";
+  }
+  return null;
+}
+
 export function addCommasToNumberString(numString: string) {
   return numString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

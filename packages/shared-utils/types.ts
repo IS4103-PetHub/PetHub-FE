@@ -294,3 +294,38 @@ export interface ReviewStatsResponse {
   ratingCountDistributionData: RatingCountDistributionData;
   ratingCountData: RatingCountData;
 }
+export interface Article {
+  articleId: number;
+  title: string;
+  content: string;
+  isPinned: boolean;
+  articleType: string;
+  dateCreated: string;
+  dateUpdated?: string;
+  createdByUserId: number;
+  updatedByUserId?: number;
+  attachmentKeys: string[];
+  attachmentUrls: string[];
+  petBusinessId: number;
+  petBusiness: any;
+  tags: Tag[];
+  category: string;
+  createdBy?: {
+    firstName: string;
+    lastName: string;
+  };
+  updatedBy?: any;
+  articleComments: ArticleComment[];
+  recommendedServices?: ServiceListing[];
+}
+
+export interface ArticleComment {
+  articleCommentId: number;
+  comment: string;
+  dateCreated: string;
+  dateUpdated?: string;
+  articleId: number;
+  Article: Article;
+  petOwnerId: number;
+  petOwner: PetOwner;
+}
