@@ -42,6 +42,7 @@ interface ReviewItemProps {
   isLikedByUser: boolean;
   isReportedByUser: boolean;
   refetchLikedAndReportedReviewIds?: () => Promise<any>;
+  refetchServiceListing?: () => Promise<any>;
   hideIconButtons?: boolean;
 }
 
@@ -50,6 +51,7 @@ const ReviewItem = ({
   isLikedByUser,
   isReportedByUser,
   refetchLikedAndReportedReviewIds,
+  refetchServiceListing,
   hideIconButtons,
 }: ReviewItemProps) => {
   const theme = useMantineTheme();
@@ -120,6 +122,7 @@ const ReviewItem = ({
       });
       if (refetchLikedAndReportedReviewIds)
         await refetchLikedAndReportedReviewIds();
+      if (refetchServiceListing) await refetchServiceListing();
       if (res.liked) {
         // update the count
         setLikedCount((prevCount) => prevCount + 1);
@@ -240,7 +243,7 @@ const ReviewItem = ({
         >
           <Box display="flex">
             <Text fw={500} mr={4}>
-              {formatISODateTimeShort(review?.replyDate)} {">"}
+              {`${formatISODateTimeShort(review?.replyDate)} >`}
             </Text>
             <Text>{review?.reply}</Text>
           </Box>

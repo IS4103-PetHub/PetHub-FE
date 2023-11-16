@@ -9,6 +9,7 @@ import {
   useMantineTheme,
   Box,
   Stack,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -53,6 +54,7 @@ import {
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
 import { useGetLikedAndReportedReviews } from "@/hooks/review";
+import { useGetServiceListingById } from "@/hooks/service-listing";
 import {
   AddRemoveFavouriteServiceListingPayload,
   CartItem,
@@ -60,28 +62,38 @@ import {
 
 interface ServiceListingDetailsProps {
   userId: number;
-  serviceListing: ServiceListing;
+  // serviceListing: ServiceListing;
   recommendedListings: ServiceListing[];
 }
 
 export default function ServiceListingDetails({
   userId,
-  serviceListing,
+  // serviceListing,
   recommendedListings,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
   const { addItemToCart } = useCartOperations(userId);
-  const { data: favouritedListings = [] } =
-    useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
+  const {
+    data: favouritedListings = [],
+    isLoading: isFavouriteServiceListingLoading,
+  } = useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
   const [isFavourite, setIsFavourite] = useState(false);
   const [value, setValue] = useState<number | "">(1);
   const [opened, { open, close }] = useDisclosure(false); // for view timeslot modal
 
+  const serviceListingId = Number(router.query.id);
+
+  const {
+    data: serviceListing,
+    isLoading: isServiceListingLoading,
+    refetch: refetchServiceListing,
+  } = useGetServiceListingById(serviceListingId);
+
   const {
     data: likedAndReportedReviewIds,
-    isLoading,
+    isLoading: isFetchLikedAndReportedReviewsLoading,
     refetch: refetchLikedAndReportedReviews,
   } = useGetLikedAndReportedReviews(serviceListing?.serviceListingId);
 
@@ -89,7 +101,7 @@ export default function ServiceListingDetails({
     if (
       favouritedListings.some(
         (listing) =>
-          listing.serviceListingId === serviceListing.serviceListingId,
+          listing.serviceListingId === serviceListing?.serviceListingId,
       )
     ) {
       setIsFavourite(true);
@@ -100,7 +112,7 @@ export default function ServiceListingDetails({
 
   const ACCORDION_VALUES = ["description", "business"];
 
-  const serviceListingId = serviceListing.serviceListingId;
+  // const serviceListingId = serviceListing?.serviceListingId;
   const payload: AddRemoveFavouriteServiceListingPayload = {
     userId,
     serviceListingId,
@@ -117,7 +129,7 @@ export default function ServiceListingDetails({
         title: "Favourite Added",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing "${serviceListing.title}" added to favourites.`,
+        message: `Listing "${serviceListing?.title}" added to favourites.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -137,7 +149,7 @@ export default function ServiceListingDetails({
         title: "Favourite Removed",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing "${serviceListing.title}" removed from favourites.`,
+        message: `Listing "${serviceListing?.title}" removed from favourites.`,
       });
     } catch (error: any) {
       notifications.show({
@@ -188,9 +200,9 @@ export default function ServiceListingDetails({
       );
       notifications.show({
         title: "Added to cart",
-        message: `${Number(value) > 1 ? `${value}` : ""} '${
-          serviceListing.title
-        }' added to cart.`,
+        message: `${
+          Number(value) > 1 ? `${value}` : ""
+        } '${serviceListing?.title}' added to cart.`,
         color: "green",
       });
       setValue(1);
@@ -205,7 +217,9 @@ export default function ServiceListingDetails({
 
   // prevent user from viewing service listing details if pet business is inactive
   if (
-    serviceListing.petBusiness.user.accountStatus !== AccountStatusEnum.Active
+    serviceListing &&
+    serviceListing?.petBusiness?.user?.accountStatus !==
+      AccountStatusEnum.Active
   ) {
     return (
       <ViewServiceListingErrorMessage
@@ -217,7 +231,10 @@ export default function ServiceListingDetails({
   }
 
   // prevent user from viewing expired service listing
-  if (!dayjs(serviceListing.lastPossibleDate).isAfter(new Date())) {
+  if (
+    serviceListing &&
+    !dayjs(serviceListing?.lastPossibleDate).isAfter(new Date())
+  ) {
     return (
       <ViewServiceListingErrorMessage
         title="Expired Service Listing"
@@ -225,6 +242,8 @@ export default function ServiceListingDetails({
       />
     );
   }
+
+  if (!serviceListing) return null;
 
   const businessSection = (
     <Accordion.Item value="business" p="sm" mb="xl">
@@ -239,16 +258,16 @@ export default function ServiceListingDetails({
       <Accordion.Panel ml={5} mr={5}>
         <Group>
           <Box>
-            <Text weight={500}>{serviceListing.petBusiness.companyName}</Text>
+            <Text weight={500}>{serviceListing?.petBusiness?.companyName}</Text>
             <Text color="dimmed" size="sm">
-              UEN: {serviceListing.petBusiness.uen}
+              UEN: {serviceListing?.petBusiness?.uen}
             </Text>
           </Box>
           <SimpleOutlineButton
             text="View business"
             ml={5}
             onClick={() =>
-              router.push(`/pet-businesses/${serviceListing.petBusinessId}`)
+              router.push(`/pet-businesses/${serviceListing?.petBusinessId}`)
             }
           />
         </Group>
@@ -256,17 +275,17 @@ export default function ServiceListingDetails({
         <Stack mt="lg" spacing={5}>
           <Group spacing="xs">
             <IconPhone color="gray" size="1.2rem" />
-            <Text size="sm">{serviceListing.petBusiness.contactNumber}</Text>
+            <Text size="sm">{serviceListing?.petBusiness?.contactNumber}</Text>
           </Group>
           <Group spacing="xs">
             <IconMail color="gray" size="1.2rem" />
-            <Text size="sm">{serviceListing.petBusiness.businessEmail}</Text>
+            <Text size="sm">{serviceListing?.petBusiness?.businessEmail}</Text>
           </Group>
         </Stack>
 
         {/*if there are addresses*/}
-        {serviceListing.addresses.length > 0 && (
-          <BusinessLocationsGroup addresses={serviceListing.addresses} />
+        {serviceListing?.addresses?.length > 0 && (
+          <BusinessLocationsGroup addresses={serviceListing?.addresses} />
         )}
       </Accordion.Panel>
     </Accordion.Item>
@@ -275,25 +294,33 @@ export default function ServiceListingDetails({
   return (
     <div>
       <Head>
-        <title>{serviceListing.title} - PetHub</title>
+        <title>{serviceListing?.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} mb={80} size="70vw" sx={{ overflow: "hidden" }}>
+        <LoadingOverlay
+          loaderProps={{ size: "lg" }}
+          visible={
+            isServiceListingLoading ||
+            isFavouriteServiceListingLoading ||
+            isFetchLikedAndReportedReviewsLoading
+          }
+        />
         <Grid gutter="xl">
           <Grid.Col span={9}>
             <ServiceListingBreadcrumbs
-              title={serviceListing.title}
-              id={serviceListing.serviceListingId}
+              title={serviceListing?.title}
+              id={serviceListing?.serviceListingId}
             />
             <ServiceCategoryBadge
-              category={serviceListing.category}
+              category={serviceListing?.category}
               size="lg"
               mt="xl"
               mb={5}
             />
             <Group position="apart">
               <PageTitle
-                title={serviceListing.title}
+                title={serviceListing?.title}
                 mb="xs"
                 size="2.25rem"
                 weight={700}
@@ -310,21 +337,21 @@ export default function ServiceListingDetails({
 
             <Box display="flex" mt={-10} mb={10}>
               <Text mr={5} fw={500} size="md">
-                {serviceListing.overallRating === 0
+                {serviceListing?.overallRating === 0
                   ? "Not rated yet"
-                  : `${serviceListing.overallRating.toFixed(1)}/5 (${
-                      serviceListing.reviews.length
-                    } reviews)`}
+                  : `${serviceListing?.overallRating.toFixed(
+                      1,
+                    )}/5 (${serviceListing?.reviews?.length} reviews)`}
               </Text>
               <StarRating
-                value={serviceListing.overallRating}
+                value={serviceListing?.overallRating}
                 viewOnly
                 allowFractions
               />
             </Box>
-            <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
+            <ServiceListingTags tags={serviceListing?.tags} size="md" mb="xl" />
             <ImageCarousel
-              attachmentURLs={serviceListing.attachmentURLs}
+              attachmentURLs={serviceListing?.attachmentURLs}
               altText="Service Listing Photo"
               imageHeight={500}
             />
@@ -345,18 +372,19 @@ export default function ServiceListingDetails({
               {businessSection}
               <DescriptionAccordionItem
                 title="Description"
-                description={serviceListing.description}
+                description={serviceListing?.description}
                 showFullDescription={showFullDescription}
                 setShowFullDescription={setShowFullDescription}
               />
               <ReviewAccordionItem
-                title={`Reviews (${serviceListing.reviews.length})`}
+                title={`Reviews (${serviceListing?.reviews?.length})`}
                 serviceListing={serviceListing}
                 likedReviewIds={likedAndReportedReviewIds?.likesBy}
                 reportedReviewIds={likedAndReportedReviewIds?.reportsBy}
                 refetchLikedAndReportedReviewIds={
                   refetchLikedAndReportedReviews
                 }
+                refetchServiceListing={refetchServiceListing}
               />
             </Accordion>
           </Grid.Col>
@@ -370,7 +398,7 @@ export default function ServiceListingDetails({
               sx={{ position: "relative" }}
             >
               <Text size="xl" weight={500} mb="md">
-                ${formatNumber2Decimals(serviceListing.basePrice)}
+                ${formatNumber2Decimals(serviceListing?.basePrice)}
               </Text>
 
               <NumberInputWithIcons
@@ -394,7 +422,7 @@ export default function ServiceListingDetails({
               </Button>
             </Paper>
 
-            {serviceListing.requiresBooking && (
+            {serviceListing?.requiresBooking && (
               <Paper
                 radius="md"
                 bg={theme.colors.gray[0]}
@@ -448,24 +476,23 @@ export default function ServiceListingDetails({
 }
 
 export async function getServerSideProps(context) {
-  const id = context.params.id;
-  const serviceListing = (await (
-    await api.get(`/service-listings/${id}`)
-  ).data) as ServiceListing;
+  // const id = context.params.id;
+  // const serviceListing = (await (await api.get(`/service-listings/${id}`)).data) as ServiceListing;
+  const serviceListingId = context.params.id;
 
   const session = await getSession(context);
 
-  if (!session) return { props: { serviceListing } };
+  if (!session) return;
   const userId = session.user["userId"];
 
   const recommendedData = (await (
     await api.get(`/service-listings/get-recommended-listings/${userId}`)
   ).data) as ServiceListing[];
   const recommendedListings = recommendedData.filter(
-    (listing) => serviceListing.serviceListingId !== listing.serviceListingId,
+    (listing) => serviceListingId !== listing.serviceListingId,
   );
 
   return {
-    props: { userId, serviceListing, recommendedListings },
+    props: { userId, recommendedListings },
   };
 }

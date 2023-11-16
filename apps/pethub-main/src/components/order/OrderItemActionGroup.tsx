@@ -363,7 +363,7 @@ const OrderItemStepperContent = ({
     </>
   );
 
-  const refundColumn = (
+  const refundColumn = orderItem.itemPrice !== 0 && (
     <>
       <Grid.Col span={8}>
         {orderItem?.RefundRequest ? (
