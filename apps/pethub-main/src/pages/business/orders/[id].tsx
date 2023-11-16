@@ -33,15 +33,7 @@ export default function PBOrdersDetails({
         <PBCannotAccessMessage />
       ) : (
         <>
-          <LargeBackButton
-            text="Back to Order Management"
-            onClick={() => {
-              router.push("/business/orders");
-            }}
-            size="sm"
-            mb="md"
-          />
-          <ViewOrderDetails order={order} pet={pet} />
+          <ViewOrderDetails order={order} pet={pet} router={router} />
         </>
       )}
     </>

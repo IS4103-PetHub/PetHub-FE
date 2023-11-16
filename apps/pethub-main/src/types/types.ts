@@ -12,6 +12,8 @@ import {
   Pet,
   OrderItem,
   ReviewReportReasonEnum,
+  SupportTicketReason,
+  Priority,
   PetOwner,
 } from "shared-utils";
 import { PetRequestTypeEnum } from "./constants";
@@ -375,4 +377,23 @@ export interface CheckoutCartPayload {
 export interface CheckoutSpotlightListingPayload {
   serviceListingId: number;
   paymentMethodId: string;
+}
+
+export interface createSupportTicketPayload {
+  userId: number;
+  supportCategory: SupportTicketReason;
+  priority: Priority;
+  reason: string;
+  files: File[];
+  serviceListingId?: number;
+  orderItemId?: number;
+  bookingId?: number;
+  payoutInvoiceId?: number;
+  refundRequestId?: number;
+}
+
+export interface commentSupportPayload {
+  userId: number;
+  comment: string;
+  files: File[];
 }

@@ -21,18 +21,21 @@ export default function PBDashboardCharts({ data }: pbDashboardDataProps) {
           <MiniSummaryCard
             title="Invalid Service Listings"
             body={data.invalidSLCount.toString()}
+            link="/business/listings"
           />
         </Grid.Col>
         <Grid.Col span={3}>
           <MiniSummaryCard
             title="Pending Refund Requests"
             body={data.openRefundRequestsCount.toString()}
+            link="/business/refunds"
           />
         </Grid.Col>
         <Grid.Col span={3}>
           <MiniSummaryCard
             title="Pending Support Requests"
             body={data.openSupportRequestsCount.toString()}
+            link="/business/supports"
           />
         </Grid.Col>
       </Grid>

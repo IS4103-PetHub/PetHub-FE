@@ -127,6 +127,10 @@ const links: {
         link: "/customer/orders",
         label: "My orders",
       },
+      {
+        link: "/customer/supports",
+        label: "My supports",
+      },
     ],
   },
   {

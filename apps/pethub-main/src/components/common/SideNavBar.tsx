@@ -19,6 +19,7 @@ import {
   IconFileInvoice,
   IconReportAnalytics,
   IconCreditCard,
+  IconHelp,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -128,6 +129,11 @@ const nonPendingLinks = [
     link: "/business/refunds",
     label: "Refunds",
     icon: IconCreditCard,
+  },
+  {
+    link: "/business/supports",
+    label: "Support",
+    icon: IconHelp,
   },
 ];
 

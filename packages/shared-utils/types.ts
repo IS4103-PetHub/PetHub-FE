@@ -4,10 +4,13 @@ import {
   GenderEnum,
   OrderItemStatusEnum,
   PetTypeEnum,
+  Priority,
   RecurrencePatternEnum,
   RefundStatusEnum,
   ReviewReportReasonEnum,
   ServiceCategoryEnum,
+  SupportTicketReason,
+  SupportTicketStatus,
 } from "./constants";
 
 export interface ChangePasswordPayload {
@@ -231,6 +234,18 @@ export interface PetOwner extends User {
   user?: User; // BE not flattening for some endpoints
 }
 
+export interface PetBusiness extends User {
+  // pet business attributes
+  companyName: string;
+  uen: string;
+  businessType?: string;
+  businessDescription?: string;
+  websiteURL?: string;
+  businessAddresses?: Address[];
+  businessEmail?: string;
+  user?: User;
+}
+
 export interface Pet {
   petId: number;
   petName: string;
@@ -272,6 +287,85 @@ export interface ReportReview {
   reportReason: ReviewReportReasonEnum;
   reviewId: number;
   review: Review;
+}
+
+export interface SupportTicket {
+  supportTicketId: number;
+  createdAt: string;
+  updatedAt: string;
+  status: SupportTicketStatus;
+  reason: string;
+  closedAt?: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  comments: Comment[];
+  supportCategory: SupportTicketReason;
+  priority: Priority;
+  petOwnerId?: number;
+  petOwner?: PetOwner;
+  petBusinessId?: number;
+  petBusiness?: PetBusiness;
+
+  serviceListingId?: number;
+  serviceListing?: ServiceListing;
+
+  orderItemId?: number;
+  orderItem?: OrderItem;
+
+  bookingId?: number;
+  booking?: Booking;
+
+  payoutInvoiceId?: number;
+  payoutInvoice?: PayoutInvoice;
+
+  refundRequestId?: number;
+  refundRequest?: RefundRequest;
+
+  invoiceId?: number;
+  invoice: Invoice;
+}
+
+export interface PayoutInvoice {
+  invoiceId: number;
+  totalAmount: number;
+  commissionCharge: number;
+  paidOutAmount: number;
+  createdAt: string;
+  paymentId: string;
+  attachmentKey?: string;
+  attachmentURL?: string;
+  userId: number;
+  petBusiness: PetBusiness;
+}
+export interface Booking {
+  bookingId: number;
+  petOwnerId: number;
+  dateCreated: string;
+  lastUpdated?: string;
+  startTime: string;
+  endTime: string;
+  timeSlotId: number;
+  serviceListingId: number;
+  serviceListing: ServiceListing;
+  // pet owner and pet details (optional)
+  petOwner?: PetOwner;
+  petId?: number;
+  pet?: Pet;
+  // not yet implemented
+  invoiceId?: number;
+  transactionId?: number;
+  orderItemId: number;
+  OrderItem?: OrderItem;
+}
+
+export interface Comment {
+  commentId: number;
+  createdAt: string;
+  comment: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  supportTicketId: number;
+  userId: number;
 }
 
 interface AverageReviewData {

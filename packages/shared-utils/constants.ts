@@ -92,6 +92,30 @@ export enum ReviewReportReasonEnum {
   Others = "OTHERS",
 }
 
+export enum SupportTicketReason {
+  GeneralEnquiry = "GENERAL_ENQUIRY",
+  ServiceListing = "SERVICE_LISTINGS",
+  Orders = "ORDERS",
+  Appointments = "APPOINTMENTS",
+  Payments = "PAYMENTS",
+  Accounts = "ACCOUNTS",
+  Refunds = "REFUNDS",
+  Others = "OTHERS",
+}
+
+export enum Priority {
+  High = "HIGH",
+  Medium = "MEDIUM",
+  Low = "LOW",
+}
+
+export enum SupportTicketStatus {
+  Pending = "PENDING",
+  InProgress = "IN_PROGRESS",
+  ClosedResolved = "CLOSED_RESOLVED",
+  ClosedUnresolved = "CLOSED_UNRESOLVED",
+}
+
 export enum ArticleTypeEnum {
   Annnouncements = "ANNOUNCEMENTS",
   TipsAndTricks = "TIPS_AND_TRICKS",

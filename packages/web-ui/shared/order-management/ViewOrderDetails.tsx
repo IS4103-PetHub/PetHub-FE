@@ -32,6 +32,7 @@ import {
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCompleteOrderItem } from "../../../../apps/pethub-main/src/hooks/order";
 import { CompleteOrderItemPayload } from "../../../../apps/pethub-main/src/types/types";
 import { PageTitle } from "../PageTitle";
@@ -40,12 +41,14 @@ interface ViewOrderDetailsProps {
   order: OrderItem;
   pet: Pet;
   isAdmin?: boolean;
+  router: any;
 }
 
 export default function ViewOrderDetails({
   order,
   pet,
   isAdmin,
+  router,
 }: ViewOrderDetailsProps) {
   const theme = useMantineTheme();
   const orderStatusColorMap = new Map([
@@ -129,6 +132,14 @@ export default function ViewOrderDetails({
   return (
     <>
       <Container mt="xl" mb="xl">
+        <LargeBackButton
+          text="Back to Order Management"
+          onClick={() => {
+            router.push(isAdmin ? "/admin/orders" : "/business/orders");
+          }}
+          size="sm"
+          mb="md"
+        />
         <Group position="apart">
           <PageTitle title={`${order.itemName}`} />
           <Button
