@@ -2,6 +2,7 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   Address,
+  ArticleTypeEnum,
   PetBusinessTypeEnum,
   ServiceListing,
 } from "shared-utils";
@@ -36,6 +37,7 @@ export interface PetBusiness extends User {
   businessType?: string;
   businessDescription?: string;
   businessEmail?: string;
+  stripeAccountId?: string;
   businessAddresses?: Address[];
   contactNumber: string;
   websiteURL?: string;
@@ -124,6 +126,7 @@ export interface PetBusinessApplication {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];
@@ -172,4 +175,16 @@ export interface RevenueDashboardPetBusiness {
   businessType: PetBusinessTypeEnum;
   userEmail: string;
   dateJoined: string;
+}
+
+export interface CreateOrUpdateArticlePayload {
+  articleId?: number;
+  title: string;
+  content: string;
+  articleType: string;
+  file: File;
+  internalUserId?: number;
+  tags: number[];
+  category: string;
+  isPinned: boolean;
 }

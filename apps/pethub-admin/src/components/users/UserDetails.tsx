@@ -242,6 +242,13 @@ const PetBusinessDetails = ({
         </Grid.Col>
 
         <Grid.Col span={6}>
+          <Text>Stripe Account ID:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>{user.stripeAccountId}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
           <Text>Commission Rule:</Text>
         </Grid.Col>
         <Grid.Col span={6}>

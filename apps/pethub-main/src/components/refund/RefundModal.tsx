@@ -55,6 +55,7 @@ const RefundModal = ({
   const theme = useMantineTheme();
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [choice, setChoice] = useState<string>("");
 
   const createRefundMutation = useCreateRefundRequest();
@@ -121,8 +122,10 @@ const RefundModal = ({
 
   const createRefundRequest = async (payload: CreateRefundRequestPayload) => {
     try {
+      setIsLoading(true);
       await createRefundMutation.mutateAsync(payload);
       if (refetch) await refetch();
+      setIsLoading(false);
       handleModalClose();
       router.push(`/customer/orders/${orderItem?.orderItemId}`);
       notifications.show({
@@ -133,6 +136,7 @@ const RefundModal = ({
           "Please wait for the business to review the details of your refund request.",
       });
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps(`Error Creating Refund Request`, error),
       });
@@ -164,8 +168,10 @@ const RefundModal = ({
     payload: ApproveOrRejectRefundRequestPayload,
   ) => {
     try {
+      setIsLoading(true);
       await approveRefundMutation.mutateAsync(payload);
       if (refetch) await refetch();
+      setIsLoading(false);
       handleModalClose();
       notifications.show({
         title: `Refund Request Approved`,
@@ -175,6 +181,7 @@ const RefundModal = ({
           "The refund request has been approved. The balance will be refunded to the customer's original payment method.",
       });
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps(`Error Approving Refund Request`, error),
       });
@@ -185,8 +192,10 @@ const RefundModal = ({
     payload: ApproveOrRejectRefundRequestPayload,
   ) => {
     try {
+      setIsLoading(true);
       await rejectRefundMutation.mutateAsync(payload);
       if (refetch) await refetch();
+      setIsLoading(false);
       handleModalClose();
       notifications.show({
         title: `Refund Request Rejected`,
@@ -195,6 +204,7 @@ const RefundModal = ({
         message: "The refund request has been rejected.",
       });
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps(`Error Approving Refund Request`, error),
       });
@@ -378,6 +388,7 @@ const RefundModal = ({
                   color="dark"
                   className="gradient-hover"
                   type="submit"
+                  loading={isLoading}
                 >
                   Submit Refund Request
                 </Button>
@@ -413,6 +424,8 @@ const RefundModal = ({
                 type="submit"
                 miw={100}
                 onClick={() => setChoice("reject")}
+                loading={choice === "reject" && isLoading}
+                display={choice === "approve" && isLoading ? "none" : "block"} // Prevent quickly clicking the other button
               >
                 Reject
               </Button>
@@ -421,6 +434,8 @@ const RefundModal = ({
                 type="submit"
                 miw={100}
                 onClick={() => setChoice("approve")}
+                loading={choice === "approve" && isLoading}
+                display={choice === "reject" && isLoading ? "none" : "block"} // Prevent quickly clicking the other button
               >
                 Approve
               </Button>

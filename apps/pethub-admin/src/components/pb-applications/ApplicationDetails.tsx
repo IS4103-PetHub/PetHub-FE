@@ -107,6 +107,10 @@ export default function ApplicationDetails({
                 </Text>
               </Group>
               <Group position="apart">
+                <Text fw={700}>Stripe Account ID</Text>
+                <Text>{application.stripeAccountId}</Text>
+              </Group>
+              <Group position="apart">
                 <Text fw={700}>Application created</Text>
                 <Text>
                   {new Date(application.dateCreated).toLocaleDateString()}

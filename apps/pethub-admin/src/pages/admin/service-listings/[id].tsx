@@ -163,6 +163,15 @@ export default function ServiceListingDetails({
         size="sm"
       />
       <Container mt="xl" mb="xl" size="70vw">
+        <Box mb="xl">
+          <LargeBackButton
+            text="Back to Service Listings"
+            onClick={async () => {
+              router.push("/admin/service-listings");
+            }}
+            size="sm"
+          />
+        </Box>
         <PageTitle title={serviceListing?.title} />
 
         <Accordion

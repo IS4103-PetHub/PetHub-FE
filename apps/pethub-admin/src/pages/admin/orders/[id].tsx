@@ -1,4 +1,4 @@
-import { useMantineTheme } from "@mantine/core";
+import { Container, useMantineTheme } from "@mantine/core";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";

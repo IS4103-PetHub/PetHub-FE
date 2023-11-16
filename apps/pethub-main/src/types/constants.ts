@@ -65,6 +65,21 @@ export const orderItemsSortOptions = [
   },
 ];
 
+export const articleSortOptions = [
+  {
+    value: "recent",
+    label: "Most recent",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+];
+
 // for landing page and service listings sidebar
 
 export const landingPageCategories = [
