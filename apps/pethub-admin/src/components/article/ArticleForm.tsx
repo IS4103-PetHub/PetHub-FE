@@ -246,7 +246,7 @@ const ArticleForm = ({
             {...form.getInputProps("title")}
           />
         </Grid.Col>
-        <Grid.Col span={11} mt={-10}>
+        <Grid.Col span={10} mt={-10}>
           <Text size="0.875rem" fw={500} color="#212529" mt={3}>
             Upload Cover Image
           </Text>
@@ -272,7 +272,7 @@ const ArticleForm = ({
             />
           )}
         </Grid.Col>
-        <Grid.Col span={5}>
+        <Grid.Col span={6}>
           <Button
             mt={14}
             fullWidth

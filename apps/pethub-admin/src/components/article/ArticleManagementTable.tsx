@@ -1,11 +1,13 @@
 import { Group, Badge } from "@mantine/core";
 import { IconPin, IconPinFilled } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React from "react";
 import {
   Article,
   TABLE_PAGE_SIZE,
+  formatISODateTimeShort,
   formatNumber2Decimals,
   getMinTableHeight,
 } from "shared-utils";
@@ -68,7 +70,7 @@ const ArticleManagementTable = ({
             accessor: "title",
             title: "Title",
             textAlignment: "left",
-            width: 150,
+            width: 170,
             sortable: true,
             ellipsis: true,
           },
@@ -82,14 +84,6 @@ const ArticleManagementTable = ({
               record.createdBy.firstName + " " + record.createdBy.lastName,
           },
           {
-            accessor: "category",
-            title: "Category",
-            textAlignment: "left",
-            width: 55,
-            render: (record) =>
-              record.category ? formatStringToLetterCase(record.category) : "-",
-          },
-          {
             accessor: "articleType",
             title: "Type",
             textAlignment: "left",
@@ -101,25 +95,20 @@ const ArticleManagementTable = ({
             ),
           },
           {
-            accessor: "tags",
-            title: "Tags",
+            accessor: "dateCreated",
+            title: "Date Created",
             textAlignment: "left",
-            width: 100,
-            render: (record) =>
-              record.tags
-                ? record.tags.map((tag, index) => (
-                    <React.Fragment key={tag.tagId}>
-                      <Badge color="blue">{tag.name}</Badge>
-                      {index < record.tags.length - 1 && "\u00A0"}
-                    </React.Fragment>
-                  ))
-                : "-",
+            sortable: true,
+            width: 75,
+            render: (record) => {
+              return `${formatISODateTimeShort(record.dateCreated)}`;
+            },
           },
           {
             accessor: "isPinned",
             title: "Pin",
             textAlignment: "right",
-            width: 40,
+            width: 35,
             sortable: true,
             render: (record) =>
               record.isPinned ? (

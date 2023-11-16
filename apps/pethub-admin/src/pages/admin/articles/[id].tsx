@@ -62,7 +62,7 @@ export default function ArticleDetails({
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
   const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadArticles);
 
-  const [isPreviewing, toggleIsPreviewing] = useToggle([true, false]);
+  const [isPreviewing, toggleIsPreviewing] = useToggle([false, true]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateArticleMutation = useUpdateArticle();
