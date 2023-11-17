@@ -13,10 +13,12 @@ interface NewsletterProps {
 
 const Newsletter = ({ opened, close }: NewsletterProps) => {
   const subscribeToNewsletterMutation = useSubscribeToNewsletter();
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
 
   const subscribeToNewsletter = async () => {
     try {
+      setIsLoading(true);
       await subscribeToNewsletterMutation.mutateAsync(email);
       notifications.show({
         title: `Subscribed`,
@@ -25,8 +27,10 @@ const Newsletter = ({ opened, close }: NewsletterProps) => {
         message:
           "You have successfully subscribed to the PetHub email newsletter.",
       });
+      setIsLoading(false);
       close();
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps(`Error Subscribing`, error),
       });
@@ -55,7 +59,9 @@ const Newsletter = ({ opened, close }: NewsletterProps) => {
           onChange={(e) => setEmail(e.currentTarget.value)}
           value={email}
         />
-        <Button onClick={subscribeToNewsletter}>Subscribe</Button>
+        <Button onClick={subscribeToNewsletter} loading={isLoading}>
+          Subscribe
+        </Button>
       </Group>
     </Dialog>
   );

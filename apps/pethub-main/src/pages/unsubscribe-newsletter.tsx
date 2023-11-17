@@ -23,12 +23,14 @@ import { parseRouterQueryParam } from "@/util";
 export default function UnsubscribeNewsletter() {
   const router = useRouter();
   const email = parseRouterQueryParam(router.query.email);
+  const [isLoading, setIsLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   const unsubscribeFromNewsletterMutation = useUnsubscribeFromNewsletter();
 
   const unsubscribeFromNewsletter = async () => {
     try {
+      setIsLoading(true);
       await unsubscribeFromNewsletterMutation.mutateAsync(email);
       notifications.show({
         title: `Unsubscribed`,
@@ -37,8 +39,10 @@ export default function UnsubscribeNewsletter() {
         message:
           "You have successfully unsubscribed from the PetHub email newsletter.",
       });
+      setIsLoading(false);
       setDone(true);
     } catch (error: any) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps(`Error Unsubscribing`, error),
       });
@@ -69,7 +73,9 @@ export default function UnsubscribeNewsletter() {
           )}
           <Group position="center" mt="xs">
             {!done ? (
-              <Button onClick={unsubscribeFromNewsletter}>Unsubscribe</Button>
+              <Button onClick={unsubscribeFromNewsletter} loading={isLoading}>
+                Unsubscribe
+              </Button>
             ) : (
               <Button onClick={() => router.push("/")}>Home</Button>
             )}
