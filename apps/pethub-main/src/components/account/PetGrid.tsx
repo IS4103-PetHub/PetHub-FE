@@ -89,19 +89,21 @@ const PetGrid = ({ userId }: PetGridProps) => {
   };
 
   const petTypeIcons = {
-    [PetTypeEnum.Dog]: "/icons8-dog.png",
-    [PetTypeEnum.Cat]: "/icons8-cat.png",
-    [PetTypeEnum.Bird]: "/icons8-bird.png",
-    [PetTypeEnum.Terrapin]: "/icons8-turtle.png",
-    [PetTypeEnum.Rabbit]: "/icons8-rabbit.png",
-    [PetTypeEnum.Rodent]: "/icons8-rat.png",
-    [PetTypeEnum.Others]: "/icons8-veterinarian.png",
+    [PetTypeEnum.Dog]: "https://img.icons8.com/pulsar-color/48/year-of-dog.png",
+    [PetTypeEnum.Cat]: "https://img.icons8.com/pulsar-color/48/cat.png",
+    [PetTypeEnum.Bird]: "https://img.icons8.com/pulsar-color/48/bird.png",
+    [PetTypeEnum.Terrapin]: "https://img.icons8.com/pulsar-color/48/turtle.png",
+    [PetTypeEnum.Rabbit]: "https://img.icons8.com/pulsar-color/48/rabbit.png",
+    [PetTypeEnum.Rodent]:
+      "https://img.icons8.com/pulsar-color/48/year-of-rat.png",
+    [PetTypeEnum.Others]:
+      "https://img.icons8.com/pulsar-color/48/dog-footprint.png",
   };
 
   const renderPetTypeIcon = (petType) => {
     const iconPath = petTypeIcons[petType];
     if (iconPath) {
-      return <img src={iconPath} alt={petType} />;
+      return <img width="30" src={iconPath} alt={petType} />;
     }
     return null; // Return null if no icon is found for the pet type
   };

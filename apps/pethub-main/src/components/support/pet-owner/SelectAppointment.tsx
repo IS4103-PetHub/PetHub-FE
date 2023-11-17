@@ -7,16 +7,19 @@ import {
   Image,
   SegmentedControl,
   Text,
+  useMantineTheme,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { UseFormReturnType } from "@mantine/form";
-import { IconCalendar } from "@tabler/icons-react";
+import { IconCalendar, IconPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { formatISODateOnly, formatISODateTimeShort } from "shared-utils";
+import { formatISODateTimeShort } from "shared-utils";
 import CenterLoader from "web-ui/shared/CenterLoader";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import { useGetBookingsByUserId } from "@/hooks/booking";
+import ShowLessButton from "../ShowLessButton";
+import ShowMoreButton from "../ShowMoreButton";
 
 interface SelectAppointmentProps {
   form: UseFormReturnType<any>;
@@ -29,6 +32,7 @@ export default function SelectAppointment({
   userId,
   memberSince,
 }: SelectAppointmentProps) {
+  const theme = useMantineTheme();
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(
     dayjs(new Date()).add(30, "days").toDate(),
@@ -96,9 +100,15 @@ export default function SelectAppointment({
         radius="md"
         withBorder
         onClick={() => handleRowClick(bookings.bookingId)}
-        style={{
+        sx={{
+          "&:hover": {
+            cursor: "pointer",
+            backgroundColor: theme.colors.gray[0],
+          },
           backgroundColor:
-            selectedBookingId === bookings.bookingId ? "#f0f0f0" : "white",
+            selectedBookingId === bookings.bookingId
+              ? theme.colors.indigo[0]
+              : "white",
         }}
       >
         <Group>
@@ -190,11 +200,9 @@ export default function SelectAppointment({
       </Grid>
       <Box mt="xl">
         {visibleListings.length < bookings.length && (
-          <Button onClick={handleShowMore} style={{ marginRight: 8 }}>
-            Show More Items
-          </Button>
+          <ShowMoreButton onClick={handleShowMore} />
         )}
-        {visibleRows > 2 && <Button onClick={handleShowLess}>Show Less</Button>}
+        {visibleRows > 2 && <ShowLessButton onClick={handleShowLess} />}
       </Box>
     </>
   );

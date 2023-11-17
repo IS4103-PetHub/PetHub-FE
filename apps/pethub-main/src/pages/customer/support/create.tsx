@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   CloseButton,
@@ -12,6 +13,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
@@ -22,6 +24,7 @@ import {
   getErrorMessageProps,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import SelectAppointment from "@/components/support/pet-owner/SelectAppointment";
 import SelectOrderItem from "@/components/support/pet-owner/SelectOrderItem";
 import SelectRefundRequests from "@/components/support/pet-owner/SelectRefundRequests";
@@ -96,7 +99,7 @@ export default function CreatePOSupport({
       const createdSupportTicket =
         await createPOSupportTicketMutation.mutateAsync(payload);
       refetchSupportTickets();
-      router.push(`/customer/supports/${createdSupportTicket.supportTicketId}`);
+      router.push(`/customer/support/${createdSupportTicket.supportTicketId}`);
     } catch (error) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Support Ticket", error),
@@ -119,9 +122,9 @@ export default function CreatePOSupport({
   const supportTicketForm = useForm({
     initialValues: initialValues,
     validate: {
-      reason: isNotEmpty("Reason is mandatory."),
-      supportCategory: isNotEmpty("Category is mandatory"),
-      priority: isNotEmpty("Priority is mandatory"),
+      reason: isNotEmpty("Description is required."),
+      supportCategory: isNotEmpty("Category is required."),
+      priority: isNotEmpty("Priority is required."),
     },
   });
 
@@ -167,13 +170,31 @@ export default function CreatePOSupport({
       </Head>
       <main>
         <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
+          <LargeBackButton
+            text="Back to Support Tickets"
+            onClick={() => router.push("/customer/support")}
+            size="sm"
+            mb="md"
+            variant="light"
+          />
           <Group position="apart">
-            <PageTitle title="Create Support Ticket" mb={"lg"} />
+            <Box mb={50}>
+              <PageTitle title="Create support ticket" />
+              <Text color="dimmed">
+                Describe your enquiry and upload supporting images if needed.
+              </Text>
+            </Box>
           </Group>
           <Stepper active={active}>
             {!isCategoryDisabled && (
               <Stepper.Step
-                label={`Select ${formatStringToLetterCase(category)}`}
+                label={
+                  category === "PAYMENTS"
+                    ? "Select corresponding order"
+                    : `Select ${formatStringToLetterCase(category)
+                        .toLowerCase()
+                        .substring(0, category.length - 1)}`
+                }
               >
                 {category === "SERVICE_LISTINGS" && (
                   <SelectServiceListing form={supportTicketForm} />
@@ -199,16 +220,17 @@ export default function CreatePOSupport({
                 )}
               </Stepper.Step>
             )}
-            <Stepper.Step label={`Describe what is wrong`}>
+            <Stepper.Step label="Enter description">
               <Textarea
-                placeholder="Input Description"
-                label="Reason"
+                minRows={8}
+                placeholder="Describe your enquiry."
+                label="Description"
                 mb="xl"
                 withAsterisk
                 {...supportTicketForm.getInputProps("reason")}
               />
             </Stepper.Step>
-            <Stepper.Step label={`Attachments`}>
+            <Stepper.Step label="Upload images (optional)">
               <FileInput
                 placeholder={
                   imagePreview.length == 0
@@ -217,7 +239,7 @@ export default function CreatePOSupport({
                 }
                 accept="image/*"
                 name="images"
-                label="Attachments"
+                label="Images"
                 multiple
                 onChange={(files) => handleFileInputChange(files)}
                 capture={false}
@@ -254,14 +276,29 @@ export default function CreatePOSupport({
             </Stepper.Step>
           </Stepper>
 
-          <Group position="center" mt="xl">
-            <Button variant="default" onClick={prevStep}>
-              Back
-            </Button>
+          <Group position="right" mt="xl">
+            {active !== 0 && (
+              <Button
+                variant="default"
+                onClick={prevStep}
+                size="md"
+                leftIcon={<IconChevronLeft size="1rem" />}
+              >
+                Back
+              </Button>
+            )}
             {active != lastActiveStep ? (
-              <Button onClick={nextStep}>Next</Button>
+              <Button
+                onClick={nextStep}
+                size="md"
+                rightIcon={<IconChevronRight size="1rem" />}
+              >
+                Next
+              </Button>
             ) : (
-              <Button onClick={handleSupportTicket}>Create</Button>
+              <Button onClick={handleSupportTicket} size="md">
+                Create
+              </Button>
             )}
           </Group>
         </Container>

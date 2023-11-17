@@ -14,7 +14,6 @@ import {
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import {
   SupportTicketReason,
@@ -141,7 +140,7 @@ export default function CreateSupportModal({
         onClose={closeAndResetForm}
         size="80vh"
         padding="xl"
-        title={"Create Support Ticket"}
+        title="Create Support Ticket"
         centered
       >
         <form>

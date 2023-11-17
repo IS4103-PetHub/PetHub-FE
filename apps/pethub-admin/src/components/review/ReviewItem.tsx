@@ -1,5 +1,4 @@
 import {
-  useMantineTheme,
   Text,
   Button,
   Group,
@@ -11,13 +10,11 @@ import {
   Flex,
   Alert,
   Divider,
-  ActionIcon,
 } from "@mantine/core";
-import { useDisclosure, useToggle } from "@mantine/hooks";
+import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconMessageCircle2 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Review,
@@ -25,7 +22,6 @@ import {
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
-import DeleteActionIcon from "web-ui/shared/DeleteActionIcon";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
 import { useDeleteReview } from "@/hooks/reported-review";
 import StarRating from "./StarRating";

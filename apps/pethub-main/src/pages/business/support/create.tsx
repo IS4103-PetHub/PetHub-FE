@@ -224,7 +224,7 @@ export default function CreatePBSupport({ userId, canView }) {
         await createPBSupportTicketMutation.mutateAsync(payload);
       refetchSupportTickets();
       closeAndResetForm();
-      router.push(`/business/supports/${createdSupportTicket.supportTicketId}`);
+      router.push(`/business/support/${createdSupportTicket.supportTicketId}`);
     } catch (error) {
       notifications.show({
         ...getErrorMessageProps("Error Creating Support Ticket", error),

@@ -3,12 +3,7 @@ import { IconPin, IconPinFilled } from "@tabler/icons-react";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
 import { useRouter } from "next/router";
 import React from "react";
-import {
-  Article,
-  TABLE_PAGE_SIZE,
-  formatNumber2Decimals,
-  getMinTableHeight,
-} from "shared-utils";
+import { Article, TABLE_PAGE_SIZE, getMinTableHeight } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
@@ -123,9 +118,9 @@ const ArticleManagementTable = ({
             sortable: true,
             render: (record) =>
               record.isPinned ? (
-                <IconPinFilled size="1rem" />
+                <IconPinFilled size="1rem" opacity={0.4} />
               ) : (
-                <IconPin size="1rem" />
+                <IconPin size="1rem" color="gray" />
               ),
           },
           {

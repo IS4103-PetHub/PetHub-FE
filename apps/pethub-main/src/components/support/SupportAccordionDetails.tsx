@@ -13,7 +13,6 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
-import { IconFileDownload } from "@tabler/icons-react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   SupportTicket,
@@ -22,10 +21,7 @@ import {
   downloadFile,
   extractFileName,
   formatEnumValueToLowerCase,
-  formatISODateLong,
   formatISODayDateTime,
-  formatNumber2Decimals,
-  formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
@@ -183,8 +179,8 @@ export default function SupportAccordionDetails({
             onDelete={() => handleAction()}
             subtitle={
               canEdit
-                ? "Are you sure you want to close the support ticket. Once the support ticket is closed, it cannot be reopened."
-                : "Are you sure you want to reopen the support ticket."
+                ? "Are you sure you want to close the support ticket? Once the support ticket is closed, it cannot be reopened."
+                : "Are you sure you want to reopen the support ticket?"
             }
             large
             largeText={canEdit ? "Close as Resolved" : "Reopen"}
@@ -196,10 +192,12 @@ export default function SupportAccordionDetails({
       </Group>
       <Box>
         <Divider mb="lg" mt="lg" />
-        <Text fw={600} size="md">
-          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Support Ticket Overview
-        </Text>
+        <Group>
+          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Support Ticket Overview
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
             "Reason",
@@ -283,15 +281,17 @@ export default function SupportAccordionDetails({
       )}
 
       <Box mb="md">
-        <Text fw={600} size="md">
-          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Attachments
-        </Text>
+        <Group>
+          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Attachments
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
-            "Display Images",
+            "Images",
             imagePreview.length == 0 ? (
-              <Text>No images uploaded</Text>
+              <Text color="dimmed">No images uploaded</Text>
             ) : (
               <ImageCarousel
                 attachmentURLs={imagePreview}

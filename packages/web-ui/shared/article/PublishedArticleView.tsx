@@ -1,5 +1,4 @@
 import {
-  Button,
   Container,
   Group,
   useMantineTheme,
@@ -14,12 +13,7 @@ import {
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import {
-  IconMessage2,
-  IconMessageCircle2,
-  IconShare,
-} from "@tabler/icons-react";
+import { IconMessageCircle2 } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import React, { useMemo } from "react";
 import {
@@ -28,7 +22,6 @@ import {
   Tag,
   calculateArticleEstimatedReadingTime,
   displayArticleDate,
-  formatISODayDateTime,
   formatStringToLetterCase,
 } from "shared-utils";
 import { CreateUpdateArticleCommentPayload } from "../../../../apps/pethub-main/src/types/types";
