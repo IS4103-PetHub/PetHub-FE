@@ -73,7 +73,7 @@ export default function CreateArticle({
         title: "Article Published",
         color: "green",
         icon: <IconCheck />,
-        message: `This article will now be visible to all users`,
+        message: `This article will now be visible to all users. This article has also been emailed to all PetHub newsletter subscribers.`,
       });
       setLoading(false);
       await refetchArticles();
