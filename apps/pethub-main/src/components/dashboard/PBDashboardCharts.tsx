@@ -13,8 +13,9 @@ export default function PBDashboardCharts({ data }: pbDashboardDataProps) {
       <Grid>
         <Grid.Col span={3}>
           <MiniSummaryCard
-            title="Unreplied Reviews"
-            body={data.unrepliedReviewCount.toString()}
+            title="Total Remaining Appointments"
+            body={data.remainingAppointments.toString()}
+            link="/business/appointments"
           />
         </Grid.Col>
         <Grid.Col span={3}>
