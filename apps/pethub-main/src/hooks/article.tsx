@@ -91,3 +91,11 @@ export const useSubscribeToNewsletter = () => {
     },
   });
 };
+
+export const useUnsubscribeFromNewsletter = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      return (await api.post(`${ARTICLE_API}/unsubscribe`, { email })).data;
+    },
+  });
+};

@@ -15,7 +15,7 @@ const Newsletter = ({ opened, close }: NewsletterProps) => {
   const subscribeToNewsletterMutation = useSubscribeToNewsletter();
   const [email, setEmail] = useState("");
 
-  const createArticleComment = async () => {
+  const subscribeToNewsletter = async () => {
     try {
       await subscribeToNewsletterMutation.mutateAsync(email);
       notifications.show({
@@ -28,7 +28,7 @@ const Newsletter = ({ opened, close }: NewsletterProps) => {
       close();
     } catch (error: any) {
       notifications.show({
-        ...getErrorMessageProps(`Error Publishing Comment`, error),
+        ...getErrorMessageProps(`Error Subscribing`, error),
       });
     }
   };
@@ -55,7 +55,7 @@ const Newsletter = ({ opened, close }: NewsletterProps) => {
           onChange={(e) => setEmail(e.currentTarget.value)}
           value={email}
         />
-        <Button onClick={createArticleComment}>Subscribe</Button>
+        <Button onClick={subscribeToNewsletter}>Subscribe</Button>
       </Group>
     </Dialog>
   );
