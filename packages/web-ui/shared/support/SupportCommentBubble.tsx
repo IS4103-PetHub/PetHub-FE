@@ -72,19 +72,19 @@ export default function SupportCommentBubble({
     <Box key={comment.commentId} mb="xl">
       <Group position={isCurrentUsersMessage ? "right" : "left"}>
         {isCurrentUsersMessage ? (
-          <>
-            <Text size="md" weight={600} mr={-15}>
+          <Group mb={5}>
+            <Text size="md" weight={600} mr={-5}>
               You
             </Text>
-            <Avatar />
-          </>
+            <Avatar radius="xl" />
+          </Group>
         ) : (
-          <>
-            <Avatar />
-            <Text size="md" weight={600} ml={-15}>
+          <Group mb={5}>
+            <Avatar radius="xl" />
+            <Text size="md" weight={600} ml={-5}>
               {isAdmin ? userName : "Admin"}
             </Text>
-          </>
+          </Group>
         )}
       </Group>
       <Paper

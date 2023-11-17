@@ -194,7 +194,7 @@ export default function SupportAccordionDetails({
         <Divider mb="lg" mt="lg" />
         <Group>
           <IconListDetails size="1rem" color={theme.colors.indigo[5]} />
-          <Text fw={600} size="md">
+          <Text fw={600} size="md" ml={-5}>
             Support Ticket Overview
           </Text>
         </Group>
@@ -281,10 +281,12 @@ export default function SupportAccordionDetails({
       )}
 
       <Box mb="md">
-        <Text fw={600} size="md">
-          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Attachments
-        </Text>
+        <Group>
+          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Attachments
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
             "Images",

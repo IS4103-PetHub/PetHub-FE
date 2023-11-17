@@ -7,13 +7,12 @@ import {
   Group,
   Image,
   Modal,
-  TextInput,
   Textarea,
   useMantineTheme,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
-import { IconPaperclip } from "@tabler/icons-react";
+import { IconPhotoPlus } from "@tabler/icons-react";
 import React, { useRef, useState } from "react";
 
 interface SupportCommentModalProps {
@@ -74,7 +73,7 @@ export default function SupportCommentModal({
     });
   };
 
-  const handlePaperclipClick = () => {
+  const handleClickAddImage = () => {
     // Programmatically trigger the hidden file input element
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -84,8 +83,8 @@ export default function SupportCommentModal({
   return (
     <>
       <ActionIcon disabled={!canEdit}>
-        <IconPaperclip
-          onClick={() => handlePaperclipClick()}
+        <IconPhotoPlus
+          onClick={() => handleClickAddImage()}
           color={theme.colors.blue[5]}
         />
       </ActionIcon>

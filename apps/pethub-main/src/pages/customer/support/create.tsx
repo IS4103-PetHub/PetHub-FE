@@ -222,6 +222,7 @@ export default function CreatePOSupport({
             )}
             <Stepper.Step label="Enter description">
               <Textarea
+                minRows={8}
                 placeholder="Describe your enquiry."
                 label="Description"
                 mb="xl"

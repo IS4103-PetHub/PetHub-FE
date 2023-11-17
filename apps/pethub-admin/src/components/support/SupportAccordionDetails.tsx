@@ -289,38 +289,36 @@ export default function SupportAccordionDetails({
           supportTicket.status != SupportTicketStatus.ClosedUnresolved && (
             <Group>
               <DeleteActionButtonModal
-                title={"Close Support Ticket"}
+                title="Close Support Ticket"
                 onDelete={() => handleCloseResolved()}
-                subtitle={
-                  "Are you sure you want to close the support ticket as resolved. Once the support ticket is closed, it cannot be reopened."
-                }
+                subtitle="Are you sure you want to close the support ticket as resolved? Once the support ticket is closed, it cannot be reopened."
                 large
-                largeText={"Close as Resolved"}
+                largeText="Close as Resolved"
                 removeIcon
-                overrideDeleteButtonText={"Close"}
-                buttonColor={"green"}
+                overrideDeleteButtonText="Close"
+                buttonColor="green"
               />
               <DeleteActionButtonModal
-                title={"Close Support Ticket"}
+                title="Close Support Ticket"
                 onDelete={() => handleCloseUnresolved()}
-                subtitle={
-                  "Are you sure you want to close the support ticket as unresolved."
-                }
+                subtitle="Are you sure you want to close the support ticket as unresolved?"
                 large
-                largeText={"Close as Unresolved"}
+                largeText="Close as Unresolved"
                 removeIcon
-                overrideDeleteButtonText={"Close"}
-                buttonColor={"red"}
+                overrideDeleteButtonText="Close"
+                buttonColor="red"
               />
             </Group>
           )}
       </Group>
       <Box>
         <Divider mb="lg" mt="lg" />
-        <Text fw={600} size="md">
-          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Support Ticket Overview
-        </Text>
+        <Group>
+          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Support Ticket Overview
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
             "Reason",
@@ -393,10 +391,12 @@ export default function SupportAccordionDetails({
       </Box>
 
       <Box mb="md">
-        <Text fw={600} size="md">
-          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;User Details
-        </Text>
+        <Group>
+          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            User Details
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {supportTicket.petBusiness
             ? generatePBDetails()
@@ -430,10 +430,12 @@ export default function SupportAccordionDetails({
       )}
 
       <Box mb="md">
-        <Text fw={600} size="md">
-          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Attachments
-        </Text>
+        <Group>
+          <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Attachments
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
             "Images",
