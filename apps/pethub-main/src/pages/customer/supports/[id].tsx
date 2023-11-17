@@ -136,11 +136,10 @@ export default function POSupportTicketDetails({
   }
 
   const ACCORDION_ITEM_PROPS = {
-    mb: 5,
-    pl: 15,
-    pr: 15,
-    pt: 5,
-    pb: 5,
+    pl: 30,
+    pr: 30,
+    pt: 15,
+    pb: 10,
   };
 
   function goBack() {

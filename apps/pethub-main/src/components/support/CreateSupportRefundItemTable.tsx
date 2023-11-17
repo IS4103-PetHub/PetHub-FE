@@ -218,7 +218,7 @@ export default function CreateSupportRefundItemTable({
       elipsis: true,
       sortable: true,
       render: (record) => <Text fw={500}>{record.orderItem.itemName}</Text>,
-      width: "30vw",
+      width: "20vw",
     },
     {
       accessor: "orderItem.itemPrice",

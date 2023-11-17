@@ -29,6 +29,7 @@ import {
   formatNumber2Decimals,
   formatISODateLong,
 } from "shared-utils";
+import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
 import BookingDetails from "web-ui/shared/support/BookingDetails";
@@ -173,11 +174,9 @@ export default function SupportAccordionDetails({
         )}
         {generateItemGroup(
           "Status",
-          <Text>
-            {formatEnumValueToLowerCase(
-              supportTicket.petOwner.user.accountStatus,
-            )}
-          </Text>,
+          <AccountStatusBadge
+            accountStatus={supportTicket.petOwner.user.accountStatus}
+          />,
         )}
       </>
     );
