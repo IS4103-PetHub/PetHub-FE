@@ -33,7 +33,7 @@ const SupportTicketCard = ({ ticket }) => {
   ]);
 
   return (
-    <Card mih={250} shadow="sm" padding="lg" radius="md" withBorder>
+    <Card mih={200} shadow="sm" padding="lg" radius="md" withBorder>
       <Group position="apart">
         <Text weight={600}>Ticket ID: {ticket.supportTicketId}</Text>
         <Badge size="lg" color={statusColorMap.get(ticket.status)}>
@@ -49,7 +49,7 @@ const SupportTicketCard = ({ ticket }) => {
       <Text mt="xl" fw={500}>
         Description:{" "}
       </Text>
-      <Text w="90%" lineClamp={2} sx={{ textOverflow: "ellipsis" }}>
+      <Text lineClamp={2} size="sm">
         {ticket.reason}
       </Text>
       <Group position="right" mt="md">

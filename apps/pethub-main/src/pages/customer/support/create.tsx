@@ -122,9 +122,9 @@ export default function CreatePOSupport({
   const supportTicketForm = useForm({
     initialValues: initialValues,
     validate: {
-      reason: isNotEmpty("Reason is mandatory."),
-      supportCategory: isNotEmpty("Category is mandatory"),
-      priority: isNotEmpty("Priority is mandatory"),
+      reason: isNotEmpty("Description is required."),
+      supportCategory: isNotEmpty("Category is required."),
+      priority: isNotEmpty("Priority is required."),
     },
   });
 
@@ -188,7 +188,13 @@ export default function CreatePOSupport({
           <Stepper active={active}>
             {!isCategoryDisabled && (
               <Stepper.Step
-                label={`Select ${formatStringToLetterCase(category)}`}
+                label={
+                  category === "PAYMENTS"
+                    ? "Select corresponding order"
+                    : `Select ${formatStringToLetterCase(category)
+                        .toLowerCase()
+                        .substring(0, category.length - 1)}`
+                }
               >
                 {category === "SERVICE_LISTINGS" && (
                   <SelectServiceListing form={supportTicketForm} />

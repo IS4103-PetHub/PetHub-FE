@@ -238,7 +238,7 @@ export default function SelectOrderItem({
               Date Created: {formatISODateOnly(orderItem.invoice.createdAt)}
             </Text>
             <Text size="xs" color="dimmed">
-              Price: ${" "}
+              Price: $
               {formatNumber2Decimals(orderItem.serviceListing.basePrice)}
             </Text>
           </Box>

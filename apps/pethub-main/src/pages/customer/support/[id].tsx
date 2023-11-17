@@ -28,7 +28,6 @@ import {
   SupportTicketStatus,
   formatEnumValueToLowerCase,
   formatISODayDateTime,
-  formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
@@ -135,12 +134,20 @@ export default function POSupportTicketDetails({
     return null;
   }
 
-  const ACCORDION_ITEM_PROPS = {
+  const HEADER_ACCORDION_ITEM_PROPS = {
     mb: 5,
     pl: 15,
     pr: 15,
     pt: 5,
     pb: 5,
+  };
+
+  const ACCORDION_ITEM_PROPS = {
+    mb: 5,
+    pl: 20,
+    pr: 20,
+    pt: 15,
+    pb: 20,
   };
 
   function goBack() {
@@ -189,7 +196,7 @@ export default function POSupportTicketDetails({
   };
 
   const headerAccordionItem = (
-    <Accordion.Item value="header" {...ACCORDION_ITEM_PROPS}>
+    <Accordion.Item value="header" {...HEADER_ACCORDION_ITEM_PROPS}>
       <Group position="apart">
         <Button
           variant=""
@@ -230,10 +237,12 @@ export default function POSupportTicketDetails({
   const supportTicketDetailsAccordionItem = (
     <Accordion.Item value="details" {...ACCORDION_ITEM_PROPS}>
       <Group position="apart">
-        <Text fw={600} size="md">
-          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Support Ticket Overview
-        </Text>
+        <Group>
+          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Support Ticket Overview
+          </Text>
+        </Group>
         {supportTicket.status != SupportTicketStatus.ClosedResolved && (
           <DeleteActionButtonModal
             title={canEdit ? "Close Support Ticket" : "Reopen Support Ticket"}
@@ -253,7 +262,7 @@ export default function POSupportTicketDetails({
       </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
-          "Reason",
+          "Description",
           <Box>
             <Text
               lineClamp={showFullDescriptionReason ? 0 : 2}
@@ -303,10 +312,12 @@ export default function POSupportTicketDetails({
 
   const attachmentAccordionItem = (
     <Accordion.Item value="details" {...ACCORDION_ITEM_PROPS}>
-      <Text fw={600} size="md">
-        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-        &nbsp;Images
-      </Text>
+      <Group mb="xs">
+        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+        <Text fw={600} size="md" ml={-5}>
+          Images
+        </Text>
+      </Group>
       {supportTicket.attachmentURLs.length == 0 ? (
         <Text color="dimmed">No images uploaded</Text>
       ) : (

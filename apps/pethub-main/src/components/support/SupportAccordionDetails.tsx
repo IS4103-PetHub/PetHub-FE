@@ -192,10 +192,12 @@ export default function SupportAccordionDetails({
       </Group>
       <Box>
         <Divider mb="lg" mt="lg" />
-        <Text fw={600} size="md">
-          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Support Ticket Overview
-        </Text>
+        <Group>
+          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md">
+            Support Ticket Overview
+          </Text>
+        </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
             "Reason",
