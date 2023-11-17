@@ -35,7 +35,7 @@ export default function PBDashboardCharts({ data }: pbDashboardDataProps) {
           <MiniSummaryCard
             title="Pending Support Requests"
             body={data.openSupportRequestsCount.toString()}
-            link="/business/supports"
+            link="/business/support"
           />
         </Grid.Col>
       </Grid>

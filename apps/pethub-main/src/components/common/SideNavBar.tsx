@@ -131,7 +131,7 @@ const nonPendingLinks = [
     icon: IconCreditCard,
   },
   {
-    link: "/business/supports",
+    link: "/business/support",
     label: "Support",
     icon: IconHelp,
   },

@@ -320,7 +320,7 @@ export default function SupportAccordionDetails({
         </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
-            "Reason",
+            "Description",
             <Box>
               <Text lineClamp={showFullDescription ? 0 : 2} ref={textRef}>
                 {supportTicket?.reason}
