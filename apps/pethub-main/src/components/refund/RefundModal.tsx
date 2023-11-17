@@ -178,7 +178,7 @@ const RefundModal = ({
         color: "green",
         icon: <IconCheck />,
         message:
-          "The refund request has been approved. The balance will be refunded to the customer's original payment method.",
+          "The refund request has been approved. An email notification has been sent to the customer and the balance will be refunded to the customer's original payment method.",
       });
     } catch (error: any) {
       setIsLoading(false);
@@ -201,7 +201,8 @@ const RefundModal = ({
         title: `Refund Request Rejected`,
         color: "green",
         icon: <IconCheck />,
-        message: "The refund request has been rejected.",
+        message:
+          "The refund request has been rejected. An email notification has been sent to the customer.",
       });
     } catch (error: any) {
       setIsLoading(false);

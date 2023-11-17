@@ -125,7 +125,8 @@ export default function ArticleDetails({
         title: `Comment Deleted`,
         color: "green",
         icon: <IconCheck />,
-        message: "Article comment has been removed.",
+        message:
+          "Article comment has been removed. Email notification has been sent to the user.",
       });
     } catch (error: any) {
       notifications.show({

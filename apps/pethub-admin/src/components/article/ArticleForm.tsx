@@ -48,7 +48,7 @@ interface ArticleFormProps {
   isPreviewing: boolean;
   toggleIsPreviewing: () => void;
   article?: Article;
-  onSubmit: (payload: CreateOrUpdateArticlePayload) => void;
+  onSubmit: (payload: CreateOrUpdateArticlePayload) => Promise<void>;
   deleteComment?: (articleCommentId: number) => Promise<void>;
 }
 
@@ -60,6 +60,7 @@ const ArticleForm = ({
   deleteComment,
 }: ArticleFormProps) => {
   const theme = useMantineTheme();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [existingFileUrl, setExistingFileUrl] = useState<string>("");
   const RichTextEditor = useMemo(() => {
     return dynamic(() => import("web-ui/shared/article/RichTextEditor"), {
@@ -199,8 +200,14 @@ const ArticleForm = ({
     document.body.removeChild(link);
   };
 
+  const handleSubmit = async (values: any) => {
+    setIsLoading(true);
+    await onSubmit(values);
+    setIsLoading(false);
+  };
+
   const ArticleForm = (
-    <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
+    <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
       <Grid mb="xl" columns={48}>
         <Grid.Col span={12}>
           <PageTitle
@@ -335,6 +342,7 @@ const ArticleForm = ({
                 }
                 miw={150}
                 type="submit"
+                loading={isLoading}
               >
                 {isUpdating ? "Save Changes" : "Publish Article"}
               </Button>
