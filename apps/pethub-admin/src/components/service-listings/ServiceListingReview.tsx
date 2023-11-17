@@ -37,6 +37,10 @@ const ServiceListingReview = ({
   }, [filteredReviews]);
 
   useEffect(() => {
+    setFilteredReviews(serviceListing?.reviews || []);
+  }, [serviceListing]);
+
+  useEffect(() => {
     if (sorting === "latest") {
       setFilteredReviews((prevReviews) =>
         [...prevReviews].sort(

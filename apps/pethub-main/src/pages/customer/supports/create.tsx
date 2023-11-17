@@ -22,6 +22,7 @@ import {
   getErrorMessageProps,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import SelectAppointment from "@/components/support/pet-owner/SelectAppointment";
 import SelectOrderItem from "@/components/support/pet-owner/SelectOrderItem";
 import SelectRefundRequests from "@/components/support/pet-owner/SelectRefundRequests";
@@ -167,9 +168,23 @@ export default function CreatePOSupport({
       </Head>
       <main>
         <Container mt={50} size="60vw" sx={{ overflow: "hidden" }}>
+          <LargeBackButton
+            text="Back to Supports"
+            onClick={() => {
+              router.push("/customer/supports");
+            }}
+            size="sm"
+            mb="md"
+          />
           <Group position="apart">
-            <PageTitle title="Create Support Ticket" mb={"lg"} />
+            <PageTitle
+              title={`Create ${formatStringToLetterCase(
+                category,
+              )} Support Ticket`}
+              mb={"lg"}
+            />
           </Group>
+
           <Stepper active={active}>
             {!isCategoryDisabled && (
               <Stepper.Step

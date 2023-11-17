@@ -155,13 +155,6 @@ export default function ServiceListingDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      <LargeBackButton
-        text="Back to Service Listings"
-        onClick={async () => {
-          router.push("/admin/service-listings");
-        }}
-        size="sm"
-      />
       <Container mt="xl" mb="xl" size="70vw">
         <Box mb="xl">
           <LargeBackButton
