@@ -210,7 +210,7 @@ export default function CreateSupportRefundItemTable({
     {
       accessor: "refundRequestId",
       title: "ID",
-      width: 80,
+      width: "4vw",
     },
     {
       accessor: "orderItem.itemName",
@@ -218,7 +218,7 @@ export default function CreateSupportRefundItemTable({
       elipsis: true,
       sortable: true,
       render: (record) => <Text fw={500}>{record.orderItem.itemName}</Text>,
-      width: "20vw",
+      width: "15vw",
     },
     {
       accessor: "orderItem.itemPrice",
