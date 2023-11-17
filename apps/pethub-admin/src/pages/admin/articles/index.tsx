@@ -68,31 +68,37 @@ export default function Articles({ permissions }: ArticlesProps) {
   const { data: internalUsers = [] } = useGetAllInternalUsers();
   const { data: tags = [] } = useGetAllTags();
 
-  // Filter states and options
-  const ARTICLE_TYPE_LABELS = Object.values(ArticleTypeEnum).join(",");
-  const ARTICLE_TYPE_VALUES = Object.values(ArticleTypeEnum).map((type) =>
-    formatStringToLetterCase(type.toString()),
-  );
+  const articleOptions: any[] = [
+    ...Object.values(ArticleTypeEnum).map((type) => ({
+      value: type.toString(),
+      label: formatStringToLetterCase(type),
+    })),
+  ];
 
-  const CATEGORY_TYPE_LABELS = Object.values(ServiceCategoryEnum).join(",");
-  const CATEGORY_TYPE_VALUES = Object.values(ServiceCategoryEnum).map(
-    (category) => formatStringToLetterCase(category.toString()),
-  );
+  const categoryOptions: any[] = [
+    ...Object.values(ServiceCategoryEnum).map((type) => ({
+      value: type.toString(),
+      label: formatStringToLetterCase(type),
+    })),
+    {
+      value: null,
+      label: "No Category",
+    },
+  ];
 
-  const [typeFilter, setTypeFilter] = useState<string>(ARTICLE_TYPE_LABELS);
-  const [categoryFilter, setCategoryFilter] =
-    useState<string>(CATEGORY_TYPE_LABELS);
-  const [tagFilter, setTagFilter] = useState<string>("");
+  const [typeFilter, setTypeFilter] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [internalUserFilter, setInternalUserFilter] =
-    useState<number>(undefined);
+    useState<string>(undefined);
 
   const internalUserOptions = internalUsers.map((internalUser) => ({
-    value: internalUser.userId.toString(),
+    value: internalUser.firstName + " " + internalUser.lastName,
     label: internalUser.firstName + " " + internalUser.lastName,
   }));
 
   const tagOptions = tags.map((tag) => ({
-    value: tag.tagId.toString(),
+    value: tag.name,
     label: tag.name,
   }));
 
@@ -113,13 +119,56 @@ export default function Articles({ permissions }: ArticlesProps) {
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    const sortedArticles = sortBy(searchResults, sortStatus.columnAccessor);
+    let filteredArticle = searchResults;
+    if (tagFilter.length > 0) {
+      filteredArticle = filteredArticle.filter(
+        (article) =>
+          article.tags &&
+          article.tags.some((tag) => tagFilter.includes(tag.name)),
+      );
+      setIsSearching(true);
+    }
+
+    if (typeFilter.length > 0) {
+      filteredArticle = filteredArticle.filter(
+        (article) =>
+          article.articleType && typeFilter.includes(article.articleType),
+      );
+      setIsSearching(true);
+    }
+
+    if (categoryFilter.length > 0) {
+      filteredArticle = filteredArticle.filter((article) =>
+        categoryFilter.includes(article.category),
+      );
+      setIsSearching(true);
+    }
+
+    if (internalUserFilter) {
+      filteredArticle = filteredArticle.filter(
+        (article) =>
+          internalUserFilter ==
+          `${article.createdBy.firstName} ${article.createdBy.lastName}`,
+      );
+      setIsSearching(true);
+    }
+
+    const sortedArticles = sortBy(filteredArticle, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedArticles.reverse();
     }
     const newRecords = sortedArticles.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, articles, searchResults]);
+  }, [
+    page,
+    sortStatus,
+    articles,
+    searchResults,
+    tagFilter,
+    typeFilter,
+    categoryFilter,
+    internalUserFilter,
+  ]);
 
   useEffect(() => {
     handleSearch(searchString);
@@ -245,7 +294,7 @@ export default function Articles({ permissions }: ArticlesProps) {
                 if (selectedInternalUser === null) {
                   setInternalUserFilter(undefined);
                 } else {
-                  setInternalUserFilter(Number(selectedInternalUser));
+                  setInternalUserFilter(selectedInternalUser);
                 }
               }}
             />
@@ -256,16 +305,7 @@ export default function Articles({ permissions }: ArticlesProps) {
               label="Filter by Tag"
               placeholder="Select tags"
               data={tagOptions}
-              onChange={(selectedTag) => {
-                if (selectedTag === null) {
-                  setTagFilter(undefined);
-                } else {
-                  const tagFilterValues = selectedTag.map((tag) =>
-                    formatLetterCaseToEnumString(tag),
-                  );
-                  setTagFilter(tagFilterValues.join(","));
-                }
-              }}
+              onChange={setTagFilter}
             />
           </Grid.Col>
           <Grid.Col span={3}>
@@ -273,17 +313,8 @@ export default function Articles({ permissions }: ArticlesProps) {
               size="md"
               label="Filter by Category"
               placeholder="Select categories"
-              data={CATEGORY_TYPE_VALUES}
-              onChange={(selectedCategory) => {
-                if (selectedCategory.length === 0) {
-                  setCategoryFilter(CATEGORY_TYPE_LABELS);
-                } else {
-                  const categoryFilterValues = selectedCategory.map(
-                    (category) => formatLetterCaseToEnumString(category),
-                  );
-                  setCategoryFilter(categoryFilterValues.join(","));
-                }
-              }}
+              data={categoryOptions}
+              onChange={setCategoryFilter}
             />
           </Grid.Col>
           <Grid.Col span={9}>
@@ -299,18 +330,8 @@ export default function Articles({ permissions }: ArticlesProps) {
               size="md"
               label="Filter by Type"
               placeholder="Select article type"
-              data={ARTICLE_TYPE_VALUES}
-              onChange={(selectedType) => {
-                if (selectedType.length === 0) {
-                  setTypeFilter(ARTICLE_TYPE_LABELS);
-                } else {
-                  // If selections are made, join them into a comma-separated string
-                  const typeFilterValues = selectedType.map((type) =>
-                    formatLetterCaseToEnumString(type),
-                  );
-                  setTypeFilter(typeFilterValues.join(","));
-                }
-              }}
+              data={articleOptions}
+              onChange={setTypeFilter}
             />
           </Grid.Col>
         </Grid>
