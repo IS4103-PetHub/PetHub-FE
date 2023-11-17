@@ -382,7 +382,7 @@ export default function ServiceListingDetails({
                     ),
                   )}
                   {generateItemGroup(
-                    "Display Images",
+                    "Images",
                     imagePreview.length == 0 ? (
                       <Text color="dimmed">No images uploaded</Text>
                     ) : (

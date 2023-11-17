@@ -215,7 +215,7 @@ export default function CreateSupportServiceListingTable({
 
   return (
     <Box mb="xl">
-      <Text>Select Service Listing</Text>
+      <Text>Select service listing</Text>
       <SearchBar text="Search by ID, title" onSearch={handleSearch} />
       {renderContent()}
     </Box>

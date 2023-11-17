@@ -37,7 +37,7 @@ const TopPetBusinessesTable = ({ records }: TopPetBusinessesTableProps) => {
             accessor: "companyName",
             title: "Company Name",
             ellipsis: true,
-            width: "30vw",
+            width: "25vw",
             render: (record) => <Text fw={500}>{record.companyName}</Text>,
           },
           {

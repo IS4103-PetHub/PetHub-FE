@@ -2,23 +2,17 @@ import {
   Button,
   useMantineTheme,
   Popover,
-  Text,
   ActionIcon,
-  Group,
   CopyButton,
   Divider,
-  Box,
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
-  IconBrandFacebook,
   IconBrandLinkedin,
   IconBrandTelegram,
   IconBrandTwitter,
   IconCopy,
-  IconLink,
-  IconMessageCircle2,
   IconPaperclip,
   IconShare,
 } from "@tabler/icons-react";

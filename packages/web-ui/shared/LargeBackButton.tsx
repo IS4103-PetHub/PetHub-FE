@@ -4,7 +4,7 @@ import React from "react";
 
 interface BackButtonProps extends ButtonProps {
   text: string;
-  onClick?(): void;
+  onClick(): void;
 }
 
 const BackButton = ({ text, onClick, ...props }: BackButtonProps) => {

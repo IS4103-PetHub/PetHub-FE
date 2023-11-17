@@ -28,7 +28,6 @@ import {
   SupportTicketStatus,
   formatEnumValueToLowerCase,
   formatISODayDateTime,
-  formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
@@ -135,16 +134,25 @@ export default function POSupportTicketDetails({
     return null;
   }
 
+  const HEADER_ACCORDION_ITEM_PROPS = {
+    mb: 5,
+    pl: 15,
+    pr: 15,
+    pt: 5,
+    pb: 5,
+  };
+
   const ACCORDION_ITEM_PROPS = {
-    pl: 30,
-    pr: 30,
+    mb: 5,
+    pl: 20,
+    pr: 20,
     pt: 15,
-    pb: 10,
+    pb: 20,
   };
 
   function goBack() {
     setBackButtonLoading(true);
-    window.location.href = "/customer/supports";
+    window.location.href = "/customer/support";
   }
 
   const statusColorMap = new Map([
@@ -188,7 +196,7 @@ export default function POSupportTicketDetails({
   };
 
   const headerAccordionItem = (
-    <Accordion.Item value="header" {...ACCORDION_ITEM_PROPS}>
+    <Accordion.Item value="header" {...HEADER_ACCORDION_ITEM_PROPS}>
       <Group position="apart">
         <Button
           variant=""
@@ -205,19 +213,22 @@ export default function POSupportTicketDetails({
           Back
         </Button>
         <Center>
-          <Text size="sm">ORDER ITEM ID.</Text>
+          <Text size="sm">SUPPORT TICKET ID.</Text>
           &nbsp;
           <Text size="sm">{supportTicket?.supportTicketId}</Text>
           <Text ml="md" mr="md" size="sm">
             |
           </Text>
-          <Text
-            size="sm"
-            color={statusColorMap.get(supportTicket.status)}
-            tt="uppercase"
+          <Badge
+            size="lg"
+            color={
+              statusColorMap.has(supportTicket?.status)
+                ? statusColorMap.get(supportTicket.status)
+                : "gray"
+            }
           >
-            {formatStringToLetterCase(supportTicket.status)}
-          </Text>
+            {formatEnumValueToLowerCase(supportTicket?.status)}
+          </Badge>
         </Center>
       </Group>
     </Accordion.Item>
@@ -226,18 +237,20 @@ export default function POSupportTicketDetails({
   const supportTicketDetailsAccordionItem = (
     <Accordion.Item value="details" {...ACCORDION_ITEM_PROPS}>
       <Group position="apart">
-        <Text fw={600} size="md">
-          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Support Ticket Overview
-        </Text>
+        <Group>
+          <IconListDetails size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Support Ticket Overview
+          </Text>
+        </Group>
         {supportTicket.status != SupportTicketStatus.ClosedResolved && (
           <DeleteActionButtonModal
             title={canEdit ? "Close Support Ticket" : "Reopen Support Ticket"}
             onDelete={() => handleAction()}
             subtitle={
               canEdit
-                ? "Are you sure you want to close the support ticket. Once the support ticket is closed, it cannot be reopened."
-                : "Are you sure you want to reopen the support ticket."
+                ? "Are you sure you want to close the support ticket? Once the support ticket is closed, it cannot be reopened."
+                : "Are you sure you want to reopen the support ticket?"
             }
             large
             largeText={canEdit ? "Close as Resolved" : "Reopen"}
@@ -249,7 +262,7 @@ export default function POSupportTicketDetails({
       </Group>
       <Grid columns={24} mt="xs">
         {generateItemGroup(
-          "Reason",
+          "Description",
           <Box>
             <Text
               lineClamp={showFullDescriptionReason ? 0 : 2}
@@ -272,18 +285,6 @@ export default function POSupportTicketDetails({
               </Button>
             </Group>
           </Box>,
-        )}
-        {generateItemGroup(
-          "Status",
-          <Badge
-            color={
-              statusColorMap.has(supportTicket?.status)
-                ? statusColorMap.get(supportTicket.status)
-                : "gray"
-            }
-          >
-            {formatEnumValueToLowerCase(supportTicket?.status)}
-          </Badge>,
         )}
         {generateItemGroup(
           "Category",
@@ -311,12 +312,14 @@ export default function POSupportTicketDetails({
 
   const attachmentAccordionItem = (
     <Accordion.Item value="details" {...ACCORDION_ITEM_PROPS}>
-      <Text fw={600} size="md">
-        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />{" "}
-        &nbsp;Attachments
-      </Text>
+      <Group mb="xs">
+        <IconPhotoPlus size="1rem" color={theme.colors.indigo[5]} />
+        <Text fw={600} size="md" ml={-5}>
+          Images
+        </Text>
+      </Group>
       {supportTicket.attachmentURLs.length == 0 ? (
-        <Text>No images uploaded</Text>
+        <Text color="dimmed">No images uploaded</Text>
       ) : (
         <ImageCarousel
           attachmentURLs={supportTicket.attachmentURLs}

@@ -6,6 +6,7 @@ import {
   SupportTicketReason,
   SupportTicketStatus,
   TABLE_PAGE_SIZE,
+  formatISODateTimeShort,
   formatStringToLetterCase,
   getMinTableHeight,
 } from "shared-utils";
@@ -64,24 +65,14 @@ export default function AdminSupportTable({
           {
             accessor: "supportTicketId",
             title: "Id",
-            textAlignment: "left",
             width: "3vw",
-            sortable: true,
-            ellipsis: true,
-          },
-          {
-            accessor: "reason",
-            title: "Reason",
-            textAlignment: "left",
-            width: "15vw",
             sortable: true,
             ellipsis: true,
           },
           {
             accessor: "supportCategory",
             title: "Category",
-            textAlignment: "left",
-            width: "10vw",
+            width: 160,
             sortable: true,
             ellipsis: true,
             render: (support) => (
@@ -97,10 +88,50 @@ export default function AdminSupportTable({
             ),
           },
           {
+            accessor: "reason",
+            title: "Description",
+            width: "20vw",
+            sortable: true,
+            ellipsis: true,
+          },
+          {
+            accessor: "createdBy",
+            title: "Created By",
+            width: "10vw",
+            sortable: true,
+            ellipsis: true,
+            render: (support) => {
+              return support.petOwner
+                ? `${support.petOwner.firstName} ${support.petOwner.lastName}`
+                : support.petBusiness.companyName;
+            },
+          },
+          {
+            accessor: "createdAt",
+            title: "Created At",
+            width: 160,
+            sortable: true,
+            ellipsis: true,
+            render: (support) => {
+              return formatISODateTimeShort(support.createdAt);
+            },
+          },
+          {
+            accessor: "closedAt",
+            title: "Closed At",
+            width: 160,
+            sortable: true,
+            ellipsis: true,
+            render: (support) => {
+              return support.closedAt
+                ? formatISODateTimeShort(support.closedAt)
+                : "-";
+            },
+          },
+          {
             accessor: "status",
             title: "Status",
-            textAlignment: "left",
-            width: "10vw",
+            width: 160,
             sortable: true,
             render: (support) => (
               <Badge
@@ -117,8 +148,7 @@ export default function AdminSupportTable({
           {
             accessor: "priority",
             title: "Priority",
-            textAlignment: "left",
-            width: "10vw",
+            width: 100,
             sortable: true,
             render: (support) => (
               <Badge
@@ -156,6 +186,9 @@ export default function AdminSupportTable({
         striped
         verticalSpacing="sm"
         highlightOnHover
+        onRowClick={(record) =>
+          router.push(`${router.asPath}/${record.supportTicketId}`)
+        }
         idAccessor="supportTicketId"
         //sorting
         sortStatus={sortStatus}
