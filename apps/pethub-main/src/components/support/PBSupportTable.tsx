@@ -64,7 +64,7 @@ export default function PBSupportTable({
           },
           {
             accessor: "reason",
-            title: "Reason",
+            title: "Description",
             textAlignment: "left",
             width: "15vw",
             sortable: true,

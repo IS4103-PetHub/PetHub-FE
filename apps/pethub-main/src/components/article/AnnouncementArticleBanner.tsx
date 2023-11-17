@@ -1,43 +1,17 @@
 import {
   useMantineTheme,
   Text,
-  Divider,
   Card,
   Group,
-  Box,
-  Badge,
   Grid,
-  Image,
-  LoadingOverlay,
-  Avatar,
   Button,
-  Center,
   CloseButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import {
-  IconArrowRight,
-  IconArticle,
-  IconCaretRight,
-  IconCaretRightFilled,
-  IconChevronRight,
-  IconExclamationCircle,
-  IconPin,
-  IconPinFilled,
-} from "@tabler/icons-react";
-import dayjs from "dayjs";
-import Link from "next/link";
+import { IconChevronRight, IconExclamationCircle } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Article,
-  calculateArticleEstimatedReadingTime,
-  displayArticleDate,
-  formatISODateTimeShort,
-  formatStringToLetterCase,
-} from "shared-utils";
-import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
+import React from "react";
+import { Article, formatISODateTimeShort } from "shared-utils";
 
 interface AnnouncementArticleBannerProps {
   article: Article;
@@ -62,7 +36,7 @@ const AnnouncementArticleBanner = ({
     >
       <Grid columns={24}>
         <Grid.Col span={4}>
-          <Group mt={2}>
+          <Group mt={2} align="center">
             <IconExclamationCircle size="1.5rem" color="gray" />
             <Text size="sm" color="dimmed">
               {formatISODateTimeShort(article?.dateCreated)}
@@ -70,7 +44,7 @@ const AnnouncementArticleBanner = ({
           </Group>
         </Grid.Col>
         <Grid.Col span={16}>
-          <Group>
+          <Group mt={-2}>
             <Text fw={600}>{article?.title}</Text>
             <Button
               ml={-10}
@@ -87,7 +61,7 @@ const AnnouncementArticleBanner = ({
         </Grid.Col>
         <Grid.Col span={3} />
         <Grid.Col span={1}>
-          <CloseButton onClick={closeBanner} size="lg" />
+          <CloseButton onClick={closeBanner} size="md" mt={-1} />
         </Grid.Col>
       </Grid>
     </Card>

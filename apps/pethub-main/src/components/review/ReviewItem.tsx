@@ -1,7 +1,6 @@
 import {
   useMantineTheme,
   Text,
-  Card,
   Button,
   Group,
   Box,
@@ -18,13 +17,11 @@ import { useDisclosure, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import {
   IconAlertCircle,
-  IconCheck,
   IconFlag,
   IconMessageCircle2,
   IconThumbDown,
   IconThumbUp,
 } from "@tabler/icons-react";
-import { IconX } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import {

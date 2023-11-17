@@ -1,4 +1,4 @@
-import { Accordion, Box, Card, Text } from "@mantine/core";
+import { Accordion, Card, Text } from "@mantine/core";
 import Link from "next/link";
 
 export default function FAQInformation({}) {
@@ -6,7 +6,7 @@ export default function FAQInformation({}) {
     {
       id: "1",
       key: "password",
-      question: "How do i change my password?",
+      question: "How do I change my password?",
       answer: (
         <Text>
           Navigate to{" "}
@@ -22,7 +22,7 @@ export default function FAQInformation({}) {
     {
       id: "3",
       key: "contactInformation",
-      question: "How can I update my contact information on the platform?",
+      question: "How do I update my contact information on the platform?",
       answer: (
         <>
           Navigate to{" "}
@@ -38,7 +38,7 @@ export default function FAQInformation({}) {
     {
       id: "2",
       key: "serviceListing",
-      question: "How do i temporarily disable my service listings?",
+      question: "How do I temporarily disable my service listings?",
       answer: (
         <>
           Navigate to{" "}
@@ -55,25 +55,27 @@ export default function FAQInformation({}) {
     {
       id: "3",
       key: "calandarGroup",
-      question: "How does the calendar group works?",
+      question: "How do Calendar Groups work?",
       answer: (
         <>
-          Navigate to{" "}
+          Calendar Groups are for pet businesses to manage business availablity
+          and schedule, such as opening hours! Use weekly recurring rules to
+          configure your business&apos; standard operating schedule, and use
+          daily rules to set date overrides. Navigate to{" "}
           <span style={{ display: "inline-block" }}>
             <Link href="/business/appointments">
               <Text color="blue">Appointments</Text>
             </Link>
           </span>{" "}
-          select &quot;Create Calendar Group&quot; to view the rules set for
-          using a calendar group.
+          select &quot;Create Calendar Group&quot; to view the full instructions
+          for creating a calendar group.
         </>
       ),
     },
     {
       id: "4",
       key: "businessSales",
-      question:
-        "Is there a way to track the performance of my service listings?",
+      question: "How can I track the performance of my service listings?",
       answer: (
         <>
           Navigate to{" "}
@@ -82,8 +84,8 @@ export default function FAQInformation({}) {
               <Text color="blue">Business Sales</Text>
             </Link>
           </span>{" "}
-          to monitor the performance of your service listings through the
-          analytics dashboard
+          to monitor the performance of your service listings via the analytics
+          dashboard.
         </>
       ),
     },
@@ -94,7 +96,7 @@ export default function FAQInformation({}) {
       {faqList.map((item) => (
         <Accordion.Item key={item.id} value={item.key}>
           <Accordion.Control>
-            <Text>{item.question}</Text>
+            <Text fw={600}>{item.question}</Text>
           </Accordion.Control>
           <Accordion.Panel>{item.answer}</Accordion.Panel>
         </Accordion.Item>

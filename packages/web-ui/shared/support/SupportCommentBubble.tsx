@@ -10,12 +10,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
-import {
-  Comment,
-  downloadFile,
-  extractFileName,
-  formatISODateTimeShort,
-} from "shared-utils";
+import { Comment, formatISODateTimeShort } from "shared-utils";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
 
 interface SupportCommentAccordionProps {
@@ -77,24 +72,24 @@ export default function SupportCommentBubble({
     <Box key={comment.commentId} mb="xl">
       <Group position={isCurrentUsersMessage ? "right" : "left"}>
         {isCurrentUsersMessage ? (
-          <>
-            <Text size="md" weight={700}>
+          <Group mb={5}>
+            <Text size="md" weight={600} mr={-5}>
               You
             </Text>
-            <Avatar />
-          </>
+            <Avatar radius="xl" />
+          </Group>
         ) : (
-          <>
-            <Avatar />
-            <Text size="md" weight={700}>
+          <Group mb={5}>
+            <Avatar radius="xl" />
+            <Text size="md" weight={600} ml={-5}>
               {isAdmin ? userName : "Admin"}
             </Text>
-          </>
+          </Group>
         )}
       </Group>
       <Paper
         shadow="sm"
-        radius="xl"
+        radius="lg"
         withBorder
         p="md"
         style={{
@@ -147,7 +142,9 @@ export default function SupportCommentBubble({
             {showImageCarousel && commentImageCarouselCol}
           </Grid.Col>
         </Grid>
-        <Text align="right">{formatISODateTimeShort(comment.createdAt)}</Text>
+        <Text align="right" size="sm" c={theme.colors.gray[7]}>
+          Sent: {formatISODateTimeShort(comment.createdAt)}
+        </Text>
       </Paper>
     </Box>
   );

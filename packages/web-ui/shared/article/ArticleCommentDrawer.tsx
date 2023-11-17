@@ -1,39 +1,18 @@
 import {
   Button,
-  Container,
   Group,
   useMantineTheme,
-  Image,
-  Avatar,
-  Stack,
   Text,
   Box,
-  Divider,
-  Badge,
   Drawer,
   rem,
-  createStyles,
   Card,
   Textarea,
 } from "@mantine/core";
-import { UseFormReturnType, useForm } from "@mantine/form";
-import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
-import dynamic from "next/dynamic";
-import React, { useMemo } from "react";
-import {
-  Article,
-  ArticleComment,
-  PetOwner,
-  Tag,
-  calculateArticleEstimatedReadingTime,
-  displayArticleDate,
-  formatISODayDateTime,
-  formatStringToLetterCase,
-  validateArticleComment,
-} from "shared-utils";
+import { useForm } from "@mantine/form";
+import React from "react";
+import { ArticleComment, PetOwner, validateArticleComment } from "shared-utils";
 import { CreateUpdateArticleCommentPayload } from "../../../../apps/pethub-main/src/types/types";
-import { PageTitle } from "../PageTitle";
 import ArticleCommentCard from "./ArticleCommentCard";
 
 interface ArticleCommentDrawerProps {

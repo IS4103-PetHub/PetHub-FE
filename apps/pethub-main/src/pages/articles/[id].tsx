@@ -1,37 +1,13 @@
-import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Group,
-  LoadingOverlay,
-  Stack,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
+import { Box, Container, Divider, Group } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconEye } from "@tabler/icons-react";
-import { IconWriting } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { IconCheck } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import { useMemo, useState } from "react";
-import {
-  AccountTypeEnum,
-  Article,
-  OrderItem,
-  Pet,
-  formatISODateLong,
-  formatISODayDateTime,
-  formatISOLongWithDay,
-} from "shared-utils";
+import { AccountTypeEnum } from "shared-utils";
 import { getErrorMessageProps } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import PublishedArticleView from "web-ui/shared/article/PublishedArticleView";
-import ViewOrderDetails from "web-ui/shared/order-management/ViewOrderDetails";
-import api from "@/api/axiosConfig";
 import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import {
   useCreateArticleComment,
@@ -137,7 +113,7 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
         </title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container fluid mb="lg" mr="lg" ml="lg" mt="md">
+      <Container fluid mb={80} mr="lg" ml="lg" mt="md">
         <Group position={"apart"} mb="md">
           <LargeBackButton
             text="Back to Articles"
@@ -160,8 +136,8 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
         <Divider mt={70} />
         <ServiceListingScrollCarousel
           serviceListings={article?.recommendedServices}
-          title="Recommended"
-          description="Related services based on article"
+          title="Recommended service listings"
+          description="Check out these related service listings based on article category and tags!"
         />
       </Container>
     </>

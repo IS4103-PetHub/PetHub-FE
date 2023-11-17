@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -19,7 +20,6 @@ import {
   SupportTicket,
   SupportTicketReason,
   SupportTicketStatus,
-  formatEnumValueToLowerCase,
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
@@ -133,8 +133,8 @@ export default function Supports({ userId }: MyAccountProps) {
       }
       return (
         <SadDimmedMessage
-          title="No Support Ticket found"
-          subtitle="New Support Tickets will appear here"
+          title="No support tickets found"
+          subtitle="New support tickets will appear here."
         />
       );
     }
@@ -153,35 +153,44 @@ export default function Supports({ userId }: MyAccountProps) {
   return (
     <>
       <Head>
-        <title>My Supports - PetHub</title>
+        <title>My Support Tickets - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Box bg={theme.colors.indigo[1]} h="400px" mb={"xl"}>
-        <Container size="60vw" sx={{ overflow: "hidden" }}>
-          <Box mb={"xl"}>
-            <PageTitle title={"Welcome to PetHub Support Serivce"} mb="lg" />
-            <Text size={"xl"}>
-              What would you like help with today? <br /> You can quicky take
-              care of most things here, or connect with us @pethub215@gmail.com
-              when needed
+      <Box bg={theme.colors.indigo[0]} h={420} mb="xl">
+        <Container size="60vw">
+          <Box pt={50} pb="xl">
+            <PageTitle title="Welcome to PetHub Customer Support" mb="lg" />
+            <Text size="xl" fw={500}>
+              What would you like help with today?
+            </Text>
+            <Text color={theme.colors.gray[7]}>
+              Select a category to create a support ticket.
             </Text>
           </Box>
           <Grid>
             {cardTitles.map((title, index) => (
               <Grid.Col span={3} key={index}>
-                <Card
-                  shadow="sm"
-                  padding="lg"
-                  radius="md"
-                  withBorder
-                  onClick={() =>
-                    router.push(
-                      `/customer/supports/create?category=${title.originalValue}`,
-                    )
-                  }
+                <Link
+                  href={`/customer/support/create?category=${title.originalValue}`}
                 >
-                  {title.formattedValue}
-                </Card>
+                  <Card
+                    shadow="xs"
+                    padding="lg"
+                    radius="md"
+                    withBorder
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: theme.colors.indigo[6],
+                        color: "white",
+                        boxShadow: "rgba(0, 0, 0, 0.1) 0px 5px 10px 0px",
+                        marginTop: -2,
+                        transition: "150ms ease-out",
+                      },
+                    }}
+                  >
+                    <Text fw={500}>{title.formattedValue}</Text>
+                  </Card>
+                </Link>
               </Grid.Col>
             ))}
           </Grid>
@@ -213,6 +222,7 @@ export default function Supports({ userId }: MyAccountProps) {
           </Grid.Col>
           <Grid.Col span={12}>
             <SearchBar
+              size="md"
               text="Search by Support Ticket ID and Reason"
               onSearch={handleSearch}
             />

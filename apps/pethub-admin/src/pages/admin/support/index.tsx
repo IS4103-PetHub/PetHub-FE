@@ -265,7 +265,7 @@ export default function Support({ userId, permissions }: SupportProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
-        <Group position="apart">
+        <Group position="apart" mb="md">
           <PageTitle title="Support Management" />
         </Group>
         {renderContent()}

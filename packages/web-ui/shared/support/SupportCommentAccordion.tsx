@@ -47,12 +47,14 @@ export default function SupportCommentAccordion({
   }, [comments]);
 
   return (
-    <Accordion.Item value="comments" pl={30} pr={30} pt={15} pb={10}>
-      <Group position="apart" mt={5} mb={15}>
-        <Text fw={600} size="md">
-          <IconMessageCircle size="1rem" color={theme.colors.indigo[5]} />{" "}
-          &nbsp;Support Ticket Overview
-        </Text>
+    <Accordion.Item value="comments" p="xl" pt="lg">
+      <Group position="apart" mb={15}>
+        <Group>
+          <IconMessageCircle size="1rem" color={theme.colors.indigo[5]} />
+          <Text fw={600} size="md" ml={-5}>
+            Comments
+          </Text>
+        </Group>
       </Group>
 
       {comments.length > 0 ? (
@@ -79,7 +81,7 @@ export default function SupportCommentAccordion({
             canEdit={canEdit}
           />
           <Textarea
-            w="85%"
+            w="90%"
             autosize
             disabled={!canEdit}
             {...commentForm.getInputProps("comment")}

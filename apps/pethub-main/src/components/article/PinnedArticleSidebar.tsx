@@ -1,30 +1,7 @@
-import {
-  useMantineTheme,
-  Text,
-  Divider,
-  Card,
-  Group,
-  Box,
-  Badge,
-  Grid,
-  Image,
-  LoadingOverlay,
-  Avatar,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { IconPin, IconPinFilled } from "@tabler/icons-react";
-import dayjs from "dayjs";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Article,
-  displayArticleDate,
-  formatStringToLetterCase,
-} from "shared-utils";
-import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
-import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
+import { Text, Card, Box } from "@mantine/core";
+import { IconPinFilled } from "@tabler/icons-react";
+import React from "react";
+import { Article } from "shared-utils";
 import PinnedArticleItem from "./PinnedArticleItem";
 
 interface PinnedArticleSidebarProps {
@@ -34,13 +11,10 @@ interface PinnedArticleSidebarProps {
 const PinnedArticleSidebar = ({
   pinnedArticles,
 }: PinnedArticleSidebarProps) => {
-  const theme = useMantineTheme();
-  const router = useRouter();
-
   const Content = (
     <Box mah="50vh" sx={{ overflowY: "auto" }}>
       <Box sx={{ display: "flex", alignItems: "center" }} mb="md">
-        <IconPinFilled size="1rem" />
+        <IconPinFilled size="1rem" opacity={0.4} />
         <Text fw={600} ml="xs">
           Pinned Items
         </Text>

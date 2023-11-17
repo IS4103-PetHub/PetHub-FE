@@ -102,7 +102,7 @@ export default function PBSupportTicketDetails({
               <LargeBackButton
                 text="Back to Supports Tickets"
                 onClick={async () => {
-                  router.push("/business/supports");
+                  router.push("/business/support");
                 }}
                 size="sm"
               />

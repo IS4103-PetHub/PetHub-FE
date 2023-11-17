@@ -12,12 +12,9 @@ import {
   Avatar,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
 import { IconPin, IconPinFilled } from "@tabler/icons-react";
-import dayjs from "dayjs";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   Article,
   calculateArticleEstimatedReadingTime,
@@ -81,9 +78,9 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
             {displayArticleDate(article?.dateCreated)}
           </Text>
           {article?.isPinned ? (
-            <IconPinFilled size="1rem" />
+            <IconPinFilled size="1rem" opacity={0.4} />
           ) : (
-            <IconPin size="1rem" />
+            <IconPin size="1rem" color="gray" />
           )}
         </Box>
       </Group>

@@ -112,9 +112,9 @@ const ArticleManagementTable = ({
             sortable: true,
             render: (record) =>
               record.isPinned ? (
-                <IconPinFilled size="1rem" />
+                <IconPinFilled size="1rem" opacity={0.4} />
               ) : (
-                <IconPin size="1rem" />
+                <IconPin size="1rem" color="gray" />
               ),
           },
           {

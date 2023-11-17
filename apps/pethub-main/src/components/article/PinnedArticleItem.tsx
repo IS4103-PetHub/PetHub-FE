@@ -1,29 +1,11 @@
-import {
-  useMantineTheme,
-  Text,
-  Divider,
-  Card,
-  Group,
-  Box,
-  Badge,
-  Grid,
-  Image,
-  LoadingOverlay,
-  Avatar,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { IconPin, IconPinFilled } from "@tabler/icons-react";
-import dayjs from "dayjs";
-import Link from "next/link";
+import { useMantineTheme, Text, Divider, Group, Box } from "@mantine/core";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   Article,
   displayArticleDate,
   formatStringToLetterCase,
 } from "shared-utils";
-import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
 
 interface PinnedArticleItemProps {
