@@ -1,6 +1,16 @@
-import { Box, Button, Card, Grid, Group, Image, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Card,
+  Grid,
+  Group,
+  Image,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
+import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   OrderItem,
@@ -16,6 +26,8 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
 import { searchOrderItemsForCustomer } from "@/util";
+import ShowLessButton from "../ShowLessButton";
+import ShowMoreButton from "../ShowMoreButton";
 
 interface SelectRefundRequestsProps {
   form: UseFormReturnType<any>;
@@ -31,6 +43,7 @@ export default function SelectRefundRequests({
     isLoading,
     refetch,
   } = useGetorderItemsByPetOwnerId(userId);
+  const theme = useMantineTheme();
   const [isSearching, setIsSearching] = useToggle();
   const [searchString, setSearchString] = useState<string>("");
   const [records, setRecords] = useState<OrderItem[]>(orderItems);
@@ -97,10 +110,14 @@ export default function SelectRefundRequests({
         radius="md"
         withBorder
         onClick={() => handleRowClick(orderItem.RefundRequest?.refundRequestId)}
-        style={{
+        sx={{
+          "&:hover": {
+            cursor: "pointer",
+            backgroundColor: theme.colors.gray[0],
+          },
           backgroundColor:
             selectedBooking === orderItem.RefundRequest?.refundRequestId
-              ? "#f0f0f0"
+              ? theme.colors.indigo[0]
               : "white",
         }}
       >
@@ -177,11 +194,9 @@ export default function SelectRefundRequests({
       </Grid>
       <Box mt="xl">
         {visibleListings.length < records.length && (
-          <Button onClick={handleShowMore} style={{ marginRight: 8 }}>
-            Show More Items
-          </Button>
+          <ShowMoreButton onClick={handleShowMore} />
         )}
-        {visibleRows > 2 && <Button onClick={handleShowLess}>Show Less</Button>}
+        {visibleRows > 2 && <ShowLessButton onClick={handleShowLess} />}
       </Box>
     </>
   );

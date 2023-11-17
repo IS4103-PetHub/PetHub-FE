@@ -1,12 +1,11 @@
 import {
-  Badge,
   Box,
-  Button,
   Card,
   Grid,
   Group,
   Image,
   Text,
+  useMantineTheme,
 } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
@@ -18,6 +17,8 @@ import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import SearchBar from "web-ui/shared/SearchBar";
 import { useGetAllServiceListingsWithQueryParams } from "@/hooks/service-listing";
 import { searchServiceListingsForCustomer } from "@/util";
+import ShowLessButton from "../ShowLessButton";
+import ShowMoreButton from "../ShowMoreButton";
 
 interface SelectServiceListingProps {
   form: UseFormReturnType<any>;
@@ -26,6 +27,7 @@ interface SelectServiceListingProps {
 export default function SelectServiceListing({
   form,
 }: SelectServiceListingProps) {
+  const theme = useMantineTheme();
   const [activeCategory, setActiveCategory] = useState<string>(null);
   const [searchString, setSearchString] = useState<string>("");
   const [searchResults, setSearchResults] = useState<ServiceListing[]>([]);
@@ -88,10 +90,14 @@ export default function SelectServiceListing({
         radius="md"
         withBorder
         onClick={() => handleRowClick(listings.serviceListingId)}
-        style={{
+        sx={{
+          "&:hover": {
+            cursor: "pointer",
+            backgroundColor: theme.colors.gray[0],
+          },
           backgroundColor:
             selectedServiceListingId === listings.serviceListingId
-              ? "#f0f0f0"
+              ? theme.colors.indigo[0]
               : "white",
         }}
       >
@@ -108,9 +114,6 @@ export default function SelectServiceListing({
             />
           </Box>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            {/* <Badge size="xs">
-                            ID {listings.serviceListingId}
-                        </Badge> */}
             <Text
               weight={600}
               size="sm"
@@ -132,7 +135,7 @@ export default function SelectServiceListing({
       if (isLoading) {
         return <CenterLoader />;
       }
-      return <SadDimmedMessage title="No Service Listing found" subtitle="" />;
+      return <SadDimmedMessage title="No service listings found" subtitle="" />;
     }
 
     return (
@@ -159,11 +162,9 @@ export default function SelectServiceListing({
       </Grid>
       <Box mt="xl">
         {visibleListings.length < searchResults.length && (
-          <Button onClick={handleShowMore} style={{ marginRight: 8 }}>
-            Show More Items
-          </Button>
+          <ShowMoreButton onClick={handleShowMore} />
         )}
-        {visibleRows > 2 && <Button onClick={handleShowLess}>Show Less</Button>}
+        {visibleRows > 2 && <ShowLessButton onClick={handleShowLess} />}
       </Box>
     </>
   );

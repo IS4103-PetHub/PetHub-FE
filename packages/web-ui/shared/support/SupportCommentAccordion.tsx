@@ -47,7 +47,7 @@ export default function SupportCommentAccordion({
   }, [comments]);
 
   return (
-    <Accordion.Item value="comments" pl={30} pr={30} pt={15} pb={10}>
+    <Accordion.Item value="comments" p="xl" pt="lg">
       <Group position="apart" mt={5} mb={15}>
         <Text fw={600} size="md">
           <IconMessageCircle size="1rem" color={theme.colors.indigo[5]} />{" "}

@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconFileDownload } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { IconListDetails, IconPhotoPlus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import { useState, useRef, ReactNode, useEffect } from "react";
@@ -26,8 +26,6 @@ import {
   formatEnumValueToLowerCase,
   getErrorMessageProps,
   formatStringToLetterCase,
-  formatNumber2Decimals,
-  formatISODateLong,
 } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
@@ -438,9 +436,9 @@ export default function SupportAccordionDetails({
         </Text>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
-            "Display Images",
+            "Images",
             imagePreview.length == 0 ? (
-              <Text>No images uploaded</Text>
+              <Text color="dimmed">No images uploaded</Text>
             ) : (
               <ImageCarousel
                 attachmentURLs={imagePreview}

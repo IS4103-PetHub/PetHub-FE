@@ -128,8 +128,8 @@ const links: {
         label: "My orders",
       },
       {
-        link: "/customer/supports",
-        label: "My supports",
+        link: "/customer/support",
+        label: "My support tickets",
       },
     ],
   },

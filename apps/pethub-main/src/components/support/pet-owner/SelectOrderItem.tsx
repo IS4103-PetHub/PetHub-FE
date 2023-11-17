@@ -1,6 +1,16 @@
-import { Box, Button, Card, Grid, Group, Image, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Card,
+  Grid,
+  Group,
+  Image,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
+import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   OrderBarCounts,
@@ -18,6 +28,8 @@ import SearchBar from "web-ui/shared/SearchBar";
 import OrderStatusBar from "@/components/order/OrderTabs";
 import { useGetorderItemsByPetOwnerId } from "@/hooks/order";
 import { searchOrderItemsForCustomer } from "@/util";
+import ShowLessButton from "../ShowLessButton";
+import ShowMoreButton from "../ShowMoreButton";
 
 interface SelectOrderItemProps {
   form: UseFormReturnType<any>;
@@ -33,6 +45,7 @@ export default function SelectOrderItem({
     isLoading,
     refetch,
   } = useGetorderItemsByPetOwnerId(userId);
+  const theme = useMantineTheme();
   const [activeTab, setActiveTab] = useState(OrderItemStatusEnum.All);
   const [isSearching, setIsSearching] = useToggle();
   const [searchString, setSearchString] = useState<string>("");
@@ -186,9 +199,15 @@ export default function SelectOrderItem({
         radius="md"
         withBorder
         onClick={() => handleRowClick(orderItem.orderItemId)}
-        style={{
+        sx={{
+          "&:hover": {
+            cursor: "pointer",
+            backgroundColor: theme.colors.gray[0],
+          },
           backgroundColor:
-            selectedOrderItem === orderItem.orderItemId ? "#f0f0f0" : "white",
+            selectedOrderItem === orderItem.orderItemId
+              ? theme.colors.indigo[0]
+              : "white",
         }}
       >
         <Group>
@@ -267,11 +286,9 @@ export default function SelectOrderItem({
       </Grid>
       <Box mt="xl">
         {visibleListings.length < records.length && (
-          <Button onClick={handleShowMore} style={{ marginRight: 8 }}>
-            Show More Items
-          </Button>
+          <ShowMoreButton onClick={handleShowMore} />
         )}
-        {visibleRows > 2 && <Button onClick={handleShowLess}>Show Less</Button>}
+        {visibleRows > 2 && <ShowLessButton onClick={handleShowLess} />}
       </Box>
     </>
   );

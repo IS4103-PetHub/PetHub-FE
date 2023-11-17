@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import {
   SupportTicketReason,
   SupportTicketStatus,
+  formatISODateTimeShort,
   formatStringToLetterCase,
 } from "shared-utils";
 
@@ -10,7 +11,7 @@ const SupportTicketCard = ({ ticket }) => {
   const router = useRouter();
 
   const viewTicketDetails = () => {
-    router.push(`/customer/supports/${ticket.supportTicketId}`);
+    router.push(`/customer/support/${ticket.supportTicketId}`);
   };
 
   const statusColorMap = new Map([
@@ -33,24 +34,23 @@ const SupportTicketCard = ({ ticket }) => {
 
   return (
     <Card mih={250} shadow="sm" padding="lg" radius="md" withBorder>
-      <Text weight={500}>Ticket ID: {ticket.supportTicketId}</Text>
-      <Text size="sm" color="dimmed">
-        Created At: {new Date(ticket.createdAt).toLocaleDateString()}
-      </Text>
-      <Text mt={"xl"}>
-        Reason: <br /> {ticket.reason}
-      </Text>
-      <Text mt={"xl"}>
-        Category:{" "}
-        <Badge color={categoryColorMap.get(ticket.supportCategory)}>
-          {formatStringToLetterCase(ticket.supportCategory)}
-        </Badge>
-      </Text>
-      <Text mt={"xl"}>
-        Status:{" "}
-        <Badge color={statusColorMap.get(ticket.status)}>
+      <Group position="apart">
+        <Text weight={600}>Ticket ID: {ticket.supportTicketId}</Text>
+        <Badge size="lg" color={statusColorMap.get(ticket.status)}>
           {formatStringToLetterCase(ticket.status)}
         </Badge>
+      </Group>
+      <Text size="sm" color="dimmed">
+        Created on: {formatISODateTimeShort(ticket.createdAt)}
+      </Text>
+      <Badge variant="dot" color={categoryColorMap.get(ticket.supportCategory)}>
+        Category: {formatStringToLetterCase(ticket.supportCategory)}
+      </Badge>
+      <Text mt="xl" fw={500}>
+        Description:{" "}
+      </Text>
+      <Text w="90%" lineClamp={2} sx={{ textOverflow: "ellipsis" }}>
+        {ticket.reason}
       </Text>
       <Group position="right" mt="md">
         <Button onClick={viewTicketDetails}>View Details</Button>

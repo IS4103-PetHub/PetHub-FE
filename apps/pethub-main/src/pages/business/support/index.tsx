@@ -253,7 +253,7 @@ export default function Supports({
           <LargeCreateButton
             mb="lg"
             text="Create Support Ticket"
-            onClick={() => router.push("/business/supports/create")}
+            onClick={() => router.push("/business/support/create")}
           />
         </Group>
         {renderContent()}
