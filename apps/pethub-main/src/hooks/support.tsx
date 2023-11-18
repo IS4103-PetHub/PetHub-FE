@@ -59,6 +59,22 @@ export const usePetOwnerCreateSupportTickets = () => {
         formData.append("files", file);
       });
 
+      if (payload.serviceListingId) {
+        formData.append(
+          "serviceListingId",
+          payload.serviceListingId.toString(),
+        );
+      }
+      if (payload.orderItemId) {
+        formData.append("orderItemId", payload.orderItemId.toString());
+      }
+      if (payload.bookingId) {
+        formData.append("bookingId", payload.bookingId.toString());
+      }
+      if (payload.refundRequestId) {
+        formData.append("refundRequestId", payload.refundRequestId.toString());
+      }
+
       return (
         await api.post(`${SUPPORT_API}/pet-owner/${payload.userId}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
