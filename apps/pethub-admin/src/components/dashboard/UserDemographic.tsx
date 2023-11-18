@@ -29,14 +29,14 @@ export default function UserDemographic({ data }: UserDemographicProps) {
         </Grid.Col>
         <Grid.Col span={3}>
           <MiniSummaryCard
-            title={`No. of Reported Reviews`}
+            title={`Reported Reviews`}
             body={data.ReportedReviewCount.toString()}
             link="/admin/reported-reviews"
           />
         </Grid.Col>
         <Grid.Col span={3}>
           <MiniSummaryCard
-            title={`No. of Pending Applications`}
+            title={`Pending Business Applications`}
             body={data.PBApplicationCount.toString()}
             link="/admin/pb-applications"
           />

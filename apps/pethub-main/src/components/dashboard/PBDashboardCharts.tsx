@@ -13,7 +13,7 @@ export default function PBDashboardCharts({ data }: pbDashboardDataProps) {
       <Grid>
         <Grid.Col span={3}>
           <MiniSummaryCard
-            title="Total Remaining Appointments"
+            title="Appointments Left Today"
             body={data.remainingAppointments.toString()}
             link="/business/appointments"
           />
