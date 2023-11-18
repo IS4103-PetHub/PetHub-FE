@@ -22,7 +22,7 @@ const ImageCarousel = ({
     attachmentURLs.length > 0 ? (
       attachmentURLs.map((url) => (
         <Carousel.Slide key={url}>
-          <Image src={url} height={imageHeight} alt={altText} />
+          <Image src={url} height={imageHeight} alt={altText} fit="contain" />
         </Carousel.Slide>
       ))
     ) : (

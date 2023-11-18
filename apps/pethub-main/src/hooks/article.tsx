@@ -83,3 +83,19 @@ export const useGetArticleCommentsIdByArticleIdAndPetOwnerId = (
     enabled: !!(articleId && petOwnerId),
   });
 };
+
+export const useSubscribeToNewsletter = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      return (await api.post(`${ARTICLE_API}/subscribe`, { email })).data;
+    },
+  });
+};
+
+export const useUnsubscribeFromNewsletter = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      return (await api.post(`${ARTICLE_API}/unsubscribe`, { email })).data;
+    },
+  });
+};

@@ -28,6 +28,7 @@ interface ReviewAccordionItemProps {
   likedReviewIds: number[];
   reportedReviewIds: number[];
   refetchLikedAndReportedReviewIds?: () => Promise<any>;
+  refetchServiceListing?: () => Promise<any>;
 }
 
 const ReviewAccordionItem = ({
@@ -36,6 +37,7 @@ const ReviewAccordionItem = ({
   likedReviewIds = [],
   reportedReviewIds = [],
   refetchLikedAndReportedReviewIds,
+  refetchServiceListing,
 }: ReviewAccordionItemProps) => {
   const theme = useMantineTheme();
   const [filteredReviews, setFilteredReviews] = useState(
@@ -51,6 +53,16 @@ const ReviewAccordionItem = ({
   }, [filteredReviews]);
 
   useEffect(() => {
+    const updateReviewsWithLatest = (prevReviews) => {
+      const latestReviewsMap = new Map(
+        serviceListing.reviews.map((review) => [review.reviewId, review]),
+      );
+
+      return prevReviews.map((prevReview) => {
+        return latestReviewsMap.get(prevReview.reviewId) || prevReview;
+      });
+    };
+
     if (sorting === "latest") {
       setFilteredReviews((prevReviews) =>
         [...prevReviews].sort(
@@ -60,12 +72,16 @@ const ReviewAccordionItem = ({
         ),
       );
     }
-    if (sorting === "Most liked") {
-      setFilteredReviews((prevReviews) =>
-        [...prevReviews].sort((a, b) => b.likedByCount - a.likedByCount),
-      );
+
+    if (sorting === "most liked") {
+      setFilteredReviews((prevReviews) => {
+        const updatedReviews = updateReviewsWithLatest(prevReviews);
+        return [...updatedReviews].sort(
+          (a, b) => b.likedByCount - a.likedByCount,
+        );
+      });
     }
-  }, [sorting]);
+  }, [sorting, serviceListing]);
 
   const titleGroup = (
     <Group position="apart">
@@ -98,7 +114,7 @@ const ReviewAccordionItem = ({
                   <Box ml={10}>Most liked</Box>
                 </Center>
               ),
-              value: "Most liked",
+              value: "most liked",
             },
           ]}
         />
@@ -140,6 +156,7 @@ const ReviewAccordionItem = ({
                 refetchLikedAndReportedReviewIds={
                   refetchLikedAndReportedReviewIds
                 }
+                refetchServiceListing={refetchServiceListing}
               />
             ))}
             <Group position="right">

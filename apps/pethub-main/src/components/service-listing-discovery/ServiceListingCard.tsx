@@ -154,6 +154,11 @@ const ServiceListingCard = ({
           allowFractions
           iconSize="1.15rem"
         />
+        <Text mr={5} fw={500} size="xs" ml={3}>
+          {serviceListing?.overallRating === 0 || !serviceListing.reviews
+            ? ""
+            : `(${serviceListing?.reviews?.length})`}
+        </Text>
       </Box>
       {isFeaturedListing ? (
         <Text color="dimmed" size="sm" lineClamp={1}>

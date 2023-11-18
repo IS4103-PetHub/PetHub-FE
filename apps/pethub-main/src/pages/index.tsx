@@ -5,9 +5,9 @@ import nookies from "nookies";
 import { useEffect } from "react";
 import { Article, ServiceListing } from "shared-utils";
 import api from "@/api/axiosConfig";
-import AnnouncementArticleBanner from "@/components/article/AnnouncementArticleBanner";
 import AppointmentReminderModal from "@/components/common/landing/AppointmentReminderModal";
 import Banner from "@/components/common/landing/Banner";
+import Newsletter from "@/components/common/landing/Newsletter";
 import ServicesSection from "@/components/common/landing/ServicesSection";
 import SimpleFooter from "@/components/common/landing/SimpleFooter";
 import WhyPetHub from "@/components/common/landing/WhyPetHub";
@@ -33,6 +33,10 @@ export default function Home({
 }: HomeProps) {
   // for appointment reminder modal
   const [opened, { open, close }] = useDisclosure(false);
+  const [
+    newsletterOpened,
+    { toggle: toggleNewsletter, close: closeNewsletter },
+  ] = useDisclosure(true);
   useEffect(() => open(), []);
 
   return (
@@ -76,6 +80,7 @@ export default function Home({
         )}
         <WhyPetHub />
         <AppointmentReminderModal opened={opened} close={close} />
+        <Newsletter opened={newsletterOpened} close={closeNewsletter} />
       </main>
       <SimpleFooter />
     </>

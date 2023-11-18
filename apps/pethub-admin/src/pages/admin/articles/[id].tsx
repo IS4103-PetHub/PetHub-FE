@@ -62,7 +62,7 @@ export default function ArticleDetails({
   const canWrite = permissionCodes.includes(PermissionsCodeEnum.WriteArticles);
   const canRead = permissionCodes.includes(PermissionsCodeEnum.ReadArticles);
 
-  const [isPreviewing, toggleIsPreviewing] = useToggle([true, false]);
+  const [isPreviewing, toggleIsPreviewing] = useToggle([false, true]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const updateArticleMutation = useUpdateArticle();
@@ -125,7 +125,8 @@ export default function ArticleDetails({
         title: `Comment Deleted`,
         color: "green",
         icon: <IconCheck />,
-        message: "Article comment has been removed.",
+        message:
+          "Article comment has been removed. Email notification has been sent to the user.",
       });
     } catch (error: any) {
       notifications.show({

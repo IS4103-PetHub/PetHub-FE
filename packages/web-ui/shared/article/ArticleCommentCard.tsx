@@ -17,6 +17,7 @@ import {
   Card,
   Textarea,
   Menu,
+  LoadingOverlay,
 } from "@mantine/core";
 import { UseFormReturnType, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
@@ -64,6 +65,7 @@ const ArticleCommentCard = ({
 }: ArticleCommentCardProps) => {
   const theme = useMantineTheme();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [showFullComment, toggleShowFullComment] = useToggle();
   const [textExceedsLineClamp, setTextExceedsLineClamp] = useState(false);
@@ -106,8 +108,15 @@ const ArticleCommentCard = ({
     form.setFieldValue("comment", values.comment);
   }
 
+  async function deleteCommentHandler() {
+    setIsLoading(true);
+    await deleteComment(articleComment?.articleCommentId);
+    setIsLoading(false);
+  }
+
   return (
     <Card>
+      <LoadingOverlay visible={isLoading} />
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Group position="apart">
           <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -142,9 +151,7 @@ const ArticleCommentCard = ({
                 )}
                 <Menu.Item
                   icon={<IconTrash size={rem(14)} color="red" />}
-                  onClick={() =>
-                    deleteComment(articleComment?.articleCommentId)
-                  }
+                  onClick={deleteCommentHandler}
                 >
                   Delete
                 </Menu.Item>

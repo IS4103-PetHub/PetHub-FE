@@ -157,7 +157,7 @@ export default function Articles({}: ArticlesProps) {
       return (
         <SadDimmedMessage
           title="No articles found"
-          subtitle="Article that you place in the future will appear here"
+          subtitle="Articles published in the future will appear here"
         />
       );
     }

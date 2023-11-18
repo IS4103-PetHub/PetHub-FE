@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { useToggle } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
 import {
   IconDeviceFloppy,
   IconEye,
@@ -21,6 +22,7 @@ import {
   IconPinFilled,
   IconUpload,
   IconWriting,
+  IconX,
 } from "@tabler/icons-react";
 import dynamic from "next/dynamic";
 import React, { useState, useMemo, useEffect } from "react";
@@ -46,7 +48,7 @@ interface ArticleFormProps {
   isPreviewing: boolean;
   toggleIsPreviewing: () => void;
   article?: Article;
-  onSubmit: (payload: CreateOrUpdateArticlePayload) => void;
+  onSubmit: (payload: CreateOrUpdateArticlePayload) => Promise<void>;
   deleteComment?: (articleCommentId: number) => Promise<void>;
 }
 
@@ -58,6 +60,7 @@ const ArticleForm = ({
   deleteComment,
 }: ArticleFormProps) => {
   const theme = useMantineTheme();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [existingFileUrl, setExistingFileUrl] = useState<string>("");
   const RichTextEditor = useMemo(() => {
     return dynamic(() => import("web-ui/shared/article/RichTextEditor"), {
@@ -109,7 +112,21 @@ const ArticleForm = ({
           return `Title must be between ${minLength} and ${maxLength} characters.`;
         }
       },
-      content: isNotEmpty("Content cannot be empty."),
+      content: (value) => {
+        if (!value) {
+          notifications.show({
+            title: isUpdating
+              ? "Error Updating Article"
+              : "Error Creating Article",
+            color: "red",
+            icon: <IconX />,
+            message: "Content cannot be empty.",
+          });
+          // Returning validation message
+          return "Content is mandatory and cannot be empty.";
+        }
+        return null; // No error
+      },
       articleType: isNotEmpty("Article type is mandatory."),
     },
   });
@@ -183,8 +200,14 @@ const ArticleForm = ({
     document.body.removeChild(link);
   };
 
+  const handleSubmit = async (values: any) => {
+    setIsLoading(true);
+    await onSubmit(values);
+    setIsLoading(false);
+  };
+
   const ArticleForm = (
-    <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
+    <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
       <Grid mb="xl" columns={48}>
         <Grid.Col span={12}>
           <PageTitle
@@ -230,7 +253,7 @@ const ArticleForm = ({
             {...form.getInputProps("title")}
           />
         </Grid.Col>
-        <Grid.Col span={11} mt={-10}>
+        <Grid.Col span={10} mt={-10}>
           <Text size="0.875rem" fw={500} color="#212529" mt={3}>
             Upload Cover Image
           </Text>
@@ -256,7 +279,7 @@ const ArticleForm = ({
             />
           )}
         </Grid.Col>
-        <Grid.Col span={5}>
+        <Grid.Col span={6}>
           <Button
             mt={14}
             fullWidth
@@ -319,6 +342,7 @@ const ArticleForm = ({
                 }
                 miw={150}
                 type="submit"
+                loading={isLoading}
               >
                 {isUpdating ? "Save Changes" : "Publish Article"}
               </Button>
