@@ -286,7 +286,7 @@ export default function Cart({ userId }: CartProps) {
         <title>My Cart - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} size="75vw" sx={{ overflow: "hidden" }}>
+      <Container mt={50} mb={50} size="75vw" sx={{ overflow: "hidden" }}>
         <Group position="apart">
           <PageTitle title={`My cart (${getItemCount()})`} mb="lg" />
         </Group>

@@ -1,36 +1,21 @@
-import {
-  Alert,
-  Button,
-  Container,
-  Grid,
-  Group,
-  Select,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
+import { Container, Grid, Group, Select, useMantineTheme } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import { IconExclamationCircle } from "@tabler/icons-react";
 import Head from "next/head";
-import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   Article,
   EMPTY_STATE_DELAY_MS,
-  RefundStatusEnum,
   ServiceCategoryEnum,
   formatStringToLetterCase,
 } from "shared-utils";
 import { PageTitle } from "web-ui";
 import CenterLoader from "web-ui/shared/CenterLoader";
-import NoSearchResultsMessage from "web-ui/shared/NoSearchResultsMessage";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
-import SearchBar from "web-ui/shared/SearchBar";
 import SortBySelect from "web-ui/shared/SortBySelect";
 import ArticleCard from "@/components/article/ArticleCard";
 import ArticleFilterBar from "@/components/article/ArticleFilterBar";
 import PinnedArticleSidebar from "@/components/article/PinnedArticleSidebar";
 import { useGetAllArticles, useGetAllPinnedArticles } from "@/hooks/article";
-import { useGetAllTags } from "@/hooks/tags";
 import { articleSortOptions } from "@/types/constants";
 import { sortRecords } from "@/util";
 
@@ -179,7 +164,7 @@ export default function Articles({}: ArticlesProps) {
   return (
     <>
       <Head>
-        <title>My Articles - PetHub</title>
+        <title>Articles - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <main>

@@ -23,6 +23,8 @@ import {
 } from "shared-utils";
 import ArticleTypeBadge from "web-ui/shared/article/ArticleTypeBadge";
 
+const IMAGE_HEIGHT = 120;
+
 interface ArticleCardProps {
   article: Article;
 }
@@ -96,16 +98,14 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
             <Image
               radius="md"
               src={article?.attachmentUrls[0]}
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Article Cover Image"
             />
           ) : (
             <Image
               radius="md"
               src="/pethub-placeholder.png"
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Article Cover Image"
             />
           )}

@@ -35,6 +35,7 @@ import ReviewModal from "../review/ReviewModal";
 import OrderItemBadge from "./OrderItemBadge";
 import OrderItemPopover from "./OrderItemPopover";
 
+const IMAGE_HEIGHT = 120;
 interface OrderItemCardProps {
   userId: number;
   orderItem: OrderItem;
@@ -296,16 +297,14 @@ const OrderItemCard = ({ userId, orderItem }: OrderItemCardProps) => {
             <Image
               radius="md"
               src={orderItem?.serviceListing.attachmentURLs[0]}
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Cart Item Photo"
             />
           ) : (
             <Image
               radius="md"
               src="/pethub-placeholder.png"
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Cart Item Photo"
             />
           )}

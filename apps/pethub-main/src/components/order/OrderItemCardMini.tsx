@@ -1,53 +1,26 @@
 import {
   useMantineTheme,
   Text,
-  Divider,
-  Card,
   Button,
   Group,
   Box,
   Badge,
-  Checkbox,
   Grid,
   Image,
-  Stack,
-  CopyButton,
   Center,
-  Alert,
-  LoadingOverlay,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import {
-  IconBuildingStore,
-  IconCopy,
-  IconMapPin,
-  IconPaw,
-  IconTrash,
-} from "@tabler/icons-react";
-import dayjs from "dayjs";
+import { IconBuildingStore } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import {
-  Invoice,
   OrderItem,
-  OrderItemStatusEnum,
-  ServiceListing,
   convertMinsToDurationString,
-  formatISODateLong,
-  formatISODateOnly,
-  formatISODateTimeShort,
   formatISODayDateTime,
 } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
-import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
-import { useCartOperations } from "@/hooks/cart";
-import { Booking, CartItem } from "@/types/types";
-import SelectTimeslotModal from "../appointment-booking/SelectTimeslotModal";
-import CreateReviewModal from "../review/ReviewModal";
-import OrderItemBadge from "./OrderItemBadge";
-import OrderItemPopover from "./OrderItemPopover";
+
+const IMAGE_HEIGHT = 120;
 
 interface OrderItemCardMiniProps {
   orderItem: OrderItem;
@@ -102,16 +75,14 @@ const OrderItemCardMini = ({ orderItem, viewOnly }: OrderItemCardMiniProps) => {
             <Image
               radius="md"
               src={orderItem?.serviceListing?.attachmentURLs[0]}
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Order Item Photo"
             />
           ) : (
             <Image
               radius="md"
               src="/pethub-placeholder.png"
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Order Item Photo"
             />
           )}

@@ -50,7 +50,9 @@ const CheckoutForm = ({
   const cartItems: CartItem[] = getSelectedCartItems();
 
   function calculateFinalAmount() {
-    return checkoutSummary.total - Number(pointsToUse) / 100;
+    return Number(
+      formatNumber2Decimals(checkoutSummary.total - Number(pointsToUse) / 100),
+    );
   }
 
   const billingForm = useForm({

@@ -108,9 +108,7 @@ export default function ArticleDetails({ userId }: ArticleDetailsProps) {
   return (
     <>
       <Head>
-        <title>
-          {articleId} - {article?.title}
-        </title>
+        <title>{article?.title} | PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid mb={80} mr="lg" ml="lg" mt="md">
