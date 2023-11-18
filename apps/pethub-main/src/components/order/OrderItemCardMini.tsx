@@ -20,7 +20,7 @@ import {
 } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 
-const IMAGE_HEIGHT = 120;
+const IMAGE_HEIGHT = 80;
 
 interface OrderItemCardMiniProps {
   orderItem: OrderItem;
