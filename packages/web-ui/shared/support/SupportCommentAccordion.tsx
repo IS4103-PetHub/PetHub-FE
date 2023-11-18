@@ -70,7 +70,9 @@ export default function SupportCommentAccordion({
           ))}
         </ScrollArea>
       ) : (
-        <Text mb="lg">No comments yet</Text>
+        <Text mb="lg" c="dimmed">
+          No comments yet
+        </Text>
       )}
 
       <form>
