@@ -396,8 +396,10 @@ const OrderItemStepperContent = ({
           variant="light"
           sx={{ border: "1px solid #e0e0e0" }}
           onClick={openRefundModal}
-          disabled={eligibleForRefund ? false : true}
-          display={eligibleForRefund ? "block" : "none"}
+          // disabled={eligibleForRefund ? false : true}
+          display={
+            eligibleForRefund || orderItem?.RefundRequest ? "block" : "none"
+          }
         >
           {orderItem?.RefundRequest ? "View Refund Request" : "Refund"}
         </Button>
