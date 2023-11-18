@@ -482,7 +482,15 @@ export async function getServerSideProps(context) {
 
   const session = await getSession(context);
 
-  if (!session) return;
+  if (!session) {
+    // Handle the case when there is no session
+    return {
+      props: {
+        userId: null,
+        recommendedListings: [],
+      },
+    };
+  }
   const userId = session.user["userId"];
 
   const recommendedData = (await (
