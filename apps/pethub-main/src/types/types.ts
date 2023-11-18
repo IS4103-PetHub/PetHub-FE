@@ -354,6 +354,7 @@ export interface UserDemographicData {
 
 export interface PbDashboardData {
   unrepliedReviewCount: number;
+  remainingAppointments: number;
   invalidSLCount: number;
   openRefundRequestsCount: number;
   openSupportRequestsCount: number;

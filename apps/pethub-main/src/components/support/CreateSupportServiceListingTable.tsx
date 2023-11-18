@@ -106,23 +106,6 @@ export default function CreateSupportServiceListingTable({
       render: (record) => formatStringToLetterCase(record.category),
     },
     {
-      accessor: "tags",
-      title: "Tags",
-      textAlignment: "left",
-      width: "10vw",
-      render: (record) =>
-        record.tags.map((tag, index) => (
-          <Badge
-            key={tag.tagId}
-            color={isValidServiceListing(record) ? "blue" : "red"}
-            mr={index < record.tags.length - 1 ? 5 : 0}
-            /* Add margin right if not the last tag */
-          >
-            {tag.name}
-          </Badge>
-        )),
-    },
-    {
       accessor: "basePrice",
       title: "Price ($)",
       textAlignment: "right",

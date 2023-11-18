@@ -22,7 +22,7 @@ import {
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   SupportTicketReason,
   SupportTicketStatus,
@@ -64,6 +64,19 @@ export default function POSupportTicketDetails({
   const [textExceedsLineClampReason, setTextExceedsLineClampReason] =
     useState(false);
   const textRefReason = useRef(null);
+
+  useEffect(() => {
+    if (textRefReason.current) {
+      const lineHeight = parseInt(
+        getComputedStyle(textRefReason.current).lineHeight,
+      );
+      const textHeight = textRefReason.current.clientHeight;
+      // Check if text exceeds 2 lines
+      if (textHeight > lineHeight * 2) {
+        setTextExceedsLineClampReason(true);
+      }
+    }
+  }, [supportTicket?.reason]);
 
   const initialValues = {
     comment: "",

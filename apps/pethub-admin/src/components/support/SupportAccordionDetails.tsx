@@ -27,6 +27,7 @@ import {
   getErrorMessageProps,
   formatStringToLetterCase,
 } from "shared-utils";
+import AccountStatusBadge from "web-ui/shared/AccountStatusBadge";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ImageCarousel from "web-ui/shared/ImageCarousel";
 import BookingDetails from "web-ui/shared/support/BookingDetails";
@@ -171,11 +172,9 @@ export default function SupportAccordionDetails({
         )}
         {generateItemGroup(
           "Status",
-          <Text>
-            {formatEnumValueToLowerCase(
-              supportTicket.petOwner.user.accountStatus,
-            )}
-          </Text>,
+          <AccountStatusBadge
+            accountStatus={supportTicket.petOwner.user.accountStatus}
+          />,
         )}
       </>
     );
@@ -321,7 +320,7 @@ export default function SupportAccordionDetails({
         </Group>
         <Grid columns={24} mt="xs">
           {generateItemGroup(
-            "Reason",
+            "Description",
             <Box>
               <Text lineClamp={showFullDescription ? 0 : 2} ref={textRef}>
                 {supportTicket?.reason}

@@ -105,7 +105,7 @@ export default function SelectRefundRequests({
   };
 
   const orderItemCards = visibleListings.map((orderItem) => (
-    <Grid.Col span={6} key={orderItem.RefundRequest.refundRequestId}>
+    <Grid.Col span={6} key={orderItem.RefundRequest?.refundRequestId}>
       <Card
         radius="md"
         withBorder
@@ -144,11 +144,15 @@ export default function SelectRefundRequests({
             </Text>
             <Text size="xs" color="dimmed">
               Refund Status:{" "}
-              {formatStringToLetterCase(orderItem?.RefundRequest?.status)}
+              {orderItem?.RefundRequest?.status
+                ? formatStringToLetterCase(orderItem?.RefundRequest?.status)
+                : ""}
             </Text>
             <Text size="xs" color="dimmed">
               Order Created Date:{" "}
-              {formatISODateOnly(orderItem.invoice.createdAt)}
+              {orderItem.invoice.createdAt
+                ? formatISODateOnly(orderItem.invoice.createdAt)
+                : ""}
             </Text>
             <Text size="xs" color="dimmed">
               Price: $

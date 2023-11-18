@@ -15,29 +15,24 @@ const MiniSummaryCard = ({
   subbody,
   link,
 }: MiniSummaryCardProps) => {
-  return (
-    <Card shadow="sm" p="md" mih={135} withBorder>
-      {link ? (
-        <Link href={link}>
-          <Text mb={6} size="lg" align="center">
-            {title}
-          </Text>
-        </Link>
-      ) : (
+  function item() {
+    return (
+      <Card shadow="sm" p="md" mih={135} withBorder>
         <Text mb={6} size="lg" align="center">
           {title}
         </Text>
-      )}
-      <Text size={"1.75rem"} fw={600} align="center" mt={subbody ? 0 : "md"}>
-        {body}
-      </Text>
-      {subbody && (
-        <Text align="center" color="dimmed" mt={-3}>
-          {subbody}
+        <Text size={"1.75rem"} fw={600} align="center" mt={subbody ? 0 : "md"}>
+          {body}
         </Text>
-      )}
-    </Card>
-  );
+        {subbody && (
+          <Text align="center" color="dimmed" mt={-3}>
+            {subbody}
+          </Text>
+        )}
+      </Card>
+    );
+  }
+  return <>{link ? <Link href={link}>{item()}</Link> : <>{item()}</>}</>;
 };
 
 export default MiniSummaryCard;

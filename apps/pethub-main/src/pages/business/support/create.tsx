@@ -256,7 +256,7 @@ export default function CreatePBSupport({ userId, canView }) {
           <LargeBackButton
             size="sm"
             text="Back to Support Tickets"
-            onClick={() => router.push("/business/supports")}
+            onClick={() => router.push("/business/support")}
             mb="md"
           />
           <PageTitle title="Create Support Ticket" />

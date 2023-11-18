@@ -40,6 +40,7 @@ const ReviewItem = ({ review, refetch, canWrite }: ReviewItemProps) => {
 
   const [focusedImage, setFocusedImage] = useState(null);
   const [showImageCarousel, setShowImageCarousel] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // This is a hacky way to check if the text exceeds 2 lines in the DOM
   useEffect(() => {
@@ -67,6 +68,7 @@ const ReviewItem = ({ review, refetch, canWrite }: ReviewItemProps) => {
   const deleteReviewMutation = useDeleteReview(queryClient);
   const handleDeleteReview = async (reviewId: number) => {
     try {
+      setIsLoading(true);
       await deleteReviewMutation.mutateAsync(reviewId);
       notifications.show({
         title: "Review Deleted",
@@ -75,7 +77,9 @@ const ReviewItem = ({ review, refetch, canWrite }: ReviewItemProps) => {
         message: `Review ID: ${reviewId} deleted successfully.`,
       });
       refetch();
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       notifications.show({
         ...getErrorMessageProps("Error Deleting Review", error),
       });
@@ -233,6 +237,7 @@ const ReviewItem = ({ review, refetch, canWrite }: ReviewItemProps) => {
                   "Are you sure you want to delete this review? Please note that once deleted, the review will be permanently removed and cannot be recovered."
                 }
                 onDelete={() => handleDeleteReview(review.reviewId)}
+                loading={isLoading}
               />
             </Center>
           </Grid.Col>
