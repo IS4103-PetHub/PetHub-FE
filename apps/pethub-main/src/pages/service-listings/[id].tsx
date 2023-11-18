@@ -298,14 +298,6 @@ export default function ServiceListingDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container mt={50} mb={80} size="70vw" sx={{ overflow: "hidden" }}>
-        <LoadingOverlay
-          loaderProps={{ size: "lg" }}
-          visible={
-            isServiceListingLoading ||
-            isFavouriteServiceListingLoading ||
-            isFetchLikedAndReportedReviewsLoading
-          }
-        />
         <Grid gutter="xl">
           <Grid.Col span={9}>
             <ServiceListingBreadcrumbs
@@ -482,7 +474,15 @@ export async function getServerSideProps(context) {
 
   const session = await getSession(context);
 
-  if (!session) return;
+  if (!session) {
+    // Handle the case when there is no session
+    return {
+      props: {
+        userId: null,
+        recommendedListings: [],
+      },
+    };
+  }
   const userId = session.user["userId"];
 
   const recommendedData = (await (
