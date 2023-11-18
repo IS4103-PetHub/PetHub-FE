@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import { ServiceListing } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 
+const IMAGE_SIZE = 50;
+
 interface MiniCartItemCardProps {
   serviceListing: ServiceListing;
   closePopup: () => void;
@@ -38,8 +40,7 @@ const MiniCartItemCard = ({
       mb="xs"
       radius="md"
       shadow="xs"
-      mah={90}
-      mih={90}
+      h={90}
       sx={{ backgroundColor: theme.colors.gray[0] }}
       onClick={handleCardClick}
     >
@@ -49,16 +50,14 @@ const MiniCartItemCard = ({
             <Image
               radius="md"
               src={serviceListing.attachmentURLs[0]}
-              fit="contain"
-              w="auto"
+              height={IMAGE_SIZE}
               alt="Cart Item Photo"
             />
           ) : (
             <Image
               radius="md"
               src="/pethub-placeholder.png"
-              fit="contain"
-              w="auto"
+              height={IMAGE_SIZE}
               alt="Cart Item Photo"
             />
           )}

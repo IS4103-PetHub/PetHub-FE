@@ -14,13 +14,13 @@ import {
 import { notifications } from "@mantine/notifications";
 import { IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ServiceListing, convertMinsToDurationString } from "shared-utils";
 import { formatNumber2Decimals } from "shared-utils";
 import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import CartItemBadge from "./CartItemBadge";
 
+const IMAGE_HEIGHT = 120;
 interface CartItemCardProps {
   itemId: number;
   serviceListing: ServiceListing;
@@ -107,16 +107,14 @@ const CartItemCard = ({
             <Image
               radius="md"
               src={serviceListing.attachmentURLs[0]}
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Cart Item Photo"
             />
           ) : (
             <Image
               radius="md"
               src="/pethub-placeholder.png"
-              fit="contain"
-              w="auto"
+              height={IMAGE_HEIGHT}
               alt="Cart Item Photo"
             />
           )}

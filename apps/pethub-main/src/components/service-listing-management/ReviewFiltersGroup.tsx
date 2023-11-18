@@ -69,7 +69,8 @@ const ReviewFiltersGroup = ({
           onClick={() => handleStarFilter(star)}
           variant={activeStarFilter === star ? "filled" : "outline"}
         >
-          {star} Paw&nbsp;<Text size={11}>({starCounts[index]})</Text>
+          {star} Paw{star > 1 ? "s" : ""}&nbsp;
+          <Text size={11}>({starCounts[index]})</Text>
         </Button>
       ))}
     </Center>
