@@ -56,6 +56,16 @@ export default function CreateArticle({
   }
 
   const handleCreateArticle = async (values: any) => {
+    if (!canWrite) {
+      notifications.show({
+        title: "No Write Permissions",
+        color: "red",
+        icon: <IconCheck />,
+        message: `You do not have permissions to create articles.`,
+      });
+      return;
+    }
+
     try {
       const payload: CreateOrUpdateArticlePayload = {
         title: values.title,
