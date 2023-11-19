@@ -86,6 +86,16 @@ export default function ArticleDetails({
   }
 
   const handleUpdateArticle = async (values: any) => {
+    if (!canWrite) {
+      notifications.show({
+        title: "No Write Permissions",
+        color: "red",
+        icon: <IconCheck />,
+        message: `You do not have permissions to update articles.`,
+      });
+      return;
+    }
+
     try {
       const payload: CreateOrUpdateArticlePayload = {
         articleId: articleId,
@@ -118,6 +128,16 @@ export default function ArticleDetails({
   };
 
   const handleDeleteArticleComment = async (articleCommentId: number) => {
+    if (!canWrite) {
+      notifications.show({
+        title: "No Write Permissions",
+        color: "red",
+        icon: <IconCheck />,
+        message: `You do not have permissions to delete comments.`,
+      });
+      return;
+    }
+
     try {
       await deleteArticleCommentMutation.mutateAsync(articleCommentId);
       await refetchArticle();
