@@ -55,12 +55,13 @@ export default function Tags({ permissions }: TagsProps) {
     columnAccessor: "tagId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<Tag[]>([]);
 
   // Recompute records whenever the current page or sort status changes
   useEffect(() => {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-    const sortedTags = sortBy(tags, sortStatus.columnAccessor);
+    const sortedTags = sortBy(searchResults, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedTags.reverse();
     }
@@ -68,22 +69,24 @@ export default function Tags({ permissions }: TagsProps) {
     const newRecords = sortedTags.slice(from, to);
     // Update the records state
     setRecords(newRecords);
-  }, [page, sortStatus, tags]);
+  }, [page, sortStatus, tags, searchResults]);
 
   useEffect(() => {
+    setSearchResults(tags);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (tags.length === 0) {
         setHasNoFetchedRecords(true);
       }
+      setSearchResults(tags);
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [tags]);
 
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(tags);
+      setSearchResults(tags); // reset search results
       setPage(1);
       return;
     }
@@ -96,7 +99,7 @@ export default function Tags({ permissions }: TagsProps) {
           searchStr.includes(tag.tagId.toString()) &&
           searchStr.length <= tag.tagId.toString().length),
     );
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -188,10 +191,9 @@ export default function Tags({ permissions }: TagsProps) {
         ) : (
           <TagTable
             tags={records}
-            totalNumTags={tags.length}
+            totalNumTags={searchResults.length}
             onDelete={handleDeleteTag}
             onUpdate={handleUpdateTag}
-            isSearching={isSearching}
             page={page}
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
@@ -212,9 +214,7 @@ export default function Tags({ permissions }: TagsProps) {
       <Container fluid>
         <Group position="apart" mb="xl">
           <PageTitle title="Tag Management" />
-          {canWrite ? (
-            <CreateTagButtonModal onCreate={handleCreateTag} />
-          ) : null}
+          {canWrite && <CreateTagButtonModal onCreate={handleCreateTag} />}
         </Group>
 
         {renderContent()}

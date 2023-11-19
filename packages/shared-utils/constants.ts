@@ -55,3 +55,74 @@ export enum RecurrencePatternEnum {
   Daily = "DAILY",
   Weekly = "WEEKLY",
 }
+
+export enum OrderItemStatusEnum {
+  All = "ALL",
+  PendingBooking = "PENDING_BOOKING",
+  PendingFulfillment = "PENDING_FULFILLMENT",
+  Fulfilled = "FULFILLED",
+  PaidOut = "PAID_OUT",
+  Refunded = "REFUNDED",
+  Expired = "EXPIRED",
+}
+
+export enum RefundStatusEnum {
+  Pending = "PENDING",
+  Approved = "APPROVED",
+  Rejected = "REJECTED",
+}
+
+export enum PetTypeEnum {
+  Dog = "DOG",
+  Cat = "CAT",
+  Bird = "BIRD",
+  Terrapin = "TERRAPIN",
+  Rabbit = "RABBIT",
+  Rodent = "RODENT",
+  Others = "OTHERS",
+}
+
+export enum ReviewReportReasonEnum {
+  RudeOrAbusive = "RUDE_ABUSIVE",
+  Pornographic = "PORNOGRAPHIC",
+  Spam = "SPAM",
+  ExposingPersonalInformation = "EXPOSING_PERSONAL_INFORMATION",
+  UnauthorizedAdvertisement = "UNAUTHORIZED_ADVERTISEMENT",
+  InaccurateOrMisleading = "INACCURATE_MISLEADING",
+  Others = "OTHERS",
+}
+
+export enum SupportTicketReason {
+  GeneralEnquiry = "GENERAL_ENQUIRY",
+  ServiceListing = "SERVICE_LISTINGS",
+  Orders = "ORDERS",
+  Appointments = "APPOINTMENTS",
+  Payments = "PAYMENTS",
+  Accounts = "ACCOUNTS",
+  Refunds = "REFUNDS",
+  Others = "OTHERS",
+}
+
+export enum Priority {
+  High = "HIGH",
+  Medium = "MEDIUM",
+  Low = "LOW",
+}
+
+export enum SupportTicketStatus {
+  Pending = "PENDING",
+  InProgress = "IN_PROGRESS",
+  ClosedResolved = "CLOSED_RESOLVED",
+  ClosedUnresolved = "CLOSED_UNRESOLVED",
+}
+
+export enum ArticleTypeEnum {
+  Annnouncements = "ANNOUNCEMENTS",
+  TipsAndTricks = "TIPS_AND_TRICKS",
+  Events = "EVENTS",
+  Others = "OTHERS",
+}
+
+export const PLATFORM_FEE_PERCENT = 0.07;
+
+export const COST_PER_SPOTLIGHT = 5;

@@ -14,10 +14,13 @@ import {
   Card,
   CloseButton,
   Autocomplete,
+  Checkbox,
 } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   Address,
@@ -25,6 +28,9 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   Tag,
+  downloadFile,
+  extractFileName,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
@@ -70,6 +76,7 @@ const ServiceListingModal = ({
   const [isViewing, setViewing] = useState(isView);
   // used to force reload the fileinput after each touch
   const [fileInputKey, setFileInputKey] = useState(0);
+  const router = useRouter();
 
   /*
    * Component Form
@@ -87,7 +94,10 @@ const ServiceListingModal = ({
       tags: [],
       confirmation: false,
       calendarGroupId: "",
-      duration: 0,
+      duration: null,
+      requiresBooking: false,
+      defaultExpiryDays: undefined,
+      lastPossibleDate: null,
     },
     validate: {
       title: (value) => {
@@ -122,6 +132,7 @@ const ServiceListingModal = ({
         }
         return null;
       },
+      defaultExpiryDays: isNotEmpty("Default Expiry Days is required"),
     },
   });
 
@@ -156,8 +167,13 @@ const ServiceListingModal = ({
           tagIds: values.tags.map((tagId) => parseInt(tagId)),
           files: values.files,
           addressIds: values.addresses,
-          calendarGroupId: parseInt(values.calendarGroupId),
+          calendarGroupId: values.calendarGroupId
+            ? parseInt(values.calendarGroupId)
+            : undefined,
           duration: values.duration,
+          requiresBooking: values.requiresBooking,
+          defaultExpiryDays: values.defaultExpiryDays,
+          lastPossibleDate: values.lastPossibleDate,
         };
         await updateServiceListingMutation.mutateAsync(payload);
         notifications.show({
@@ -176,12 +192,17 @@ const ServiceListingModal = ({
           addressIds: values.addresses,
           calendarGroupId: parseInt(values.calendarGroupId),
           duration: values.duration,
+          requiresBooking: values.requiresBooking,
+          defaultExpiryDays: values.defaultExpiryDays,
+          lastPossibleDate: values.lastPossibleDate,
         };
-        await createServiceListingMutation.mutateAsync(payload);
+        const res = await createServiceListingMutation.mutateAsync(payload);
         notifications.show({
-          message: "Service Successfully Created",
+          title: "Service Listing Created",
+          message: `Service listing successfully created with ID: ${res.serviceListingId}`,
           color: "green",
         });
+        router.push(`/business/listings/${res.serviceListingId}`);
       }
       refetch();
       serviceListingForm.reset();
@@ -211,20 +232,6 @@ const ServiceListingModal = ({
     }),
   );
 
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
-
   const setServiceListingFields = async () => {
     const tagIds = serviceListing.tags.map((tag) => tag.tagId.toString());
     const addressIds = serviceListing.addresses.map((address) =>
@@ -246,6 +253,13 @@ const ServiceListingModal = ({
 
     serviceListingForm.setValues({
       ...serviceListing,
+      requiresBooking: serviceListing.requiresBooking,
+      defaultExpiryDays: serviceListing.defaultExpiryDays
+        ? serviceListing.defaultExpiryDays
+        : undefined,
+      lastPossibleDate: serviceListing.lastPossibleDate
+        ? new Date(serviceListing.lastPossibleDate)
+        : undefined,
       title: serviceListing.title,
       tags: tagIds,
       files: downloadedFiles,
@@ -363,53 +377,31 @@ const ServiceListingModal = ({
               return isNaN(floatValue) ? "" : floatValue.toString();
             }}
             formatter={(value) => {
-              const formattedValue = parseFloat(
-                value.replace(/\$\s?/, ""),
-              ).toFixed(2);
+              const formattedValue = formatNumber2Decimals(
+                parseFloat(value.replace(/\$\s?/, "")),
+              );
               return `$ ${formattedValue}`;
             }}
             {...serviceListingForm.getInputProps("basePrice")}
           />
 
-          <Autocomplete
+          <NumberInput
+            withAsterisk
             disabled={isViewing}
-            placeholder="Select Service duration"
-            label="Duration (minutes)"
-            data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
-            onChange={(selectedValue) => {
-              const selectedDuration = parseInt(selectedValue, 10);
-              if (!isNaN(selectedDuration)) {
-                serviceListingForm.setValues({ duration: selectedDuration });
-              } else {
-                serviceListingForm.setValues({ duration: 0 });
-              }
-            }}
-            value={
-              serviceListingForm.values.duration
-                ? serviceListingForm.values.duration.toString()
-                : ""
-            }
+            label="Default Expiry Days"
+            placeholder="Input number of days for vouchers to expire"
+            min={0}
+            {...serviceListingForm.getInputProps("defaultExpiryDays")}
           />
 
-          <Select
+          <DateInput
             disabled={isViewing}
-            label="Calendar Group"
-            placeholder="Pick one"
-            data={
-              calendarGroups
-                ? [
-                    {
-                      value: "",
-                      label: "",
-                    },
-                    ...calendarGroups.map((group) => ({
-                      value: group.calendarGroupId.toString(),
-                      label: group.name,
-                    })),
-                  ]
-                : []
-            }
-            {...serviceListingForm.getInputProps("calendarGroupId")}
+            label="Last Operational Date"
+            placeholder="Input last possible date"
+            valueFormat="DD-MM-YYYY"
+            minDate={new Date()}
+            clearable
+            {...serviceListingForm.getInputProps("lastPossibleDate")}
           />
 
           <MultiSelect
@@ -441,6 +433,61 @@ const ServiceListingModal = ({
             }
             {...serviceListingForm.getInputProps("tags")}
           />
+
+          <Checkbox
+            disabled={isViewing}
+            label="Requires Booking"
+            {...serviceListingForm.getInputProps("requiresBooking", {
+              type: "checkbox",
+            })}
+          />
+
+          {serviceListingForm.values.requiresBooking && (
+            <>
+              <Autocomplete
+                disabled={isViewing}
+                placeholder="Select Service duration"
+                label="Duration (minutes)"
+                data={["30", "60", "90", "120", "150", "180"]} // Convert numbers to strings
+                onChange={(selectedValue) => {
+                  const selectedDuration = parseInt(selectedValue, 10);
+                  if (!isNaN(selectedDuration)) {
+                    serviceListingForm.setValues({
+                      duration: selectedDuration,
+                    });
+                  } else {
+                    serviceListingForm.setValues({ duration: 0 });
+                  }
+                }}
+                value={
+                  serviceListingForm.values.duration
+                    ? serviceListingForm.values.duration.toString()
+                    : ""
+                }
+              />
+
+              <Select
+                disabled={isViewing}
+                label="Calendar Group"
+                placeholder="Select a Calendar Group"
+                data={
+                  calendarGroups
+                    ? [
+                        {
+                          value: null,
+                          label: "",
+                        },
+                        ...calendarGroups.map((group) => ({
+                          value: group.calendarGroupId.toString(),
+                          label: group.name,
+                        })),
+                      ]
+                    : []
+                }
+                {...serviceListingForm.getInputProps("calendarGroupId")}
+              />
+            </>
+          )}
 
           <FileInput
             disabled={isViewing}
@@ -483,49 +530,31 @@ const ServiceListingModal = ({
               ))}
           </div>
 
-          {!isViewing && (
-            <>
-              {/* TODO: link to page with terms and conditions  */}
-              {/* {!isUpdating && (
-                  <Checkbox
-                    mt="md"
-                    label={"I agree to all the terms and conditions."}
-                    {...serviceListingForm.getInputProps("confirmation", {
-                      type: "checkbox",
-                    })}
-                    />
-                  )} */}
-              <Group position="right">
-                {!isViewing && (
-                  <Button
-                    type="reset"
-                    color="gray"
-                    onClick={() => {
-                      closeAndResetForm();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                )}
-                <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
-              </Group>
-            </>
-          )}
-
-          {isViewing && (
-            <>
-              <Group position="right">
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setUpdating(true);
-                    setViewing(false);
-                  }}
-                >
-                  Edit
-                </Button>
-              </Group>
-            </>
+          {!isViewing ? (
+            <Group position="right">
+              <Button
+                type="reset"
+                color="gray"
+                onClick={() => {
+                  closeAndResetForm();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">{isUpdating ? "Save" : "Create"}</Button>
+            </Group>
+          ) : (
+            <Group position="right">
+              <Button
+                type="button"
+                onClick={() => {
+                  setUpdating(true);
+                  setViewing(false);
+                }}
+              >
+                Edit
+              </Button>
+            </Group>
           )}
         </Stack>
       </form>

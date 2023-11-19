@@ -1,34 +1,41 @@
 import { Center, Container, Group, LoadingOverlay } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState, useEffect } from "react";
-import { CalendarGroup, getErrorMessageProps } from "shared-utils";
+import {
+  AccountStatusEnum,
+  CalendarGroup,
+  getErrorMessageProps,
+} from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import LargeEditButton from "web-ui/shared/LargeEditButton";
+import api from "@/api/axiosConfig";
 import CalendarGroupForm from "@/components/calendarGroup/CalendarGroupForm";
+import PBCannotAccessMessage from "@/components/common/PBCannotAccessMessage";
 import {
   useDeleteCalendarGroupById,
   useGetCalendarGroupById,
   useGetCalendarGroupByPBId,
 } from "@/hooks/calendar-group";
 import { useUpdateCalendarGroup } from "@/hooks/calendar-group";
-import {
-  validateCGDescription,
-  validateCGName,
-  validateCGSettings,
-} from "@/util";
+import { PetBusiness } from "@/types/types";
+import { validateCGName, validateCGSettings } from "@/util";
 
 interface ViewCalendarGroupProps {
   userId: number;
+  canView: boolean;
 }
 
-export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
+export default function ViewCalendarGroup({
+  userId,
+  canView,
+}: ViewCalendarGroupProps) {
   const router = useRouter();
   const [isEditingDisabled, setIsEditingDisabled] = useState(true);
   const [key, setKey] = useState(Math.random());
@@ -58,7 +65,7 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
     },
     validate: {
       name: validateCGName,
-      description: validateCGDescription,
+      description: isNotEmpty("Description is required."),
       scheduleSettings: validateCGSettings as any,
     },
   });
@@ -139,67 +146,71 @@ export default function ViewCalendarGroup({ userId }: ViewCalendarGroupProps) {
         <title>View Calendar Group - PetHub Business</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt="xl" mb="xl">
-        {isLoading ? (
-          <LoadingOverlay visible={isLoading} overlayBlur={1} />
-        ) : (
-          <>
-            <LargeBackButton
-              text="Back to Calendar View"
-              onClick={() => {
-                refetchCalendarGroupByPbId();
-                router.push("/business/appointments");
-              }}
-              size="sm"
-              mb="md"
-            />
-            <Group position="apart">
-              <PageTitle
-                title={
-                  isEditingDisabled
-                    ? "View Calendar Group"
-                    : "Update Calendar Group"
-                }
+      {!canView ? (
+        <PBCannotAccessMessage />
+      ) : (
+        <Container mt="xl" mb="xl">
+          {isLoading ? (
+            <LoadingOverlay visible={isLoading} overlayBlur={1} />
+          ) : (
+            <>
+              <LargeBackButton
+                text="Back to Calendar View"
+                onClick={() => {
+                  refetchCalendarGroupByPbId();
+                  router.push("/business/calendar-groups");
+                }}
+                size="sm"
+                mb="md"
               />
+              <Group position="apart">
+                <PageTitle
+                  title={
+                    isEditingDisabled
+                      ? "View Calendar Group"
+                      : "Update Calendar Group"
+                  }
+                />
 
-              {isEditingDisabled && (
-                <Group>
-                  <LargeEditButton
-                    text="Edit"
-                    onClick={toggleEdit}
-                    size="sm"
-                    variant="light"
-                    sx={{ border: "1.5px  solid" }}
-                  />
-                  <DeleteActionButtonModal
-                    title="Delete Calendar Group"
-                    subtitle="Are you sure you want to delete this Calendar Group?"
-                    onDelete={async () =>
-                      handleDeleteCalendarGroup(form.values.calendarGroupId)
-                    }
-                    large
-                    variant="light"
-                    sx={{ border: "1.5px  solid" }}
-                  />
-                </Group>
-              )}
-            </Group>
+                {isEditingDisabled && (
+                  <Group>
+                    <LargeEditButton
+                      text="Edit"
+                      onClick={toggleEdit}
+                      size="sm"
+                      variant="light"
+                      sx={{ border: "1.5px  solid" }}
+                    />
+                    <DeleteActionButtonModal
+                      title="Delete Calendar Group"
+                      subtitle="Are you sure you want to delete this Calendar Group?"
+                      onDelete={async () =>
+                        handleDeleteCalendarGroup(form.values.calendarGroupId)
+                      }
+                      large
+                      variant="light"
+                      sx={{ border: "1.5px  solid" }}
+                    />
+                  </Group>
+                )}
+              </Group>
 
-            <Group mt="xs">
-              <CalendarGroupForm
-                key={key}
-                form={form}
-                userId={userId}
-                isEditingDisabled={isEditingDisabled}
-                forView={true}
-                toggleEdit={toggleEdit}
-                cancelEdit={cancelEdit}
-                submit={handleUpdateCalendarGroup}
-              />
-            </Group>
-          </>
-        )}
-      </Container>
+              <Group mt="xs">
+                <CalendarGroupForm
+                  key={key}
+                  form={form}
+                  userId={userId}
+                  isEditingDisabled={isEditingDisabled}
+                  forView={true}
+                  toggleEdit={toggleEdit}
+                  cancelEdit={cancelEdit}
+                  submit={handleUpdateCalendarGroup}
+                />
+              </Group>
+            </>
+          )}
+        </Container>
+      )}
     </>
   );
 }
@@ -210,6 +221,14 @@ export async function getServerSideProps(context) {
   if (!session) return null;
 
   const userId = session.user["userId"];
+  const accountStatus = session.user["accountStatus"];
+  const petBusiness = (await (
+    await api.get(`/users/pet-businesses/${userId}`)
+  ).data) as PetBusiness;
 
-  return { props: { userId } };
+  const canView =
+    accountStatus !== AccountStatusEnum.Pending &&
+    petBusiness.petBusinessApplication;
+
+  return { props: { userId, canView } };
 }

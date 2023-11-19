@@ -1,13 +1,16 @@
 import { Group, Badge } from "@mantine/core";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
+import { useRouter } from "next/router";
 import React from "react";
 import {
   ServiceListing,
   TABLE_PAGE_SIZE,
+  formatNumber2Decimals,
   getMinTableHeight,
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import ViewActionButton from "web-ui/shared/ViewActionButton";
 import ViewServiceListingModal from "./ViewServiceListingModal";
 
 interface ServiceListingTableProps {
@@ -15,7 +18,6 @@ interface ServiceListingTableProps {
   totalNumServiceListing: number;
   onDelete(id: number): void;
   canWrite: boolean;
-  isSearching: boolean;
   page: number;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
@@ -27,12 +29,12 @@ const ServiceListingTable = ({
   totalNumServiceListing,
   onDelete,
   canWrite,
-  isSearching,
   page,
   sortStatus,
   onSortStatusChange,
   onPageChange,
 }: ServiceListingTableProps) => {
+  const router = useRouter();
   return (
     <>
       <DataTable
@@ -84,7 +86,7 @@ const ServiceListingTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return `${record.basePrice.toFixed(2)}`;
+              return `${formatNumber2Decimals(record.basePrice)}`;
             },
           },
           {
@@ -95,17 +97,12 @@ const ServiceListingTable = ({
             textAlignment: "right",
             render: (record) => (
               <Group position="right">
-                <ViewServiceListingModal
-                  canWrite={canWrite}
-                  onDelete={() => {
-                    onDelete(record.serviceListingId);
-                    if (records.length === 1 && page > 1) {
-                      onPageChange(page - 1);
-                    }
-                  }}
-                  serviceListing={record}
+                <ViewActionButton
+                  onClick={() =>
+                    router.push(`${router.asPath}/${record.serviceListingId}`)
+                  }
                 />
-                {canWrite ? (
+                {canWrite && (
                   <DeleteActionButtonModal
                     title={`Are you sure you want to delete ${record.title}?`}
                     subtitle="Pet Owners would no longer be able to view this service listing."
@@ -116,7 +113,7 @@ const ServiceListingTable = ({
                       }
                     }}
                   />
-                ) : null}
+                )}
               </Group>
             ),
           },
@@ -127,11 +124,14 @@ const ServiceListingTable = ({
         striped
         verticalSpacing="sm"
         idAccessor="serviceListingId"
-        //sorting
+        highlightOnHover
+        onRowClick={(record) =>
+          router.push(`/admin/service-listings/${record.serviceListingId}`)
+        } //sorting
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumServiceListing}
+        totalRecords={totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}

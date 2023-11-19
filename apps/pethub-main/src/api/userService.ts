@@ -1,38 +1,29 @@
-import { ForgotPasswordPayload, ResetPasswordPayload } from "shared-utils";
+import {
+  ForgotPasswordPayload,
+  ResendVerifyEmailPayload,
+  ResetPasswordPayload,
+  VerifyEmailPayload,
+} from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { LoginCredentials } from "@/types/types";
 import api from "./axiosConfig";
 
-// TODO: Change stuff to fit the format of the finalized API after
 export const loginService = async ({
   email,
   password,
   accountType,
 }: LoginCredentials) => {
-  try {
-    const body = {
-      email: email,
-      password: password,
-      accountType: accountType,
-    };
-    let url =
-      accountType === AccountTypeEnum.PetOwner
-        ? "/users/pet-owners/login"
-        : "/users/pet-businesses/login";
-    let res = await api.post(url, body);
-    console.log(
-      "Calling Service: [userService - userLogin] with response:",
-      res,
-    );
-    if (res.data && res.status == 200) {
-      return res.data;
-    } else {
-      return null;
-    }
-  } catch (e) {
-    console.log("Error from [userService - userLogin]:", e);
-    return null;
-  }
+  const body = {
+    email: email,
+    password: password,
+    accountType: accountType,
+  };
+  let url =
+    accountType === AccountTypeEnum.PetOwner
+      ? "/users/pet-owners/login"
+      : "/users/pet-businesses/login";
+  let res = await api.post(url, body);
+  return res.data;
 };
 
 export const forgotPasswordService = async ({
@@ -71,5 +62,27 @@ export const resetPasswordService = async ({
   } catch (e) {
     console.log("Error from [userService - resetPassword]:", e);
     throw e;
+  }
+};
+
+export const verifyEmail = async ({ token }: VerifyEmailPayload) => {
+  try {
+    let res = await api.post(`/users/verify-email/${token}`);
+    return res.data;
+  } catch (error) {
+    console.log("ERROR: unable to verify email", error);
+    throw error;
+  }
+};
+
+export const resendVerifyEmail = async ({
+  email,
+}: ResendVerifyEmailPayload) => {
+  try {
+    let res = await api.post(`/users/resend-verify-email/${email}`);
+    return res.data;
+  } catch (error) {
+    console.log("ERROR: unable to resend email", error);
+    throw error;
   }
 };

@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import { getErrorMessageProps } from "shared-utils";
 import { PageTitle } from "web-ui";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
+import LargeBackButton from "web-ui/shared/LargeBackButton";
 import api from "@/api/axiosConfig";
 import NoPermissionsMessage from "@/components/common/NoPermissionsMessage";
 import AddUsersToUserGroupModal from "@/components/rbac/AddUsersToUserGroupModal";
@@ -181,19 +182,27 @@ export default function UserGroupDetails({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Container fluid>
+        <LargeBackButton
+          text="Back to User Groups"
+          onClick={() => {
+            router.push("/admin/rbac");
+          }}
+          size="sm"
+          mb="md"
+        />
         <Group position="apart">
           <Group position="left">
             <PageTitle title="User Group Details" />
             <Badge size="lg">Group Id: {groupId}</Badge>
           </Group>
-          {canWrite ? (
+          {canWrite && (
             <DeleteActionButtonModal
               title={`Are you sure you want to delete ${userGroup?.name}?`}
               subtitle="Any users currently assigned to this user group will be unassigned."
               onDelete={() => handleDeleteUserGroup(userGroup?.groupId)}
               large
             />
-          ) : null}
+          )}
         </Group>
 
         <Accordion
@@ -260,20 +269,20 @@ export default function UserGroupDetails({
               </Group>
             </Accordion.Control>
             <Accordion.Panel mb="xs">
-              {canWrite ? (
+              {canWrite && (
                 <AddUsersToUserGroupModal
                   userGroup={userGroup}
                   refetch={refetch}
                 />
-              ) : null}
+              )}
               {userGroup?.userGroupMemberships &&
-              userGroup.userGroupMemberships.length > 0 ? (
-                <MembershipsTable
-                  userGroup={userGroup}
-                  refetch={refetch}
-                  disabled={!canWrite}
-                />
-              ) : null}
+                userGroup.userGroupMemberships.length > 0 && (
+                  <MembershipsTable
+                    userGroup={userGroup}
+                    refetch={refetch}
+                    disabled={!canWrite}
+                  />
+                )}
             </Accordion.Panel>
           </Accordion.Item>
         </Accordion>

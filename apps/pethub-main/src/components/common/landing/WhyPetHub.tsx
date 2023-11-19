@@ -42,7 +42,10 @@ const WhyPetHub = () => {
   ];
 
   return (
-    <Box h={600} sx={{ backgroundColor: theme.colors.dark[6] }}>
+    <Box
+      h={620}
+      sx={{ backgroundColor: theme.colors.dark[6], verticalAlign: "center" }}
+    >
       <Center w="100%" h="100%">
         <Box>
           <PageTitle align="center" title="Why PetHub?" color="white" mb={50} />

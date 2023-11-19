@@ -25,6 +25,7 @@ export default function PetOwnerTable() {
     columnAccessor: "userId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<PetOwner[]>([]);
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetOwner[]>(petOwners);
   const [isSearching, setIsSearching] = useToggle();
@@ -48,17 +49,17 @@ export default function PetOwnerTable() {
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
 
-    // Sort the petOwners based on the current sort status
-    const sortedPetOwners = sortBy(petOwners, sortStatus.columnAccessor);
+    const sortedPetOwners = sortBy(searchResults, sortStatus.columnAccessor);
     if (sortStatus.direction === "desc") {
       sortedPetOwners.reverse();
     }
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetOwners.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, petOwners, hasNoFetchedRecords]);
+  }, [page, sortStatus, petOwners, hasNoFetchedRecords, searchResults]);
 
   useEffect(() => {
+    setSearchResults(petOwners);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petOwners.length === 0) {
@@ -66,7 +67,7 @@ export default function PetOwnerTable() {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [petOwners]);
 
   if (isError) {
     return ErrorAlert("Pet Owners");
@@ -75,14 +76,14 @@ export default function PetOwnerTable() {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(petOwners);
+      setSearchResults(petOwners);
       setPage(1);
       return;
     }
     // search by id or first name or last name or email
     setIsSearching(true);
     const results = searchPetOwners(petOwners, searchStr);
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -119,6 +120,7 @@ export default function PetOwnerTable() {
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            highlightOnHover
             onRowClick={(record) => handleOpenModal(record)}
             rowStyle={{ cursor: "pointer" }}
             withBorder
@@ -199,7 +201,7 @@ export default function PetOwnerTable() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={isSearching ? records.length : petOwners?.length}
+            totalRecords={searchResults.length}
             recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}

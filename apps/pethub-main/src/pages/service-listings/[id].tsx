@@ -9,6 +9,7 @@ import {
   useMantineTheme,
   Box,
   Stack,
+  LoadingOverlay,
 } from "@mantine/core";
 import { useToggle, useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
@@ -17,55 +18,90 @@ import {
   IconMapPin,
   IconPhone,
   IconCheck,
-  IconX,
+  IconClock,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
-import { ServiceListing } from "shared-utils";
+import {
+  AccountStatusEnum,
+  ServiceListing,
+  getErrorMessageProps,
+} from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import { PageTitle } from "web-ui";
+import ImageCarousel from "web-ui/shared/ImageCarousel";
+import NumberInputWithIcons from "web-ui/shared/NumberInputWithIcons";
 import SimpleOutlineButton from "web-ui/shared/SimpleOutlineButton";
 import api from "@/api/axiosConfig";
 import SelectTimeslotModal from "@/components/appointment-booking/SelectTimeslotModal";
 import FavouriteButton from "@/components/favourites/FavouriteButton";
+import StarRating from "@/components/review/StarRating";
 import BusinessLocationsGroup from "@/components/service-listing-discovery/BusinessLocationsGroup";
 import DescriptionAccordionItem from "@/components/service-listing-discovery/DescriptionAccordionItem";
+import ReviewAccordionItem from "@/components/service-listing-discovery/ReviewAccordionItem";
 import ServiceCategoryBadge from "@/components/service-listing-discovery/ServiceCategoryBadge";
 import ServiceListingBreadcrumbs from "@/components/service-listing-discovery/ServiceListingBreadcrumbs";
-import ServiceListingCarousel from "@/components/service-listing-discovery/ServiceListingCarousel";
+import ServiceListingScrollCarousel from "@/components/service-listing-discovery/ServiceListingScrollCarousel";
 import ServiceListingTags from "@/components/service-listing-discovery/ServiceListingTags";
+import ViewServiceListingErrorMessage from "@/components/service-listing-discovery/ViewServiceListingErrorMessage";
+import { useCartOperations } from "@/hooks/cart";
 import {
   useAddServiceListingToFavourites,
   useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams,
   useRemoveServiceListingFromFavourites,
 } from "@/hooks/pet-owner";
-import { AddRemoveFavouriteServiceListingPayload } from "@/types/types";
-import { formatPriceForDisplay } from "@/util";
+import { useGetLikedAndReportedReviews } from "@/hooks/review";
+import { useGetServiceListingById } from "@/hooks/service-listing";
+import {
+  AddRemoveFavouriteServiceListingPayload,
+  CartItem,
+} from "@/types/types";
 
 interface ServiceListingDetailsProps {
   userId: number;
-  serviceListing: ServiceListing;
+  // serviceListing: ServiceListing;
+  recommendedListings: ServiceListing[];
 }
 
 export default function ServiceListingDetails({
   userId,
-  serviceListing,
+  // serviceListing,
+  recommendedListings,
 }: ServiceListingDetailsProps) {
   const theme = useMantineTheme();
   const router = useRouter();
   const [showFullDescription, setShowFullDescription] = useToggle();
-
-  const { data: favouritedListings = [] } =
-    useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
-
+  const { addItemToCart } = useCartOperations(userId);
+  const {
+    data: favouritedListings = [],
+    isLoading: isFavouriteServiceListingLoading,
+  } = useGetAllFavouriteServiceListingsByPetOwnerIdWithQueryParams(userId);
   const [isFavourite, setIsFavourite] = useState(false);
+  const [value, setValue] = useState<number | "">(1);
+  const [opened, { open, close }] = useDisclosure(false); // for view timeslot modal
+
+  const serviceListingId = Number(router.query.id);
+
+  const {
+    data: serviceListing,
+    isLoading: isServiceListingLoading,
+    refetch: refetchServiceListing,
+  } = useGetServiceListingById(serviceListingId);
+
+  const {
+    data: likedAndReportedReviewIds,
+    isLoading: isFetchLikedAndReportedReviewsLoading,
+    refetch: refetchLikedAndReportedReviews,
+  } = useGetLikedAndReportedReviews(serviceListing?.serviceListingId);
 
   useEffect(() => {
     if (
       favouritedListings.some(
         (listing) =>
-          listing.serviceListingId === serviceListing.serviceListingId,
+          listing.serviceListingId === serviceListing?.serviceListingId,
       )
     ) {
       setIsFavourite(true);
@@ -73,12 +109,10 @@ export default function ServiceListingDetails({
       setIsFavourite(false);
     }
   }, [favouritedListings, serviceListing]);
-  // for select timeslot modal
-  const [opened, { open, close }] = useDisclosure(false);
 
   const ACCORDION_VALUES = ["description", "business"];
 
-  const serviceListingId = serviceListing.serviceListingId;
+  // const serviceListingId = serviceListing?.serviceListingId;
   const payload: AddRemoveFavouriteServiceListingPayload = {
     userId,
     serviceListingId,
@@ -95,18 +129,11 @@ export default function ServiceListingDetails({
         title: "Favourite Added",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing "${serviceListing.title}" added to favourites.`,
+        message: `Listing "${serviceListing?.title}" added to favourites.`,
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Adding Listing to Favourites",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps("Error Adding Listing to Favourites", error),
       });
     }
   };
@@ -122,23 +149,28 @@ export default function ServiceListingDetails({
         title: "Favourite Removed",
         color: "green",
         icon: <IconCheck />,
-        message: `Listing "${serviceListing.title}" removed from favourites.`,
+        message: `Listing "${serviceListing?.title}" removed from favourites.`,
       });
     } catch (error: any) {
       notifications.show({
-        title: "Error Removing Listing from Favourites",
-        color: "red",
-        icon: <IconX />,
-        message:
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message,
+        ...getErrorMessageProps(
+          "Error Removing Listing from Favourites",
+          error,
+        ),
       });
     }
   };
 
-  const handleFavouriteToggle = () => {
+  const handleFavouriteToggle = async () => {
+    const session = await getSession();
+    if (!session) {
+      notifications.show({
+        title: "Login Required",
+        message: "Please log in to add to favourites!",
+        color: "red",
+      });
+      return;
+    }
     if (isFavourite) {
       handleRemoveFavourite(payload);
     } else {
@@ -146,19 +178,72 @@ export default function ServiceListingDetails({
     }
   };
 
-  const handleClickBuyNow = async () => {
+  const handleClickAddToCart = async () => {
     const session = await getSession();
     if (!session) {
       notifications.show({
         title: "Login Required",
-        message: "Please log in to buy!",
+        message: "Please log in to add to cart!",
         color: "red",
       });
       return;
     }
-    // display select timeslot modal
-    open();
+
+    try {
+      await addItemToCart(
+        {
+          serviceListing: serviceListing,
+          ...{ quantity: value },
+          isSelected: true,
+        } as CartItem,
+        Number(value),
+      );
+      notifications.show({
+        title: "Added to cart",
+        message: `${
+          Number(value) > 1 ? `${value}` : ""
+        } '${serviceListing?.title}' added to cart.`,
+        color: "green",
+      });
+      setValue(1);
+    } catch (error) {
+      notifications.show({
+        title: "Error Adding to Cart",
+        message: "Please try again later.",
+        color: "red",
+      });
+    }
   };
+
+  // prevent user from viewing service listing details if pet business is inactive
+  if (
+    serviceListing &&
+    serviceListing?.petBusiness?.user?.accountStatus !==
+      AccountStatusEnum.Active
+  ) {
+    return (
+      <ViewServiceListingErrorMessage
+        title="Inactive Pet Business"
+        description="This service listing cannot be viewed at the moment as the pet business
+    account is inactive."
+      />
+    );
+  }
+
+  // prevent user from viewing expired service listing
+  if (
+    serviceListing &&
+    !dayjs(serviceListing?.lastPossibleDate).isAfter(new Date())
+  ) {
+    return (
+      <ViewServiceListingErrorMessage
+        title="Expired Service Listing"
+        description="This service listing cannot be viewed as it is expired."
+      />
+    );
+  }
+
+  if (!serviceListing) return null;
 
   const businessSection = (
     <Accordion.Item value="business" p="sm" mb="xl">
@@ -173,16 +258,16 @@ export default function ServiceListingDetails({
       <Accordion.Panel ml={5} mr={5}>
         <Group>
           <Box>
-            <Text weight={500}>{serviceListing.petBusiness.companyName}</Text>
+            <Text weight={500}>{serviceListing?.petBusiness?.companyName}</Text>
             <Text color="dimmed" size="sm">
-              UEN: {serviceListing.petBusiness.uen}
+              UEN: {serviceListing?.petBusiness?.uen}
             </Text>
           </Box>
           <SimpleOutlineButton
             text="View business"
             ml={5}
             onClick={() =>
-              router.push(`/pet-businesses/${serviceListing.petBusinessId}`)
+              router.push(`/pet-businesses/${serviceListing?.petBusinessId}`)
             }
           />
         </Group>
@@ -190,64 +275,87 @@ export default function ServiceListingDetails({
         <Stack mt="lg" spacing={5}>
           <Group spacing="xs">
             <IconPhone color="gray" size="1.2rem" />
-            <Text size="sm">{serviceListing.petBusiness.contactNumber}</Text>
+            <Text size="sm">{serviceListing?.petBusiness?.contactNumber}</Text>
           </Group>
           <Group spacing="xs">
             <IconMail color="gray" size="1.2rem" />
-            <Text size="sm">{serviceListing.petBusiness.businessEmail}</Text>
+            <Text size="sm">{serviceListing?.petBusiness?.businessEmail}</Text>
           </Group>
         </Stack>
 
         {/*if there are addresses*/}
-        {serviceListing.addresses.length > 0 ? (
-          <BusinessLocationsGroup addresses={serviceListing.addresses} />
-        ) : null}
+        {serviceListing?.addresses?.length > 0 && (
+          <BusinessLocationsGroup addresses={serviceListing?.addresses} />
+        )}
       </Accordion.Panel>
     </Accordion.Item>
   );
 
   return (
-    <>
+    <div>
       <Head>
-        <title>{serviceListing.title} - PetHub</title>
+        <title>{serviceListing?.title} - PetHub</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container mt={50} size="70vw" sx={{ overflow: "hidden" }}>
+      <Container mt={50} mb={80} size="70vw" sx={{ overflow: "hidden" }}>
         <Grid gutter="xl">
           <Grid.Col span={9}>
             <ServiceListingBreadcrumbs
-              title={serviceListing.title}
-              id={serviceListing.serviceListingId}
+              title={serviceListing?.title}
+              id={serviceListing?.serviceListingId}
             />
             <ServiceCategoryBadge
-              category={serviceListing.category}
+              category={serviceListing?.category}
               size="lg"
               mt="xl"
               mb={5}
             />
             <Group position="apart">
               <PageTitle
-                title={serviceListing.title}
+                title={serviceListing?.title}
                 mb="xs"
                 size="2.25rem"
                 weight={700}
               />
-              <FavouriteButton
-                text={isFavourite ? "Remove Favourite" : "Favourite"}
-                isFavourite={isFavourite}
-                size={20}
-                onClick={handleFavouriteToggle}
-              />
+              {userId && (
+                <FavouriteButton
+                  text={isFavourite ? "Remove Favourite" : "Favourite"}
+                  isFavourite={isFavourite}
+                  size={20}
+                  onClick={async () => handleFavouriteToggle()}
+                />
+              )}
             </Group>
-            <ServiceListingTags tags={serviceListing.tags} size="md" mb="xl" />
-            <ServiceListingCarousel
-              attachmentURLs={serviceListing.attachmentURLs}
+
+            <Box display="flex" mt={-10} mb={10}>
+              <Text mr={5} fw={500} size="md">
+                {serviceListing?.overallRating === 0
+                  ? "Not rated yet"
+                  : `${serviceListing?.overallRating.toFixed(
+                      1,
+                    )}/5 (${serviceListing?.reviews?.length} reviews)`}
+              </Text>
+              <StarRating
+                value={serviceListing?.overallRating}
+                viewOnly
+                allowFractions
+              />
+            </Box>
+            <ServiceListingTags tags={serviceListing?.tags} size="md" mb="xl" />
+            <ImageCarousel
+              attachmentURLs={serviceListing?.attachmentURLs}
+              altText="Service Listing Photo"
+              imageHeight={500}
             />
             <Accordion
               radius="md"
               variant="filled"
               mt="xl"
-              mb={80}
+              mb={
+                !recommendedListings || recommendedListings?.length === 0
+                  ? 80
+                  : 0
+              }
               multiple
               value={ACCORDION_VALUES}
               chevronSize={0}
@@ -256,9 +364,19 @@ export default function ServiceListingDetails({
               {businessSection}
               <DescriptionAccordionItem
                 title="Description"
-                description={serviceListing.description}
+                description={serviceListing?.description}
                 showFullDescription={showFullDescription}
                 setShowFullDescription={setShowFullDescription}
+              />
+              <ReviewAccordionItem
+                title={`Reviews (${serviceListing?.reviews?.length})`}
+                serviceListing={serviceListing}
+                likedReviewIds={likedAndReportedReviewIds?.likesBy}
+                reportedReviewIds={likedAndReportedReviewIds?.reportsBy}
+                refetchLikedAndReportedReviewIds={
+                  refetchLikedAndReportedReviews
+                }
+                refetchServiceListing={refetchServiceListing}
               />
             </Accordion>
           </Grid.Col>
@@ -269,37 +387,112 @@ export default function ServiceListingDetails({
               p="lg"
               withBorder
               mt={50}
+              sx={{ position: "relative" }}
             >
-              <Group position="apart">
-                <Text size="xl" weight={500}>
-                  ${formatPriceForDisplay(serviceListing.basePrice)}
-                </Text>
-              </Group>
-              <Button size="md" fullWidth mt="xs" onClick={handleClickBuyNow}>
-                Buy now
-              </Button>
+              <Text size="xl" weight={500} mb="md">
+                ${formatNumber2Decimals(serviceListing?.basePrice)}
+              </Text>
 
-              <SelectTimeslotModal
-                petOwnerId={userId}
-                serviceListing={serviceListing}
-                opened={opened}
-                onClose={close}
+              <NumberInputWithIcons
+                min={1}
+                max={10}
+                step={1}
+                value={value}
+                setValue={setValue}
+                fullWidth
               />
+
+              <Button
+                size="md"
+                fullWidth
+                mt="xs"
+                onClick={handleClickAddToCart}
+                color="dark"
+                className="gradient-hover"
+              >
+                Add to cart
+              </Button>
             </Paper>
+
+            {serviceListing?.requiresBooking && (
+              <Paper
+                radius="md"
+                bg={theme.colors.gray[0]}
+                p="lg"
+                withBorder
+                mt="xs"
+                sx={{ position: "relative" }}
+              >
+                <Group mb="xs">
+                  <IconClock color={theme.colors.indigo[5]} />
+                  <Text fw={600} size="lg" ml={-5}>
+                    Available timeslots
+                  </Text>
+                </Group>
+                <Text color="dimmed" size="sm">
+                  This service listing requires appointment booking. View
+                  available timeslots before making your purchase!
+                </Text>
+                <Button
+                  size="md"
+                  fullWidth
+                  mt="md"
+                  onClick={open}
+                  variant="light"
+                  sx={{ border: "1.5px solid" }}
+                >
+                  View timeslots
+                </Button>
+                <SelectTimeslotModal
+                  orderItem={null}
+                  petOwnerId={userId}
+                  serviceListing={serviceListing}
+                  opened={opened}
+                  onClose={close}
+                  viewOnly
+                />
+              </Paper>
+            )}
+          </Grid.Col>
+          <Grid.Col span={12}>
+            <ServiceListingScrollCarousel
+              serviceListings={recommendedListings}
+              title="Recommended for you"
+              description="Based on your pets, order history and what's popular"
+            />
           </Grid.Col>
         </Grid>
       </Container>
-    </>
+    </div>
   );
 }
 
 export async function getServerSideProps(context) {
-  const id = context.params.id;
+  // const id = context.params.id;
+  // const serviceListing = (await (await api.get(`/service-listings/${id}`)).data) as ServiceListing;
+  const serviceListingId = context.params.id;
 
-  const serviceListing = await (await api.get(`/service-listings/${id}`)).data;
   const session = await getSession(context);
-  if (!session) return { props: { serviceListing } };
+
+  if (!session) {
+    // Handle the case when there is no session
+    return {
+      props: {
+        userId: null,
+        recommendedListings: [],
+      },
+    };
+  }
   const userId = session.user["userId"];
 
-  return { props: { userId, serviceListing } };
+  const recommendedData = (await (
+    await api.get(`/service-listings/get-recommended-listings/${userId}`)
+  ).data) as ServiceListing[];
+  const recommendedListings = recommendedData.filter(
+    (listing) => serviceListingId !== listing.serviceListingId,
+  );
+
+  return {
+    props: { userId, recommendedListings },
+  };
 }

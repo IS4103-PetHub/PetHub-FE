@@ -29,6 +29,7 @@ export default function PetBusinessTable() {
     columnAccessor: "userId",
     direction: "asc",
   });
+  const [searchResults, setSearchResults] = useState<PetBusiness[]>([]);
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<PetBusiness[]>(petBusinesses);
   const [isSearching, setIsSearching] = useToggle();
@@ -53,10 +54,8 @@ export default function PetBusinessTable() {
     // Compute pagination slice indices based on the current page
     const from = (page - 1) * TABLE_PAGE_SIZE;
     const to = from + TABLE_PAGE_SIZE;
-
-    // Sort petBusinesses based on the current sort status
     const sortedPetBusinesses = sortBy(
-      petBusinesses,
+      searchResults,
       sortStatus.columnAccessor,
     );
     if (sortStatus.direction === "desc") {
@@ -65,9 +64,10 @@ export default function PetBusinessTable() {
     // Slice the sorted array to get the records for the current page
     const newRecords = sortedPetBusinesses.slice(from, to);
     setRecords(newRecords);
-  }, [page, sortStatus, petBusinesses, hasNoFetchedRecords]);
+  }, [page, sortStatus, petBusinesses, hasNoFetchedRecords, searchResults]);
 
   useEffect(() => {
+    setSearchResults(petBusinesses);
     const timer = setTimeout(() => {
       // display empty state message if no records fetched after some time
       if (petBusinesses.length === 0) {
@@ -75,7 +75,7 @@ export default function PetBusinessTable() {
       }
     }, EMPTY_STATE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, []);
+  }, [petBusinesses]);
 
   if (isError) {
     return ErrorAlert("Pet Businesses");
@@ -84,14 +84,14 @@ export default function PetBusinessTable() {
   const handleSearch = (searchStr: string) => {
     if (searchStr.length === 0) {
       setIsSearching(false);
-      setRecords(petBusinesses);
+      setSearchResults(petBusinesses);
       setPage(1);
       return;
     }
     // search by id or company name or uen or email
     setIsSearching(true);
     const results = searchPetBusinesses(petBusinesses, searchStr);
-    setRecords(results);
+    setSearchResults(results);
     setPage(1);
   };
 
@@ -128,6 +128,7 @@ export default function PetBusinessTable() {
           <NoSearchResultsMessage />
         ) : (
           <DataTable
+            highlightOnHover
             onRowClick={(record) => handleOpenModal(record)}
             rowStyle={{ cursor: "pointer" }}
             withBorder
@@ -208,7 +209,7 @@ export default function PetBusinessTable() {
             sortStatus={sortStatus}
             onSortStatusChange={setSortStatus}
             //pagination
-            totalRecords={isSearching ? records.length : petBusinesses?.length}
+            totalRecords={searchResults.length}
             recordsPerPage={TABLE_PAGE_SIZE}
             page={page}
             onPageChange={(p) => setPage(p)}

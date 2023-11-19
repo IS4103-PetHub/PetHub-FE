@@ -51,20 +51,20 @@ const UserGroupPermissionsForm = ({
 
   return (
     <form onSubmit={form.onSubmit((values: any) => onSubmit(values))}>
-      {isEditing ? (
+      {isEditing && (
         <Box mb="md" ml="lg">
           <SelectAllPermissionsCheckbox permissions={permissions} form={form} />
         </Box>
-      ) : null}
+      )}
 
-      {userGroup?.userGroupPermissions?.length === 0 && !isEditing ? (
+      {userGroup?.userGroupPermissions?.length === 0 && !isEditing && (
         <Text color="dimmed" mb="md">
           No permissions assigned
         </Text>
-      ) : null}
+      )}
 
       {permissionsCheckboxes}
-      {disabled ? null : (
+      {!disabled && (
         <EditCancelSaveButtons
           isEditing={isEditing}
           onClickCancel={onCancel}

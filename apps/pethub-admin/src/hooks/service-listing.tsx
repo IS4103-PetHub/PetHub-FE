@@ -36,3 +36,15 @@ export const useDeleteServiceListingById = (queryClient: QueryClient) => {
     },
   });
 };
+
+export const useGetServiceListingById = (serviceListingId: number) => {
+  return useQuery({
+    queryKey: ["service-listings", serviceListingId],
+    queryFn: async () => {
+      const response = await api.get(
+        `${SERVICE_LISTING_API}/${serviceListingId}`,
+      );
+      return response.data as ServiceListing;
+    },
+  });
+};

@@ -1,6 +1,6 @@
 import { Badge, BadgeProps, Box, Group } from "@mantine/core";
 import React from "react";
-import { Tag } from "shared-utils";
+import { Tag, formatStringToLetterCase } from "shared-utils";
 
 interface ServiceListingTagsProps extends BadgeProps {
   tags: Tag[];
@@ -15,7 +15,7 @@ const ServiceListingTags = ({ tags, ...props }: ServiceListingTagsProps) => {
     <Group spacing={5}>
       {tags?.map((tag) => (
         <Badge color="gray" size="sm" key={tag.tagId} {...props}>
-          # {tag.name}
+          # {formatStringToLetterCase(tag.name)}
         </Badge>
       ))}
     </Group>

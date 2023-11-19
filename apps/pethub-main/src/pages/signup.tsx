@@ -24,7 +24,6 @@ import {
 } from "@tabler/icons-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getSession, signIn } from "next-auth/react";
 import React from "react";
 import { getErrorMessageProps, validatePassword } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
@@ -33,11 +32,7 @@ import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
 import PasswordBar from "web-ui/shared/PasswordBar";
 import { useCreatePetBusiness } from "@/hooks/pet-business";
 import { useCreatePetOwner } from "@/hooks/pet-owner";
-import {
-  CreatePetBusinessPayload,
-  CreatePetOwnerPayload,
-  LoginCredentials,
-} from "@/types/types";
+import { CreatePetBusinessPayload, CreatePetOwnerPayload } from "@/types/types";
 
 const useStyles = createStyles((theme) => ({
   backgroundEffect: {
@@ -106,32 +101,8 @@ export default function SignUp() {
 
   type FormValues = typeof form.values;
 
-  const handleLogin = async (loginCredentials: LoginCredentials) => {
-    const res = await signIn("credentials", {
-      callbackUrl: "/",
-      redirect: false,
-      ...loginCredentials,
-    });
-    if (res?.error) {
-      notifications.show({
-        title: "Login Failed",
-        message: "Invalid Credentials",
-        color: "red",
-      });
-    } else {
-      const session = await getSession();
-      if (session) {
-        if (session.user["accountType"] === AccountTypeEnum.PetBusiness) {
-          showOverlay();
-          router.push("/business/dashboard");
-        } else {
-          router.push("/");
-        }
-      }
-    }
-    setTimeout(() => {
-      form.reset();
-    }, 800);
+  const handleRouteToVerfiyEmail = async (email) => {
+    router.push(`/verify-email?email=${email}`);
   };
 
   const createPetOwnerMutation = useCreatePetOwner();
@@ -144,17 +115,15 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet owner account created successfully!`,
       });
-      // login and redirect home page
-      handleLogin({
-        email: payload.email,
-        password: payload.password,
-        accountType: AccountTypeEnum.PetOwner,
-      });
+      // login and redirect to verify email
+      handleRouteToVerfiyEmail(payload.email);
     } catch (error: any) {
+      hideOverlay();
       notifications.show({
         ...getErrorMessageProps("Error Creating Account", error),
       });
     }
+    hideOverlay();
   };
 
   const createPetBusinessMutation = useCreatePetBusiness();
@@ -169,20 +138,19 @@ export default function SignUp() {
         icon: <IconCheck />,
         message: `Pet business account created successfully!`,
       });
-      // login and redirect to pet business dashboard
-      handleLogin({
-        email: payload.email,
-        password: payload.password,
-        accountType: AccountTypeEnum.PetBusiness,
-      });
+      // login and redirect to verify email
+      handleRouteToVerfiyEmail(payload.email);
     } catch (error: any) {
+      hideOverlay();
       notifications.show({
         ...getErrorMessageProps("Error Creating Account", error),
       });
     }
+    hideOverlay();
   };
 
   function handleSubmit(values: FormValues) {
+    showOverlay();
     if (values.accountType === AccountTypeEnum.PetOwner) {
       const payload: CreatePetOwnerPayload = {
         firstName: values.firstName,
@@ -249,7 +217,7 @@ export default function SignUp() {
           <DateInput
             label="Date of birth"
             placeholder="Date of birth"
-            valueFormat="DD/MM/YYYY"
+            valueFormat="DD-MM-YYYY"
             maxDate={new Date()}
             icon={<IconCalendar size="1rem" />}
             {...form.getInputProps("dateOfBirth")}
@@ -332,7 +300,14 @@ export default function SignUp() {
                 />
               </Grid.Col>
             </Grid>
-            <Button type="submit" fullWidth leftIcon={<IconPlus size="1rem" />}>
+            <Button
+              type="submit"
+              size="md"
+              fullWidth
+              leftIcon={<IconPlus size="1rem" />}
+              color="dark"
+              className="gradient-hover"
+            >
               Create account
             </Button>
           </form>

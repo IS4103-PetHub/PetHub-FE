@@ -28,8 +28,6 @@ interface MyAccountProps {
 
 export default function MyAccount({ userId, permissions }: MyAccountProps) {
   const theme = useMantineTheme();
-  const queryClient = useQueryClient();
-
   const defaultValues = ["account", "permissions"];
 
   const { data: internalUser, refetch } = useGetInternalUserById(userId);

@@ -12,10 +12,17 @@ import {
   Divider,
   Group,
   Button,
+  Checkbox,
 } from "@mantine/core";
 import { useDisclosure, useToggle } from "@mantine/hooks";
 import React, { useEffect, useState } from "react";
-import { ServiceListing, formatStringToLetterCase } from "shared-utils";
+import {
+  ServiceListing,
+  downloadFile,
+  extractFileName,
+  formatNumber2Decimals,
+  formatStringToLetterCase,
+} from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 
@@ -43,20 +50,6 @@ const ViewServiceListingModal = ({
 
     fetchAndSetServiceListingFields(); // Immediately invoke the async function
   }, [serviceListing]);
-
-  const downloadFile = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const buffer = await response.arrayBuffer();
-      return new File([buffer], fileName);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  };
-
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
 
   const getFilesFromServiceListing = async () => {
     const fileNames = serviceListing.attachmentKeys.map((keys) =>
@@ -87,7 +80,7 @@ const ViewServiceListingModal = ({
       </Text>
       <Group
         mt="md"
-        display={serviceListing.description?.length < 200 ? "none" : "block"}
+        display={serviceListing.description?.length < 350 ? "none" : "block"}
       >
         <Group position="right">
           <Button
@@ -133,7 +126,7 @@ const ViewServiceListingModal = ({
                   Service Listing Details
                 </Text>
               </div>
-              {canWrite ? (
+              {canWrite && (
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${serviceListing.title}?`}
                   subtitle="Pet Owners would no longer be able to view this service listing."
@@ -141,7 +134,7 @@ const ViewServiceListingModal = ({
                     onDelete();
                   }}
                 />
-              ) : null}
+              )}
             </Group>
             <Divider />
             <Grid gutter="md" style={{ marginTop: "20px" }}>
@@ -168,7 +161,7 @@ const ViewServiceListingModal = ({
                 <Text fw={700}>Price:</Text>
               </Grid.Col>
               <Grid.Col span={9}>
-                <Text>${serviceListing.basePrice.toFixed(2)}</Text>
+                <Text>${formatNumber2Decimals(serviceListing.basePrice)}</Text>
               </Grid.Col>
 
               <Grid.Col span={3}>
@@ -216,6 +209,52 @@ const ViewServiceListingModal = ({
                 <Text>
                   {serviceListing.lastUpdated
                     ? new Date(serviceListing.lastUpdated).toLocaleDateString()
+                    : "-"}
+                </Text>
+              </Grid.Col>
+
+              <Grid.Col span={3}>
+                <Text fw={700}>Requires Bookings:</Text>
+              </Grid.Col>
+              <Grid.Col span={9}>
+                {serviceListing.requiresBooking ? (
+                  <Badge color="green">Yes</Badge>
+                ) : (
+                  <Badge color="red">No</Badge>
+                )}
+              </Grid.Col>
+
+              {serviceListing.requiresBooking && (
+                <>
+                  <Grid.Col span={3}>
+                    <Text fw={700}>Duration:</Text>
+                  </Grid.Col>
+                  <Grid.Col span={9}>
+                    <Text>{serviceListing.duration} mins</Text>
+                  </Grid.Col>
+                </>
+              )}
+
+              <Grid.Col span={3}>
+                <Text fw={700}>Default Expiry Days:</Text>
+              </Grid.Col>
+              <Grid.Col span={9}>
+                <Text>
+                  {serviceListing.defaultExpiryDays
+                    ? `${serviceListing.defaultExpiryDays} Days`
+                    : "-"}
+                </Text>
+              </Grid.Col>
+
+              <Grid.Col span={3}>
+                <Text fw={700}>Last Operational Date:</Text>
+              </Grid.Col>
+              <Grid.Col span={9}>
+                <Text>
+                  {serviceListing.lastPossibleDate
+                    ? new Date(
+                        serviceListing.lastPossibleDate,
+                      ).toLocaleDateString()
                     : "-"}
                 </Text>
               </Grid.Col>

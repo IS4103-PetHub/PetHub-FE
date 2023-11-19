@@ -12,13 +12,13 @@ export const serviceListingSortOptions = [
   {
     value: "recent",
     label: "Recently added",
-    attribute: "dateCreated",
+    attribute: "listingTime",
     direction: "desc",
   },
   {
     value: "oldest",
     label: "Oldest",
-    attribute: "dateCreated",
+    attribute: "listingTime",
     direction: "asc",
   },
   {
@@ -50,15 +50,35 @@ export const bookingsSortOptions = [
   },
 ];
 
-export enum PetTypeEnum {
-  Dog = "DOG",
-  Cat = "CAT",
-  Bird = "BIRD",
-  Terrapin = "TERRAPIN",
-  Rabbit = "RABBIT",
-  Rodent = "RODENT",
-  Others = "OTHERS",
-}
+export const orderItemsSortOptions = [
+  {
+    value: "recent",
+    label: "Most recent",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+];
+
+export const articleSortOptions = [
+  {
+    value: "recent",
+    label: "Most recent",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+];
 
 // for landing page and service listings sidebar
 
@@ -95,4 +115,44 @@ export const serviceListingSideBarCategories = [
   ...landingPageCategories,
 ];
 
-export const allowedRoutesAfterLogin = ["/customer/appointments"];
+export const allowedRoutesAfterLogin = [
+  "/customer/appointments",
+  "/customer/account",
+  "/customer/orders",
+  "/customer/cart",
+  "/customer/favourites",
+  "/business/application",
+  "/business/appointments",
+  "/business/listings",
+];
+
+export const GST_PERCENT = 0.08;
+
+export const PLATFORM_FEE_MESSAGE: string =
+  "The platform fee covers operational costs to help keep PetHub up and running. PetHub strives to deliver a smooth and pleasant experience for all users.";
+
+export enum PetRequestTypeEnum {
+  LostPet = "LOST_PET",
+  FoundPet = "FOUND_PET",
+}
+
+export const petLostAndFoundSortOptions = [
+  {
+    value: "newest",
+    label: "Newest",
+    attribute: "dateCreated",
+    direction: "desc",
+  },
+  {
+    value: "oldest",
+    label: "Oldest",
+    attribute: "dateCreated",
+    direction: "asc",
+  },
+  {
+    value: "recently_spotted",
+    label: "Recently spotted",
+    attribute: "last",
+    direction: "asc",
+  },
+];

@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ForgotPasswordPayload, getErrorMessageProps } from "shared-utils";
 import { AccountTypeEnum } from "shared-utils";
 import { useLoadingOverlay } from "web-ui/shared/LoadingOverlayContext";
@@ -33,20 +33,6 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
 
   const cookies = parseCookies();
   const originalPath = cookies.originalPath || "/";
-
-  // Reset the entire modal (including forms, states etc) if it is closed and re-opened
-  useEffect(() => {
-    if (!opened) {
-      // Let closing animation finish so it's not visible
-      const timer = setTimeout(() => {
-        loginForm.reset();
-        forgotPasswordForm.reset();
-        toggle("login");
-        setIsForgotPasswordSuccessful(false);
-        setIsSubmitButtonLoading(false);
-      }, 800);
-    }
-  }, [opened]);
 
   const loginForm = useForm({
     initialValues: {
@@ -84,7 +70,6 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
   type ForgotPasswordFormValues = typeof forgotPasswordForm.values;
 
   const handleLogin = async (values: LoginFormValues) => {
-    let successfullyLoggedIn = false;
     const res = await signIn("credentials", {
       callbackUrl: originalPath,
       redirect: false,
@@ -93,31 +78,30 @@ const LoginModal = ({ opened, open, close }: LoginModalProps) => {
       accountType: values.accountType,
     });
     if (res?.error) {
+      const verificationError = res.error.includes("Account not verified");
       notifications.show({
         title: "Login Failed",
-        message: "Invalid Credentials",
+        message: `${verificationError ? res.error : "Invalid Credentials"}`,
         color: "red",
       });
     } else {
-      // Only set redirect to true if the login is successful
-      successfullyLoggedIn = true;
       const session = await getSession();
       if (
         session &&
         session.user["accountType"] === AccountTypeEnum.PetBusiness
       ) {
         showOverlay();
-        router.push("/business/dashboard");
+        if (allowedRoutesAfterLogin.includes(originalPath)) {
+          router.push(originalPath);
+        } else {
+          router.push("/business/dashboard");
+        }
       }
+      if (allowedRoutesAfterLogin.includes(originalPath)) {
+        router.push(originalPath);
+      }
+      close();
     }
-    if (
-      successfullyLoggedIn &&
-      allowedRoutesAfterLogin.includes(originalPath)
-    ) {
-      router.push(originalPath);
-    }
-    close();
-
     const timer = setTimeout(() => {
       loginForm.reset();
     }, 800);

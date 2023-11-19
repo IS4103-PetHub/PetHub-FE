@@ -3,12 +3,16 @@ import { sortBy } from "lodash";
 import {
   CalendarGroup,
   DayOfWeekEnum,
+  OrderItem,
   Recurrence,
   RecurrencePatternEnum,
   ScheduleSettings,
   ServiceListing,
   TimePeriod,
 } from "shared-utils";
+import { PetLostAndFound } from "./types/types";
+
+const TEXT_REGEX_PATTERN = /^[a-zA-Z0-9\s.,]+$/;
 
 // Convert param to string
 export function parseRouterQueryParam(param: string | string[] | undefined) {
@@ -39,20 +43,45 @@ export function validateWebsiteURL(url: string) {
   return !/^https?:\/\/.+\..+$/.test(url);
 }
 
-export function formatPriceForDisplay(num: number) {
-  return (Math.round(num * 100) / 100).toFixed(2);
-}
-
 export function searchServiceListingsForCustomer(
   serviceListings: ServiceListing[],
   searchStr: string,
 ) {
+  const search = searchStr.toLowerCase();
   return serviceListings.filter(
     (serviceListing: ServiceListing) =>
-      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      serviceListing.petBusiness?.companyName
+      serviceListing.title.toLowerCase().includes(search) ||
+      serviceListing.petBusiness?.companyName.toLowerCase().includes(search),
+  );
+}
+
+export function searchOrderItemsForCustomer(
+  orderItems: OrderItem[],
+  searchStr: string,
+) {
+  const search = searchStr.toLowerCase();
+  return orderItems.filter(
+    (orderItem: OrderItem) =>
+      orderItem.itemName?.toLowerCase().includes(search) ||
+      orderItem.orderItemId?.toString() === search ||
+      orderItem.serviceListing?.petBusiness?.companyName
+        ?.toLowerCase()
+        .includes(search),
+  );
+}
+
+export function searchPetLostAndFoundPosts(
+  posts: PetLostAndFound[],
+  searchStr: string,
+) {
+  const search = searchStr.toLowerCase();
+  return posts.filter(
+    (post: PetLostAndFound) =>
+      post.title.toLowerCase().includes(search) ||
+      post.description.toLowerCase().includes(search) ||
+      `${post.petOwner.firstName} ${post.petOwner.lastName}`
         .toLowerCase()
-        .includes(searchStr.toLowerCase()),
+        .includes(search),
   );
 }
 
@@ -213,31 +242,11 @@ export function validateCGSettings(scheduleSettings: ScheduleSettings[]) {
 }
 
 export function validateCGName(name: string) {
-  if (!name || name.length > 72) {
-    return "Name is required and should be at most 72 characters long.";
+  if (!name) {
+    return "Name is required for calendar group.";
   }
-  const validPattern = /^[a-zA-Z0-9\s.,]+$/;
-  const alphabetPresence = /[a-zA-Z]+/;
-  if (!validPattern.test(name)) {
-    return "Name must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
-  }
-  if (!alphabetPresence.test(name)) {
-    return "Name must contain at least one alphabet character.";
-  }
-  return null;
-}
-
-export function validateCGDescription(description: string) {
-  if (!description) {
-    return "Description is required.";
-  }
-  const validPattern = /^[a-zA-Z0-9\s.,]+$/;
-  const alphabetPresence = /[a-zA-Z]+/;
-  if (!validPattern.test(description)) {
-    return "Description must have a valid format (only alphabets, numbers, spaces, periods, and commas are allowed).";
-  }
-  if (!alphabetPresence.test(description)) {
-    return "Description must contain at least one alphabet character.";
+  if (name.length > 72) {
+    return "Calendar Group Name should be at most 72 characters long.";
   }
   return null;
 }
@@ -404,4 +413,93 @@ export function sanitizeCGPayload(calendarGroup: CalendarGroup): CalendarGroup {
     }
   }
   return CGCopy;
+}
+
+export function validateReviewTitle(title: string) {
+  if (!title) {
+    return "Title is required.";
+  }
+  if (title.length > 64) {
+    return "Title cannot exceed 64 characters";
+  }
+  return null;
+}
+
+export function validateReviewComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 2000) {
+    return "Title cannot exceed 2000 characters";
+  }
+  return null;
+}
+
+export function validateReviewRating(rating: number) {
+  if (!rating) {
+    return "Rating is required.";
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return "Rating must be between 1 and 5 stars inclusive.";
+  }
+  return null;
+}
+
+export function validateReviewFiles(files: string[]) {
+  if (files.length > 3) {
+    return "Maximum of 3 images allowed";
+  }
+  return null;
+}
+// for pet
+export const calculateAge = (dateOfBirth: any) => {
+  const currentDate = new Date();
+  const dob = new Date(dateOfBirth);
+  let age = dayjs(currentDate).diff(dob, "years");
+
+  if (age == 0) {
+    age = dayjs(currentDate).diff(dob, "months");
+    return `${age} month${age !== 1 ? "s" : ""}`;
+  }
+  return `${age} year${age > 1 ? "s" : ""}`;
+};
+
+export const flattenAndFilterFeaturedListingsResponse = (response: any) => {
+  // filter out expired SLs
+  const now = new Date();
+  return (
+    response
+      .filter((res: any) =>
+        dayjs(res.serviceListing.lastPossibleDate).isAfter(now),
+      )
+      // flatten the SL object as featured listing should extend SL
+      .map((res: any) => {
+        const { serviceListing, description, ...rest } = res;
+        return {
+          ...rest,
+          ...serviceListing,
+          featuredDescription: description,
+        };
+      })
+  );
+};
+
+export function validateRefundReason(reason: string) {
+  if (!reason) {
+    return "Reason is required.";
+  }
+  if (reason.length > 2000) {
+    return "Reason cannot exceed 2000 characters";
+  }
+  return null;
+}
+
+export function validateRefundComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 2000) {
+    return "Comment cannot exceed 2000 characters";
+  }
+  return null;
 }

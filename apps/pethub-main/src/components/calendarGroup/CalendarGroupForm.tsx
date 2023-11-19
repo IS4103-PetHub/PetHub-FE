@@ -9,6 +9,7 @@ import {
   Divider,
   List,
 } from "@mantine/core";
+import { AccordionItem } from "@mantine/core/lib/Accordion/AccordionItem/AccordionItem";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import React, { useState } from "react";
@@ -112,31 +113,52 @@ const CalendarGroupForm = ({
     }
   }
 
+  function renderItemGroup(label: string, value: string) {
+    return (
+      <>
+        {value && (
+          <Stack ml="xs" mr="xs" mb="md">
+            <Text fw={600}>{label}</Text>
+            <Text color="dimmed">{value}</Text>
+          </Stack>
+        )}
+      </>
+    );
+  }
+
   return (
     <form onSubmit={form.onSubmit((values: any) => handleSubmit(values))}>
       <Grid mt="sm" mb="sm" gutter="lg">
         <Grid.Col span={12}>
-          <TextInput
-            label="Name"
-            defaultValue={form.values.name}
-            placeholder="Enter a name for the calendar group"
-            withAsterisk
-            disabled={isEditingDisabled}
-            {...form.getInputProps("name")}
-          />
+          {isEditingDisabled ? (
+            renderItemGroup("Name", form.values.name)
+          ) : (
+            <TextInput
+              label="Name"
+              defaultValue={form.values.name}
+              placeholder="Enter a name for the calendar group"
+              withAsterisk
+              disabled={isEditingDisabled}
+              {...form.getInputProps("name")}
+            />
+          )}
         </Grid.Col>
         <Grid.Col span={12}>
-          <Textarea
-            withAsterisk
-            defaultValue={form.values.description}
-            placeholder="Enter a description for the calendar group"
-            label="Description"
-            autosize
-            minRows={3}
-            maxRows={5}
-            disabled={isEditingDisabled}
-            {...form.getInputProps("description")}
-          />
+          {isEditingDisabled ? (
+            renderItemGroup("Description", form.values.description)
+          ) : (
+            <Textarea
+              withAsterisk
+              defaultValue={form.values.description}
+              placeholder="Enter a description for the calendar group"
+              label="Description"
+              autosize
+              minRows={3}
+              maxRows={5}
+              disabled={isEditingDisabled}
+              {...form.getInputProps("description")}
+            />
+          )}
         </Grid.Col>
         <Grid.Col span={12}>
           <Stack>

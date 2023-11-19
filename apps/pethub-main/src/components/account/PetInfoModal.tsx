@@ -16,12 +16,14 @@ import { IconCalendar } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import {
   GenderEnum,
+  Pet,
+  PetTypeEnum,
+  extractFileName,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
 import { useCreatePet, useUpdatePet } from "@/hooks/pets";
-import { PetTypeEnum } from "@/types/constants";
-import { Pet, PetPayload } from "@/types/types";
+import { PetPayload } from "@/types/types";
 
 interface PetInfoModalProps {
   opened: boolean;
@@ -213,10 +215,6 @@ const PetInfoModal = ({
     label: formatStringToLetterCase(value),
   }));
 
-  const extractFileName = (attachmentKeys: string) => {
-    return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
-  };
-
   const downloadFile = async (url: string, fileName: string) => {
     try {
       const response = await fetch(url);
@@ -271,7 +269,7 @@ const PetInfoModal = ({
               label="Date of Birth"
               clearable
               placeholder="Date of birth"
-              valueFormat="DD/MM/YYYY"
+              valueFormat="DD-MM-YYYY"
               maxDate={new Date()}
               icon={<IconCalendar size="1rem" />}
               {...form.getInputProps("dateOfBirth")}

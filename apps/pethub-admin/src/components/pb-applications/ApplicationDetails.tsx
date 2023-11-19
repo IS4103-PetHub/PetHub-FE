@@ -107,6 +107,10 @@ export default function ApplicationDetails({
                 </Text>
               </Group>
               <Group position="apart">
+                <Text fw={700}>Stripe Account ID</Text>
+                <Text>{application.stripeAccountId}</Text>
+              </Group>
+              <Group position="apart">
                 <Text fw={700}>Application created</Text>
                 <Text>
                   {new Date(application.dateCreated).toLocaleDateString()}
@@ -131,9 +135,8 @@ export default function ApplicationDetails({
           </Accordion.Control>
           <Accordion.Panel mr="xl" ml="md">
             <Textarea
-              minRows={3}
-              maxRows={5}
-              disabled
+              minRows={5}
+              maxRows={8}
               value={application.businessDescription}
             />
           </Accordion.Panel>
@@ -162,19 +165,19 @@ export default function ApplicationDetails({
           </Accordion.Panel>
         </Accordion.Item>
 
-        {disabled ||
-        applicationStatus !== BusinessApplicationStatusEnum.Pending ? null : (
-          <Accordion.Item value="action">
-            <Accordion.Control
-              icon={<IconAddressBook size={rem(20)} color="blue" />}
-            >
-              Action
-            </Accordion.Control>
-            <Accordion.Panel mr="xl" ml="md">
-              {actionButtonGroup}
-            </Accordion.Panel>
-          </Accordion.Item>
-        )}
+        {!disabled &&
+          applicationStatus === BusinessApplicationStatusEnum.Pending && (
+            <Accordion.Item value="action">
+              <Accordion.Control
+                icon={<IconAddressBook size={rem(20)} color="blue" />}
+              >
+                Action
+              </Accordion.Control>
+              <Accordion.Panel mr="xl" ml="md">
+                {actionButtonGroup}
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
       </Accordion>
     </Container>
   );

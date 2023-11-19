@@ -17,9 +17,11 @@ import { useMediaQuery, useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
 import React, { useState } from "react";
 import {
+  OrderItem,
   ServiceListing,
   convertMinsToDurationString,
   formatISODayDateTime,
@@ -29,7 +31,7 @@ import {
 } from "shared-utils";
 import LargeBackButton from "web-ui/shared/LargeBackButton";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/booking";
-import { useGetAvailableTimeSlotsByCGId } from "@/hooks/calendar-group";
+import { useGetAvailableTimeSlots } from "@/hooks/calendar-group";
 import { useGetPetsByPetOwnerId } from "@/hooks/pets";
 import { Booking } from "@/types/types";
 import TimeslotCard from "./TimeslotCard";
@@ -40,22 +42,30 @@ const TIMESLOTS_SPAN = 12 - CALENDAR_SPAN;
 interface SelectTimeslotModalProps {
   petOwnerId: number;
   serviceListing: ServiceListing;
+  orderItem: OrderItem;
   opened: boolean;
   onClose(): void;
   // optional, only for updating
   isUpdating?: boolean;
   booking?: Booking;
+  onCreateBooking?(): void;
   onUpdateBooking?(): void;
+  viewOnly?: boolean;
+  forPetBusiness?: boolean;
 }
 
 const SelectTimeslotModal = ({
   petOwnerId,
   serviceListing,
+  orderItem,
   opened,
   onClose,
   isUpdating,
   booking,
+  onCreateBooking,
   onUpdateBooking,
+  viewOnly,
+  forPetBusiness,
 }: SelectTimeslotModalProps) => {
   const isTablet = useMediaQuery("(max-width: 100em)");
   const [selectedMonth, setSelectedMonth] = useState<Date>(
@@ -67,21 +77,15 @@ const SelectTimeslotModal = ({
   const [selectedPetId, setSelectedPetId] = useState<string>(
     booking ? booking.petId?.toString() : "",
   );
+  const [isCreatingOrUpdating, setIsCreatingOrUpdating] = useToggle();
 
-  /* 
-  service listing does not belong to calendar group, or does not have a set duration
-  means this service listing is not applicable for appointment booking
-  */
-  const notApplicableForAppointment =
-    !serviceListing.calendarGroupId || !serviceListing.duration;
-
-  const { data: availTimeslots = [], isLoading } =
-    useGetAvailableTimeSlotsByCGId(
-      serviceListing.calendarGroupId,
-      selectedMonth.toISOString(),
-      dayjs(selectedMonth).add(1, "month").toISOString(),
-      serviceListing.duration,
-    );
+  const { data: availTimeslots = [], isLoading } = useGetAvailableTimeSlots(
+    orderItem?.orderItemId || null,
+    orderItem ? null : serviceListing.serviceListingId,
+    selectedMonth.toISOString(),
+    dayjs(selectedMonth).add(1, "month").toISOString(),
+    serviceListing.duration,
+  );
 
   const { data: pets = [] } = useGetPetsByPetOwnerId(petOwnerId);
 
@@ -98,6 +102,13 @@ const SelectTimeslotModal = ({
       });
       return;
     }
+    if (!orderItem?.orderItemId) {
+      notifications.show({
+        title: "System Error",
+        message: "No OrderItemID provided",
+        color: "red",
+      });
+    }
     try {
       let payload;
       const startTime = selectedTimeslot;
@@ -109,12 +120,12 @@ const SelectTimeslotModal = ({
         payload = { bookingId: booking.bookingId, startTime, endTime };
         await updateBookingMutation.mutateAsync(payload);
         // refetch user bookings
-        onUpdateBooking();
+        if (onUpdateBooking) onUpdateBooking();
       } else {
         payload = {
           petOwnerId: session.user["userId"],
           calendarGroupId: serviceListing.calendarGroupId,
-          serviceListingId: serviceListing.serviceListingId,
+          orderItemId: orderItem?.orderItemId,
           startTime,
           endTime,
         };
@@ -123,6 +134,7 @@ const SelectTimeslotModal = ({
           payload = { ...payload, petId: parseInt(selectedPetId) };
         }
         await createBookingMutation.mutateAsync(payload);
+        if (onCreateBooking) onCreateBooking();
       }
       notifications.show({
         title: `Appointment ${isUpdating ? "Rescheduled" : "Confirmed"}`,
@@ -142,11 +154,15 @@ const SelectTimeslotModal = ({
     }
   }
 
-  if (notApplicableForAppointment) {
+  if (!serviceListing.requiresBooking) {
     return null;
   }
 
   function handleClose() {
+    if (isCreatingOrUpdating) {
+      // prevent close when creating or updating booking
+      return;
+    }
     onClose();
     setSelectedMonth(dayjs(new Date()).startOf("month").toDate());
     setSelectedTimeslot(null);
@@ -154,13 +170,15 @@ const SelectTimeslotModal = ({
     setShowConfirmation(false);
   }
 
-  function handleClickButton() {
+  async function handleClickButton() {
     if (!showConfirmation) {
       setShowConfirmation();
       return;
     }
-    createOrUpdateBooking();
+    setIsCreatingOrUpdating(true);
+    await createOrUpdateBooking();
     handleClose();
+    setIsCreatingOrUpdating(false);
   }
 
   const calendar = (
@@ -170,6 +188,8 @@ const SelectTimeslotModal = ({
       maxLevel="year"
       minDate={new Date()}
       // exclude dates without any available time slots that is later than the system time
+      maxDate={dayjs(new Date()).add(3, "months").toDate()}
+      // only can see slots and book max 3 months in advanced
       excludeDate={(date) =>
         !availTimeslots.some(
           (data) =>
@@ -224,15 +244,15 @@ const SelectTimeslotModal = ({
         </Text>
         <Divider mb="lg" />
 
-        {isLoading ? (
+        {isLoading && (
           <Box h={200} sx={{ verticalAlign: "center" }}>
             <Center h="100%" w="100%">
               <Loader opacity={0.5} />
             </Center>
           </Box>
-        ) : null}
+        )}
 
-        {selectedDate ? (
+        {selectedDate && (
           <>
             <Group mb="md">
               <Text size="lg" weight={500}>
@@ -242,7 +262,7 @@ const SelectTimeslotModal = ({
                 {timeslotChips?.length}
               </Badge>
             </Group>
-            <Group>
+            <Group sx={viewOnly ? { pointerEvents: "none" } : {}}>
               <Chip.Group
                 multiple={false}
                 value={selectedTimeslot}
@@ -252,39 +272,49 @@ const SelectTimeslotModal = ({
               </Chip.Group>
             </Group>
           </>
-        ) : null}
+        )}
       </Grid.Col>
     </Grid>
   );
 
   const confirmation = (
     <>
-      <Text mb="lg">
-        {isUpdating
-          ? "Please confirm your new timeslot."
-          : "Please confirm your selected timeslot and select a pet (optional)."}
-      </Text>
+      {forPetBusiness ? (
+        <Text mb="lg">
+          Please verify the new appointment details for the customer. They will
+          also receive an email notification upon confirmation.
+        </Text>
+      ) : (
+        <Text mb="lg">
+          {isUpdating
+            ? "Please confirm your new timeslot."
+            : "Please confirm your selected timeslot and select a pet (optional)."}
+        </Text>
+      )}
       <TimeslotCard
+        orderItem={orderItem}
         serviceListing={serviceListing}
         startTime={selectedTimeslot}
         disabled
       />
-      <Select
-        disabled={isUpdating}
-        label="Pet"
-        maxDropdownHeight={200}
-        placeholder="Select a pet"
-        dropdownPosition="bottom"
-        withinPortal
-        clearable
-        mb="xl"
-        data={...pets.map((pet) => ({
-          value: pet.petId.toString(),
-          label: pet.petName,
-        }))}
-        value={selectedPetId}
-        onChange={setSelectedPetId}
-      />
+      {!forPetBusiness && !(isUpdating && !selectedPetId) && (
+        <Select
+          disabled={isUpdating}
+          label="Pet"
+          maxDropdownHeight={200}
+          placeholder="Select a pet"
+          dropdownPosition="bottom"
+          withinPortal
+          clearable
+          mb="xl"
+          data={...pets.map((pet) => ({
+            value: pet.petId.toString(),
+            label: pet.petName,
+          }))}
+          value={selectedPetId}
+          onChange={setSelectedPetId}
+        />
+      )}
     </>
   );
 
@@ -294,7 +324,11 @@ const SelectTimeslotModal = ({
       onClose={handleClose}
       title={
         <Text size="1.5rem" weight={600}>
-          {showConfirmation ? "Confirm timeslot" : "Select timeslot"}
+          {viewOnly
+            ? "Available timeslots"
+            : showConfirmation
+            ? "Confirm timeslot"
+            : "Select timeslot"}
         </Text>
       }
       size="70vw"
@@ -304,37 +338,40 @@ const SelectTimeslotModal = ({
     >
       {showConfirmation ? confirmation : selectTimeslotsGrid}
 
-      <Group position={showConfirmation ? "apart" : "right"}>
-        <LargeBackButton
-          text="Back"
-          variant="light"
-          display={showConfirmation ? "inline" : "none"}
-          onClick={() => setShowConfirmation(false)}
-        />
-        <Group position="right">
-          {selectedTimeslot && !showConfirmation ? (
-            <Text>
-              <strong>Selected: </strong>
-              {formatISODayDateTime(selectedTimeslot)}
-            </Text>
-          ) : null}
-          <Button
-            size="md"
-            color="gray"
-            variant="default"
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            size="md"
-            disabled={!selectedTimeslot}
-            onClick={handleClickButton}
-          >
-            {showConfirmation ? "Confirm" : "Next"}
-          </Button>
+      {!viewOnly && (
+        <Group position={showConfirmation ? "apart" : "right"}>
+          <LargeBackButton
+            text="Back"
+            variant="light"
+            display={showConfirmation ? "inline" : "none"}
+            onClick={() => setShowConfirmation(false)}
+          />
+          <Group position="right">
+            {selectedTimeslot && !showConfirmation ? (
+              <Text>
+                <strong>Selected: </strong>
+                {formatISODayDateTime(selectedTimeslot)}
+              </Text>
+            ) : null}
+            <Button
+              size="md"
+              color="gray"
+              variant="default"
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="md"
+              disabled={!selectedTimeslot}
+              onClick={handleClickButton}
+              loading={isCreatingOrUpdating}
+            >
+              {showConfirmation ? "Confirm" : "Next"}
+            </Button>
+          </Group>
         </Group>
-      </Group>
+      )}
     </Modal>
   );
 };

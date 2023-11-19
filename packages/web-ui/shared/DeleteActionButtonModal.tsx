@@ -9,6 +9,10 @@ interface DeleteActionButtonModalProps extends ButtonProps {
   subtitle: string;
   onDelete(): void;
   large?: boolean;
+  largeText?: string;
+  overrideDeleteButtonText?: string;
+  removeIcon?: boolean;
+  buttonColor?: string;
 }
 
 const DeleteActionButtonModal = ({
@@ -16,6 +20,10 @@ const DeleteActionButtonModal = ({
   subtitle,
   onDelete,
   large,
+  largeText,
+  overrideDeleteButtonText,
+  removeIcon,
+  buttonColor,
   ...props
 }: DeleteActionButtonModalProps) => {
   const [opened, { open, close }] = useDisclosure(false);
@@ -44,20 +52,24 @@ const DeleteActionButtonModal = ({
           <Button type="reset" color="gray" onClick={close}>
             Cancel
           </Button>
-          <Button color="red" type="submit" onClick={handleDelete}>
-            Delete
+          <Button
+            color={buttonColor ? buttonColor : "red"}
+            type="submit"
+            onClick={handleDelete}
+          >
+            {overrideDeleteButtonText ?? "Delete"}
           </Button>
         </Group>
       </Modal>
 
       {large ? (
         <Button
-          color="red"
-          leftIcon={<IconTrash size={"1rem"} />}
+          color={buttonColor ? buttonColor : "red"}
+          leftIcon={removeIcon ? null : <IconTrash size={"1rem"} />}
           onClick={open}
           {...props}
         >
-          Delete
+          {largeText ?? "Delete"}
         </Button>
       ) : (
         <DeleteActionIcon onClick={open} />

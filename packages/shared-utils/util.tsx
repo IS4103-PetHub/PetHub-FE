@@ -46,8 +46,8 @@ export function formatISODateLong(dateString: string) {
 }
 
 export function formatISODateOnly(dateString: string) {
-  // e.g. 1/9/2023
-  return dayjs(dateString).format("D/M/YYYY");
+  // e.g. 1-9-2023
+  return dayjs(dateString).format("DD-MM-YYYY");
 }
 
 export function formatISOTimeOnly(dateString: string) {
@@ -57,7 +57,12 @@ export function formatISOTimeOnly(dateString: string) {
 
 export function formatISODayDateTime(dateString: string) {
   // e.g. Sat
-  return dayjs(dateString).format("ddd D/M/YYYY h:mma");
+  return dayjs(dateString).format("ddd DD-MM-YYYY h:mma");
+}
+
+export function formatISODateTimeShort(dateString: string) {
+  // e.g. 14-09-2023 21:10
+  return dayjs(dateString).format("DD-MM-YYYY HH:mm");
 }
 
 export function convertMinsToDurationString(mins: number) {
@@ -91,6 +96,7 @@ export function getErrorMessageProps(title: string, error: any) {
     title: title,
     color: "red",
     icon: <IconX />,
+    autoClose: 5000,
     message:
       (error.response && error.response.data && error.response.data.message) ||
       error.message,
@@ -104,15 +110,32 @@ export function formatStringToLetterCase(enumString: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+export function formatLetterCaseToEnumString(str: string) {
+  return str.replace(/\s+/g, "_").toUpperCase();
+}
+
 export const formatEnumValueToLowerCase = (value: string) => {
   return value.replace(/_/g, " ").toLowerCase();
 };
+
+export function formatNumberCustomDecimals(num: number, precision: number) {
+  // use this instead of toFixed() alone to avoid rounding errors e.g. 1.005 should round to 1.01 not 1.00
+  // returns a formatted string
+  return Number(
+    Math.round(parseFloat(num + "e" + precision)) + "e-" + precision,
+  ).toFixed(precision);
+}
+
+export function formatNumber2Decimals(num: number) {
+  return formatNumberCustomDecimals(num, 2);
+}
 
 export function searchServiceListingsForPB(
   serviceListings: ServiceListing[],
   searchStr: string,
 ) {
   return serviceListings.filter((serviceListing: ServiceListing) => {
+    const search = searchStr.toLowerCase();
     const formattedCategory = formatEnumValueToLowerCase(
       serviceListing.category,
     );
@@ -120,9 +143,159 @@ export function searchServiceListingsForPB(
       tag.name.toLowerCase(),
     );
     return (
-      serviceListing.title.toLowerCase().includes(searchStr.toLowerCase()) ||
-      formattedCategory.includes(searchStr.toLowerCase()) ||
-      formattedTags.some((tag) => tag.includes(searchStr.toLowerCase()))
+      serviceListing.title.toLowerCase().includes(search) ||
+      formattedCategory.includes(search) ||
+      formattedTags.some((tag) => tag.includes(search))
     );
   });
+}
+
+export function sortInvalidServiceListings(serviceListings: ServiceListing[]) {
+  return serviceListings.sort((a, b) =>
+    (a.requiresBooking ? a.calendarGroupId && a.duration : true) &&
+    (a.lastPossibleDate ? new Date(a.lastPossibleDate) > new Date() : true)
+      ? 1
+      : -1,
+  );
+}
+
+export function isValidServiceListing(serviceListing: ServiceListing) {
+  return (
+    (serviceListing.requiresBooking
+      ? serviceListing.calendarGroupId && serviceListing.duration
+      : true) &&
+    (serviceListing.lastPossibleDate
+      ? new Date(serviceListing.lastPossibleDate) > new Date()
+      : true)
+  );
+}
+
+export function generateRandomIntFromInterval(min: number, max: number) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+// handling file download and file name extraction
+export const downloadFile = async (url: string, fileName: string) => {
+  try {
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
+    return new File([buffer], fileName);
+  } catch (error) {
+    console.log("Error:", error);
+  }
+};
+
+export const extractFileName = (attachmentKeys: string) => {
+  return attachmentKeys.substring(attachmentKeys.lastIndexOf("-") + 1);
+};
+
+export function validateReviewTitle(title: string) {
+  if (!title) {
+    return "Title is required.";
+  }
+  if (title.length > 64) {
+    return "Title cannot exceed 64 characters";
+  }
+  return null;
+}
+
+export function validateReviewComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 2000) {
+    return "Title cannot exceed 2000 characters";
+  }
+  return null;
+}
+
+export function validateReviewRating(rating: number) {
+  if (!rating) {
+    return "Rating is required.";
+  }
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return "Rating must be between 1 and 5 stars inclusive.";
+  }
+  return null;
+}
+
+export function validateReviewFiles(files: string[]) {
+  if (files.length > 3) {
+    return "Maximum of 3 images allowed";
+  }
+  return null;
+}
+
+// If < 1 hour: "Moments ago", if < 24 hours: "x hours ago", if < 7 days, x days ago, else "DD-MM-YYYY-TT"
+export function displayArticleDate(dateCreated) {
+  if (!dateCreated) return "Moments ago";
+
+  const createdDate = dayjs(dateCreated);
+  const now = dayjs();
+
+  const hoursDiff = now.diff(createdDate, "hour");
+  const daysDiff = now.diff(createdDate, "day");
+
+  if (hoursDiff < 1) {
+    return "Moments ago";
+  } else if (hoursDiff >= 1 && hoursDiff < 24) {
+    return `${hoursDiff} hour${hoursDiff > 1 ? "s" : ""} ago`;
+  } else if (daysDiff >= 1 && daysDiff < 7) {
+    return `${daysDiff} day${daysDiff > 1 ? "s" : ""} ago`;
+  } else {
+    return formatISODayDateTime(dateCreated);
+  }
+}
+
+// Same as above but got minutes also
+export function displayArticleCommentDate(dateCreated) {
+  if (!dateCreated) return "A moment ago";
+
+  const createdDate = dayjs(dateCreated);
+  const now = dayjs();
+
+  const minutesDiff = now.diff(createdDate, "minute");
+  const hoursDiff = now.diff(createdDate, "hour");
+  const daysDiff = now.diff(createdDate, "day");
+
+  if (minutesDiff < 1) {
+    return `A moment ago`;
+  } else if (minutesDiff < 60) {
+    return `${minutesDiff} minute${minutesDiff !== 1 ? "s" : ""} ago`;
+  } else if (hoursDiff < 24) {
+    return `${hoursDiff} hour${hoursDiff !== 1 ? "s" : ""} ago`;
+  } else if (daysDiff < 7) {
+    return `${daysDiff} day${daysDiff !== 1 ? "s" : ""} ago`;
+  } else {
+    return formatISODateTimeShort(dateCreated);
+  }
+}
+
+export function calculateArticleEstimatedReadingTime(content: string) {
+  const text = content;
+  const wpm = 238;
+  const words = text.trim().split(/\s+/).length;
+  let estimatedTime = words / wpm;
+
+  if (estimatedTime < 1) {
+    return "Under a minute read";
+  } else {
+    estimatedTime = Math.ceil(estimatedTime);
+    return `${estimatedTime} minute${estimatedTime > 1 ? "s" : ""} read`;
+  }
+}
+
+export function validateArticleComment(comment: string) {
+  if (!comment) {
+    return "Comment is required.";
+  }
+  if (comment.length > 500) {
+    return "Comment cannot exceed 500 characters";
+  }
+  return null;
+}
+
+export function addCommasToNumberString(numString: string) {
+  return numString.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

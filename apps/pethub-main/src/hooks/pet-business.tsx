@@ -39,6 +39,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         businessType: data.businessType,
         businessDescription: data.businessDescription,
         websiteURL: data.websiteURL,
+        stripeAccountId: data.stripeAccountId,
         contactNumber: data.contactNumber,
         email: data.user.email,
         accountType: data.user.accountType,
@@ -47,6 +48,7 @@ export const useGetPetBusinessByIdAndAccountType = (
         businessAddresses: data.businessAddresses,
         businessEmail: data.businessEmail,
         petBusinessApplication: data.petBusinessApplication,
+        commissionRule: data.commissionRule,
       };
       return petBusiness as PetBusiness;
     },

@@ -16,24 +16,23 @@ import {
   IconGenderFemale,
   IconGenderMale,
   IconPlus,
-  IconX,
 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
   EMPTY_STATE_DELAY_MS,
   GenderEnum,
+  PetTypeEnum,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
-import CenterLoader from "web-ui/shared/CenterLoader";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import SadDimmedMessage from "web-ui/shared/SadDimmedMessage";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeletePetById, useGetPetsByPetOwnerId } from "@/hooks/pets";
-import { PetTypeEnum } from "@/types/constants";
+import { calculateAge } from "@/util";
 import PetInfoModal from "./PetInfoModal";
 
 interface PetGridProps {
@@ -90,33 +89,23 @@ const PetGrid = ({ userId }: PetGridProps) => {
   };
 
   const petTypeIcons = {
-    [PetTypeEnum.Dog]: "/icons8-dog.png",
-    [PetTypeEnum.Cat]: "/icons8-cat.png",
-    [PetTypeEnum.Bird]: "/icons8-bird.png",
-    [PetTypeEnum.Terrapin]: "/icons8-turtle.png",
-    [PetTypeEnum.Rabbit]: "/icons8-rabbit.png",
-    [PetTypeEnum.Rodent]: "/icons8-rat.png",
-    [PetTypeEnum.Others]: "/icons8-veterinarian.png",
+    [PetTypeEnum.Dog]: "https://img.icons8.com/pulsar-color/48/year-of-dog.png",
+    [PetTypeEnum.Cat]: "https://img.icons8.com/pulsar-color/48/cat.png",
+    [PetTypeEnum.Bird]: "https://img.icons8.com/pulsar-color/48/bird.png",
+    [PetTypeEnum.Terrapin]: "https://img.icons8.com/pulsar-color/48/turtle.png",
+    [PetTypeEnum.Rabbit]: "https://img.icons8.com/pulsar-color/48/rabbit.png",
+    [PetTypeEnum.Rodent]:
+      "https://img.icons8.com/pulsar-color/48/year-of-rat.png",
+    [PetTypeEnum.Others]:
+      "https://img.icons8.com/pulsar-color/48/dog-footprint.png",
   };
 
   const renderPetTypeIcon = (petType) => {
     const iconPath = petTypeIcons[petType];
     if (iconPath) {
-      return <img src={iconPath} alt={petType} />;
+      return <img width="30" src={iconPath} alt={petType} />;
     }
     return null; // Return null if no icon is found for the pet type
-  };
-
-  const calculateAge = (dateOfBirth: any) => {
-    const currentDate = new Date();
-    const dob = new Date(dateOfBirth);
-    let age = dayjs(currentDate).diff(dob, "years");
-
-    if (age == 0) {
-      age = dayjs(currentDate).diff(dob, "months");
-      return `${age} month${age !== 1 ? "s" : ""}`;
-    }
-    return `${age} year${age > 1 ? "s" : ""}`;
   };
 
   const renderNoPetContent = () => {
@@ -220,19 +209,16 @@ const PetGrid = ({ userId }: PetGridProps) => {
                       )}
                     </Group>
                     <Text>
-                      {pet.dateOfBirth
-                        ? `Age: ${calculateAge(pet.dateOfBirth)}`
-                        : ""}
+                      {pet.dateOfBirth &&
+                        `Age: ${calculateAge(pet.dateOfBirth)}`}
                     </Text>
                     <Text>
-                      {pet.petWeight !== null && pet.petWeight !== undefined
-                        ? `Weight: ${pet.petWeight.toFixed(2)} kg`
-                        : ""}
+                      {pet.petWeight > 0 &&
+                        `Weight: ${formatNumber2Decimals(pet.petWeight)} kg`}
                     </Text>
                     <Text>
-                      {pet.microchipNumber
-                        ? `Microchip No: ${pet.microchipNumber}`
-                        : ""}
+                      {pet.microchipNumber &&
+                        `Microchip No: ${pet.microchipNumber}`}
                     </Text>
                   </Card.Section>
                   <Card.Section style={{ height: "15%" }}>

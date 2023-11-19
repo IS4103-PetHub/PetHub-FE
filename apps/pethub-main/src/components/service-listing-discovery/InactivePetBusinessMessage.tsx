@@ -15,7 +15,7 @@ const InactivePetBusinessMessage = () => {
         This pet business account is inactive and cannot be viewed.
       </Alert>
       <Center>
-        <Button mt="md" onClick={() => router.push("/")}>
+        <Button mt="md" color="dark" onClick={() => router.push("/")}>
           Return to home
         </Button>
       </Center>

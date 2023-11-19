@@ -7,8 +7,16 @@ import {
   ServiceCategoryEnum,
   ServiceListing,
   GenderEnum,
+  CommissionRule,
+  PetTypeEnum,
+  Pet,
+  OrderItem,
+  ReviewReportReasonEnum,
+  SupportTicketReason,
+  Priority,
+  PetOwner,
 } from "shared-utils";
-import { PetTypeEnum } from "./constants";
+import { PetRequestTypeEnum } from "./constants";
 
 /*
  * USER MANAGEMENT
@@ -57,15 +65,9 @@ export interface PetBusiness extends User {
   websiteURL?: string;
   businessAddresses?: Address[];
   businessEmail?: string;
+  stripeAccountId?: string;
   petBusinessApplication: PetBusinessApplication;
-}
-
-export interface PetOwner extends User {
-  // pet owner attributes
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  favouriteListings?: ServiceListing[];
+  commissionRule: CommissionRule;
 }
 
 export interface BusinessApplicationApprover {
@@ -81,6 +83,7 @@ export interface CreatePetBusinessApplicationPayload {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];
@@ -91,6 +94,7 @@ export interface PetBusinessApplication {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId?: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];
@@ -119,6 +123,9 @@ export interface CreateServiceListingPayload {
   addressIds: number[];
   calendarGroupId: number;
   duration: number;
+  requiresBooking: boolean;
+  defaultExpiryDays: number;
+  lastPossibleDate: string;
 }
 
 export interface UpdateServiceListingPayload {
@@ -133,6 +140,9 @@ export interface UpdateServiceListingPayload {
   addressIds: number[];
   calendarGroupId: number;
   duration: number;
+  requiresBooking: boolean;
+  defaultExpiryDays: number;
+  lastPossibleDate: string;
 }
 
 /*
@@ -152,24 +162,6 @@ export interface tuiCalendar {
   name: string;
   backgroundColor: string;
   borderColor: string;
-}
-
-/*
- * Pet
- */
-
-export interface Pet {
-  petId: number;
-  petName: string;
-  petType: PetTypeEnum;
-  gender: GenderEnum;
-  petWeight?: number;
-  dateOfBirth?: string;
-  microchipNumber?: string;
-  attachmentKeys: string[];
-  attachmentURLs: string[];
-  dateCreated: string;
-  dateUpdated: string;
 }
 
 export interface PetPayload {
@@ -215,9 +207,194 @@ export interface Booking {
   // not yet implemented
   invoiceId?: number;
   transactionId?: number;
+  orderItemId: number;
+  OrderItem?: OrderItem;
 }
 
 export interface AddRemoveFavouriteServiceListingPayload {
   serviceListingId: number;
   userId: number;
+}
+
+export interface CartItem {
+  cartItemId?: number; // Added to cart order, basically corresponds to date added
+  serviceListing: ServiceListing;
+  quantity: number;
+  isSelected: boolean;
+}
+
+export interface Cart {
+  cartId?: number;
+  cartItems: CartItem[];
+  itemCount: number;
+  userId: number;
+}
+
+export interface CheckoutSummary {
+  itemCount: number;
+  subtotal: number;
+  gst: number;
+  platformFee: number;
+  total: number;
+}
+
+export interface CompleteOrderItemPayload {
+  userId: number;
+  voucherCode: string;
+}
+
+export interface CreateReviewPayload {
+  orderItemId: number;
+  title: string;
+  comment: string;
+  rating: number;
+  files: File[];
+}
+
+export interface UpdateReviewPayload {
+  reviewId: number;
+  title: string;
+  comment: string;
+  rating: number;
+  files: File[];
+}
+
+export interface CreateRefundRequestPayload {
+  orderItemId: number;
+  reason: string;
+}
+
+export interface ApproveOrRejectRefundRequestPayload {
+  refundRequestId: number;
+  comment: string;
+}
+
+export interface ReportReviewPayload {
+  reviewId: number;
+  reportReason: ReviewReportReasonEnum;
+}
+
+export interface ReplyReviewPayload {
+  reviewId: number;
+  reply: string;
+}
+
+export interface PetLostAndFound {
+  petLostAndFoundId: number;
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  attachmentKeys: string[];
+  attachmentURLs: string[];
+  contactNumber: string;
+  userId: number;
+  petOwner?: PetOwner;
+  petId?: number;
+  pet?: Pet;
+  dateCreated: string;
+  dateUpdated?: string;
+  isResolved: boolean;
+}
+
+export interface CreatePetLostAndFoundPayload {
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  contactNumber: string;
+  file: File;
+  petOwnerId: number;
+  petId: string;
+}
+
+export interface UpdatePetLostAndFoundPayload {
+  petLostAndFoundId: number;
+  title: string;
+  description: string;
+  requestType: PetRequestTypeEnum;
+  lastSeenDate: string;
+  lastSeenLocation: string;
+  contactNumber: string;
+  file: File;
+  petId: string;
+  isResolved: boolean;
+}
+
+export interface FeaturedServiceListing extends ServiceListing {
+  id: number;
+  featuredListingSetId: number;
+  description: string;
+}
+
+export interface SalesDashboardSummary {
+  totalNumOrders: number;
+  totalSales: number;
+  last30DaySales: number;
+  mostSalesDate: string;
+  mostSalesAmount: number;
+}
+
+export interface SalesDashboardServiceListing {
+  serviceListingId: number;
+  title: string;
+  category: ServiceCategoryEnum;
+  totalOrders: number;
+  totalSales: number;
+}
+
+export interface UserDemographicData {
+  POCount: number;
+  PBCount: number;
+  ReportedReviewCount: number;
+  PBApplicationCount: number;
+}
+
+export interface PbDashboardData {
+  unrepliedReviewCount: number;
+  remainingAppointments: number;
+  invalidSLCount: number;
+  openRefundRequestsCount: number;
+  openSupportRequestsCount: number;
+}
+
+export interface CreateUpdateArticleCommentPayload {
+  articleId?: number;
+  articleCommentId?: number;
+  comment: string;
+}
+
+export interface CheckoutCartPayload {
+  paymentMethodId: string;
+  totalPrice: number;
+  userId: number;
+  pointsRedeemed: number;
+  // serviceListingId, quantity
+  cartItems: any[];
+}
+
+export interface CheckoutSpotlightListingPayload {
+  serviceListingId: number;
+  paymentMethodId: string;
+}
+
+export interface createSupportTicketPayload {
+  userId: number;
+  supportCategory: SupportTicketReason;
+  priority: Priority;
+  reason: string;
+  files: File[];
+  serviceListingId?: number;
+  orderItemId?: number;
+  bookingId?: number;
+  payoutInvoiceId?: number;
+  refundRequestId?: number;
+}
+
+export interface commentSupportPayload {
+  userId: number;
+  comment: string;
+  files: File[];
 }

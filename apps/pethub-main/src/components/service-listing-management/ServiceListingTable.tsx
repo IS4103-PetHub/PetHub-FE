@@ -1,9 +1,10 @@
-import { Group, Badge } from "@mantine/core";
+import { Group, Badge, Text, Alert } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { DataTable, DataTableSortStatus } from "mantine-datatable";
-import React, { useState } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import {
   Address,
   CalendarGroup,
@@ -11,60 +12,40 @@ import {
   Tag,
   getErrorMessageProps,
   getMinTableHeight,
+  isValidServiceListing,
 } from "shared-utils";
 import { formatStringToLetterCase } from "shared-utils";
 import { TABLE_PAGE_SIZE } from "shared-utils";
+import { formatNumber2Decimals } from "shared-utils";
 import DeleteActionButtonModal from "web-ui/shared/DeleteActionButtonModal";
 import EditActionButton from "web-ui/shared/EditActionButton";
 import ViewActionButton from "web-ui/shared/ViewActionButton";
 import { useDeleteServiceListingById } from "@/hooks/service-listing";
-import { formatPriceForDisplay } from "@/util";
 import ServiceListingModal from "./ServiceListingModal";
 
 interface ServiceListTableProps {
   records: ServiceListing[];
   totalNumServiceListing: number;
-  userId: number;
   refetch(): void;
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onSortStatusChange: any;
   onPageChange(p: number): void;
-  tags: Tag[];
-  addresses: Address[];
-  calendarGroups: CalendarGroup[];
 }
 
 const ServiceListTable = ({
   records,
   totalNumServiceListing,
-  userId,
   refetch,
   page,
-  isSearching,
   sortStatus,
   onSortStatusChange,
   onPageChange,
-  tags,
-  addresses,
-  calendarGroups,
 }: ServiceListTableProps) => {
-  /*
-   * Component State
-   */
-  const [selectedService, setSelectedService] = useState(null);
-  const [isServiceModalOpen, { close: closeView, open: openView }] =
-    useDisclosure(false);
-  const [isUpdateModalOpen, { close: closeUpdate, open: openUpdate }] =
-    useDisclosure(false);
-
+  const router = useRouter();
   const queryClient = useQueryClient();
   const deleteServiceListingMutation = useDeleteServiceListingById(queryClient);
 
-  /*
-   * Service Handlers
-   */
   const handleDeleteService = async (serviceListingId: number) => {
     try {
       await deleteServiceListingMutation.mutateAsync(serviceListingId);
@@ -92,6 +73,7 @@ const ServiceListTable = ({
             width: "25vw",
             sortable: true,
             ellipsis: true,
+            render: (record) => <Text fw={500}>{record.title}</Text>,
           },
           {
             accessor: "category",
@@ -110,7 +92,7 @@ const ServiceListTable = ({
               record.tags.map((tag, index) => (
                 <Badge
                   key={tag.tagId}
-                  color="blue"
+                  color={isValidServiceListing(record) ? "blue" : "red"}
                   mr={index < record.tags.length - 1 ? 5 : 0}
                   /* Add margin right if not the last tag */
                 >
@@ -125,7 +107,7 @@ const ServiceListTable = ({
             width: 100,
             sortable: true,
             render: (record) => {
-              return formatPriceForDisplay(record.basePrice);
+              return formatNumber2Decimals(record.basePrice);
             },
           },
           {
@@ -136,23 +118,25 @@ const ServiceListTable = ({
             textAlignment: "right",
             render: (service) => (
               <Group position="right">
-                <ViewActionButton
-                  onClick={function (): void {
-                    setSelectedService(service);
-                    openView();
-                  }}
-                />
-                <EditActionButton
-                  onClick={function (): void {
-                    setSelectedService(service);
-                    openUpdate();
-                  }}
-                />
-                <DeleteActionButtonModal
-                  title={`Are you sure you want to delete ${service.title}?`}
-                  subtitle="The customer would no longer be able to view this service listing."
-                  onDelete={() => handleDeleteService(service.serviceListingId)}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  {" "}
+                  <ViewActionButton
+                    onClick={() => {
+                      router.push(
+                        `/business/listings/${service.serviceListingId}`,
+                      );
+                    }}
+                  />
+                </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <DeleteActionButtonModal
+                    title={`Are you sure you want to delete ${service.title}?`}
+                    subtitle="The customer would no longer be able to view this service listing."
+                    onDelete={() =>
+                      handleDeleteService(service.serviceListingId)
+                    }
+                  />
+                </div>
               </Group>
             ),
           },
@@ -162,43 +146,33 @@ const ServiceListTable = ({
         withColumnBorders
         striped
         verticalSpacing="sm"
+        highlightOnHover
+        onRowClick={(record) =>
+          router.push(`/business/listings/${record.serviceListingId}`)
+        }
         idAccessor="serviceListingId"
         //sorting
         sortStatus={sortStatus}
         onSortStatusChange={onSortStatusChange}
         //pagination
-        totalRecords={isSearching ? records.length : totalNumServiceListing}
+        totalRecords={totalNumServiceListing}
         recordsPerPage={TABLE_PAGE_SIZE}
         page={page}
         onPageChange={(p) => onPageChange(p)}
-      />
+        rowStyle={({
+          requiresBooking,
+          calendarGroupId,
+          duration,
+          lastPossibleDate,
+        }) => {
+          const isValid =
+            (requiresBooking ? calendarGroupId && duration : true) &&
+            (lastPossibleDate ? new Date(lastPossibleDate) > new Date() : true);
 
-      {/* View */}
-      <ServiceListingModal
-        opened={isServiceModalOpen}
-        onClose={closeView}
-        isView={true}
-        isUpdate={false}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-        addresses={addresses ? addresses : []}
-        calendarGroups={calendarGroups}
-      />
-
-      {/* Update */}
-      <ServiceListingModal
-        opened={isUpdateModalOpen}
-        onClose={closeUpdate}
-        isView={false}
-        isUpdate={true}
-        serviceListing={selectedService}
-        userId={userId}
-        refetch={refetch}
-        tags={tags}
-        addresses={addresses ? addresses : []}
-        calendarGroups={calendarGroups}
+          return isValid
+            ? { cursor: "pointer" }
+            : { color: "red", cursor: "pointer" };
+        }}
       />
     </>
   );

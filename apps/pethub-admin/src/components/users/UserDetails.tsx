@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
 import {
   AccountTypeEnum,
+  formatNumber2Decimals,
   formatStringToLetterCase,
   getErrorMessageProps,
 } from "shared-utils";
@@ -226,21 +227,35 @@ const PetBusinessDetails = ({
           <Text>Business Type:</Text>
         </Grid.Col>
         <Grid.Col span={6}>
-          <Text>{user.businessType || "-"}</Text>
+          <Text>
+            {user.businessType
+              ? formatStringToLetterCase(user.businessType)
+              : "-"}
+          </Text>
         </Grid.Col>
-
-        {/* <Grid.Col span={6}>
-          <Text>Business Description:</Text>
-        </Grid.Col>
-        <Grid.Col span={6}>
-          <Text>{user.businessDescription || "-"}</Text>
-        </Grid.Col> */}
 
         <Grid.Col span={6}>
           <Text>Website:</Text>
         </Grid.Col>
         <Grid.Col span={6}>
           <Text>{user.websiteURL || "-"}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
+          <Text>Stripe Account ID:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>{user.stripeAccountId}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
+          <Text>Commission Rule:</Text>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Text>
+            {user.commissionRule.name} (
+            {formatNumber2Decimals(user.commissionRule.commissionRate * 100)}%)
+          </Text>
         </Grid.Col>
       </Grid>
     </Paper>
@@ -521,7 +536,7 @@ const UserDetails = ({
   return (
     <>
       {UserDetailsComponent}
-      {disabled ? null : (
+      {!disabled && (
         <>
           <DeleteAccountModal
             closeDeleteModal={closeDelete}

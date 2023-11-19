@@ -5,12 +5,16 @@ import { useToggle } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { IconCalendar, IconCheck } from "@tabler/icons-react";
 import React, { useEffect } from "react";
-import { formatISODateLong, getErrorMessageProps } from "shared-utils";
+import {
+  PetOwner,
+  formatISODateLong,
+  getErrorMessageProps,
+} from "shared-utils";
 import { AccountStatusEnum } from "shared-utils";
 import EditCancelSaveButtons from "web-ui/shared/EditCancelSaveButtons";
 import { useUpdatePetBusiness } from "@/hooks/pet-business";
 import { useUpdatePetOwner } from "@/hooks/pet-owner";
-import { PetBusiness, PetOwner } from "@/types/types";
+import { PetBusiness } from "@/types/types";
 import { validateWebsiteURL } from "@/util";
 
 interface AccountInfoFormProps {
@@ -38,6 +42,7 @@ const AccountInfoForm = ({
     email: petOwner ? petOwner.email : petBusiness.email,
     businessEmail: petBusiness ? petBusiness.businessEmail : "",
     websiteURL: petBusiness ? petBusiness.websiteURL : "",
+    stripeAccountId: petBusiness ? petBusiness.stripeAccountId : "",
     businessDescription: petBusiness ? petBusiness.businessDescription : "",
     businessAddresses: petBusiness ? petBusiness.businessAddresses : [],
   };
@@ -57,6 +62,8 @@ const AccountInfoForm = ({
         petBusiness && !/^.{8,9}[A-Z]$/.test(value)
           ? "Invalid Unique Entity Number (UEN)."
           : null,
+      stripeAccountId: (value, values) =>
+        petBusiness && !value ? "Stripe account ID is required." : null,
       firstName: (value, values) =>
         petOwner && !value ? "First name is required." : null,
       lastName: (value, values) =>
@@ -202,7 +209,7 @@ const AccountInfoForm = ({
         {isEditing ? (
           <DateInput
             placeholder="Date of birth"
-            valueFormat="DD/MM/YYYY"
+            valueFormat="DD-MM-YYYY"
             maxDate={new Date()}
             icon={<IconCalendar size="1rem" />}
             {...form.getInputProps("dateOfBirth")}
@@ -284,6 +291,23 @@ const AccountInfoForm = ({
                 />
               ) : (
                 petBusiness.websiteURL
+              )}
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Divider my="sm" />
+            </Grid.Col>
+            <Grid.Col span={KEY_SPAN}>
+              <strong>Stripe account ID</strong>
+            </Grid.Col>
+            <Grid.Col span={VALUE_SPAN}>
+              {isEditing ? (
+                <TextInput
+                  placeholder=""
+                  {...form.getInputProps("stripeAccountId")}
+                  disabled
+                />
+              ) : (
+                petBusiness.stripeAccountId
               )}
             </Grid.Col>
             <Grid.Col span={12}>

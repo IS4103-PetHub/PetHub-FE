@@ -133,13 +133,13 @@ export default function PetBusinessApplicationDetails({
 
   const actionButtonGroup = (
     <Center>
-      {applicationStatus === BusinessApplicationStatusEnum.Pending ? (
+      {applicationStatus === BusinessApplicationStatusEnum.Pending && (
         <>
           <RejectButton />
           &nbsp;
           <ApproveButton />
         </>
-      ) : null}
+      )}
     </Center>
   );
 
@@ -233,6 +233,7 @@ export default function PetBusinessApplicationDetails({
         <LargeBackButton
           text="Back to applications"
           size="sm"
+          mb="xs"
           onClick={() => {
             window.location.href = "/admin/pb-applications";
           }}

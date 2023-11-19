@@ -17,6 +17,8 @@ import { IconChevronDown, IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
+import { useCartOperations } from "@/hooks/cart";
+import CartDisplayPopover from "../cart/CartDisplayPopover";
 import LoginModal from "../login/LoginModal";
 
 const HEADER_HEIGHT = rem(80);
@@ -95,8 +97,13 @@ const links: {
     ],
   },
   {
-    link: "/lost-and-found",
-    label: "Lost & found pets",
+    link: "/pet-lost-and-found?requestType=",
+    label: "Pet Lost & Found",
+    links: undefined,
+  },
+  {
+    link: "/articles",
+    label: "Articles",
     links: undefined,
   },
   {
@@ -104,7 +111,6 @@ const links: {
     label: "Help",
     links: undefined,
   },
-
   {
     link: "/customer/account",
     label: "My account",
@@ -117,7 +123,20 @@ const links: {
         link: "/customer/appointments",
         label: "My appointments",
       },
+      {
+        link: "/customer/orders",
+        label: "My orders",
+      },
+      {
+        link: "/customer/support",
+        label: "My support tickets",
+      },
     ],
+  },
+  {
+    link: "/customer/cart",
+    label: "Cart",
+    links: undefined,
   },
 ];
 
@@ -127,11 +146,12 @@ const HeaderBar = () => {
   const [opened, { toggle }] = useDisclosure(false);
 
   const [isLoginModalOpened, { open, close }] = useDisclosure(false);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+  const { getItemCount } = useCartOperations(session?.user["userId"]);
 
   const items = links.map((link) => {
     // Only logged in users can see the account tab
-    if (link.label === "My account") {
+    if (link.label === "My account" || link.label === "Cart") {
       if (!session) {
         return null;
       }
@@ -165,6 +185,17 @@ const HeaderBar = () => {
           </Menu.Target>
           <Menu.Dropdown>{menuItems}</Menu.Dropdown>
         </Menu>
+      );
+    }
+
+    if (link.label === "Cart") {
+      return (
+        <Link key={link.label} href={link.link} className={classes.link}>
+          <CartDisplayPopover
+            size={getItemCount()}
+            userId={session.user["userId"]}
+          />
+        </Link>
       );
     }
 

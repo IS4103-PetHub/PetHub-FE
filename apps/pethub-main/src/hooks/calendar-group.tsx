@@ -5,24 +5,33 @@ import { Timeslot } from "@/types/types";
 
 const CALENDAR_GROUP_API = "/calendar-groups";
 
-export const useGetAvailableTimeSlotsByCGId = (
-  cgId: number,
+export const useGetAvailableTimeSlots = (
+  orderItemId: number | null,
+  serviceListingId: number | null,
   startTime: string,
   endTime: string,
   duration: number,
 ) => {
-  const params = { startTime, endTime, duration };
+  // Can get by orderItemId or serviceListingId
+  const params = {
+    ...(orderItemId ? { orderItemId } : { serviceListingId }),
+    startTime,
+    endTime,
+    duration,
+  };
   return useQuery({
-    queryKey: ["available-timeslots", { calendarGroupId: cgId }, { params }],
+    queryKey: ["available-timeslots", { params }],
     queryFn: async () => {
       const response = await api.get(
-        `${CALENDAR_GROUP_API}/available-timeslots/${cgId}`,
+        `${CALENDAR_GROUP_API}/available-timeslots`,
         { params },
       );
       return response.data as Timeslot[];
     },
     // only run this query if all the values are not null
-    enabled: !!(cgId && startTime && endTime && duration),
+    enabled: !!(startTime && endTime && duration),
+    // always fetch again to find new timeslots
+    refetchOnMount: true,
   });
 };
 

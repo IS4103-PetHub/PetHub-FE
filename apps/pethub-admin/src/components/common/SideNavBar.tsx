@@ -17,6 +17,12 @@ import {
   IconUsersGroup,
   IconArticle,
   IconLogout,
+  IconBusinessplan,
+  IconFileInvoice,
+  IconMessageReport,
+  IconNews,
+  IconMessage,
+  IconChartBar,
 } from "@tabler/icons-react";
 import { IconBoxMultiple } from "@tabler/icons-react";
 import Link from "next/link";
@@ -24,7 +30,6 @@ import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { LightDarkModeToggle } from "web-ui";
 
 const useStyles = createStyles((theme) => ({
   nav: {
@@ -101,6 +106,36 @@ const data = [
     label: "Service Listings",
     icon: IconBoxMultiple,
   },
+  {
+    link: "/admin/commission",
+    label: "Commission Rules",
+    icon: IconBusinessplan,
+  },
+  {
+    link: "/admin/orders",
+    label: "Orders",
+    icon: IconFileInvoice,
+  },
+  {
+    link: "/admin/reported-reviews",
+    label: "Reported Reviews",
+    icon: IconMessageReport,
+  },
+  {
+    link: "/admin/revenue/dashboard",
+    label: "Revenue Tracking",
+    icon: IconChartBar,
+  },
+  {
+    link: "/admin/articles",
+    label: "Articles",
+    icon: IconNews,
+  },
+  {
+    link: "/admin/support",
+    label: "Support",
+    icon: IconMessage,
+  },
 ];
 
 const SideNavBar = () => {
@@ -145,7 +180,6 @@ const SideNavBar = () => {
           >
             PetHub Admin
           </Text>
-          {/* <LightDarkModeToggle /> */}
         </Group>
         {links}
       </Navbar.Section>

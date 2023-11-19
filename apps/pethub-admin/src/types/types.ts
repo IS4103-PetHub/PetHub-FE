@@ -2,7 +2,9 @@ import {
   AccountStatusEnum,
   AccountTypeEnum,
   Address,
+  ArticleTypeEnum,
   PetBusinessTypeEnum,
+  ServiceListing,
 } from "shared-utils";
 
 import {
@@ -35,9 +37,11 @@ export interface PetBusiness extends User {
   businessType?: string;
   businessDescription?: string;
   businessEmail?: string;
+  stripeAccountId?: string;
   businessAddresses?: Address[];
   contactNumber: string;
   websiteURL?: string;
+  commissionRule: CommissionRule;
 }
 
 export interface InternalUser extends User {
@@ -56,7 +60,6 @@ export interface CreateInternalUserPayload {
   lastName: string;
   email: string;
   adminRole: string;
-  password: string;
 }
 
 export interface CreateUserGroupPayload {
@@ -123,6 +126,7 @@ export interface PetBusinessApplication {
   businessType: PetBusinessTypeEnum;
   businessEmail: string;
   websiteURL?: string;
+  stripeAccountId: string;
   businessDescription: string;
   businessAddresses: Address[];
   attachments: string[];
@@ -144,4 +148,43 @@ export interface ApprovePetBusinessApplicationPayload {
 export interface RejectPetBusinessApplicationPayload {
   petBusinessApplicationId: Number;
   remark: String;
+}
+
+export interface CommissionRule {
+  commissionRuleId: number;
+  name: string;
+  commissionRate: number;
+  createdAt?: string;
+  updatedAt?: string;
+  petBusinesses?: PetBusiness[];
+}
+
+export interface RevenueDashboardSummary {
+  totalTransactionAmount: number;
+  totalCommissionEarned: number;
+  last30DaysTransactionAmount: number;
+  last30DaysCommissionEarned: number;
+}
+
+export interface RevenueDashboardPetBusiness {
+  petBusinessId: number;
+  totalAmount: number;
+  totalCommission: number;
+  orderItemCount: number;
+  companyName: string;
+  businessType: PetBusinessTypeEnum;
+  userEmail: string;
+  dateJoined: string;
+}
+
+export interface CreateOrUpdateArticlePayload {
+  articleId?: number;
+  title: string;
+  content: string;
+  articleType: string;
+  file: File;
+  internalUserId?: number;
+  tags: number[];
+  category: string;
+  isPinned: boolean;
 }

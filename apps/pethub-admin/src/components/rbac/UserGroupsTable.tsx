@@ -11,7 +11,6 @@ interface UserGroupsTableProps {
   records: UserGroup[];
   totalNumUserGroups: number;
   page: number;
-  isSearching: boolean;
   sortStatus: DataTableSortStatus;
   onDelete(id: number): void;
   onSortStatusChange: any;
@@ -23,7 +22,6 @@ const UserGroupsTable = ({
   records,
   totalNumUserGroups,
   page,
-  isSearching,
   sortStatus,
   onDelete,
   onSortStatusChange,
@@ -34,6 +32,10 @@ const UserGroupsTable = ({
 
   return (
     <DataTable
+      highlightOnHover
+      onRowClick={(record) =>
+        router.push(`/admin/rbac/user-groups/${record.groupId}`)
+      }
       minHeight={getMinTableHeight(records)}
       columns={[
         {
@@ -64,7 +66,7 @@ const UserGroupsTable = ({
                   router.push(`${router.asPath}/user-groups/${group.groupId}`)
                 }
               />
-              {disabled ? null : (
+              {!disabled && (
                 <DeleteActionButtonModal
                   title={`Are you sure you want to delete ${group.name}?`}
                   subtitle="Any users currently assigned to this user group will be unassigned."
@@ -90,7 +92,7 @@ const UserGroupsTable = ({
       sortStatus={sortStatus}
       onSortStatusChange={onSortStatusChange}
       //pagination
-      totalRecords={isSearching ? records.length : totalNumUserGroups}
+      totalRecords={totalNumUserGroups}
       recordsPerPage={TABLE_PAGE_SIZE}
       page={page}
       onPageChange={(p) => onPageChange(p)}

@@ -15,6 +15,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import localFont from "next/font/local";
+import { useRouter } from "next/router";
 import { SessionProvider } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -23,6 +24,7 @@ import {
   LoadingOverlayProvider,
   useLoadingOverlay,
 } from "web-ui/shared/LoadingOverlayContext";
+import { CartProvider } from "@/components/cart/CartContext";
 import HeaderBar from "@/components/common/HeaderBar";
 import SideNavBar from "@/components/common/SideNavBar";
 import type { AppProps } from "next/app";
@@ -38,6 +40,7 @@ export function App({ Component, pageProps }: AppProps) {
   const { data: session, status } = useSession();
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+  const router = useRouter();
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -93,7 +96,12 @@ export function App({ Component, pageProps }: AppProps) {
               <AppShell
                 header={headerBarCheck()}
                 navbar={sideBarCheck()}
-                padding={sideBarCheck() ? "lg" : 0}
+                padding={
+                  router.asPath === "/business/sales/dashboard" ||
+                  !sideBarCheck()
+                    ? 0
+                    : "lg"
+                }
               >
                 {status === "loading" ? (
                   <Container
@@ -136,7 +144,9 @@ export default function AppProvider(props: any) {
   return (
     <SessionProvider session={props.pageProps.session}>
       <LoadingOverlayProvider>
-        <App {...props} />
+        <CartProvider>
+          <App {...props} />
+        </CartProvider>
       </LoadingOverlayProvider>
     </SessionProvider>
   );
