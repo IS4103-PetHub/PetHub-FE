@@ -49,7 +49,7 @@ export default function Listings({
     data: serviceListings = [],
     isLoading,
     refetch: refetchServiceListings,
-  } = useGetServiceListingByPetBusinessId(userId);
+  } = useGetServiceListingByPetBusinessId(userId, true);
 
   const { data: calendarGroups = [] } = useGetCalendarGroupByPBId(userId);
 
