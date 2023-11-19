@@ -37,7 +37,7 @@ export default function CreateSupportServiceListingTable({
   userId,
 }: CreateSupportServiceListingTableProps) {
   const { data: serviceListings = [], isLoading } =
-    useGetServiceListingByPetBusinessId(userId);
+    useGetServiceListingByPetBusinessId(userId, true);
   const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<ServiceListing[]>(serviceListings);
   const [isSearching, setIsSearching] = useToggle();

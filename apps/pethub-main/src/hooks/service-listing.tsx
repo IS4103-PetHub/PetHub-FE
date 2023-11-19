@@ -74,12 +74,18 @@ export const useGetAllServiceListingsWithQueryParams = (
 };
 
 // GET Service Listing by Business Id
-export const useGetServiceListingByPetBusinessId = (userId: number) => {
+export const useGetServiceListingByPetBusinessId = (
+  userId: number,
+  isPB?: boolean,
+) => {
   return useQuery({
     queryKey: ["service-listings", { petBusinessId: userId }],
     queryFn: async () => {
       const response = await api.get(
         `${SERVICE_LISTING_API}/pet-businesses/${userId}`,
+        {
+          params: { isPB }, // Include isPB in the query string if it's defined
+        },
       );
       return response.data as ServiceListing[];
     },
